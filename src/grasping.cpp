@@ -133,9 +133,7 @@ class grasping_NLP : public Ipopt::TNLP
 
     Vector aux_gradf;
     Vector old_x_f;
-    Vector old_x_gr;
-
-    Hand hnd;
+    Vector old_x_gr;    
 
 public:
     double t0;
@@ -148,6 +146,8 @@ public:
     Matrix H_h2w;
     Matrix H_x;
     Vector euler;
+
+    Hand hnd;
 
     /****************************************************************/
     void init(Object &obj_received, ResourceFinder &rf)
@@ -801,125 +801,8 @@ public:
    /****************************************************************/
    Vector get_result() const
    {
-       return solution;
+       return robot_pose;
    }
 
 };
 
-/****************************************************************/
-int main(int argc, char *argv[])
-{
-    ResourceFinder rf;
-    rf.configure(argc,argv);
-    double t,t0;
-
-    string nameFileOut, nameFileSolution;
-    string mu_strategy,nlp_scaling_method;
-    double tol,constr_viol_tol, sum;
-    int acceptable_iter,max_iter;
-    int object_provided;
-    Object obj_main;
-
-    nameFileOut=rf.find("nameFileOut").asString().c_str();
-    if(rf.find("nameFileOut").isNull())
-       nameFileOut="test";
-
-    nameFileSolution=rf.find("nameFileSolution").asString().c_str();
-    if(rf.find("nameFileSolution").isNull())
-       nameFileSolution="solution.txt";
-
-    tol=rf.find("tol").asDouble();
-    if(rf.find("tol").isNull())
-       tol=1e-4;
-
-    constr_viol_tol=rf.find("constr_tol").asDouble();
-    if(rf.find("constr_tol").isNull())
-       constr_viol_tol=1e-2;
-
-    acceptable_iter=rf.find("acceptable_iter").asInt();
-    if(rf.find("acceptable_iter").isNull())
-       acceptable_iter=0;
-
-    max_iter=rf.find("max_iter").asInt();
-    if(rf.find("max_iter").isNull())
-       max_iter=2e19;
-
-    mu_strategy=rf.find("mu_strategy").asString().c_str();
-    if(rf.find("mu_strategy").isNull())
-       mu_strategy="monotone";
-
-    nlp_scaling_method=rf.find("nlp_scaling_method").asString().c_str();
-    if(rf.find("nlp_scaling_method").isNull())
-       nlp_scaling_method="none";    
-
-    object_provided=rf.find("object_prov").asInt();
-    if(rf.find("object_prov").isNull())
-        object_provided=1;
-
-    obj_main.init(rf);
-    obj_main.getObject(object_provided,rf);
-
-
-    //algorithm settings
-    Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
-    app->Options()->SetNumericValue("tol",tol);
-    app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol);
-    app->Options()->SetIntegerValue("acceptable_iter",acceptable_iter);
-    app->Options()->SetStringValue("mu_strategy",mu_strategy);
-    app->Options()->SetIntegerValue("max_iter",max_iter);
-    app->Options()->SetStringValue("nlp_scaling_method",nlp_scaling_method);
-    //app->Options()->SetNumericValue("nlp_scaling_max_gradient",10);
-    //app->Options()->SetNumericValue("nlp_scaling_min_value",1e-2);
-    app->Options()->SetStringValue("hessian_approximation","limited-memory");
-    app->Options()->SetStringValue("derivative_test","first-order");
-    app->Options()->SetStringValue("derivative_test_print_all","yes");
-    app->Options()->SetStringValue("output_file",nameFileOut+".out");
-    //app->Options()->SetStringValue("print_user_options","yes");
-    //app->Options()->SetStringValue("print_options_documentation","no");
-    app->Options()->SetIntegerValue("print_level",0);
-    app->Initialize();
-
-    t0=Time::now();
-    Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
-    grasp_nlp->init(obj_main,rf);
-    grasp_nlp->configure(rf);
-
-    Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
-    t=Time::now()-t0;
-
-    if(status==Ipopt::Solve_Succeeded)
-    {
-        Vector sol;
-        sol=grasp_nlp->get_result();
-        cout<<"The optimal solution is: "<<sol.toString().c_str()<<endl;
-        ofstream fout(nameFileSolution.c_str());
-
-        if(fout.is_open())
-        {
-            fout<<"x: "<<endl<<endl;
-            fout<<sol.toString().c_str()<<endl<<endl;
-
-            fout<<"hand pose "<<endl<<endl;
-            fout<<grasp_nlp->robot_pose.toString()<<endl<<endl;
-
-            fout<<"t for ipopt: "<<endl<<endl;
-            fout<<t<<endl<<endl;
-
-            fout<<"method to compute gradient:"<<endl<<endl;
-            fout<<grasp_nlp->gradient_comp<<endl;
-
-            fout<<"object: "<<endl;
-            fout<<obj_main.x.toString()<<endl;
-        }
-    }
-    else
-        cout<<"Problem not solved!"<<endl; 
-
-    Vector sol;
-    sol=grasp_nlp->get_result();
-    cout<<"The optimal solution is: "<<sol.toString().c_str()<<endl;
-
-    cout<<"t "<<t<<endl;
-
-    return 0;
-}

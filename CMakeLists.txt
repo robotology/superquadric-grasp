@@ -31,7 +31,7 @@ add_definitions(${YARP_DEFINES})
 add_definitions(-D_USE_MATH_DEFINES)
 
 add_executable(${PROJECTNAME} ${sources})
-target_link_libraries(${PROJECTNAME} ${YARP_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib)
+target_link_libraries(${PROJECTNAME} ${YARP_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib perceptiveModels actionPrimitives)
 
 add_subdirectory(app)
 
