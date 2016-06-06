@@ -39,7 +39,7 @@
 #include <iCub/action/actionPrimitives.h>
 #include <iCub/perception/sensors.h>
 #include <iCub/perception/tactileFingers.h>
-#include "grasping.cpp"
+#include "computePose.cpp"
 
 #define AFFACTIONPRIMITIVESLAYER    ActionPrimitivesLayer1
 
@@ -76,21 +76,27 @@ protected:
     string robot;
     string left_or_right;
 
+    ResourceFinder *rf;
+
+
     deque<Vector> trajectory;
-    Vector pose;
+    Vector pose, sol;
+    double t,t0;
 
     double tol, constr_viol_tol;
     int max_iter, acceptable_iter, object_provided;
     string mu_strategy,nlp_scaling_method;
 
-    Ipopt::ApplicationReturnStatus status;
-    Ipopt::SmartPtr<Ipopt::IpoptApplication> app;
-    Ipopt::SmartPtr<grasping_NLP>  grasp_nlp;
-
-    Object obj_main;
+    Vector object;
+    Vector hand;
+    int n_pointshand;
+    double distance;
 
     bool go_on;
+    bool online;
+    bool move;
 
+    string nameFileOut, nameFileSolution, nameFileTrajectory;
 
 public:
 
@@ -122,26 +128,15 @@ public:
     }
 
     /****************************************************************/
-    bool configure(ResourceFinder &rf)
+    bool configDevices(ResourceFinder &rf)
     {
-        cout<<"debug 0"<<endl;
         robot=rf.find("robot").asString().c_str();
         if(rf.find("robot").isNull())
-        {
-            cerr<<"Robot name not provided!"<<endl;
-            return false;
-        }
-        cout<<"debug 1"<<endl;
+            robot="iCubsim";
 
-        left_or_right=rf.find("hand").asString().c_str();
-        if(rf.find("hand").isNull())
-        {
-            //yError("Hand not provided!");
-            return false;
-        }
-
-
-        cout<<"debug 2"<<endl;
+        left_or_right=rf.find("which_hand").asString().c_str();
+        if(rf.find("which_hand").isNull())
+            left_or_right="right";
 
         Property option_arm("(device cartesiancontrollerclient)");
         option_arm.put("remote","/"+robot+"/cartesianController/"+left_or_right+"_arm");
@@ -150,13 +145,11 @@ public:
         robotDevice.open(option_arm);
         if (!robotDevice.isValid())
         {
-            //yErr("Device index not available!");
+            yError("Device index not available!");
             return false;
         }
 
         robotDevice.view(icart_arm);
-
-        cout<<"debug 3"<<endl;
 
         Property option_arm2("(device remote_controlboard)");
         option_arm2.put("remote","/"+robot+"/"+left_or_right+"_arm");
@@ -165,22 +158,11 @@ public:
         robotDevice2.open(option_arm2);
         if (!robotDevice2.isValid())
         {
-            //yErr("Device not available!");
+            yError("Device not available!");
             return false;
         }
 
-        cout<<"debug 4"<<endl;
-        robotDevice2.view(enc);
-cout<<"debug 5"<<endl;
-
-        bool ok=configAction(rf);
-cout<<"debug 6"<<endl;
-        configSuperq(rf);
-cout<<"debug 7"<<endl;
-        pose.resize(6,0.0);
-
-        return ok;
-
+        return true;
     }
 
     /****************************************************************/
@@ -214,12 +196,13 @@ cout<<"debug 7"<<endl;
     /****************************************************************/
     bool updateModule()
     {
-        go_on=computeSuperq();
+        go_on=computePose();
 
         if(go_on)
             computeTrajectory();
 
-        go_on=reachPose();
+        if (go_on && (move==1))
+            go_on=reachPose();
 
         if(go_on)
             go_on=graspObject();
@@ -235,11 +218,12 @@ cout<<"debug 7"<<endl;
 
     /****************************************************************/
     bool configAction(ResourceFinder &rf)
-    {
+    {        
         string name=rf.find("name").asString().c_str();
         setName(name.c_str());
 
-        Property config; config.fromConfigFile(rf.findFile("from").c_str());
+        Property config;
+        config.fromConfigFile(rf.findFile("from").c_str());
         Bottle &bGeneral=config.findGroup("general");
         if (bGeneral.isNull())
         {
@@ -256,7 +240,7 @@ cout<<"debug 7"<<endl;
 
         Bottle &bArm=config.findGroup("arm_dependent");
         getArmDependentOptions(bArm,graspDisp);
-
+;
         action=new AFFACTIONPRIMITIVESLAYER(option);
         if (!action->isValid())
         {
@@ -265,7 +249,7 @@ cout<<"debug 7"<<endl;
         }
 
         deque<string> q=action->getHandSeqList();
-        cout<<"***** List of available hand sequence keys:"<<endl;
+        cout<<"*** List of available hand sequence keys:"<<endl;
         for (size_t i=0; i<q.size(); i++)
             cout<<q[i]<<endl;
 
@@ -275,7 +259,6 @@ cout<<"debug 7"<<endl;
         attach(rpcPort);
 
         Model *model; action->getGraspModel(model);
-
 
         if (model!=NULL)
         {
@@ -287,31 +270,98 @@ cout<<"debug 7"<<endl;
             }
         }
         return true;
-
     }
 
     /***********************************************************************/
-    void configSuperq(ResourceFinder &rf)
+    bool configure(ResourceFinder &rf)
     {
-        tol=rf.check("tol",Value(1e-5)).asDouble();
-        constr_viol_tol=rf.check("constr_tol",Value(1e-2)).asDouble();
-        acceptable_iter=rf.check("acceptable_iter",Value(0)).asInt();
-        max_iter=rf.check("max_iter",Value(2e19)).asInt();
+        bool config_ok;
+
+        config_ok=configPose(rf);
+
+        move=(rf.check("move", Value("no"))=="yes");
+
+        if (config_ok && (move==1))
+        {
+            config_ok=configDevices(rf);
+            if (config_ok)
+            config_ok=configAction(rf);
+        }
+
+        return config_ok;
+    }
+
+    /***********************************************************************/
+    bool configPose(ResourceFinder &rf)
+    {
+        this->rf=&rf;
+
+        online=(rf.check("online", Value("no"))=="yes");
+        n_pointshand=rf.check("pointshand", Value(48)).asInt();
+        distance=rf.check("distance", Value(0.1)).asDouble();
+
+        if (online)
+             askForObject();
+        else
+        {
+            readSuperq("object",object,11,this->rf);
+            readSuperq("hand",hand,11,this->rf);
+        }
+
+        nameFileOut=rf.find("nameFileOut").asString().c_str();
+        if(rf.find("nameFileOut").isNull())
+           nameFileOut="test.txt";
+
+        nameFileSolution=rf.find("nameFileSolution").asString();
+        if(rf.find("nameFileSolution").isNull())
+           nameFileSolution="solution.txt";
+
+        nameFileTrajectory=rf.find("nameFileTrajectory").asString().c_str();
+        if(rf.find("nameFileTrajectory").isNull())
+           nameFileOut="test-trajectory.txt";
+
+        tol=rf.check("tol", Value(1e-3)).asDouble();
+        constr_viol_tol=rf.check("constr_tol", Value(1e-2)).asDouble();
+
+        acceptable_iter=rf.check("acceptable_iter", Value(0)).asInt();
+
+        max_iter=rf.check("max_iter", Value(1e8)).asInt();
 
         mu_strategy=rf.find("mu_strategy").asString().c_str();
         if(rf.find("mu_strategy").isNull())
-            mu_strategy="adaptive";
+           mu_strategy="monotone";
+
         nlp_scaling_method=rf.find("nlp_scaling_method").asString().c_str();
         if(rf.find("nlp_scaling_method").isNull())
-            nlp_scaling_method="none";
-        object_provided=rf.find("object_prov").asInt();
-            if(rf.find("object_prov").isNull())
-                object_provided=1;
+           nlp_scaling_method="none";
 
-        obj_main.init(rf);
-        obj_main.getObject(object_provided,rf);
+        return true;
+    }
 
-        app=new Ipopt::IpoptApplication;
+    /****************************************************************/
+    void askForObject()
+    {
+
+    }
+
+    /****************************************************************/
+    bool readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
+    {
+        if (Bottle *b=rf->find(name_obj.c_str()).asList())
+        {
+            if (b->size()>=dimension)
+            {
+                for(size_t i=0; i<b->size();i++)
+                    x.push_back(b->get(i).asDouble());
+            }
+            return true;
+        }
+    }
+
+    /***********************************************************************/
+    bool computePose()
+    {
+        Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
         app->Options()->SetNumericValue("tol",tol);
         app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol);
         app->Options()->SetIntegerValue("acceptable_iter",acceptable_iter);
@@ -319,70 +369,81 @@ cout<<"debug 7"<<endl;
         app->Options()->SetIntegerValue("max_iter",max_iter);
         app->Options()->SetStringValue("nlp_scaling_method",nlp_scaling_method);
         app->Options()->SetStringValue("hessian_approximation","limited-memory");
-        app->Options()->SetIntegerValue("print_level",0);
+        app->Options()->SetStringValue("derivative_test","first-order");
+        app->Options()->SetStringValue("derivative_test_print_all","yes");
+        app->Options()->SetStringValue("output_file",nameFileOut+".out");
+        app->Options()->SetIntegerValue("print_level",5);
         app->Initialize();
 
-        grasp_nlp= new grasping_NLP;
-
-        grasp_nlp->init(obj_main,rf);
-        grasp_nlp->configure(rf);
-
-    }
-
-    /***********************************************************************/
-    bool computeSuperq()
-    {
-        double t,t0;
         t0=Time::now();
+        Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
+        grasp_nlp->init(object, hand, n_pointshand);
+        grasp_nlp->configure(this->rf);
 
-        status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
+        Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
         t=Time::now()-t0;
-        cout<<"t "<<t<<endl;
 
         if(status==Ipopt::Solve_Succeeded)
         {
-            pose=grasp_nlp->get_result();
-            cout<<"solution "<<pose.toString()<<endl;
-            yInfo("Solution of the optimization problem: %s", pose.toString().c_str());
+            sol=grasp_nlp->get_result();
+            pose=grasp_nlp->robot_pose;
+            cout<<"The optimal robot pose is: "<<pose.toString().c_str()<<endl;
+            ofstream fout(nameFileSolution.c_str());
+
+            if(fout.is_open())
+            {
+                fout<<"Initial hand volume pose: "<<" "<<"["<<grasp_nlp->hand.toString(3,3).c_str()<<"]"<<endl<<endl;
+
+                fout<<"Final hand volume pose: "<<" "<<"["<<sol.toString(3,3).c_str()<<"]"<<endl<<endl;
+
+                fout<<"Final hand pose "<<" "<<"["<<grasp_nlp->robot_pose.toString(3,3)<<"]"<<endl<<endl;
+
+                fout<<"t for ipopt: "<<t<<endl<<endl;
+
+                fout<<"object: "<<" "<<"["<<grasp_nlp->object.toString(3,3)<<"]"<<endl<<endl;
+
+                fout<<"bounds in constrained:"<<endl<<"["<<grasp_nlp->bounds_constr.toString(3,3)<<"]"<<endl<<endl;
+
+                fout<<"plane: ["<<grasp_nlp->plane.toString()<<endl;
+            }
+
             return true;
         }
         else
+        {
+            cout<<"Problem not solved!"<<endl;
             return false;
+        }
     }
 
     /***********************************************************************/
     bool computeTrajectory()
     {
         Vector pose1(6,0.0);
-        Vector euler(6,0.0);
+        Vector euler(3,0.0);
         euler[0]=pose[3];
         euler[1]=pose[4];
         euler[2]=pose[5];
-        Matrix H_x(4,4);
-        H_x=euler2dcm(euler);
+        Matrix H(4,4);
+        H=euler2dcm(euler);
         euler[0]=pose[0];
         euler[1]=pose[1];
         euler[2]=pose[2];
-        H_x.setSubcol(euler,0,3);
-
-        euler[0]=grasp_nlp->hnd.x[8];
-        euler[1]=grasp_nlp->hnd.x[9];
-        euler[2]=grasp_nlp->hnd.x[10];
-        Matrix H_h2w(4,4);
-        H_h2w=euler2dcm(euler);
-        euler[0]=grasp_nlp->hnd.x[5];
-        euler[1]=grasp_nlp->hnd.x[6];
-        euler[2]=grasp_nlp->hnd.x[7];
-        H_h2w.setSubcol(euler,0,3);
-
-        Matrix H(4,4);
-        H=H_x*H_h2w;
+        H.setSubcol(euler,0,3);
 
         pose1=pose;
-        pose1.setSubvector(0,pose.subVector(0,2)-grasp_nlp->hnd.x[0]*(H.transposed().getCol(2).subVector(0,2)));
-
+        pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
         trajectory.push_back(pose1);
         trajectory.push_back(pose);
+
+        ofstream fout(nameFileTrajectory.c_str());
+
+        if(fout.is_open())
+        {
+            for (size_t i=0; i<trajectory.size();i++)
+            fout<<"waypoint "<<i<<" "<<trajectory[i].toString()<<endl;
+
+        }
 
         return true;
     }
@@ -416,11 +477,9 @@ cout<<"debug 7"<<endl;
             // grasp (wait until it's done)
             action->grasp(point.subVector(0,2), point.subVector(3,5), graspDisp);
             action->checkActionsDone(f,true);
-
         }
 
         return true;
-
     }
 
     /***********************************************************************/
@@ -445,7 +504,8 @@ int main(int argc, char *argv[])
    ResourceFinder rf;
    rf.setVerbose(true);
    rf.setDefaultConfigFile("config.ini");
-   rf.setDefault("grasp_model_type","tactile");
+   rf.setDefaultContext("superquadric-grasping");
+   rf.setDefault("grasp_model_type","springy");
    rf.setDefault("grasp_model_file","grasp_model.ini");
    rf.setDefault("hand_sequences_file","hand_sequences.ini");
    rf.setDefault("name","actionPrimitivesMod");

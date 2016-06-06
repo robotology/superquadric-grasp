@@ -4,13 +4,14 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-set(PROJECTNAME Superquadric-Grasping)
-project(${PROJECTNAME})
+project(superquadric-grasping)
 
 find_package(YARP REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+include(YarpIDL)
 include(YarpInstallationHelpers)
 
+find_package(OpenCV REQUIRED)
 find_package(ICUB REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH})
 
@@ -22,7 +23,7 @@ icubcontrib_set_default_prefix()
 
 find_package(IPOPT REQUIRED)
 
-set(sources src/grasping.cpp src/main.cpp)
+set(sources src/computePose.cpp src/main.cpp)
 source_group("Source Files" FILES ${sources})
 
 include_directories(${YARP_INCLUDE_DIRS} ${ICUB_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS} iKin)
@@ -30,9 +31,16 @@ include_directories(${YARP_INCLUDE_DIRS} ${ICUB_INCLUDE_DIRS} ${IPOPT_INCLUDE_DI
 add_definitions(${YARP_DEFINES}) 
 add_definitions(-D_USE_MATH_DEFINES)
 
-add_executable(${PROJECTNAME} ${sources})
-target_link_libraries(${PROJECTNAME} ${YARP_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib perceptiveModels actionPrimitives)
+add_executable(${PROJECT_NAME} ${sources})
+target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib perceptiveModels actionPrimitives)
 
-add_subdirectory(app)
-
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 icubcontrib_add_uninstall_target()
+
+
+# app and conf
+file(GLOB conf ${CMAKE_CURRENT_SOURCE_DIR}/app/conf/*.ini)
+yarp_install(FILES ${conf} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
+#file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/app/scripts/*.template)
+#yarp_install(FILES ${scripts} DESTINATION ${ICUBCONTRIB_APPLICATIONS_TEMPLATES_INSTALL_DIR})
+#yarp_install(FILES ${PROJECT_NAME}.xml DESTINATION ${ICUBCONTRIB_MODULES_INSTALL_DIR})
