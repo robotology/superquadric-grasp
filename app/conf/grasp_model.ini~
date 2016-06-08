@@ -1,7 +1,7 @@
 
 name         tactile
 type         right
-compensation true
+compensation false
 verbosity    1
 
 [thumb]
