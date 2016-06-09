@@ -41,7 +41,9 @@
 #include <iCub/action/actionPrimitives.h>
 #include <iCub/perception/sensors.h>
 #include <iCub/perception/tactileFingers.h>
+
 #include "computePose.cpp"
+#include "src/superquadricGrasping_IDL.h"
 
 #define AFFACTIONPRIMITIVESLAYER    ActionPrimitivesLayer1
 
@@ -54,11 +56,12 @@ using namespace iCub::perception;
 using namespace iCub::action;
 using namespace iCub::iKin;
 
-class GraspingModule: public RFModule
+class GraspingModule: public RFModule,
+                      public superquadricGrasping_IDL
 {
 protected:
     AFFACTIONPRIMITIVESLAYER *action;
-    Port                      rpcPort;
+    RpcServer                portRpc;
 
     Vector graspOrien;
     Vector graspDisp;
@@ -78,7 +81,6 @@ protected:
     string left_or_right;
 
     ResourceFinder *rf;
-
 
     deque<Vector> trajectory;
     Vector pose, sol;
@@ -106,10 +108,141 @@ protected:
     bool online;
     bool move;
     bool viewer;
+    bool stop_var;
 
     string nameFileOut, nameFileSolution, nameFileTrajectory;
 
 public:
+
+    /************************************************************************/
+    bool attach(RpcServer &source)
+    {
+        return this->yarp().attachAsServer(source);
+    }
+
+    /************************************************************************/
+    bool start()
+    {
+        go_on=true;
+        stop_var=false;
+        return true;
+    }
+
+    /************************************************************************/
+    bool stop()
+    {
+        stop_var=true;
+        return true;
+    }
+
+    /************************************************************************/
+    bool go_home()
+    {
+        bool f;
+        action->pushAction("karate_hand");
+        action->checkActionsDone(f,true);
+
+
+        action->pushAction(home_x);
+        action->checkActionsDone(f,true);
+        return f;
+    }
+
+    /************************************************************************/
+    bool set_trajectory_options(const Property &options)
+    {
+        Bottle &groupBottle=options.findGroup("grasp_displacement");
+
+        if (!groupBottle.isNull())
+        {
+            if (Bottle *pB=groupBottle.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=graspDisp.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    graspDisp[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new grasp_displacement "<<graspDisp.toString();
+            }
+        }
+
+        Bottle &groupBottle1=options.findGroup("grasp_orientation");
+
+        if (!groupBottle1.isNull())
+        {
+            if (Bottle *pB=groupBottle1.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=graspOrien.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    graspOrien[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new grasp_orientation "<<graspOrien.toString();
+            }
+        }
+
+        Bottle &groupBottle2=options.findGroup("doffs");
+
+        if (!groupBottle2.isNull())
+        {
+            if (Bottle *pB=groupBottle2.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=dOffs.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    dOffs[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new doff "<<dOffs.toString();
+            }
+        }
+
+        Bottle &groupBottle3=options.findGroup("home_x");
+
+        if (!groupBottle3.isNull())
+        {
+            if (Bottle *pB=groupBottle3.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=home_x.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    home_x[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new home_x "<<home_x.toString();
+            }
+        }
+
+        Bottle &groupBottle4=options.findGroup("dlift");
+
+        if (!groupBottle4.isNull())
+        {
+            if (Bottle *pB=groupBottle4.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=dLift.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    dLift[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new dlift "<<dLift.toString();
+            }
+        }
+
+        if ((groupBottle.isNull())&& (groupBottle2.isNull()) && (groupBottle3.isNull()) && (groupBottle4.isNull()))
+        {
+            return false;
+        }
+        else
+            return true;
+    }
 
     /************************************************************************/
     GraspingModule()
@@ -121,7 +254,7 @@ public:
         home_x.resize(3,0.0);
         graspDisp[0]=0.0;
         graspDisp[1]=0.0;
-        graspDisp[2]=0.05;
+        graspDisp[2]=0.01;
 
         graspOrien[0]=-0.171542;
         graspOrien[1]= 0.124396;
@@ -234,6 +367,8 @@ public:
             return false;
         }
 
+        //getHandPose();
+
         Vector curDof;
         icart_arm->getDOF(curDof);
         cout<<"["<<curDof.toString()<<"]"<<endl;  // [0 0 0 1 1 1 1 1 1 1] will be printed out
@@ -253,8 +388,8 @@ public:
         if (action!=NULL)
             delete action;
 
-        if (rpcPort.isOpen())
-            rpcPort.close();
+        if (portRpc.asPort().isOpen())
+            portRpc.close();
 
         if (portSuperqRpc.asPort().isOpen())
             portSuperqRpc.close();
@@ -269,7 +404,6 @@ public:
         robotDevice2.close();
 
         return true;
-
     }
 
     /****************************************************************/
@@ -283,25 +417,56 @@ public:
     /****************************************************************/
     bool updateModule()
     {
-        if (norm(hand)!=0.0 && norm(object)!=0.0)
+        if (stop_var==true)
+            go_on=false;
+
+        if (norm(hand)!=0.0 && norm(object)!=0.0 && (go_on==true))
             go_on=computePose();
 
         if (go_on)
             computeTrajectory();
 
+        if (stop_var==true)
+            go_on=false;
+
         if ((go_on==true) && (viewer==true))
             go_on=showTrajectory();
 
-        if ((go_on==true) && (move==true))
-            go_on=reachPose();
+
+        for (size_t i=0; i<trajectory.size();i++)
+        {
+            if (stop_var==true)
+                go_on=false;
+
+            if ((go_on==true) && (move==true))
+            {
+                go_on=reachPose(i);
+            }
+        }
+
+        if (stop_var==true)
+            go_on=false;
 
         if ((go_on==true) && (move==true))
+        {
             go_on=graspObject();
+
+            if (stop_var==true)
+                go_on=false;
+
+            liftObject();
+        }
+
+        if (stop_var==true)
+            go_on=false;
 
         if ((go_on==true) && (move==true))
             go_on=comeBack();
 
-        return !go_on;
+        if (stop_var==true)
+            go_on=true;
+
+        return go_on;
     }
 
     /****************************************************************/
@@ -355,9 +520,9 @@ public:
         for (size_t i=0; i<q.size(); i++)
             cout<<q[i]<<endl;
 
-        string fwslash="/";
-        rpcPort.open((fwslash+name+"/rpc").c_str());
-        attach(rpcPort);
+
+        portRpc.open("/superquadric-grasping/rpc");
+        attach(portRpc);
 
         Model *model; action->getGraspModel(model);
 
@@ -419,7 +584,6 @@ public:
             return false;
     }
 
-
     /***********************************************************************/
     bool configPose(ResourceFinder &rf)
     {
@@ -435,7 +599,7 @@ public:
         if (online)
         {
              askForObject();
-             getHandPose();
+             readSuperq("hand",hand,11,this->rf);
         }
         else
         {
@@ -488,11 +652,11 @@ public:
                 object[idx]=reply.get(idx).asDouble();
             }
 
-            yInfo()<<"Object superquadric: "<<object.toString();
+            yInfo()<<" Object superquadric: "<<object.toString();
         }
         else
         {
-            yError()<<"Superquadric not provided!";
+            yError()<<" Superquadric not provided!";
         }
     }
 
@@ -504,11 +668,14 @@ public:
 
         icart_arm->getPose(x,o);
 
-        hand.setSubvector(0,x);
-        Matrix H=axis2dcm(o);
-        hand.setSubvector(3,dcm2euler(H));
+        yDebug()<<"hand "<<hand.toString();
+        yDebug()<<"x "<<x.toString();
 
-        yInfo()<<"Hand pose: "<<hand.toString();
+        hand.setSubvector(5,x);
+        Matrix H=axis2dcm(o);
+        hand.setSubvector(8,dcm2euler(H));
+
+        yInfo()<<" Hand pose: "<<hand.toString();
     }
 
     /****************************************************************/
@@ -618,28 +785,6 @@ public:
     /***********************************************************************/
     bool showTrajectory()
     {
-        /****************/
-        Bottle info;
-        igaze->getInfo(info);
-        Matrix K(3,4);
-        K.zero();
-
-        Bottle *intr_par;
-
-        if (eye=="left")
-            intr_par=info.find("camera_intrinsics_left").asList();
-        else
-            intr_par=info.find("camera_intrinsics_right").asList();
-
-        K(0,0)=intr_par->get(0).asDouble();
-        K(0,1)=intr_par->get(1).asDouble();
-        K(0,2)=intr_par->get(2).asDouble();
-        K(1,1)=intr_par->get(5).asDouble();
-        K(1,2)=intr_par->get(6).asDouble();
-        K(2,2)=1;
-        /***************/
-
-
         ImageOf<PixelRgb> *imgIn=portImgIn.read();
         if (imgIn==NULL)
             return false;
@@ -707,7 +852,6 @@ public:
             yDebug()<<"y2D "<<y2D.toString();
             yDebug()<<"z2D "<<z2D.toString();
 
-
             cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
             cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
             cv::Point  target_pointy((int)y2D[0],(int)y2D[1]);
@@ -746,51 +890,36 @@ public:
     }
 
     /***********************************************************************/
-    bool reachPose()
+    bool reachPose(const int i)
     {
         bool f;
 
         if (firstRun)
         {
-            action->pushAction("open_hand");
+            action->pushAction(home_x,"karate_hand");
             action->checkActionsDone(f,true);
 
             firstRun=false;
         }
 
         Vector point(6,0.0);
-        point=trajectory[0];
+        point=trajectory[i];
 
         Vector orient(4,0.0);
         orient=dcm2axis(euler2dcm(point.subVector(3,5)));
 
-        yDebug()<<"point to be reached: "<<point.subVector(0,2).toString();
-        yDebug()<<"orientation: "<<orient.toString();
+        cout<<"[waypoint "<<i<<"]: point to be reached: "<<point.subVector(0,2).toString()<<endl;
+        cout<<"[waypoint "<<i<<"]: orientation: "<<orient.toString()<<endl;
 
         // grasp (wait until it's done)
-        //action->pushAction(point.subVector(0,2), orient);
-        //action->checkActionsDone(f,true);
-
-
-        icart_arm->goToPose(point.subVector(0,2), orient);
-        icart_arm->waitMotionDone(0.02);
+        action->pushAction(point.subVector(0,2), orient);
+        action->checkActionsDone(f,true);
 
         Vector x_tmp(3,0.0);
         Vector o_tmp(4,0.0);
         icart_arm->getPose(x_tmp, o_tmp);
 
-        yDebug()<<"poses "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString();
-        showTrajectory();
-
-        point=trajectory[1];
-        yDebug()<<"point to be reached: "<<point.subVector(0,2).toString();
-
-        // grasp (wait until it's done)
-        //action->pushAction(point.subVector(0,2), orient);
-        //action->checkActionsDone(f,true);
-
-        icart_arm->goToPose(point.subVector(0,2), orient);
-        icart_arm->waitMotionDone(0.02);
+        cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
         showTrajectory();
 
         return true;
@@ -803,37 +932,64 @@ public:
         action->pushAction("close_hand");
         action->checkActionsDone(f,true);
         firstRun=true;
+
+        showTrajectory();
         return true;
+    }
+
+    /***********************************************************************/
+    void liftObject()
+    {
+        bool f;
+        Vector point(6,0.0);
+        point=trajectory[1];
+
+        Vector orient(4,0.0);
+        orient=dcm2axis(euler2dcm(point.subVector(3,5)));
+        point[2]+=0.2;
+        action->pushAction(point.subVector(0,2), orient);
+        action->checkActionsDone(f,true);
+
+        point=trajectory[1];
+        action->pushAction(point.subVector(0,2), orient);
+        action->checkActionsDone(f,true);
     }
 
     /***********************************************************************/
     bool comeBack()
     {
         bool f;
-        action->pushAction("open_hand");
+        action->pushAction("karate_hand");
         action->checkActionsDone(f,true);
 
         firstRun=false;
 
 
         Vector point(6,0.0);
-        point=trajectory[1];
+        point=trajectory[0];
 
         Vector orient(4,0.0);
         orient=dcm2axis(euler2dcm(point.subVector(3,5)));
 
-        icart_arm->goToPose(point.subVector(0,2), orient);
-        icart_arm->waitMotionDone(0.02);
+        cout<<"[waypoint 1-back]: point to be reached: "<<point.subVector(0,2).toString()<<endl;
+        cout<<"[waypoint 1-back]: orientation: "<<orient.toString()<<endl;
+
+        action->pushAction(point.subVector(0,2), orient);
+        action->checkActionsDone(f,true);
 
         Vector x_tmp(3,0.0);
         Vector o_tmp(4,0.0);
         icart_arm->getPose(x_tmp, o_tmp);
 
-        point=trajectory[0];
-        yDebug()<<"point to be reached: "<<point.subVector(0,2).toString();
+        cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
-        icart_arm->goToPose(point.subVector(0,2), orient);
-        icart_arm->waitMotionDone(0.02);
+        action->pushAction(home_x);
+        action->checkActionsDone(f,true);
+        icart_arm->getPose(x_tmp, o_tmp);
+
+        cout<<"[Come back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+
+        showTrajectory();
 
         return true;
     }
