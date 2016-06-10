@@ -62,7 +62,7 @@ public:
     Matrix bounds_constr;
 
     /****************************************************************/
-    void init(Vector &objectext, Vector &handext, int &n_handpoints)
+    void init(Vector &objectext, Vector &handext, int &n_handpoints, const string &str_hand)
     {
         hand=handext;
         object=objectext;
@@ -97,7 +97,7 @@ public:
 
         for(int i=0; i<n_handpoints; i++)
         {
-            points_on.push_back(computePointsHand(hand,i, n_handpoints));
+            points_on.push_back(computePointsHand(hand,i, n_handpoints, str_hand));
             cout<<points_on[i].toString()<<endl;
         }
 
@@ -140,7 +140,7 @@ public:
     }
 
     /****************************************************************/
-    Vector computePointsHand(Vector &hand, int j, int l)
+    Vector computePointsHand(Vector &hand, int j, int l, const string &str_hand)
     {
         Vector point(3,0.0);
         double theta;
@@ -148,28 +148,55 @@ public:
         if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
             hand[1]=findMax(object.subVector(0,2));
 
-        if (j<l/3)
+        if (str_hand=="right")
         {
-            theta=j*M_PI/8;
-            point[0]=cos(theta)*hand[0];
-            point[1]=sin(theta)*hand[1];
-            point[2]=0.0;
+            if (j<l/3)
+            {
+                theta=j*M_PI/8;
+                point[0]=cos(theta)*hand[0];
+                point[1]=sin(theta)*hand[1];
+                point[2]=0.0;
+            }
+            if(j>=l/3 && j<l/3*2)
+            {
+                theta=j*M_PI/16;
+                point[0]=cos(theta)*hand[0];
+                point[1]=0.0;
+                point[2]=sin(theta)*hand[2];
+            }
+            if(j>=l/3*2 && j<l)
+            {
+                theta=j*M_PI/16+M_PI;
+                point[0]=0.0;
+                point[1]=cos(theta)*hand[1];
+                point[2]=sin(theta)*hand[2];
+            }
         }
-        if(j>=l/3 && j<l/3*2)
+        else
         {
-            theta=j*M_PI/16;
-            point[0]=cos(theta)*hand[0];
-            point[1]=0.0;
-            point[2]=sin(theta)*hand[2];
-        }
-        if(j>=l/3*2 && j<l)
-        {
-            theta=j*M_PI/16+M_PI;
-            point[0]=0.0;
-            point[1]=cos(theta)*hand[1];
-            point[2]=sin(theta)*hand[2];
-        }
+            if (j<l/3)
+            {
+                theta=j*M_PI/8+M_PI;
+                point[0]=cos(theta)*hand[0];
+                point[1]=sin(theta)*hand[1];
+                point[2]=0.0;
+            }
+            if(j>=l/3 && j<l/3*2)
+            {
+                theta=j*M_PI/16+M_PI;
+                point[0]=cos(theta)*hand[0];
+                point[1]=0.0;
+                point[2]=sin(theta)*hand[2];
+            }
+            if(j>=l/3*2 && j<l)
+            {
+                theta=j*M_PI/16;
+                point[0]=0.0;
+                point[1]=cos(theta)*hand[1];
+                point[2]=sin(theta)*hand[2];
+            }
 
+        }
         Vector point_tr(4,0.0);
 
         euler[0]=hand[8];
@@ -614,21 +641,25 @@ public:
      }
 
     /****************************************************************/
-    void configure(ResourceFinder *rf)
+    void configure(ResourceFinder *rf, const string &left_or_right)
     {
         Matrix x0_tmp;
         x0_tmp.resize(6,1);
         x0.resize(6,0.0);
-        readMatrix("x0",x0_tmp,1,rf);
+        readMatrix("x0"+left_or_right,x0_tmp,1,rf);
         for(size_t i=0; i< 6; i++)
             x0[i]=x0_tmp(i,0);
 
         bounds.resize(6,2);
-        readMatrix("bounds",bounds, 6, rf);
+        readMatrix("bounds_"+left_or_right,bounds, 6, rf);
         bounds_constr.resize(6,2);
-        readMatrix("bounds_constr",bounds_constr,6 , rf);
+        readMatrix("bounds_constr_"+left_or_right,bounds_constr,6 , rf);
         plane.resize(4,1);
         readMatrix("plane", plane,4,rf);
+
+        cout<<"  ***** left or right "<<left_or_right;
+        cout<<"  ***** bounds "<<bounds.toString()<<endl;
+        cout<<"  ***** bounds constr "<<bounds_constr.toString()<<endl;
     }
 
     /****************************************************************/
@@ -655,7 +686,7 @@ public:
        }
        else
        {
-           if(tag=="bounds" || tag=="bounds_constr")
+           if(tag=="bounds_right" || tag=="bounds_constr_right" || tag=="bounds_left" || tag=="bounds_constr_left")
            {
                tag_x=tag+"_l";
                tag_y=tag+"_u";

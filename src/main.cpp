@@ -61,20 +61,31 @@ class GraspingModule: public RFModule,
 {
 protected:
     AFFACTIONPRIMITIVESLAYER *action;
+    AFFACTIONPRIMITIVESLAYER *action2;
     RpcServer                portRpc;
 
-    Vector graspOrien;
-    Vector graspDisp;
-    Vector dOffs;
-    Vector dLift;
-    Vector home_x;
+    Vector graspOrienR;
+    Vector graspDispR;
+    Vector dOffsR;
+    Vector dLiftR;
+    Vector home_xR;
+
+    Vector graspOrienL;
+    Vector graspDispL;
+    Vector dOffsL;
+    Vector dLiftL;
+    Vector home_xL;
 
     bool firstRun;
 
     PolyDriver robotDevice;
     PolyDriver robotDevice2;
+    PolyDriver robotDevice3;
+    PolyDriver robotDevice4;
+
 
     ICartesianControl *icart_arm;
+    ICartesianControl *icart_arm2;
     IEncoders *enc;
 
     string robot;
@@ -83,7 +94,8 @@ protected:
     ResourceFinder *rf;
 
     deque<Vector> trajectory;
-    Vector pose, sol;
+    Vector poseR, solR;
+    Vector poseL, solL;
     double t,t0;
 
     double tol, constr_viol_tol;
@@ -91,7 +103,7 @@ protected:
     string mu_strategy,nlp_scaling_method;
 
     Vector object;
-    Vector hand;
+    Vector hand, hand1;
     int n_pointshand;
     double distance;
 
@@ -109,8 +121,13 @@ protected:
     bool move;
     bool viewer;
     bool stop_var;
+    bool conf_dev_called;
+    bool chosen_pose;
+    bool conf_act_called;
 
-    string nameFileOut, nameFileSolution, nameFileTrajectory;
+    string nameFileOut_right, nameFileSolution_right, nameFileTrajectory;
+    string nameFileOut_left, nameFileSolution_left;
+    string chosen_hand;
 
 public:
 
@@ -136,107 +153,213 @@ public:
     }
 
     /************************************************************************/
-    bool go_home()
+    bool go_home(const string &hand)
     {
         bool f;
+        f=false;
         action->pushAction("karate_hand");
         action->checkActionsDone(f,true);
 
 
-        action->pushAction(home_x);
-        action->checkActionsDone(f,true);
+        if (hand=="right")
+        {
+            action->pushAction(home_xR);
+            action->checkActionsDone(f,true);
+        }
+        else
+        {
+            action2->pushAction(home_xL);
+            action2->checkActionsDone(f,true);
+        }
+
         return f;
+    }
+
+    /************************************************************************/
+    bool choose_hand(const string &str_hand)
+    {
+        chosen_pose=true;
+        chosen_hand=str_hand;
+
+        return true;
     }
 
     /************************************************************************/
     bool set_trajectory_options(const Property &options)
     {
-        Bottle &groupBottle=options.findGroup("grasp_displacement");
+        Bottle &groupBottle=options.findGroup("grasp_displacement_r");
 
         if (!groupBottle.isNull())
         {
             if (Bottle *pB=groupBottle.get(1).asList())
             {
                 int sz=pB->size();
-                int len=graspDisp.length();
+                int len=graspDispR.length();
                 int l=len<sz?len:sz;
 
                 for (int i=0; i<l; i++)
-                    graspDisp[i]=pB->get(i).asDouble();
+                    graspDispR[i]=pB->get(i).asDouble();
 
-                yInfo()<<"new grasp_displacement "<<graspDisp.toString();
+                yInfo()<<"new grasp_displacement right "<<graspDispR.toString();
             }
         }
 
-        Bottle &groupBottle1=options.findGroup("grasp_orientation");
+        Bottle &groupBottle1=options.findGroup("grasp_orientation_r");
 
         if (!groupBottle1.isNull())
         {
             if (Bottle *pB=groupBottle1.get(1).asList())
             {
                 int sz=pB->size();
-                int len=graspOrien.length();
+                int len=graspOrienR.length();
                 int l=len<sz?len:sz;
 
                 for (int i=0; i<l; i++)
-                    graspOrien[i]=pB->get(i).asDouble();
+                    graspOrienR[i]=pB->get(i).asDouble();
 
-                yInfo()<<"new grasp_orientation "<<graspOrien.toString();
+                yInfo()<<"new grasp_orientation right "<<graspOrienR.toString();
             }
         }
 
-        Bottle &groupBottle2=options.findGroup("doffs");
+        Bottle &groupBottle2=options.findGroup("doffs_r");
 
         if (!groupBottle2.isNull())
         {
             if (Bottle *pB=groupBottle2.get(1).asList())
             {
                 int sz=pB->size();
-                int len=dOffs.length();
+                int len=dOffsR.length();
                 int l=len<sz?len:sz;
 
                 for (int i=0; i<l; i++)
-                    dOffs[i]=pB->get(i).asDouble();
+                    dOffsR[i]=pB->get(i).asDouble();
 
-                yInfo()<<"new doff "<<dOffs.toString();
+                yInfo()<<"new doff right "<<dOffsR.toString();
             }
         }
 
-        Bottle &groupBottle3=options.findGroup("home_x");
+        Bottle &groupBottle3=options.findGroup("home_x_r");
 
         if (!groupBottle3.isNull())
         {
             if (Bottle *pB=groupBottle3.get(1).asList())
             {
                 int sz=pB->size();
-                int len=home_x.length();
+                int len=home_xR.length();
                 int l=len<sz?len:sz;
 
                 for (int i=0; i<l; i++)
-                    home_x[i]=pB->get(i).asDouble();
+                    home_xR[i]=pB->get(i).asDouble();
 
-                yInfo()<<"new home_x "<<home_x.toString();
+                yInfo()<<"new home_x right "<<home_xR.toString();
             }
         }
 
-        Bottle &groupBottle4=options.findGroup("dlift");
+        Bottle &groupBottle4=options.findGroup("dlift_r");
 
         if (!groupBottle4.isNull())
         {
             if (Bottle *pB=groupBottle4.get(1).asList())
             {
                 int sz=pB->size();
-                int len=dLift.length();
+                int len=dLiftR.length();
                 int l=len<sz?len:sz;
 
                 for (int i=0; i<l; i++)
-                    dLift[i]=pB->get(i).asDouble();
+                    dLiftR[i]=pB->get(i).asDouble();
 
-                yInfo()<<"new dlift "<<dLift.toString();
+                yInfo()<<"new dlift right "<<dLiftR.toString();
             }
         }
 
-        if ((groupBottle.isNull())&& (groupBottle2.isNull()) && (groupBottle3.isNull()) && (groupBottle4.isNull()))
+
+        Bottle &groupBottle5=options.findGroup("grasp_displacement_l");
+
+        if (!groupBottle5.isNull())
+        {
+            if (Bottle *pB=groupBottle5.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=graspDispL.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    graspDispL[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new grasp_displacement right "<<graspDispL.toString();
+            }
+        }
+
+        Bottle &groupBottle6=options.findGroup("grasp_orientation_l");
+
+        if (!groupBottle6.isNull())
+        {
+            if (Bottle *pB=groupBottle6.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=graspOrienL.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    graspOrienL[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new grasp_orientation left "<<graspOrienL.toString();
+            }
+        }
+
+        Bottle &groupBottle7=options.findGroup("doffs_l");
+
+        if (!groupBottle7.isNull())
+        {
+            if (Bottle *pB=groupBottle7.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=dOffsL.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    dOffsL[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new doff left "<<dOffsL.toString();
+            }
+        }
+
+        Bottle &groupBottle8=options.findGroup("home_x_l");
+
+        if (!groupBottle8.isNull())
+        {
+            if (Bottle *pB=groupBottle8.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=home_xL.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    home_xL[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new home_x left "<<home_xL.toString();
+            }
+        }
+
+        Bottle &groupBottle9=options.findGroup("dlift_l");
+
+        if (!groupBottle9.isNull())
+        {
+            if (Bottle *pB=groupBottle9.get(1).asList())
+            {
+                int sz=pB->size();
+                int len=dLiftL.length();
+                int l=len<sz?len:sz;
+
+                for (int i=0; i<l; i++)
+                    dLiftL[i]=pB->get(i).asDouble();
+
+                yInfo()<<"new dlift left "<<dLiftL.toString();
+            }
+        }
+
+        if ((groupBottle.isNull()) && (groupBottle2.isNull()) && (groupBottle3.isNull()) && (groupBottle4.isNull())  &&
+                (groupBottle5.isNull()) && (groupBottle6.isNull()) && (groupBottle7.isNull()) && (groupBottle8.isNull()))
         {
             return false;
         }
@@ -247,31 +370,58 @@ public:
     /************************************************************************/
     GraspingModule()
     {
-        graspDisp.resize(3,0.0);
-        graspOrien.resize(4,0.0);
-        dOffs.resize(3,0.0);
-        dLift.resize(3,0.0);
-        home_x.resize(3,0.0);
-        graspDisp[0]=0.0;
-        graspDisp[1]=0.0;
-        graspDisp[2]=0.01;
+        graspDispR.resize(3,0.0);
+        graspOrienR.resize(4,0.0);
+        dOffsR.resize(3,0.0);
+        dLiftR.resize(3,0.0);
+        home_xR.resize(3,0.0);
+        graspDispL.resize(3,0.0);
+        graspOrienL.resize(4,0.0);
+        dOffsL.resize(3,0.0);
+        dLiftL.resize(3,0.0);
+        home_xL.resize(3,0.0);
 
-        graspOrien[0]=-0.171542;
-        graspOrien[1]= 0.124396;
-        graspOrien[2]=-0.977292;
-        graspOrien[3]= 3.058211;
+        graspDispR[0]=0.0;
+        graspDispR[1]=0.0;
+        graspDispR[2]=0.01;
 
-        dOffs[0]=-0.03;
-        dOffs[1]=-0.07;
-        dOffs[2]=-0.02;
+        graspOrienR[0]=-0.171542;
+        graspOrienR[1]= 0.124396;
+        graspOrienR[2]=-0.977292;
+        graspOrienR[3]= 3.058211;
 
-        dLift[0]=0.0;
-        dLift[1]=0.0;
-        dLift[2]=0.15;
+        dOffsR[0]=-0.03;
+        dOffsR[1]=-0.07;
+        dOffsR[2]=-0.02;
 
-        home_x[0]=-0.29;
-        home_x[1]=0.21;
-        home_x[2]= 0.11;
+        dLiftR[0]=0.0;
+        dLiftR[1]=0.0;
+        dLiftR[2]=0.15;
+
+        home_xR[0]=-0.29;
+        home_xR[1]=0.21;
+        home_xR[2]= 0.11;
+
+        graspDispL[0]=0.0;
+        graspDispL[1]=0.0;
+        graspDispL[2]=0.01;
+
+        graspOrienL[0]=-0.171542;
+        graspOrienL[1]= 0.124396;
+        graspOrienL[2]=-0.977292;
+        graspOrienL[3]= 3.058211;
+
+        dOffsL[0]=-0.03;
+        dOffsL[1]=-0.07;
+        dOffsL[2]=-0.02;
+
+        dLiftL[0]=0.0;
+        dLiftL[1]=0.0;
+        dLiftL[2]=0.15;
+
+        home_xL[0]=-0.29;
+        home_xL[1]=-0.21;
+        home_xL[2]= 0.11;
 
         action=NULL;
         firstRun=true;
@@ -333,7 +483,7 @@ public:
     }
 
     /****************************************************************/
-    bool configDevices(ResourceFinder &rf)
+    bool configBasics(ResourceFinder &rf)
     {
         robot=rf.find("robot").asString().c_str();
         if(rf.find("robot").isNull())
@@ -343,41 +493,82 @@ public:
         if(rf.find("which_hand").isNull())
             left_or_right="right";
 
-        Property option_arm("(device cartesiancontrollerclient)");
-        option_arm.put("remote","/"+robot+"/cartesianController/"+left_or_right+"_arm");
-        option_arm.put("local","/superquadric-grasping/cartesian/"+left_or_right+"_arm");
+        conf_dev_called=false;
+        chosen_pose==true;
 
-        robotDevice.open(option_arm);
-        if (!robotDevice.isValid())
+        return true;
+    }
+
+    /****************************************************************/
+    bool configDevices(ResourceFinder &rf, const string &arm)
+    {
+        if (conf_dev_called)
         {
-            yError("Device index not available!");
-            return false;
+            Property option_arm3("(device cartesiancontrollerclient)");
+            option_arm3.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
+            option_arm3.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
+
+            robotDevice3.open(option_arm3);
+            if (!robotDevice3.isValid())
+            {
+                yError("Device index not available!");
+                return false;
+            }
+
+            robotDevice3.view(icart_arm2);
+
+            Property option_arm4("(device remote_controlboard)");
+            option_arm4.put("remote","/"+robot+"/"+arm+"_arm");
+            option_arm4.put("local","/superquadric-grasping/joint/"+arm+"_arm");
+
+            robotDevice4.open(option_arm4);
+            if (!robotDevice4.isValid())
+            {
+                yError("Device not available!");
+                return false;
+            }
+        }
+        else
+        {
+            Property option_arm("(device cartesiancontrollerclient)");
+            option_arm.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
+            option_arm.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
+
+
+            robotDevice.open(option_arm);
+            if (!robotDevice.isValid())
+            {
+                yError("Device index not available!");
+                return false;
+            }
+
+            robotDevice.view(icart_arm);
+
+            Property option_arm2("(device remote_controlboard)");
+            option_arm2.put("remote","/"+robot+"/"+arm+"_arm");
+            option_arm2.put("local","/superquadric-grasping/joint/"+arm+"_arm");
+
+            robotDevice2.open(option_arm2);
+            if (!robotDevice2.isValid())
+            {
+                yError("Device not available!");
+                return false;
+            }
+
+            //getHandPose();
+
+            Vector curDof;
+            icart_arm->getDOF(curDof);
+            cout<<"["<<curDof.toString()<<"]"<<endl;  // [0 0 0 1 1 1 1 1 1 1] will be printed out
+            Vector newDof(3);
+            newDof[0]=1;    // torso pitch: 1 => enable
+            newDof[1]=2;    // torso roll:  2 => skip
+            newDof[2]=1;    // torso yaw:   1 => enable
+            icart_arm->setDOF(newDof,curDof);
+            cout<<"["<<curDof.toString()<<"]"<<endl;  // [1 0 1 1 1 1 1 1 1 1] will be printed out
         }
 
-        robotDevice.view(icart_arm);
-
-        Property option_arm2("(device remote_controlboard)");
-        option_arm2.put("remote","/"+robot+"/"+left_or_right+"_arm");
-        option_arm2.put("local","/superquadric-grasping/joint/"+left_or_right+"_arm");
-
-        robotDevice2.open(option_arm2);
-        if (!robotDevice2.isValid())
-        {
-            yError("Device not available!");
-            return false;
-        }
-
-        //getHandPose();
-
-        Vector curDof;
-        icart_arm->getDOF(curDof);
-        cout<<"["<<curDof.toString()<<"]"<<endl;  // [0 0 0 1 1 1 1 1 1 1] will be printed out
-        Vector newDof(3);
-        newDof[0]=1;    // torso pitch: 1 => enable
-        newDof[1]=2;    // torso roll:  2 => skip
-        newDof[2]=1;    // torso yaw:   1 => enable
-        icart_arm->setDOF(newDof,curDof);
-        cout<<"["<<curDof.toString()<<"]"<<endl;  // [1 0 1 1 1 1 1 1 1 1] will be printed out
+        conf_dev_called=true;
 
         return true;
     }
@@ -420,51 +611,76 @@ public:
         if (stop_var==true)
             go_on=false;
 
-        if (norm(hand)!=0.0 && norm(object)!=0.0 && (go_on==true))
-            go_on=computePose();
-
-        if (go_on)
-            computeTrajectory();
-
-        if (stop_var==true)
-            go_on=false;
+        if (norm(hand)!=0.0 && norm(object)!=0.0 && (go_on==true) && (norm(poseR)==0.0) && (norm(poseL)==0.0))
+        {
+            if (left_or_right!="both")
+                go_on=computePose(hand, left_or_right);
+            else
+            {
+                go_on=computePose(hand, "right");
+                go_on=computePose(hand1, "left");
+            }
+        }
 
         if ((go_on==true) && (viewer==true))
-            go_on=showTrajectory();
-
-
-        for (size_t i=0; i<trajectory.size();i++)
         {
+            if (left_or_right=="both")
+            {
+                yDebug()<<"[SHOW POSE ]: right";
+                go_on=showPoses(poseR,poseL,2);
+            }
+            else if (left_or_right=="right")
+                go_on=showPoses(poseR,poseL,1);
+            else
+            {
+                go_on=showPoses(poseL,poseL,1);
+            }
+        }
+
+        if (chosen_pose)
+        {
+            if ((go_on==true))
+                computeTrajectory(chosen_hand);
+
+            if (stop_var==true)
+                go_on=false;
+
+            if ((go_on==true) && (viewer==true))
+                go_on=showTrajectory();
+
+            for (size_t i=0; i<trajectory.size();i++)
+            {
+                if (stop_var==true)
+                    go_on=false;
+
+                if ((go_on==true) && (move==true))
+                {
+                    go_on=reachPose(i, chosen_hand);
+                }
+            }
+
             if (stop_var==true)
                 go_on=false;
 
             if ((go_on==true) && (move==true))
             {
-                go_on=reachPose(i);
+                go_on=graspObject(chosen_hand);
+
+                if (stop_var==true)
+                    go_on=false;
+
+                liftObject(chosen_hand);
             }
-        }
-
-        if (stop_var==true)
-            go_on=false;
-
-        if ((go_on==true) && (move==true))
-        {
-            go_on=graspObject();
 
             if (stop_var==true)
                 go_on=false;
 
-            liftObject();
+            if ((go_on==true) && (move==true))
+                go_on=comeBack(chosen_hand);
+
+            if (stop_var==true)
+                go_on=true;
         }
-
-        if (stop_var==true)
-            go_on=false;
-
-        if ((go_on==true) && (move==true))
-            go_on=comeBack();
-
-        if (stop_var==true)
-            go_on=true;
 
         return go_on;
     }
@@ -476,64 +692,109 @@ public:
     }
 
     /****************************************************************/
-    bool configAction(ResourceFinder &rf)
+    bool configAction(ResourceFinder &rf, const string &l_o_r)
     {
-        robot=rf.find("robot").asString().c_str();
-        if(rf.find("robot").isNull())
-            robot="iCubsim";
-
-        left_or_right=rf.find("which_hand").asString().c_str();
-        if(rf.find("which_hand").isNull())
-            left_or_right="right";
-
-        string name=rf.find("name").asString().c_str();
-        setName(name.c_str());
-
-        Property config;
-        config.fromConfigFile(rf.findFile("from").c_str());
-        Bottle &bGeneral=config.findGroup("general");
-        if (bGeneral.isNull())
+        if (conf_act_called)
         {
-            cout<<"Error: group general is missing!"<<endl;
-            return false;
-        }
+            string name=rf.find("name").asString().c_str();
+            setName(name.c_str());
 
-        Property option(bGeneral.toString().c_str());
-        option.put("local",name.c_str());
-        option.put("part",left_or_right+"_arm");
-        option.put("grasp_model_type",rf.find("grasp_model_type").asString().c_str());
-        option.put("grasp_model_file",rf.findFile("grasp_model_file").c_str());
-        option.put("hand_sequences_file",rf.findFile("hand_sequences_file").c_str());
+            Property config;
+            config.fromConfigFile(rf.findFile("from").c_str());
+            Bottle &bGeneral=config.findGroup("general");
 
-        Bottle &bArm=config.findGroup("arm_dependent");
-        getArmDependentOptions(bArm,graspOrien,graspDisp,dOffs,dLift,home_x);
+            Property option2(bGeneral.toString().c_str());
+            option2.put("local",name.c_str());
+            option2.put("part",l_o_r+"_arm");
+            option2.put("grasp_model_type",rf.find("grasp_model_type").asString().c_str());
+            option2.put("grasp_model_file",rf.findFile("grasp_model_file_"+l_o_r).c_str());
+            option2.put("hand_sequences_file",rf.findFile("hand_sequences_file").c_str());
 
-        action=new AFFACTIONPRIMITIVESLAYER(option);
-        if (!action->isValid())
-        {
-            delete action;
-            return false;
-        }
+            Bottle &bArm=config.findGroup("arm_dependent");
+            if (l_o_r=="right")
+                getArmDependentOptions(bArm,graspOrienR,graspDispR,dOffsR,dLiftR,home_xR);
+            else
+                getArmDependentOptions(bArm,graspOrienL,graspDispL,dOffsL,dLiftL,home_xL);
 
-        deque<string> q=action->getHandSeqList();
-        cout<<"*** List of available hand sequence keys:"<<endl;
-        for (size_t i=0; i<q.size(); i++)
-            cout<<q[i]<<endl;
-
-
-        portRpc.open("/superquadric-grasping/rpc");
-        attach(portRpc);
-
-        Model *model; action->getGraspModel(model);
-
-        if (model!=NULL)
-        {
-            if (!model->isCalibrated())
+            action2=new AFFACTIONPRIMITIVESLAYER(option2);
+            if (!action2->isValid())
             {
-                Property prop;
-                prop.put("finger","all");
-                model->calibrate(prop);
+                delete action2;
+                return false;
             }
+
+            deque<string> q=action2->getHandSeqList();
+            cout<<"*** List of available hand sequence keys:"<<endl;
+            for (size_t i=0; i<q.size(); i++)
+                cout<<q[i]<<endl;
+
+            Model *model2; action2->getGraspModel(model2);
+
+            if (model2!=NULL)
+            {
+               if (!model2->isCalibrated())
+               {
+                   Property prop2;
+                   prop2.put("finger","all");
+                   model2->calibrate(prop2);
+               }
+            }
+        }
+        else
+        {
+            string name=rf.find("name").asString().c_str();
+            setName(name.c_str());
+
+            Property config;
+            config.fromConfigFile(rf.findFile("from").c_str());
+            Bottle &bGeneral=config.findGroup("general");
+            if (bGeneral.isNull())
+            {
+                cout<<"Error: group general is missing!"<<endl;
+                return false;
+            }
+
+            Property option(bGeneral.toString().c_str());
+            option.put("local",name.c_str());
+            option.put("part",l_o_r+"_arm");
+            option.put("grasp_model_type",rf.find("grasp_model_type").asString().c_str());
+            option.put("grasp_model_file",rf.findFile("grasp_model_file_"+l_o_r).c_str());
+            option.put("hand_sequences_file",rf.findFile("hand_sequences_file").c_str());
+
+            Bottle &bArm=config.findGroup("arm_dependent");
+            if (l_o_r=="right")
+                getArmDependentOptions(bArm,graspOrienR,graspDispR,dOffsR,dLiftR,home_xR);
+
+
+            action=new AFFACTIONPRIMITIVESLAYER(option);
+            if (!action->isValid())
+            {
+                delete action;
+                return false;
+            }
+
+            deque<string> q=action->getHandSeqList();
+            cout<<"*** List of available hand sequence keys:"<<endl;
+            for (size_t i=0; i<q.size(); i++)
+                cout<<q[i]<<endl;
+
+
+            portRpc.open("/superquadric-grasping/rpc");
+            attach(portRpc);
+
+            Model *model; action->getGraspModel(model);
+
+            if (model!=NULL)
+            {
+                if (!model->isCalibrated())
+                {
+                    Property prop;
+                    prop.put("finger","all");
+                    model->calibrate(prop);
+                }
+            }
+
+            conf_act_called=true;
         }
         return true;
     }
@@ -542,8 +803,12 @@ public:
     bool configure(ResourceFinder &rf)
     {
         bool config_ok;
+        bool config_ok1;
 
-        config_ok=configPose(rf);
+        config_ok=configBasics(rf);
+
+        if (config_ok==true)
+            config_ok=configPose(rf);
 
         viewer=(rf.check("viewer", Value("no"))=="yes");
 
@@ -552,11 +817,29 @@ public:
 
         move=(rf.check("move", Value("no"))=="yes");
 
+
         if ((config_ok==true) && (move==1))
-        {
-            config_ok=configDevices(rf);
+        {            
+            if (left_or_right=="both")
+            {
+                config_ok=configDevices(rf, "right");
+                config_ok1=configDevices(rf, "left");
+
+                config_ok=(config_ok==true && config_ok1==true);
+            }
+            else
+                 config_ok=configDevices(rf, left_or_right);
+
             if (config_ok)
-            config_ok=configAction(rf);
+            {
+                if (left_or_right=="both")
+                {
+                    config_ok=configAction(rf, "right");
+                    config_ok=configAction(rf, "left");
+                }
+                else
+                    config_ok=configAction(rf, left_or_right);
+            }
         }
 
         return config_ok;
@@ -598,26 +881,43 @@ public:
 
         if (online)
         {
-             askForObject();
-             readSuperq("hand",hand,11,this->rf);
+             askForObject();            
         }
         else
         {
             readSuperq("object",object,11,this->rf);
-            readSuperq("hand",hand,11,this->rf);
         }
 
-        nameFileOut=rf.find("nameFileOut").asString().c_str();
-        if(rf.find("nameFileOut").isNull())
-           nameFileOut="test.txt";
+        readSuperq("hand",hand,11,this->rf);
 
-        nameFileSolution=rf.find("nameFileSolution").asString();
-        if(rf.find("nameFileSolution").isNull())
-           nameFileSolution="solution.txt";
 
-        nameFileTrajectory=rf.find("nameFileTrajectory").asString().c_str();
-        if(rf.find("nameFileTrajectory").isNull())
-           nameFileOut="test-trajectory.txt";
+        cout<<"left or oright "<<left_or_right<<endl;
+        if (left_or_right=="both")
+        {
+            readSuperq("hand1",hand1,11,this->rf);
+        }
+
+         cout<<"HAND1 "<<hand1.toString()<<endl;
+
+        nameFileOut_right=rf.find("nameFileOut_right").asString().c_str();
+        if(rf.find("nameFileOut_right").isNull())
+           nameFileOut_right="test_right.txt";
+
+        nameFileSolution_right=rf.find("nameFileSolution_right").asString();
+        if(rf.find("nameFileSolution_right").isNull())
+           nameFileSolution_right="solution_right.txt";
+
+        nameFileTrajectory=rf.find("nameFileTrajectory_right").asString().c_str();
+        if(rf.find("nameFileTrajectory_right").isNull())
+           nameFileTrajectory="test-trajectory_right.txt";
+
+        nameFileOut_left=rf.find("nameFileOut_left").asString().c_str();
+        if(rf.find("nameFileOut_left").isNull())
+           nameFileOut_left="test_left.txt";
+
+        nameFileSolution_left=rf.find("nameFileSolution_left").asString();
+        if(rf.find("nameFileSolution_left").isNull())
+           nameFileSolution_left="solution_left.txt";
 
         tol=rf.check("tol", Value(1e-3)).asDouble();
         constr_viol_tol=rf.check("constr_tol", Value(1e-2)).asDouble();
@@ -693,8 +993,9 @@ public:
     }
 
     /***********************************************************************/
-    bool computePose()
+    bool computePose(Vector &which_hand, const string &l_o_r)
     {
+        yInfo()<<"******** Computing pose for "<<l_o_r<<" hand....";
         Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
         app->Options()->SetNumericValue("tol",tol);
         app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol);
@@ -705,54 +1006,96 @@ public:
         app->Options()->SetStringValue("hessian_approximation","limited-memory");
         app->Options()->SetStringValue("derivative_test","first-order");
         app->Options()->SetStringValue("derivative_test_print_all","yes");
-        app->Options()->SetStringValue("output_file",nameFileOut+".out");
-        app->Options()->SetIntegerValue("print_level",5);
+        if (l_o_r=="right")
+            app->Options()->SetStringValue("output_file",nameFileOut_right+".out");
+        else
+            app->Options()->SetStringValue("output_file",nameFileOut_left+".out");
+        app->Options()->SetIntegerValue("print_level",0);
         app->Initialize();
 
         t0=Time::now();
         Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
-        grasp_nlp->init(object, hand, n_pointshand);
-        grasp_nlp->configure(this->rf);
+        grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
+        grasp_nlp->configure(this->rf,l_o_r);
 
         Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
         t=Time::now()-t0;
 
         if(status==Ipopt::Solve_Succeeded)
         {
-            sol=grasp_nlp->get_result();
-            pose=grasp_nlp->robot_pose;
-            cout<<"The optimal robot pose is: "<<pose.toString().c_str()<<endl;
-            ofstream fout(nameFileSolution.c_str());
-
-            if(fout.is_open())
+            if (l_o_r=="right")
             {
-                fout<<"Initial hand volume pose: "<<" "<<"["<<grasp_nlp->hand.toString(3,3).c_str()<<"]"<<endl<<endl;
+                solR=grasp_nlp->get_result();
+                poseR=grasp_nlp->robot_pose;
+                cout<<"The optimal robot pose for "<<l_o_r<<" hand is: "<<poseR.toString().c_str()<<endl;
+                ofstream fout(nameFileSolution_right.c_str());
 
-                fout<<"Final hand volume pose: "<<" "<<"["<<sol.toString(3,3).c_str()<<"]"<<endl<<endl;
+                if(fout.is_open())
+                {
+                    fout<<"Initial"<<l_o_r<<" hand volume pose: "<<" "<<"["<<grasp_nlp->hand.toString(3,3).c_str()<<"]"<<endl<<endl;
 
-                fout<<"Final hand pose "<<" "<<"["<<grasp_nlp->robot_pose.toString(3,3)<<"]"<<endl<<endl;
+                    fout<<"Final"<<l_o_r<<" hand volume pose: "<<" "<<"["<<solR.toString(3,3).c_str()<<"]"<<endl<<endl;
 
-                fout<<"t for ipopt: "<<t<<endl<<endl;
+                    fout<<"Final"<<l_o_r<<" hand pose "<<" "<<"["<<poseR.toString(3,3)<<"]"<<endl<<endl;
 
-                fout<<"object: "<<" "<<"["<<grasp_nlp->object.toString(3,3)<<"]"<<endl<<endl;
+                    fout<<"t for ipopt: "<<t<<endl<<endl;
 
-                fout<<"bounds in constrained:"<<endl<<"["<<grasp_nlp->bounds_constr.toString(3,3)<<"]"<<endl<<endl;
+                    fout<<"object: "<<" "<<"["<<grasp_nlp->object.toString(3,3)<<"]"<<endl<<endl;
 
-                fout<<"plane: ["<<grasp_nlp->plane.toString()<<endl;
+                    fout<<"bounds in constrained:"<<endl<<"["<<grasp_nlp->bounds_constr.toString(3,3)<<"]"<<endl<<endl;
+
+                    fout<<"plane: ["<<grasp_nlp->plane.toString()<<endl;
+                }
+            }
+            else
+            {
+                solL=grasp_nlp->get_result();
+                poseL=grasp_nlp->robot_pose;
+                cout<<"The optimal robot pose for "<<l_o_r<<" hand is: "<<poseL.toString().c_str()<<endl;
+
+                ofstream fout(nameFileSolution_left.c_str());
+
+                if(fout.is_open())
+                {
+                    fout<<"Initial"<<l_o_r<<" hand volume pose: "<<" "<<"["<<grasp_nlp->hand.toString(3,3).c_str()<<"]"<<endl<<endl;
+
+                    fout<<"Final"<<l_o_r<<" hand volume pose: "<<" "<<"["<<solL.toString(3,3).c_str()<<"]"<<endl<<endl;
+
+                    fout<<"Final"<<l_o_r<<" hand pose "<<" "<<"["<<poseL.toString(3,3)<<"]"<<endl<<endl;
+
+                    fout<<"t for ipopt: "<<t<<endl<<endl;
+
+                    fout<<"object: "<<" "<<"["<<grasp_nlp->object.toString(3,3)<<"]"<<endl<<endl;
+
+                    fout<<"bounds in constrained:"<<endl<<"["<<grasp_nlp->bounds_constr.toString(3,3)<<"]"<<endl<<endl;
+
+                    fout<<"plane: ["<<grasp_nlp->plane.toString()<<endl;
+                }
             }
 
+            chosen_pose=false;
             return true;
         }
         else
         {
+            chosen_pose=false;
             cout<<"Problem not solved!"<<endl;
             return false;
         }
     }
 
     /***********************************************************************/
-    bool computeTrajectory()
+    bool computeTrajectory(const string &chosen_hand)
     {
+        Vector pose(6,0.0);
+
+        if (chosen_hand=="right")
+        {
+            pose=poseR;
+        }
+        else
+            pose=poseL;
+
         Vector pose1(6,0.0);
         Vector euler(3,0.0);
         euler[0]=pose[3];
@@ -766,7 +1109,11 @@ public:
         H.setSubcol(euler,0,3);
 
         pose1=pose;
-        pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
+        if (chosen_hand=="right")
+            pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
+        else
+            pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.transposed().getCol(2).subVector(0,2)));
+
         trajectory.clear();
         trajectory.push_back(pose1);
         trajectory.push_back(pose);
@@ -776,8 +1123,121 @@ public:
         if(fout.is_open())
         {
             for (size_t i=0; i<trajectory.size();i++)
-            fout<<"waypoint "<<i<<" "<<trajectory[i].toString()<<endl;
+            fout<<"waypoint "<<i<<" for "<<chosen_hand<<" hand"<<trajectory[i].toString()<<endl;
         }
+
+        return true;
+    }
+
+    /***********************************************************************/
+    bool showPoses(Vector &pose, Vector &pose2, const int &n_poses)
+    {
+        ImageOf<PixelRgb> *imgIn=portImgIn.read();
+        if (imgIn==NULL)
+            return false;
+
+        ImageOf<PixelRgb> &imgOut=portImgOut.prepare();
+        imgOut=*imgIn;
+        //imgOut.resize(imgIn->width(),imgIn->height());
+
+        deque<Vector> poses;
+        poses.push_back(pose);
+        poses.push_back(pose2);
+
+        cv::Mat imgInMat=cv::Mat((IplImage*)imgIn->getIplImage());
+        cv::Mat imgOutMat=cv::Mat((IplImage*)imgOut.getIplImage());
+        imgInMat.copyTo(imgOutMat);
+
+        PixelRgb color(255,255,0);
+
+        Vector waypoint(6,0.0);
+        Vector waypoint2D(2,0.0);
+
+        Vector x(3,0.0);
+        Vector y(3,0.0);
+        Vector z(3,0.0);
+        double length=0.08;
+        Vector dir_x(3,0.0);
+        Vector dir_y(3,0.0);
+        Vector dir_z(3,0.0);
+        Vector x2D(2,0.0);
+        Vector y2D(2,0.0);
+        Vector z2D(2,0.0);
+
+        for (int i=0; i<n_poses; i++)
+        {
+            waypoint=poses[i];
+            yDebug()<<"point "<<waypoint.toString();
+
+            if (eye=="left")
+                igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
+            else
+                igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
+
+            yDebug()<<"2D point "<<waypoint2D.toString();
+
+            Matrix H=euler2dcm(waypoint.subVector(3,5));
+
+            dir_x=H.subcol(0,0,3);
+            dir_y=H.subcol(0,1,3);
+            dir_z=H.subcol(0,2,3);
+
+            x[0]=waypoint[0]+length*dir_x[0]; x[1]=waypoint[1]+length*dir_x[1]; x[2]=waypoint[2]+length*dir_x[2];
+            y[0]=waypoint[0]+length*dir_y[0]; y[1]=waypoint[1]+length*dir_y[1]; y[2]=waypoint[2]+length*dir_y[2];
+            z[0]=waypoint[0]+length*dir_z[0]; z[1]=waypoint[1]+length*dir_z[1]; z[2]=waypoint[2]+length*dir_z[2];
+
+            if (eye=="left")
+            {
+                igaze->get2DPixel(0,x,x2D);
+                igaze->get2DPixel(0,y,y2D);
+                igaze->get2DPixel(0,z,z2D);
+            }
+            else
+            {
+                igaze->get2DPixel(1,x,x2D);
+                igaze->get2DPixel(1,y,y2D);
+                igaze->get2DPixel(1,z,z2D);
+            }
+
+            yDebug()<<"x2D "<<x2D.toString();
+            yDebug()<<"y2D "<<y2D.toString();
+            yDebug()<<"z2D "<<z2D.toString();
+
+            cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
+            cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
+            cv::Point  target_pointy((int)y2D[0],(int)y2D[1]);
+            cv::Point  target_pointz((int)z2D[0],(int)z2D[1]);
+
+            if ((target_point.x<0) || (target_point.y<0) || (target_point.x>=320) || (target_point.y>=240))
+            {
+                yError("Not acceptable pixels!");
+            }
+            else
+                imgOut.pixel(target_point.x, target_point.y)= color;
+
+            if ((target_pointx.x<0) || (target_pointx.y<0) || (target_pointx.x>=320) || (target_pointx.y>=240))
+            {
+                yError("Not acceptable pixels!");
+            }
+            else
+                cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+
+            if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
+            {
+                yError("Not acceptable pixels!");
+            }
+            else
+                cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+
+            if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
+            {
+                yError("Not acceptable pixels!");
+            }
+            else
+                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+        }
+
+        portImgOut.write();
 
         return true;
     }
@@ -890,55 +1350,106 @@ public:
     }
 
     /***********************************************************************/
-    bool reachPose(const int i)
+    bool reachPose(const int i, const string &chosen_hand)
     {
         bool f;
 
-        if (firstRun)
+        if (chosen_hand=="right")
         {
-            action->pushAction(home_x,"karate_hand");
+            if (firstRun)
+            {
+                action->pushAction(home_xR,"karate_hand");
+
+                action->checkActionsDone(f,true);
+
+                firstRun=false;
+            }
+
+            Vector point(6,0.0);
+            point=trajectory[i];
+
+            Vector orient(4,0.0);
+            orient=dcm2axis(euler2dcm(point.subVector(3,5)));
+
+            cout<<"[waypoint "<<i<<"]: point to be reached: "<<point.subVector(0,2).toString()<<endl;
+            cout<<"[waypoint "<<i<<"]: orientation: "<<orient.toString()<<endl;
+
+            // grasp (wait until it's done)
+            action->pushAction(point.subVector(0,2), orient);
             action->checkActionsDone(f,true);
 
-            firstRun=false;
+            Vector x_tmp(3,0.0);
+            Vector o_tmp(4,0.0);
+
+            icart_arm->getPose(x_tmp, o_tmp);
+
+            cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+            showTrajectory();
+
+        }
+        else
+        {
+            if (firstRun)
+            {
+                action2->pushAction(home_xL,"karate_hand");
+
+                action2->checkActionsDone(f,true);
+
+                firstRun=false;
+            }
+
+            Vector point(6,0.0);
+            point=trajectory[i];
+
+            Vector orient(4,0.0);
+            orient=dcm2axis(euler2dcm(point.subVector(3,5)));
+
+            cout<<"[waypoint "<<i<<"]: point to be reached: "<<point.subVector(0,2).toString()<<endl;
+            cout<<"[waypoint "<<i<<"]: orientation: "<<orient.toString()<<endl;
+
+            // grasp (wait until it's done)
+            action2->pushAction(point.subVector(0,2), orient);
+            action2->checkActionsDone(f,true);
+
+            Vector x_tmp(3,0.0);
+            Vector o_tmp(4,0.0);
+
+            if (left_or_right=="both")
+                icart_arm2->getPose(x_tmp, o_tmp);
+            else
+
+
+            cout<<"[Reicart_arm->getPose(x_tmp, o_tmp);ached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+            showTrajectory();
         }
 
-        Vector point(6,0.0);
-        point=trajectory[i];
-
-        Vector orient(4,0.0);
-        orient=dcm2axis(euler2dcm(point.subVector(3,5)));
-
-        cout<<"[waypoint "<<i<<"]: point to be reached: "<<point.subVector(0,2).toString()<<endl;
-        cout<<"[waypoint "<<i<<"]: orientation: "<<orient.toString()<<endl;
-
-        // grasp (wait until it's done)
-        action->pushAction(point.subVector(0,2), orient);
-        action->checkActionsDone(f,true);
-
-        Vector x_tmp(3,0.0);
-        Vector o_tmp(4,0.0);
-        icart_arm->getPose(x_tmp, o_tmp);
-
-        cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
-        showTrajectory();
-
         return true;
     }
 
     /***********************************************************************/
-    bool graspObject()
+    bool graspObject(const string &chosen_hand)
     {
-        bool f;
-        action->pushAction("close_hand");
-        action->checkActionsDone(f,true);
-        firstRun=true;
+        if (chosen_hand=="right")
+        {
+            bool f;
+            action->pushAction("close_hand");
+            action->checkActionsDone(f,true);
+            firstRun=true;
+        }
+        else
+        {
+            bool f;
+            action2->pushAction("close_hand");
+            action2->checkActionsDone(f,true);
+            firstRun=true;
+        }
 
         showTrajectory();
         return true;
     }
 
     /***********************************************************************/
-    void liftObject()
+    void liftObject(const string &chosen_hand)
     {
         bool f;
         Vector point(6,0.0);
@@ -947,25 +1458,37 @@ public:
         Vector orient(4,0.0);
         orient=dcm2axis(euler2dcm(point.subVector(3,5)));
         point[2]+=0.2;
-        action->pushAction(point.subVector(0,2), orient);
-        action->checkActionsDone(f,true);
 
-        point=trajectory[1];
-        action->pushAction(point.subVector(0,2), orient);
-        action->checkActionsDone(f,true);
+        if (chosen_hand=="right")
+        {
+            action->pushAction(point.subVector(0,2), orient);
+            action->checkActionsDone(f,true);
+
+            point=trajectory[1];
+            action->pushAction(point.subVector(0,2), orient);
+            action->checkActionsDone(f,true);
+        }
+        else
+        {
+            action2->pushAction(point.subVector(0,2), orient);
+            action2->checkActionsDone(f,true);
+
+            point=trajectory[1];
+            action2->pushAction(point.subVector(0,2), orient);
+            action2->checkActionsDone(f,true);
+        }
     }
 
     /***********************************************************************/
-    bool comeBack()
+    bool comeBack( const string &hand)
     {
         bool f;
-        action->pushAction("karate_hand");
-        action->checkActionsDone(f,true);
-
         firstRun=false;
 
 
         Vector point(6,0.0);
+        Vector x_tmp(3,0.0);
+        Vector o_tmp(4,0.0);
         point=trajectory[0];
 
         Vector orient(4,0.0);
@@ -974,20 +1497,44 @@ public:
         cout<<"[waypoint 1-back]: point to be reached: "<<point.subVector(0,2).toString()<<endl;
         cout<<"[waypoint 1-back]: orientation: "<<orient.toString()<<endl;
 
-        action->pushAction(point.subVector(0,2), orient);
-        action->checkActionsDone(f,true);
+        if (chosen_hand=="right")
+        {
+            action->pushAction("karate_hand");
+            action->checkActionsDone(f,true);
+            action->pushAction(point.subVector(0,2), orient);
+            action->checkActionsDone(f,true);
 
-        Vector x_tmp(3,0.0);
-        Vector o_tmp(4,0.0);
-        icart_arm->getPose(x_tmp, o_tmp);
+            icart_arm->getPose(x_tmp, o_tmp);
 
-        cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+            action->pushAction(home_xR,"karate_hand");
 
-        action->pushAction(home_x);
-        action->checkActionsDone(f,true);
-        icart_arm->getPose(x_tmp, o_tmp);
+            cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
-        cout<<"[Come back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+            action->checkActionsDone(f,true);
+
+            icart_arm->getPose(x_tmp, o_tmp);
+
+            cout<<"[Come back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+        }
+        else
+        {
+            action2->pushAction("karate_hand");
+            action2->checkActionsDone(f,true);
+            action2->pushAction(point.subVector(0,2), orient);
+            action2->checkActionsDone(f,true);
+
+            icart_arm2->getPose(x_tmp, o_tmp);
+
+            cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+
+            action->pushAction(home_xL,"karate_hand");
+
+            action2->checkActionsDone(f,true);
+
+            icart_arm2->getPose(x_tmp, o_tmp);
+
+            cout<<"[Come back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+        }
 
         showTrajectory();
 
@@ -1010,7 +1557,8 @@ int main(int argc, char *argv[])
    rf.setDefaultConfigFile("config.ini");
    rf.setDefaultContext("superquadric-grasping");
    rf.setDefault("grasp_model_type","tactile");
-   rf.setDefault("grasp_model_file","grasp_model.ini");
+   rf.setDefault("grasp_model_file_right","grasp_model_right.ini");
+   rf.setDefault("grasp_model_file_left","grasp_model_left.ini");
    rf.setDefault("hand_sequences_file","hand_sequences.ini");
    rf.setDefault("name","actionPrimitivesMod");
    rf.configure(argc,argv);

@@ -34,31 +34,39 @@ service superquadricGrasping_IDL
     /**
     * Start entire pipeline: pose computation and
     * grasping
-    * return true/false on success/failure
+    *@return true/false on success/failure
     */
     bool start();
 
     /**
-    * come back home
-    * return true/false on success/failure
+    * Come back home
+    *@return true/false on success/failure
     */
-    bool go_home();
+    bool go_home(1:string hand);
+
+    /**
+    * Choose the hand to use to grasp the object
+    *@param hand name (left or right)
+    *@return true/false on success/failure
+    */
+    bool choose_hand(1:string hand);
 
     /**
     * Stop all robot movements but not the module
-    * return true/false on success/failure
+    *@return true/false on success/failure
     */
     bool stop();
 
     /**
     * Compute, show and send pose
-    * return computed poses
+    *@return computed poses
     */
     Vector compute_pose();
 
     /** Set parameters of trajectory computation and 
     * poses reaching
     *@params a Property object containing the parameters you want to change
+    *@return true/false on success/failure
     */
     bool set_trajectory_options(1:Property options);
 }
