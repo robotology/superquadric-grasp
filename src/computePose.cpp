@@ -60,6 +60,7 @@ public:
     Vector solution;
     Vector robot_pose;
     Matrix bounds_constr;
+    string l_o_r;
 
     /****************************************************************/
     void init(Vector &objectext, Vector &handext, int &n_handpoints, const string &str_hand)
@@ -98,7 +99,7 @@ public:
         for(int i=0; i<n_handpoints; i++)
         {
             points_on.push_back(computePointsHand(hand,i, n_handpoints, str_hand));
-            cout<<points_on[i].toString()<<endl;
+            //cout<<points_on[i].toString()<<endl;
         }
 
         aux_objvalue=0.0;
@@ -528,7 +529,10 @@ public:
          x_tmp[4]=x[4];
          x_tmp[5]=x[5];
 
-         robotPose=x_tmp.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2));
+         if (l_o_r=="right")
+            robotPose=x_tmp.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2));
+         else
+             robotPose=x_tmp.subVector(0,2)+hand[0]*(H.getCol(2).subVector(0,2));
 
          g[5]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
@@ -580,7 +584,11 @@ public:
          x_tmp[0]=x[0];
          x_tmp[1]=x[1];
          x_tmp[2]=x[2];
-         robotPose=x_tmp-hand[0]*(H.getCol(2).subVector(0,2));
+
+         if (l_o_r=="right")
+            robotPose=x_tmp-hand[0]*(H.getCol(2).subVector(0,2));
+         else
+             robotPose=x_tmp+hand[0]*(H.getCol(2).subVector(0,2));
 
          g[5]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
@@ -660,6 +668,7 @@ public:
         cout<<"  ***** left or right "<<left_or_right;
         cout<<"  ***** bounds "<<bounds.toString()<<endl;
         cout<<"  ***** bounds constr "<<bounds_constr.toString()<<endl;
+        l_o_r=left_or_right;
     }
 
     /****************************************************************/
@@ -751,9 +760,38 @@ public:
 
         robot_pose.resize(6,0.0);
         robot_pose.setSubvector(3,dcm2euler(H));
-        robot_pose.setSubvector(0,solution.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2)));
+        if (l_o_r=="right")
+            robot_pose.setSubvector(0,solution.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2)));
+        else
+            robot_pose.setSubvector(0,solution.subVector(0,2)+hand[0]*(H.getCol(2).subVector(0,2)));
+
 
         cout<<"robot pose "<< robot_pose.toString()<<endl;
+
+
+        /*********************/
+      /**for(size_t i=0;i<points_on.size();i++)
+        {
+            Vector point(3,0.0);
+            point=points_on[i];
+
+            Vector point_tr(4,0.0);
+            Vector point_tmp(4,1.0);
+            point_tmp.setSubvector(0,point);
+
+            euler[0]=x[3];
+            euler[1]=x[4];
+            euler[2]=x[5];
+            H_x=euler2dcm(euler);
+            euler[0]=x[0];
+            euler[1]=x[1];
+            euler[2]=x[2];
+            H_x.setSubcol(euler,0,3);
+
+            point_tr=H_x*point_tmp;
+            cout<<point_tr.subVector(0,2).toString()<<endl;
+        }
+        /*********************/
    }
 
    /****************************************************************/
