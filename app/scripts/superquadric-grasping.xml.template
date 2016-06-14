@@ -34,4 +34,11 @@
         <to>/superquadric-grasping/img:i</to>
         <protocol>tcp</protocol>
     </connection>
+    
+    <connection>
+        <from>/superquadric-grasping/camcalib:rpc</from>
+        <to>/depth2kin/rpc</to>
+        <protocol>tcp</protocol>
+    </connection>
+
 </application>

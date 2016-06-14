@@ -95,6 +95,7 @@ protected:
     deque<Vector> trajectory;
     Vector poseR, solR;
     Vector poseL, solL;
+    Vector pose_tmp, pose_tmp2;
     double t,t0;
 
     double tol, constr_viol_tol;
@@ -192,6 +193,17 @@ public:
     }
 
     /************************************************************************/
+    bool calibrate_cam(const string &calibration_or_not)
+    {
+        if (calibration_or_not=="yes")
+            calib_cam=true;
+        else
+            calib_cam=false;
+
+        return true;
+    }
+
+    /************************************************************************/
     bool grasping_method(const string &precision_or_power)
     {
         if (precision_or_power=="power")
@@ -232,6 +244,8 @@ public:
     {
         chosen_pose=true;
         chosen_hand=str_hand;
+
+        yInfo()<<"Chosen hand: "<<chosen_hand;
 
         return true;
     }
@@ -549,9 +563,7 @@ public:
         conf_act_called=false;
         go_on=true;
         stop_var=false;
-        calib_cam=rf.find("calib_cam").asString().c_str();
-        if (rf.find("calib_cam").isNull())
-            calib_cam=false;
+        calib_cam=(rf.check("calib_cam", Value("yes"))=="yes");
 
         lift=rf.find("lift").asString().c_str();
         if(rf.find("lift").isNull())
@@ -689,6 +701,9 @@ public:
         if (stop_var==true)
             go_on=false;
 
+        if (online)
+            askForObject();
+
         if (norm(hand)!=0.0 && norm(object)!=0.0 && (go_on==true) && (norm(poseR)==0.0) && (norm(poseL)==0.0))
         {
             if (left_or_right!="both")
@@ -703,15 +718,43 @@ public:
 
         if ((go_on==true) && (viewer==true))
         {
+            if (norm(poseR)!=0.0)
+                pose_tmp=poseR;
+            if (norm(poseL)!=0.0)
+                pose_tmp2=poseL;
             if (left_or_right=="both")
             {
-                go_on=showPoses(poseR,poseL,2);
+                go_on=showPoses(poseR,poseL,2,0);
             }
             else if (left_or_right=="right")
-                go_on=showPoses(poseR,poseL,1);
+                go_on=showPoses(poseR,poseL,1,0);
             else
             {
-                go_on=showPoses(poseL,poseL,1);
+                go_on=showPoses(poseL,poseL,1,0);
+            }
+        }
+
+        if ((go_on==true) && (calib_cam==true))
+        {
+            if (norm(poseR)!=0.0)
+            {
+                calibCameras(pose_tmp);
+            }
+            else if (norm(poseL)!=0.0)
+                calibCameras(pose_tmp2);
+        }
+
+        if ((go_on==true) && (viewer==true) && (calib_cam==true))
+        {
+            if (left_or_right=="both")
+            {
+                go_on=showPoses(poseR,poseL,2,100);
+            }
+            else if (left_or_right=="right")
+                go_on=showPoses(poseR,poseL,1,100);
+            else
+            {
+                go_on=showPoses(poseL,poseL,1,100);
             }
         }
 
@@ -720,9 +763,9 @@ public:
             if ((go_on==true) && (calib_cam==true))
             {
                 if (chosen_hand =="right")
-                    calibCameras(poseR);
+                    calibCameras(pose_tmp);
                 else
-                    calibCameras(poseL);
+                    calibCameras(pose_tmp2);
             }
 
             if ((go_on==true))
@@ -817,7 +860,7 @@ public:
 
             Model *model2; action2->getGraspModel(model2);
 
-            if (model2!=NULL)
+            /**if (model2!=NULL)
             {
                if (!model2->isCalibrated())
                {
@@ -825,7 +868,7 @@ public:
                    prop2.put("finger","all");
                    model2->calibrate(prop2);
                }
-            }
+            }*/
         }
         else
         {
@@ -866,7 +909,7 @@ public:
 
             Model *model; action->getGraspModel(model);
 
-            if (model!=NULL)
+            /**if (model!=NULL)
             {
                 if (!model->isCalibrated())
                 {
@@ -874,7 +917,7 @@ public:
                     prop.put("finger","all");
                     model->calibrate(prop);
                 }
-            }
+            }*/
 
             conf_act_called=true;
         }
@@ -925,6 +968,8 @@ public:
             }
         }
 
+        cout<<"config_ok "<<config_ok<<endl;
+
         return config_ok;
     }
 
@@ -965,16 +1010,12 @@ public:
         online=(rf.check("online", Value("no"))=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
         distance=rf.check("distance", Value(0.1)).asDouble();
-        superq_name=rf.check("superq_name", Value("box")).asString();
+        superq_name=rf.check("superq_name", Value("Tomato")).asString();
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
 
-        if (online)
-        {
-             askForObject();            
-        }
-        else
-        {
+        if (!online)
+        {                       
             readSuperq("object",object,11,this->rf);
         }
 
@@ -1030,17 +1071,23 @@ public:
     {
         Bottle cmd, reply;
         cmd.addString("get");
+        cmd.addString("_");
         cmd.addString("superq");
         cmd.addString(superq_name);
 
-        if (portSuperqRpc.write(cmd,reply))
-        {
-            for (int idx=0; idx<reply.size(); idx++)
-            {
-                object[idx]=reply.get(idx).asDouble();
-            }
+        portSuperqRpc.write(cmd,reply);
 
-            yInfo()<<" Object superquadric: "<<object.toString();
+        if (reply.size()>0)
+        {
+            if (Bottle *b=reply.get(0).asList())
+            {
+                for (int idx=0; idx<b->size(); idx++)
+                {
+                    object[idx]=b->get(idx).asDouble();
+                }
+
+                yInfo()<<" Object superquadric: "<<object.toString();
+            }
         }
         else
         {
@@ -1081,7 +1128,7 @@ public:
     }
 
     /****************************************************************/
-    Vector calibCameras(Vector &v)
+    void calibCameras(Vector &v)
     {
         Bottle cmd,reply;
         cmd.clear();
@@ -1096,6 +1143,8 @@ public:
         cmd.addDouble(v[2]);
 
         portCalibCamRpc.write(cmd, reply);
+        yDebug()<<"cmd "<<cmd.toString();
+        yDebug()<<"reply "<<reply.toString();
         if (reply.get(0).asString()=="ok")
         {
             v[0]=reply.get(1).asDouble();
@@ -1103,7 +1152,7 @@ public:
             v[2]=reply.get(3).asDouble();
         }
 
-        yDebug()<<"Vector after calibration: "<<v_calib.toString();
+        yDebug()<<"Vector after calibration: "<<v.toString();
     }
 
     /***********************************************************************/
@@ -1124,7 +1173,7 @@ public:
             app->Options()->SetStringValue("output_file",nameFileOut_right+".out");
         else
             app->Options()->SetStringValue("output_file",nameFileOut_left+".out");
-        app->Options()->SetIntegerValue("print_level",5);
+        app->Options()->SetIntegerValue("print_level",0);
         app->Initialize();
 
         t0=Time::now();
@@ -1244,7 +1293,7 @@ public:
     }
 
     /***********************************************************************/
-    bool showPoses(Vector &pose, Vector &pose2, const int &n_poses)
+    bool showPoses(Vector &pose, Vector &pose2, const int &n_poses, int change_color)
     {
         ImageOf<PixelRgb> *imgIn=portImgIn.read();
         if (imgIn==NULL)
@@ -1333,21 +1382,21 @@ public:
                 yError("Not acceptable pixels!");
             }
             else
-                cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+                cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255-change_color,0+change_color,0));
 
             if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
             {
                 yError("Not acceptable pixels!");
             }
             else
-                cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+                cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0+change_color,255-change_color,0));
 
             if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
             {
                 yError("Not acceptable pixels!");
             }
             else
-                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0+change_color,255-change_color));
         }
 
         igaze->lookAtFixationPoint(pose);

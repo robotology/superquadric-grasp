@@ -59,6 +59,13 @@ service superquadricGrasping_IDL
     bool grasping_method(1:string lift_or_not);
 
     /**
+    * Enabl or not depth2kin calibration
+    *@param yes or no
+    *@return true/false on success/failure
+    */
+    bool calibrate_cam(1:string calib_or_not);
+
+    /**
     * Choose the hand to use to grasp the object
     *@param hand name (left or right)
     *@return true/false on success/failure
