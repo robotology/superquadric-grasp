@@ -20,7 +20,7 @@
     <connection>
         <from>/superquadric-grasping/superq:rpc</from>
         <to>/superquadric-model/rpc</to>
-        <protocol>tpc</protocol>
+        <protocol>tcp</protocol>
     </connection>
 
     <connection>
