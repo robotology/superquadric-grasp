@@ -45,6 +45,20 @@ service superquadricGrasping_IDL
     bool go_home(1:string hand);
 
     /**
+    * Say if you want the robot to lift the object or not
+    *@param yes or no 
+    *@return true/false on success/failure
+    */
+    bool lift_object(1:string lift_or_not);
+
+    /**
+    * Select the kind of grasping you want the robot to perform:
+    *@param power or precision, for respectively power or precision grasp
+    *@return true/false on success/failure
+    */
+    bool grasping_method(1:string lift_or_not);
+
+    /**
     * Choose the hand to use to grasp the object
     *@param hand name (left or right)
     *@return true/false on success/failure

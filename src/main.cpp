@@ -125,6 +125,7 @@ protected:
     bool chosen_pose;
     bool conf_act_called;
     bool calib_cam;
+    bool lift;
 
     string nameFileOut_right, nameFileSolution_right, nameFileTrajectory;
     string nameFileOut_left, nameFileSolution_left;
@@ -181,6 +182,49 @@ public:
         }
 
         return f;
+    }
+
+    /************************************************************************/
+    bool lift_object(const string &lift_or_not)
+    {
+        lift=(lift_or_not=="yes");
+        return true;
+    }
+
+    /************************************************************************/
+    bool grasping_method(const string &precision_or_power)
+    {
+        if (precision_or_power=="power")
+        {
+            hand[0]=0.03; hand[1]=0.05; hand[2]=0.03;
+            if (left_or_right=="both")
+            {
+                hand1[0]=0.03; hand1[1]=0.05; hand1[2]=0.03;
+            }
+
+            yInfo()<<"New hand: "<<hand.toString();
+            if (left_or_right=="both")
+                yInfo()<<"New other hand : "<<hand1.toString();
+
+            return true;
+        }
+        else if (precision_or_power=="precision")
+        {
+            hand[0]=0.08; hand[1]=0.05; hand[2]=0.08;
+            if (left_or_right=="both")
+            {
+                hand1[0]=0.08; hand1[1]=0.05; hand1[2]=0.08;
+            }
+
+            yInfo()<<"New hand: "<<hand.toString();
+            if (left_or_right=="both")
+                yInfo()<<"New other hand : "<<hand1.toString();
+
+
+            return true;
+        }
+        else
+            return false;
     }
 
     /************************************************************************/
@@ -509,6 +553,13 @@ public:
         if (rf.find("calib_cam").isNull())
             calib_cam=false;
 
+        lift=rf.find("lift").asString().c_str();
+        if(rf.find("lift").isNull())
+            lift=true;
+
+        portRpc.open("/superquadric-grasping/rpc");
+        attach(portRpc);
+
         return true;
     }
 
@@ -704,7 +755,8 @@ public:
                 if (stop_var==true)
                     go_on=false;
 
-                liftObject();
+                if (go_on==true && lift==true)
+                    liftObject();
             }
 
             if (stop_var==true)
@@ -811,8 +863,6 @@ public:
             cout<<"*** List of available hand sequence keys:"<<endl;
             for (size_t i=0; i<q.size(); i++)
                 cout<<q[i]<<endl;
-            portRpc.open("/superquadric-grasping/rpc");
-            attach(portRpc);
 
             Model *model; action->getGraspModel(model);
 
@@ -829,6 +879,7 @@ public:
             conf_act_called=true;
         }
 
+        showTrajectory();
         return true;
     }
 
