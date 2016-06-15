@@ -1075,34 +1075,6 @@ public:
     }
 
     /****************************************************************/
-    void fromCamtoRoot()
-    {
-        Matrix H(4,4);
-        Stamp *stamp=NULL;
-        Vector pos, orient;
-
-        if (eye=="left")
-        {
-            igaze->getLeftEyePose(pos,orient,stamp);
-            H=axis2dcm(orient);
-            H.setSubcol(pos,0,3);
-            //H=SE3inv(H);
-
-            cout<<"H "<<H.toString()<<endl;
-        }
-
-        Vector tmp(4,1.0);
-        tmp.setSubvector(0,object.subVector(5,7));
-        cout<<"tmp "<<tmp.toString();
-        tmp=H*tmp;
-        cout<<"tmp "<<tmp.toString();
-        //object.setSubvector(5,tmp);
-        //Matrix H2=euler2dcm(object.subVector(8,10));
-        //object.setSubvector(8,dcm2euler(H*H2));
-        //yInfo()<<"Object in root reference "<<object.toString();
-    }
-
-    /****************************************************************/
     void askForObject(const string &obj_name)
     {
         Bottle cmd, reply;        
@@ -1132,8 +1104,6 @@ public:
         {
             yError()<<" Superquadric not provided!";
         }
-
-        fromCamtoRoot();
     }
 
     /****************************************************************/
