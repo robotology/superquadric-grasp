@@ -702,7 +702,7 @@ public:
             go_on=false;
 
         if (online)
-            askForObject();
+            askForObject(superq_name);
 
         if (norm(hand)!=0.0 && norm(object)!=0.0 && (go_on==true) && (norm(poseR)==0.0) && (norm(poseL)==0.0))
         {
@@ -722,6 +722,7 @@ public:
                 pose_tmp=poseR;
             if (norm(poseL)!=0.0)
                 pose_tmp2=poseL;
+
             if (left_or_right=="both")
             {
                 go_on=showPoses(poseR,poseL,2,0);
@@ -749,12 +750,17 @@ public:
             if (left_or_right=="both")
             {
                 go_on=showPoses(poseR,poseL,2,100);
+                go_on=showPoses(pose_tmp,pose_tmp2,2,0);
             }
             else if (left_or_right=="right")
+            {
                 go_on=showPoses(poseR,poseL,1,100);
+                go_on=showPoses(pose_tmp,pose_tmp2,1,0);
+            }
             else
             {
                 go_on=showPoses(poseL,poseL,1,100);
+                go_on=showPoses(pose_tmp,pose_tmp2,1,0);
             }
         }
 
@@ -1018,6 +1024,8 @@ public:
         {                       
             readSuperq("object",object,11,this->rf);
         }
+        else
+            object.resize(11,0.0);
 
         readSuperq("hand",hand,11,this->rf);
 
@@ -1067,15 +1075,45 @@ public:
     }
 
     /****************************************************************/
-    void askForObject()
+    void fromCamtoRoot()
     {
-        Bottle cmd, reply;
-        cmd.addString("get");
-        cmd.addString("_");
-        cmd.addString("superq");
-        cmd.addString(superq_name);
+        Matrix H(4,4);
+        Stamp *stamp=NULL;
+        Vector pos, orient;
+
+        if (eye=="left")
+        {
+            igaze->getLeftEyePose(pos,orient,stamp);
+            H=axis2dcm(orient);
+            H.setSubcol(pos,0,3);
+            //H=SE3inv(H);
+
+            cout<<"H "<<H.toString()<<endl;
+        }
+
+        Vector tmp(4,1.0);
+        tmp.setSubvector(0,object.subVector(5,7));
+        cout<<"tmp "<<tmp.toString();
+        tmp=H*tmp;
+        cout<<"tmp "<<tmp.toString();
+        //object.setSubvector(5,tmp);
+        //Matrix H2=euler2dcm(object.subVector(8,10));
+        //object.setSubvector(8,dcm2euler(H*H2));
+        //yInfo()<<"Object in root reference "<<object.toString();
+    }
+
+    /****************************************************************/
+    void askForObject(const string &obj_name)
+    {
+        Bottle cmd, reply;        
+        cmd.addString("get_superq");
+        cmd.addString(obj_name);
+
+        yDebug()<<"cmd "<<cmd.toString();
 
         portSuperqRpc.write(cmd,reply);
+
+        cout<<"reply "<<reply.toString();
 
         if (reply.size()>0)
         {
@@ -1086,13 +1124,16 @@ public:
                     object[idx]=b->get(idx).asDouble();
                 }
 
-                yInfo()<<" Object superquadric: "<<object.toString();
+                yInfo()<<" Object superquadric received: "<<object.toString();
+
             }
         }
         else
         {
             yError()<<" Superquadric not provided!";
         }
+
+        fromCamtoRoot();
     }
 
     /****************************************************************/
@@ -1178,6 +1219,7 @@ public:
 
         t0=Time::now();
         Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
+        yDebug()<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.Object: "<<object.toString();
         grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
         grasp_nlp->configure(this->rf,l_o_r);
 
@@ -1329,7 +1371,7 @@ public:
         for (int i=0; i<n_poses; i++)
         {
             waypoint=poses[i];
-            yDebug()<<"point "<<waypoint.toString();
+            yDebug()<<"point "<<i<<" "<<waypoint.toString();
 
             if (eye=="left")
                 igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
