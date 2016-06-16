@@ -1,10 +1,10 @@
 Initial right hand volume pose:  [ 0.020  0.100  0.020  1.000  1.000  0.000  0.000  0.000 -1.570  1.570 -1.570]
 
-Final  right hand volume pose:  [-0.363  0.041 -0.142 -2.483  2.281 -2.259]
+Final  right hand volume pose:  [-0.363  0.042 -0.142 -2.484  2.282 -2.260]
 
-Final right hand pose  [-0.342  0.064 -0.086 -0.883  2.281 -0.658]
+Final right hand pose  [-0.373  0.053 -0.128 -0.881  2.282 -0.657]
 
-t for ipopt: 0.234805
+t for ipopt: 0.87835
 
 object:  [ 0.054  0.054  0.100  0.401  0.752 -0.413 -0.009 -0.198  3.787  0.874  2.329]
 
@@ -19,4 +19,4 @@ bounds in constrained:
 plane: [ 0.000000
  0.000000
  1.000000
- 0.300000
+ 0.260000

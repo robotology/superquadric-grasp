@@ -52,6 +52,7 @@ class grasping_NLP : public Ipopt::TNLP
     Matrix H_h2w;
     Matrix H_x;
     Vector euler;
+    Vector displacement;
 
 public:
     Vector hand;
@@ -649,7 +650,7 @@ public:
      }
 
     /****************************************************************/
-    void configure(ResourceFinder *rf, const string &left_or_right)
+    void configure(ResourceFinder *rf, const string &left_or_right, const Vector &disp)
     {
         Matrix x0_tmp;
         x0_tmp.resize(6,1);
@@ -669,6 +670,15 @@ public:
         cout<<"  ***** bounds "<<bounds.toString()<<endl;
         cout<<"  ***** bounds constr "<<bounds_constr.toString()<<endl;
         l_o_r=left_or_right;
+
+        if (norm(disp)==0.0)
+        {
+            displacement.resize(3,0.0);
+            displacement[0]=rf->check("disp_x", Value(0.05)).asDouble();
+            displacement[1]=rf->check("disp_y", Value(0.0)).asDouble();
+            displacement[2]=rf->check("disp_z", Value(0.05)).asDouble();
+        }
+        yDebug()<<"displacement "<<displacement.toString();
     }
 
     /****************************************************************/
@@ -758,12 +768,25 @@ public:
        for (Ipopt::Index i=0; i<3; i++)
            solution[i]=H(i,3);
 
+       yDebug()<<"solution "<<solution.toString();
+
         robot_pose.resize(6,0.0);
         robot_pose.setSubvector(3,dcm2euler(H));
         if (l_o_r=="right")
-            robot_pose.setSubvector(0,solution.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2)));
+        {
+            robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));
+            yDebug()<<"robot pose "<<robot_pose.toString();
+            robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
+            yDebug()<<"robot pose "<<robot_pose.toString();
+            robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
+            yDebug()<<"robot pose "<<robot_pose.toString();
+        }
         else
-            robot_pose.setSubvector(0,solution.subVector(0,2)+hand[0]*(H.getCol(2).subVector(0,2)));
+        {
+            robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));
+            robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
+            robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
+        }
 
 
         cout<<"robot pose "<< robot_pose.toString()<<endl;

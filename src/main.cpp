@@ -106,6 +106,7 @@ protected:
     Vector hand, hand1;
     int n_pointshand;
     double distance;
+    Vector displacement;
 
     RpcClient portSuperqRpc;
     RpcClient portCalibCamRpc;
@@ -259,6 +260,24 @@ public:
         chosen_hand=str_hand;
 
         yInfo()<<"Chosen hand: "<<chosen_hand;
+
+        return true;
+    }
+
+    /************************************************************************/
+    bool hand_displacement(const Vector &disp)
+    {
+        if (disp.size()>=1)
+            displacement[0]=disp[0];
+        else
+            return false;
+
+        if (disp.size()>=2)
+            displacement[1]=disp[1];
+        if (disp.size()>=3)
+            displacement[2]=disp[2];
+
+        yInfo()<<"Hand displacement: "<<displacement.toString();
 
         return true;
     }
@@ -585,6 +604,8 @@ public:
         portRpc.open("/superquadric-grasping/rpc");
         attach(portRpc);
 
+        displacement.resize(3,0.0);
+
         return true;
     }
 
@@ -665,12 +686,6 @@ public:
     /****************************************************************/
     bool close()
     {
-        if (action!=NULL)
-            delete action;
-
-        if ((action2!=NULL) && (left_or_right=="both"))
-            delete action2;
-
         if (portRpc.asPort().isOpen())
             portRpc.close();
 
@@ -683,16 +698,26 @@ public:
         if (!portImgOut.isClosed())
             portImgOut.close();
 
-        robotDevice.close();
-        robotDevice2.close();
-
-        if (left_or_right=="both")
+        if (move==true)
         {
-            robotDevice3.close();
-            robotDevice4.close();
+            if (action!=NULL)
+                delete action;
+
+            if ((action2!=NULL) && (left_or_right=="both"))
+                delete action2;
+
+            robotDevice.close();
+            robotDevice2.close();
+
+            if (left_or_right=="both")
+            {
+                robotDevice3.close();
+                robotDevice4.close();
+            }
         }
 
-        GazeCtrl.close();
+        if (viewer==true)
+            GazeCtrl.close();
 
         return true;
     }
@@ -700,9 +725,12 @@ public:
     /****************************************************************/
     bool interruptModule()
     {
-        action->syncCheckInterrupt(true);
-        if (left_or_right=="both")
-            action2->syncCheckInterrupt(true);
+        if (move==true)
+        {
+            action->syncCheckInterrupt(true);
+            if (left_or_right=="both")
+                action2->syncCheckInterrupt(true);
+        }
         portImgIn.interrupt();
 
         return true;
@@ -786,13 +814,13 @@ public:
 
         if (chosen_pose)
         {
-            if ((go_on==true) && (calib_cam==true))
+            /**if ((go_on==true) && (calib_cam==true))
             {
                 if (chosen_hand =="right")
                     poseR=calibCameras(pose_tmp);
                 else
                     poseL=calibCameras(pose_tmp2);
-            }
+            }*/
 
             if ((go_on==true))
                 computeTrajectory(chosen_hand);
@@ -1213,7 +1241,7 @@ public:
         Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
         yDebug()<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.Object: "<<object.toString();
         grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
-        grasp_nlp->configure(this->rf,l_o_r);
+        grasp_nlp->configure(this->rf,l_o_r, displacement);
 
         Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
         t=Time::now()-t0;

@@ -79,6 +79,13 @@ service superquadricGrasping_IDL
     bool choose_hand(1:string hand);
 
     /**
+    * Change hand displacement for grasping
+    *@param displacement value (as a Vector)
+    *@return true/false on success/failure
+    */
+    bool hand_displacement(1:Vector hand);
+
+    /**
     * Stop all robot movements but not the module
     *@return true/false on success/failure
     */
