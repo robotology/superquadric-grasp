@@ -204,6 +204,19 @@ public:
     }
 
     /************************************************************************/
+    bool clear_poses()
+    {
+        poseR.resize(6,0.0);
+        poseL.resize(6,0.0);
+        object.resize(11,0.0);
+        chosen_pose=false;
+        go_on=true;
+        stop_var=false;
+        cout<<"go_on "<<go_on<<endl;
+        return true;
+    }
+
+    /************************************************************************/
     bool grasping_method(const string &precision_or_power)
     {
         if (precision_or_power=="power")
@@ -701,11 +714,12 @@ public:
         if (stop_var==true)
             go_on=false;
 
-        if (online)
+        if (online && norm(object)==0.0)
             askForObject(superq_name);
 
         if (norm(hand)!=0.0 && norm(object)!=0.0 && (go_on==true) && (norm(poseR)==0.0) && (norm(poseL)==0.0))
-        {
+        {                        
+            yDebug()<<"It's computing pose ...";
             if (left_or_right!="both")
                 go_on=computePose(hand, left_or_right);
             else
@@ -714,17 +728,23 @@ public:
                 bool go_on1=computePose(hand1, "left");
                 go_on=((go_on==true) || (go_on1==true));
             }
-        }
 
-        if ((go_on==true) && (viewer==true))
-        {
             if (norm(poseR)!=0.0)
                 pose_tmp=poseR;
             if (norm(poseL)!=0.0)
                 pose_tmp2=poseL;
+        }
+        else
+        {
+            poseR=pose_tmp;
+            poseL=pose_tmp2;
+        }
 
+        if ((go_on==true) && (viewer==true))
+        {            
             if (left_or_right=="both")
             {
+                yDebug()<<"show Pose right and left...";
                 go_on=showPoses(poseR,poseL,2,0);
             }
             else if (left_or_right=="right")
@@ -739,10 +759,10 @@ public:
         {
             if (norm(poseR)!=0.0)
             {
-                calibCameras(pose_tmp);
+                poseR=calibCameras(pose_tmp);
             }
-            else if (norm(poseL)!=0.0)
-                calibCameras(pose_tmp2);
+            if (norm(poseL)!=0.0)
+                poseL=calibCameras(pose_tmp2);
         }
 
         if ((go_on==true) && (viewer==true) && (calib_cam==true))
@@ -769,9 +789,9 @@ public:
             if ((go_on==true) && (calib_cam==true))
             {
                 if (chosen_hand =="right")
-                    calibCameras(pose_tmp);
+                    poseR=calibCameras(pose_tmp);
                 else
-                    calibCameras(pose_tmp2);
+                    poseL=calibCameras(pose_tmp2);
             }
 
             if ((go_on==true))
@@ -824,7 +844,7 @@ public:
     /****************************************************************/
     double getPeriod()
     {
-        return 0.1;
+        return 0.3;
     }
 
     /****************************************************************/
@@ -1016,7 +1036,7 @@ public:
         online=(rf.check("online", Value("no"))=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
         distance=rf.check("distance", Value(0.1)).asDouble();
-        superq_name=rf.check("superq_name", Value("Tomato")).asString();
+        superq_name=rf.check("superq_name", Value("Octopus")).asString();
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
 
@@ -1139,13 +1159,14 @@ public:
     }
 
     /****************************************************************/
-    void calibCameras(Vector &v)
+    Vector calibCameras(Vector &v)
     {
         Bottle cmd,reply;
         cmd.clear();
         cmd.addString("getPoint");
         cmd.addString(eye);
         Vector v_calib;
+        v_calib=v;
 
         yDebug()<<"Vector before calibration: "<<v.toString();
 
@@ -1158,12 +1179,13 @@ public:
         yDebug()<<"reply "<<reply.toString();
         if (reply.get(0).asString()=="ok")
         {
-            v[0]=reply.get(1).asDouble();
-            v[1]=reply.get(2).asDouble();
-            v[2]=reply.get(3).asDouble();
+            v_calib[0]=reply.get(1).asDouble();
+            v_calib[1]=reply.get(2).asDouble();
+            v_calib[2]=reply.get(3).asDouble();
         }
 
-        yDebug()<<"Vector after calibration: "<<v.toString();
+        yDebug()<<"Vector after calibration: "<<v_calib.toString();
+        return v_calib;
     }
 
     /***********************************************************************/
@@ -1348,7 +1370,7 @@ public:
             else
                 igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
 
-            yDebug()<<"2D point "<<waypoint2D.toString();
+            //yDebug()<<"2D point "<<waypoint2D.toString();
 
             Matrix H=euler2dcm(waypoint.subVector(3,5));
 
@@ -1373,9 +1395,9 @@ public:
                 igaze->get2DPixel(1,z,z2D);
             }
 
-            yDebug()<<"x2D "<<x2D.toString();
-            yDebug()<<"y2D "<<y2D.toString();
-            yDebug()<<"z2D "<<z2D.toString();
+            //yDebug()<<"x2D "<<x2D.toString();
+            //yDebug()<<"y2D "<<y2D.toString();
+            //yDebug()<<"z2D "<<z2D.toString();
 
             cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
             cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
@@ -1411,7 +1433,8 @@ public:
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0+change_color,255-change_color));
         }
 
-        igaze->lookAtFixationPoint(pose);
+        if (norm(object)!=0.0)
+            igaze->lookAtFixationPoint(object.subVector(5,7));
         portImgOut.write();
 
         return true;

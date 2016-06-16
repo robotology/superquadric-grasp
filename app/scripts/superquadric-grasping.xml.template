@@ -32,7 +32,7 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/superquadric-grasping/img:i</to>
-        <protocol>tcp</protocol>
+        <protocol>udp</protocol>
     </connection>
     
     <connection>

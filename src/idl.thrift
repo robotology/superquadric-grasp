@@ -52,6 +52,12 @@ service superquadricGrasping_IDL
     bool lift_object(1:string lift_or_not);
 
     /**
+    * Remove computed poses 
+    *@return true/false on success/failure
+    */
+    bool clear_poses();
+
+    /**
     * Select the kind of grasping you want the robot to perform:
     *@param power or precision, for respectively power or precision grasp
     *@return true/false on success/failure
