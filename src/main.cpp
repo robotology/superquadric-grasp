@@ -106,6 +106,7 @@ protected:
     Vector hand, hand1;
     int n_pointshand;
     double distance;
+    string dir;
     Vector displacement;
 
     RpcClient portSuperqRpc;
@@ -605,6 +606,7 @@ public:
         attach(portRpc);
 
         displacement.resize(3,0.0);
+        dir=rf.check("approaching_direction", Value("z")).asString();
 
         return true;
     }
@@ -823,7 +825,7 @@ public:
             }*/
 
             if ((go_on==true))
-                computeTrajectory(chosen_hand);
+                computeTrajectory(chosen_hand, dir);
 
             if (stop_var==true)
                 go_on=false;
@@ -1310,9 +1312,11 @@ public:
     }
 
     /***********************************************************************/
-    bool computeTrajectory(const string &chosen_hand)
+    bool computeTrajectory(const string &chosen_hand, const string &direction)
     {
         Vector pose(6,0.0);
+
+        yDebug()<<"TRAJECTORY "<<direction;
 
         if (chosen_hand=="right")
         {
@@ -1334,10 +1338,30 @@ public:
         H.setSubcol(euler,0,3);
 
         pose1=pose;
-        if (chosen_hand=="right")
-            pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
+        if (direction=="z")
+        {
+            if (chosen_hand=="right")
+                pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
+            else
+                pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.transposed().getCol(2).subVector(0,2)));
+        }
         else
-            pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.transposed().getCol(2).subVector(0,2)));
+        {
+            if (chosen_hand=="right")
+            {
+                pose1.setSubvector(0,pose.subVector(0,2)-distance/2*(H.transposed().getCol(2).subVector(0,2)));
+                yDebug()<<"Pose1 "<<pose1.toString();
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance*3/2*(H.transposed().getCol(0).subVector(0,2)));
+                yDebug()<<"Pose1 "<<pose1.toString();
+            }
+            else
+            {
+                pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.transposed().getCol(2).subVector(0,2)));
+                yDebug()<<"Pose1 "<<pose1.toString();
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.transposed().getCol(0).subVector(0,2)));
+                yDebug()<<"Pose1 "<<pose1.toString();
+            }
+        }
 
         trajectory.clear();
         trajectory.push_back(pose1);
@@ -1461,8 +1485,8 @@ public:
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0+change_color,255-change_color));
         }
 
-        if (norm(object)!=0.0)
-            igaze->lookAtFixationPoint(object.subVector(5,7));
+        //if (norm(object)!=0.0)
+            //igaze->lookAtFixationPoint(object.subVector(5,7));
         portImgOut.write();
 
         return true;
@@ -1471,6 +1495,7 @@ public:
     /***********************************************************************/
     bool showTrajectory()
     {
+        yDebug()<<"I'M SHOWING TRAJECOTRY ";
         ImageOf<PixelRgb> *imgIn=portImgIn.read();
         if (imgIn==NULL)
             return false;
