@@ -1340,18 +1340,27 @@ public:
         pose1=pose;
         if (direction=="z")
         {
+            yDebug()<<"DIRECTION Z";
             if (chosen_hand=="right")
+            {
+                yDebug()<<"POSA DESTRA: "<<pose1.toString();
+                yDebug()<<"COSA SOTTRAGGO "<<(H.transposed().getCol(2).subVector(0,2)).toString();
                 pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
+                yDebug()<<"POSA DESTRA: "<<pose1.toString();
+            }
             else
+            {
+                yDebug()<<"COSA SOTTRAGGO "<<(H.transposed().getCol(2).subVector(0,2)).toString();
                 pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.transposed().getCol(2).subVector(0,2)));
+            }
         }
         else
         {
             if (chosen_hand=="right")
             {
-                pose1.setSubvector(0,pose.subVector(0,2)-distance/2*(H.transposed().getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.transposed().getCol(2).subVector(0,2)));
                 yDebug()<<"Pose1 "<<pose1.toString();
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance*3/2*(H.transposed().getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)+distance*3/2*(H.transposed().getCol(0).subVector(0,2)));
                 yDebug()<<"Pose1 "<<pose1.toString();
             }
             else

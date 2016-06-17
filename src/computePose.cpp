@@ -676,14 +676,14 @@ public:
             displacement.resize(3,0.0);
             displacement[0]=rf->check("disp_x_right", Value(0.05)).asDouble();
             displacement[1]=rf->check("disp_y_right", Value(0.0)).asDouble();
-            displacement[2]=rf->check("disp_z_right", Value(0.05)).asDouble();
+            displacement[2]=rf->check("disp_z_right", Value(0.02)).asDouble();
         }
         else if (norm(disp)==0.0 && left_or_right=="left")
         {
             displacement.resize(3,0.0);
             displacement[0]=rf->check("disp_x_left", Value(0.05)).asDouble();
             displacement[1]=rf->check("disp_y_left", Value(0.0)).asDouble();
-            displacement[2]=rf->check("disp_z_left", Value(-0.05)).asDouble();
+            displacement[2]=rf->check("disp_z_left", Value(0.02)).asDouble();
         }
         yDebug()<<"displacement "<<displacement.toString();
     }
@@ -790,7 +790,7 @@ public:
         }
         else
         {
-            robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));
+            robot_pose.setSubvector(0,solution.subVector(0,2)+(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));
             robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
             robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
         }
