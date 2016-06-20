@@ -164,7 +164,6 @@ public:
         action->pushAction("karate_hand");
         action->checkActionsDone(f,true);
 
-
         if (hand=="right")
         {
             action->pushAction(home_xR);
@@ -246,7 +245,6 @@ public:
             yInfo()<<"New hand: "<<hand.toString();
             if (left_or_right=="both")
                 yInfo()<<"New other hand : "<<hand1.toString();
-
 
             return true;
         }
@@ -774,7 +772,6 @@ public:
         {            
             if (left_or_right=="both")
             {
-                yDebug()<<"show Pose right and left...";
                 go_on=showPoses(poseR,poseL,2,0);
             }
             else if (left_or_right=="right")
@@ -1131,11 +1128,7 @@ public:
         cmd.addString("get_superq");
         cmd.addString(obj_name);
 
-        yDebug()<<"cmd "<<cmd.toString();
-
         portSuperqRpc.write(cmd,reply);
-
-        cout<<"reply "<<reply.toString();
 
         if (reply.size()>0)
         {
@@ -1163,9 +1156,6 @@ public:
         Vector o(4,0.0);
 
         icart_arm->getPose(x,o);
-
-        yDebug()<<"hand "<<hand.toString();
-        yDebug()<<"x "<<x.toString();
 
         hand.setSubvector(5,x);
         Matrix H=axis2dcm(o);
@@ -1205,8 +1195,6 @@ public:
         cmd.addDouble(v[2]);
 
         portCalibCamRpc.write(cmd, reply);
-        yDebug()<<"cmd "<<cmd.toString();
-        yDebug()<<"reply "<<reply.toString();
         if (reply.get(0).asString()=="ok")
         {
             v_calib[0]=reply.get(1).asDouble();
@@ -1241,7 +1229,6 @@ public:
 
         t0=Time::now();
         Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
-        yDebug()<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.Object: "<<object.toString();
         grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
         grasp_nlp->configure(this->rf,l_o_r, displacement);
 
@@ -1316,8 +1303,6 @@ public:
     {
         Vector pose(6,0.0);
 
-        yDebug()<<"TRAJECTORY "<<direction;
-
         if (chosen_hand=="right")
         {
             pose=poseR;
@@ -1340,35 +1325,26 @@ public:
         pose1=pose;
         if (direction=="z")
         {
-            yDebug()<<"DIRECTION Z";
             if (chosen_hand=="right")
             {
-                yDebug()<<"POSA DESTRA: "<<pose1.toString();
-                yDebug()<<"COSA SOTTRAGGO "<<(H.transposed().getCol(2).subVector(0,2)).toString();
-                pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.transposed().getCol(2).subVector(0,2)));
-                yDebug()<<"POSA DESTRA: "<<pose1.toString();
+                pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.getCol(2).subVector(0,2)));
             }
             else
             {
-                yDebug()<<"COSA SOTTRAGGO "<<(H.transposed().getCol(2).subVector(0,2)).toString();
-                pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.transposed().getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.getCol(2).subVector(0,2)));
             }
         }
         else
         {
             if (chosen_hand=="right")
             {
-                pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.transposed().getCol(2).subVector(0,2)));
-                yDebug()<<"Pose1 "<<pose1.toString();
-                pose1.setSubvector(0,pose1.subVector(0,2)+distance*3/2*(H.transposed().getCol(0).subVector(0,2)));
-                yDebug()<<"Pose1 "<<pose1.toString();
+                pose1.setSubvector(0,pose.subVector(0,2)-distance/2*(H.getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
             }
             else
             {
-                pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.transposed().getCol(2).subVector(0,2)));
-                yDebug()<<"Pose1 "<<pose1.toString();
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.transposed().getCol(0).subVector(0,2)));
-                yDebug()<<"Pose1 "<<pose1.toString();
+                pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
             }
         }
 
@@ -1424,14 +1400,11 @@ public:
         for (int i=0; i<n_poses; i++)
         {
             waypoint=poses[i];
-            yDebug()<<"point "<<i<<" "<<waypoint.toString();
 
             if (eye=="left")
                 igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
             else
                 igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
-
-            //yDebug()<<"2D point "<<waypoint2D.toString();
 
             Matrix H=euler2dcm(waypoint.subVector(3,5));
 
@@ -1455,10 +1428,6 @@ public:
                 igaze->get2DPixel(1,y,y2D);
                 igaze->get2DPixel(1,z,z2D);
             }
-
-            //yDebug()<<"x2D "<<x2D.toString();
-            //yDebug()<<"y2D "<<y2D.toString();
-            //yDebug()<<"z2D "<<z2D.toString();
 
             cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
             cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
@@ -1504,7 +1473,6 @@ public:
     /***********************************************************************/
     bool showTrajectory()
     {
-        yDebug()<<"I'M SHOWING TRAJECOTRY ";
         ImageOf<PixelRgb> *imgIn=portImgIn.read();
         if (imgIn==NULL)
             return false;
@@ -1567,10 +1535,6 @@ public:
                 igaze->get2DPixel(1,y,y2D);
                 igaze->get2DPixel(1,z,z2D);
             }
-
-            yDebug()<<"x2D "<<x2D.toString();
-            yDebug()<<"y2D "<<y2D.toString();
-            yDebug()<<"z2D "<<z2D.toString();
 
             cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
             cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);

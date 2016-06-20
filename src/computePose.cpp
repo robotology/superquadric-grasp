@@ -505,13 +505,14 @@ public:
          g[4]=H(1,0);
 
          Vector x_min;
+         double minz=10.0;
 
          for (size_t i=0; i<points_on.size(); i++)
          {
              Vector pnt(4,1.0);
              pnt.setSubvector(0,points_on[i]);
              Vector point=H_x*pnt;
-             double minz=10.0;
+
              if (point[2]<minz)
              {
                  minz=point[2];
@@ -565,12 +566,14 @@ public:
          g[4]=H(1,0);
 
          Vector x_min;
+         double minz=10.0;
+
          for (size_t i1=0; i1<points_on.size(); i1++)
          {
              Vector pnt(4,1.0);
              pnt.setSubvector(0,points_on[i1]);
              Vector point=H_x*pnt;
-             double minz=10.0;
+
              if (point[2]<minz)
              {
                  minz=point[2];
@@ -666,9 +669,6 @@ public:
         plane.resize(4,1);
         readMatrix("plane", plane,4,rf);
 
-        cout<<"  ***** left or right "<<left_or_right;
-        cout<<"  ***** bounds "<<bounds.toString()<<endl;
-        cout<<"  ***** bounds constr "<<bounds_constr.toString()<<endl;
         l_o_r=left_or_right;
 
         if (norm(disp)==0.0 && left_or_right=="right")
@@ -782,11 +782,8 @@ public:
         if (l_o_r=="right")
         {
             robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));
-            yDebug()<<"robot pose "<<robot_pose.toString();
             robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
-            yDebug()<<"robot pose "<<robot_pose.toString();
             robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
-            yDebug()<<"robot pose "<<robot_pose.toString();
         }
         else
         {
@@ -800,7 +797,7 @@ public:
 
 
         /*********************/
-      /**for(size_t i=0;i<points_on.size();i++)
+        /**for(size_t i=0;i<points_on.size();i++)
         {
             Vector point(3,0.0);
             point=points_on[i];
