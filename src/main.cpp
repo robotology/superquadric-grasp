@@ -118,6 +118,7 @@ protected:
     string eye;
     PolyDriver GazeCtrl;
     IGazeControl *igaze;
+    Matrix K,H;
 
     bool go_on;
     bool online;
@@ -266,6 +267,7 @@ public:
     /************************************************************************/
     bool hand_displacement(const Vector &disp)
     {
+        yError()<<"disp size "<<disp.size();
         if (disp.size()>=1)
             displacement[0]=disp[0];
         else
@@ -500,7 +502,7 @@ public:
 
         graspDispL[0]=0.0;
         graspDispL[1]=0.0;
-        graspDispL[2]=0.01;
+        graspDispL[2]=0.0;
 
         graspOrienL[0]=-0.171542;
         graspOrienL[1]= 0.124396;
@@ -801,7 +803,7 @@ public:
             }
             else if (left_or_right=="right")
             {
-                go_on=showPoses(poseR,poseL,1,100);
+                go_on=showPoses(poseR,poseR,1,100);
                 go_on=showPoses(pose_tmp,pose_tmp2,1,0);
             }
             else
@@ -913,7 +915,7 @@ public:
 
             Model *model2; action2->getGraspModel(model2);
 
-            /**if (model2!=NULL)
+            if (model2!=NULL)
             {
                if (!model2->isCalibrated())
                {
@@ -921,7 +923,7 @@ public:
                    prop2.put("finger","all");
                    model2->calibrate(prop2);
                }
-            }*/
+            }
         }
         else
         {
@@ -1046,10 +1048,30 @@ public:
         if (GazeCtrl.isValid())
         {
             GazeCtrl.view(igaze);
-            return true;
         }
         else
             return false;
+
+        Bottle info;
+        igaze->getInfo(info);
+        K.resize(3,4);
+        K.zero();
+
+        Bottle *intr_par;
+
+        if (eye=="left")
+            intr_par=info.find("camera_intrinsics_left").asList();
+        else
+            intr_par=info.find("camera_intrinsics_right").asList();
+
+        K(0,0)=intr_par->get(0).asDouble();
+        K(0,1)=intr_par->get(1).asDouble();
+        K(0,2)=intr_par->get(2).asDouble();
+        K(1,1)=intr_par->get(5).asDouble();
+        K(1,2)=intr_par->get(6).asDouble();
+        K(2,2)=1;
+
+        return true;
     }
 
     /***********************************************************************/
@@ -1062,7 +1084,7 @@ public:
 
         online=(rf.check("online", Value("no"))=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
-        distance=rf.check("distance", Value(0.1)).asDouble();
+        distance=rf.check("distance", Value(0.05)).asDouble();
         superq_name=rf.check("superq_name", Value("Octopus")).asString();
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
@@ -1397,6 +1419,25 @@ public:
         Vector y2D(2,0.0);
         Vector z2D(2,0.0);
 
+        addSuperq(object,imgOut,255);
+        Vector hand_in_pose(11,0.0);
+
+        if (n_poses==1)
+        {
+            hand_in_pose.setSubvector(0,hand);
+            hand_in_pose.setSubvector(5,solR);
+            addSuperq(hand_in_pose,imgOut,0);
+        }
+        else if (n_poses==2)
+        {
+            hand_in_pose.setSubvector(0,hand);
+            hand_in_pose.setSubvector(5,solR);
+            addSuperq(hand_in_pose,imgOut,0);
+            hand_in_pose.setSubvector(0,hand1);
+            hand_in_pose.setSubvector(5,solL);
+            addSuperq(hand_in_pose,imgOut,0);
+        }
+
         for (int i=0; i<n_poses; i++)
         {
             waypoint=poses[i];
@@ -1461,13 +1502,94 @@ public:
             }
             else
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0+change_color,255-change_color));
-        }
+        }        
 
         //if (norm(object)!=0.0)
             //igaze->lookAtFixationPoint(object.subVector(5,7));
         portImgOut.write();
 
         return true;
+    }
+
+    /***********************************************************************/
+    void addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
+    {
+        PixelRgb color(col,255,0);
+        Vector pos, orient;
+        double co,so,ce,se;
+        Stamp *stamp=NULL;
+
+        Matrix R=euler2dcm(x.subVector(8,10));
+        R=R.transposed();
+
+        if ((norm(object)>0.0))
+        {
+            if (eye=="left")
+            {
+                if (igaze->getLeftEyePose(pos,orient,stamp))
+                {
+                    H=axis2dcm(orient);
+                    H.setSubcol(pos,0,3);
+                    H=SE3inv(H);
+                }
+            }
+            else
+            {
+                if (igaze->getRightEyePose(pos,orient,stamp))
+                {
+                    H=axis2dcm(orient);
+                    H.setSubcol(pos,0,3);
+                    H=SE3inv(H);
+                }
+            }
+
+            Vector point(3,0.0);
+            Vector point2D(2,0.0);
+            double step=2*M_PI/50;
+
+            for (double eta=-M_PI; eta<M_PI; eta+=step)
+            {
+                 for (double omega=-M_PI; omega<M_PI;omega+=step)
+                 {
+                     co=cos(omega); so=sin(omega);
+                     ce=cos(eta); se=sin(eta);
+
+                     point[0]=x[0] * sign(ce)*(pow(abs(ce),x[3])) * sign(co)*(pow(abs(co),x[4])) * R(0,0) +
+                                x[1] * sign(ce)*(pow(abs(ce),x[3]))* sign(so)*(pow(abs(so),x[4])) * R(0,1)+
+                                    x[2] * sign(se)*(pow(abs(se),x[3])) * R(0,2) + x[5];
+
+                     point[1]=x[0] * sign(ce)*(pow(abs(ce),x[3])) * sign(co)*(pow(abs(co),x[4])) * R(1,0) +
+                                x[1] * sign(ce)*(pow(abs(ce),x[3])) * sign(so)*(pow(abs(so),x[4])) * R(1,1)+
+                                    x[2] * sign(se)*(pow(abs(se),x[3])) * R(1,2) + x[6];
+
+                     point[2]=x[0] * sign(ce)*(pow(abs(ce),x[3])) * sign(co)*(pow(abs(co),x[4])) * R(2,0) +
+                                x[1] * sign(ce)*(pow(abs(ce),x[3])) * sign(so)*(pow(abs(so),x[4])) * R(2,1)+
+                                    x[2] * sign(se)*(pow(abs(se),x[3])) * R(2,2) + x[7];
+
+                     point2D=from3Dto2D(point);
+
+                     cv::Point target_point((int)point2D[0],(int)point2D[1]);
+
+                     if ((target_point.x<0) || (target_point.y<0) || (target_point.x>=320) || (target_point.y>=240))
+                     {
+                         yError("Not acceptable pixels!");
+                     }
+                     else
+                        imgOut.pixel(target_point.x, target_point.y)=color;
+
+                 }
+             }
+        }
+    }
+
+    /*******************************************************************************/
+    Vector from3Dto2D(const Vector &point3D)
+    {
+        Vector point2D(3,0.0);
+        Vector point_aux(4,1.0);
+        point_aux.setSubvector(0,point3D);
+        point2D=K*H*point_aux;
+        return point2D.subVector(0,1)/point2D[2];
     }
 
     /***********************************************************************/
@@ -1500,6 +1622,22 @@ public:
         Vector x2D(2,0.0);
         Vector y2D(2,0.0);
         Vector z2D(2,0.0);
+
+        addSuperq(object,imgOut,255);
+        Vector hand_in_pose(11,0.0);
+
+        if (chosen_hand=="right")
+        {
+            hand_in_pose.setSubvector(0,hand);
+            hand_in_pose.setSubvector(5,solR);
+            addSuperq(hand_in_pose,imgOut,0);
+        }
+        else
+        {
+            hand_in_pose.setSubvector(0,hand1);
+            hand_in_pose.setSubvector(5,solL);
+            addSuperq(hand_in_pose,imgOut,0);
+        }
 
         for (size_t i=0; i<trajectory.size(); i++)
         {
@@ -1609,6 +1747,10 @@ public:
             Vector o_tmp(4,0.0);
 
             icart_arm->getPose(x_tmp, o_tmp);
+            double ep, eo;
+            ep=norm(x_tmp-point.subVector(0,2));
+            eo=norm(dcm2euler(axis2dcm(o_tmp))-point.subVector(3,5));
+            yError()<<"Error in position :"<< ep<<" Error in orientation "<<eo;
 
             cout<<"[Reached pose on object]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
             showTrajectory();
@@ -1642,6 +1784,10 @@ public:
             Vector o_tmp(4,0.0);
 
             icart_arm2->getPose(x_tmp, o_tmp);
+            double ep, eo;
+            ep=norm(x_tmp-point.subVector(0,2));
+            eo=norm(dcm2euler(axis2dcm(o_tmp))-point.subVector(3,5));
+            yError()<<"Error in position :"<< ep<<" Error in orientation "<<eo;
 
             cout<<"[Reached pose on object]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
@@ -1852,7 +1998,7 @@ int main(int argc, char *argv[])
    rf.setVerbose(true);
    rf.setDefaultConfigFile("config.ini");
    rf.setDefaultContext("superquadric-grasping");
-   rf.setDefault("grasp_model_type","tactile");
+   rf.setDefault("grasp_model_type","springy");
    rf.setDefault("grasp_model_file_right","grasp_model_right.ini");
    rf.setDefault("grasp_model_file_left","grasp_model_left.ini");
    rf.setDefault("hand_sequences_file","hand_sequences.ini");
