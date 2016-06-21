@@ -1085,7 +1085,7 @@ public:
         online=(rf.check("online", Value("no"))=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
         distance=rf.check("distance", Value(0.05)).asDouble();
-        superq_name=rf.check("superq_name", Value("Octopus")).asString();
+        superq_name=rf.check("superq_name", Value("Sponge")).asString();
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
 
@@ -1361,12 +1361,12 @@ public:
             if (chosen_hand=="right")
             {
                 pose1.setSubvector(0,pose.subVector(0,2)-distance/2*(H.getCol(2).subVector(0,2)));
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
             }
             else
             {
                 pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.getCol(2).subVector(0,2)));
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
             }
         }
 
