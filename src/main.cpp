@@ -609,81 +609,7 @@ public:
         dir=rf.check("approaching_direction", Value("z")).asString();
 
         return true;
-    }
-
-    /****************************************************************/
-    bool configDevices(ResourceFinder &rf, const string &arm)
-    {
-        if (conf_dev_called)
-        {
-            Property option_arm3("(device cartesiancontrollerclient)");
-            option_arm3.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
-            option_arm3.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
-
-            robotDevice3.open(option_arm3);
-            if (!robotDevice3.isValid())
-            {
-                yError("Device index not available!");
-                return false;
-            }
-
-            robotDevice3.view(icart_arm2);
-
-            Property option_arm4("(device remote_controlboard)");
-            option_arm4.put("remote","/"+robot+"/"+arm+"_arm");
-            option_arm4.put("local","/superquadric-grasping/joint/"+arm+"_arm");
-
-            robotDevice4.open(option_arm4);
-            if (!robotDevice4.isValid())
-            {
-                yError("Device not available!");
-                return false;
-            }
-        }
-        else
-        {
-            Property option_arm("(device cartesiancontrollerclient)");
-            option_arm.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
-            option_arm.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
-
-
-            robotDevice.open(option_arm);
-            if (!robotDevice.isValid())
-            {
-                yError("Device index not available!");
-                return false;
-            }
-
-            robotDevice.view(icart_arm);
-
-            Property option_arm2("(device remote_controlboard)");
-            option_arm2.put("remote","/"+robot+"/"+arm+"_arm");
-            option_arm2.put("local","/superquadric-grasping/joint/"+arm+"_arm");
-
-            robotDevice2.open(option_arm2);
-            if (!robotDevice2.isValid())
-            {
-                yError("Device not available!");
-                return false;
-            }
-
-            //getHandPose();
-
-            Vector curDof;
-            icart_arm->getDOF(curDof);
-            cout<<"["<<curDof.toString()<<"]"<<endl;  // [0 0 0 1 1 1 1 1 1 1] will be printed out
-            Vector newDof(3);
-            newDof[0]=1;    // torso pitch: 1 => enable
-            newDof[1]=2;    // torso roll:  2 => skip
-            newDof[2]=1;    // torso yaw:   1 => enable
-            icart_arm->setDOF(newDof,curDof);
-            cout<<"["<<curDof.toString()<<"]"<<endl;  // [1 0 1 1 1 1 1 1 1 1] will be printed out
-        }
-
-        conf_dev_called=true;
-
-        return true;
-    }
+    }    
 
     /****************************************************************/
     bool close()
@@ -877,6 +803,80 @@ public:
     }
 
     /****************************************************************/
+    bool configDevices(ResourceFinder &rf, const string &arm)
+    {
+        if (conf_dev_called)
+        {
+            Property option_arm3("(device cartesiancontrollerclient)");
+            option_arm3.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
+            option_arm3.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
+
+            robotDevice3.open(option_arm3);
+            if (!robotDevice3.isValid())
+            {
+                yError("Device index not available!");
+                return false;
+            }
+
+            robotDevice3.view(icart_arm2);
+
+            Property option_arm4("(device remote_controlboard)");
+            option_arm4.put("remote","/"+robot+"/"+arm+"_arm");
+            option_arm4.put("local","/superquadric-grasping/joint/"+arm+"_arm");
+
+            robotDevice4.open(option_arm4);
+            if (!robotDevice4.isValid())
+            {
+                yError("Device not available!");
+                return false;
+            }
+        }
+        else
+        {
+            Property option_arm("(device cartesiancontrollerclient)");
+            option_arm.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
+            option_arm.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
+
+
+            robotDevice.open(option_arm);
+            if (!robotDevice.isValid())
+            {
+                yError("Device index not available!");
+                return false;
+            }
+
+            robotDevice.view(icart_arm);
+
+            Property option_arm2("(device remote_controlboard)");
+            option_arm2.put("remote","/"+robot+"/"+arm+"_arm");
+            option_arm2.put("local","/superquadric-grasping/joint/"+arm+"_arm");
+
+            robotDevice2.open(option_arm2);
+            if (!robotDevice2.isValid())
+            {
+                yError("Device not available!");
+                return false;
+            }
+
+            //getHandPose();
+
+            Vector curDof;
+            icart_arm->getDOF(curDof);
+            cout<<"["<<curDof.toString()<<"]"<<endl;  // [0 0 0 1 1 1 1 1 1 1] will be printed out
+            Vector newDof(3);
+            newDof[0]=1;    // torso pitch: 1 => enable
+            newDof[1]=2;    // torso roll:  2 => skip
+            newDof[2]=1;    // torso yaw:   1 => enable
+            icart_arm->setDOF(newDof,curDof);
+            cout<<"["<<curDof.toString()<<"]"<<endl;  // [1 0 1 1 1 1 1 1 1 1] will be printed out
+        }
+
+        conf_dev_called=true;
+
+        return true;
+    }
+
+    /****************************************************************/
     bool configAction(ResourceFinder &rf, const string &l_o_r)
     {
         if (conf_act_called)
@@ -964,7 +964,7 @@ public:
 
             Model *model; action->getGraspModel(model);
 
-            /**if (model!=NULL)
+            if (model!=NULL)
             {
                 if (!model->isCalibrated())
                 {
@@ -972,60 +972,13 @@ public:
                     prop.put("finger","all");
                     model->calibrate(prop);
                 }
-            }*/
+            }
 
             conf_act_called=true;
         }
 
         showTrajectory();
         return true;
-    }
-
-    /***********************************************************************/
-    bool configure(ResourceFinder &rf)
-    {
-        bool config_ok;
-        bool config_ok1;
-
-        config_ok=configBasics(rf);
-
-        if (config_ok==true)
-            config_ok=configPose(rf);
-
-        viewer=(rf.check("viewer", Value("no"))=="yes");
-
-        if (viewer)
-            config_ok=configViewer(rf);
-
-        move=(rf.check("move", Value("no"))=="yes");
-
-        if ((config_ok==true) && (move==1))
-        {            
-            if (left_or_right=="both")
-            {
-                config_ok=configDevices(rf, "right");
-                config_ok1=configDevices(rf, "left");
-
-                config_ok=(config_ok==true && config_ok1==true);
-            }
-            else
-                 config_ok=configDevices(rf, left_or_right);
-
-            if (config_ok)
-            {
-                if (left_or_right=="both")
-                {
-                    config_ok=configAction(rf, "right");
-                    config_ok=configAction(rf, "left");
-                }
-                else
-                    config_ok=configAction(rf, left_or_right);
-            }
-        }
-
-        cout<<"config_ok "<<config_ok<<endl;
-
-        return config_ok;
     }
 
     /***********************************************************************/
@@ -1090,7 +1043,7 @@ public:
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
 
         if (!online)
-        {                       
+        {
             readSuperq("object",object,11,this->rf);
         }
         else
@@ -1141,6 +1094,53 @@ public:
            nlp_scaling_method="none";
 
         return true;
+    }
+
+    /***********************************************************************/
+    bool configure(ResourceFinder &rf)
+    {
+        bool config_ok;
+        bool config_ok1;
+
+        config_ok=configBasics(rf);
+
+        if (config_ok==true)
+            config_ok=configPose(rf);
+
+        viewer=(rf.check("viewer", Value("no"))=="yes");
+
+        if (viewer)
+            config_ok=configViewer(rf);
+
+        move=(rf.check("move", Value("no"))=="yes");
+
+        if ((config_ok==true) && (move==1))
+        {            
+            if (left_or_right=="both")
+            {
+                config_ok=configDevices(rf, "right");
+                config_ok1=configDevices(rf, "left");
+
+                config_ok=(config_ok==true && config_ok1==true);
+            }
+            else
+                 config_ok=configDevices(rf, left_or_right);
+
+            if (config_ok)
+            {
+                if (left_or_right=="both")
+                {
+                    config_ok=configAction(rf, "right");
+                    config_ok=configAction(rf, "left");
+                }
+                else
+                    config_ok=configAction(rf, left_or_right);
+            }
+        }
+
+        cout<<"config_ok "<<config_ok<<endl;
+
+        return config_ok;
     }
 
     /****************************************************************/
