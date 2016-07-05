@@ -188,6 +188,18 @@ public:
     }
 
     /************************************************************************/
+    string get_lift_object()
+    {
+        string value;
+
+        if (lift)
+            value="yes";
+         else
+            value="no";
+        return value;
+    }
+
+    /************************************************************************/
     bool lift_object(const string &lift_or_not)
     {
         lift=(lift_or_not=="yes");
@@ -203,6 +215,18 @@ public:
             calib_cam=false;
 
         return true;
+    }
+
+    /************************************************************************/
+    string get_calibrate_cam()
+    {
+        string value;
+
+        if (calib_cam)
+            value="yes";
+         else
+            value="no";
+        return value;
     }
 
     /************************************************************************/
@@ -254,6 +278,15 @@ public:
     }
 
     /************************************************************************/
+    string get_grasping_method()
+    {
+        if (hand[0]==0.03)
+            return "power";
+        else
+            return "precision";
+    }
+
+    /************************************************************************/
     bool choose_hand(const string &str_hand)
     {
         chosen_pose=true;
@@ -262,6 +295,12 @@ public:
         yInfo()<<"Chosen hand: "<<chosen_hand;
 
         return true;
+    }
+
+    /************************************************************************/
+    string get_chosen_hand()
+    {
+        return chosen_hand;
     }
 
     /************************************************************************/
@@ -281,6 +320,18 @@ public:
         yInfo()<<"Hand displacement: "<<displacement.toString();
 
         return true;
+    }
+
+    /************************************************************************/
+    vector<double> get_hand_displacement()
+    {
+        vector<double> hand_displ;
+        hand_displ.clear();
+
+        for (size_t i=0; i<3; i++)
+            hand_displ.push_back(displacement[i]);
+
+        return hand_displ;
     }
 
     /************************************************************************/
