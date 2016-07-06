@@ -674,14 +674,14 @@ public:
         if (norm(disp)==0.0 && left_or_right=="right")
         {
             displacement.resize(3,0.0);
-            displacement[0]=rf->check("disp_x_right", Value(0.03)).asDouble();
+            displacement[0]=rf->check("disp_x_right", Value(0.01)).asDouble();
             displacement[1]=rf->check("disp_y_right", Value(0.0)).asDouble();
             displacement[2]=rf->check("disp_z_right", Value(0.0)).asDouble();
         }
         else if (norm(disp)==0.0 && left_or_right=="left")
         {
             displacement.resize(3,0.0);
-            displacement[0]=rf->check("disp_x_left", Value(0.03)).asDouble();
+            displacement[0]=rf->check("disp_x_left", Value(0.01)).asDouble();
             displacement[1]=rf->check("disp_y_left", Value(0.0)).asDouble();
             displacement[2]=rf->check("disp_z_left", Value(0.0)).asDouble();
         }

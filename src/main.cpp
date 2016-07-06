@@ -1411,17 +1411,19 @@ public:
         {
             if (chosen_hand=="right")
             {
-                pose1.setSubvector(0,pose.subVector(0,2)-distance/2*(H.getCol(2).subVector(0,2)));
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
             }
             else
             {
-                pose1.setSubvector(0,pose.subVector(0,2)+distance/2*(H.getCol(2).subVector(0,2)));
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
             }
         }
 
         trajectory.clear();
+
+        pose[1]=pose[1]-0.03;
         trajectory.push_back(pose1);
         trajectory.push_back(pose);
 
@@ -1472,6 +1474,9 @@ public:
 
         addSuperq(object,imgOut,255);
         Vector hand_in_pose(11,0.0);
+
+        if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
+            hand[1]=findMax(object.subVector(0,2));
 
         if (n_poses==1)
         {
