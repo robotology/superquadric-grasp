@@ -2,9 +2,9 @@ Initial left hand volume pose:  [ 0.060  0.050  0.060  1.000  1.000  0.000  0.00
 
 Final left hand volume pose:  [-0.365 -0.019  0.063 -0.920  1.429 -1.691]
 
-Final left hand pose  [-0.334 -0.078  0.054 -1.451  1.429 -2.222]
+Final left hand pose  [-0.350 -0.078  0.066 -1.451  1.429 -2.222]
 
-t for ipopt: 0.47266
+t for ipopt: 0.533049
 
 object:  [ 0.027  0.031  0.056  0.301  0.510 -0.365 -0.037  0.056  5.274  0.083  1.407]
 

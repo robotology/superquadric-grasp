@@ -142,19 +142,6 @@ service superquadricGrasping_IDL
     list<double> get_hand_displacement();
 
     /**
-    * Change pose shift for grasping
-    *@param shift value (as a Vector)
-    *@return true/false on success/failure
-    */
-    bool set_shiftt(1:Vector shift);
-
-    /**
-    * Get shift displacement for grasping
-    *@return the vector of shift
-    */
-    list<double> get_shift();
-
-    /**
     * Stop all robot movements but not the module
     *@return true/false on success/failure
     */

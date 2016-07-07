@@ -105,9 +105,10 @@ protected:
     Vector object;
     Vector hand, hand1;
     int n_pointshand;
-    double distance;
+    double distance, distance1;
     string dir;
     Vector displacement;
+    Vector shift;
 
     RpcClient portSuperqRpc;
     RpcClient portCalibCamRpc;
@@ -304,6 +305,42 @@ public:
     }
 
     /************************************************************************/
+    bool trajectory_distance_x(const double dist)
+    {
+        if (dist>=0.0)
+        {
+            distance=dist;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    /************************************************************************/
+    bool trajectory_distance_z(const double dist)
+    {
+        if (dist>=0.0)
+        {
+            distance1=dist;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    /************************************************************************/
+    double get_trajectory_distance_x()
+    {
+        return distance;
+    }
+
+    /************************************************************************/
+    double get_trajectory_distance_z()
+    {
+        return distance1;
+    }
+
+    /************************************************************************/
     bool hand_displacement(const Vector &disp)
     {
         yError()<<"disp size "<<disp.size();
@@ -330,6 +367,37 @@ public:
 
         for (size_t i=0; i<3; i++)
             hand_displ.push_back(displacement[i]);
+
+        return hand_displ;
+    }
+
+    /************************************************************************/
+    bool set_shift(const Vector &shi)
+    {
+        yError()<<"disp size "<<shi.size();
+        if (shi.size()>=1)
+            shift[0]=shi[0];
+        else
+            return false;
+
+        if (shi.size()>=2)
+            shift[1]=shi[1];
+        if (shi.size()>=3)
+            shift[2]=shi[2];
+
+        yInfo()<<"Hand displacement: "<<shift.toString();
+
+        return true;
+    }
+
+    /************************************************************************/
+    vector<double> get_shift()
+    {
+        vector<double> hand_displ;
+        hand_displ.clear();
+
+        for (size_t i=0; i<3; i++)
+            hand_displ.push_back(shift[i]);
 
         return hand_displ;
     }
@@ -1089,7 +1157,12 @@ public:
         online=(rf.check("online", Value("no"))=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
         distance=rf.check("distance", Value(0.05)).asDouble();
+        distance1=rf.check("distance1", Value(0.05)).asDouble();
         superq_name=rf.check("superq_name", Value("Sponge")).asString();
+        shift.resize(3,0.0);
+        shift[0]=0.0;
+        shift[1]=0.03;
+        shift[2]=0.0;
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
 
@@ -1396,6 +1469,7 @@ public:
         H.setSubcol(euler,0,3);
 
         pose1=pose;
+
         if (direction=="z")
         {
             if (chosen_hand=="right")
@@ -1411,19 +1485,19 @@ public:
         {
             if (chosen_hand=="right")
             {
-                pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.getCol(2).subVector(0,2)));
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose.subVector(0,2)-distance1*(H.getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
             }
             else
             {
-                pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.getCol(2).subVector(0,2)));
-                pose1.setSubvector(0,pose1.subVector(0,2)-distance/2*(H.getCol(0).subVector(0,2)));
+                pose1.setSubvector(0,pose.subVector(0,2)+distance1*(H.getCol(2).subVector(0,2)));
+                pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
             }
         }
 
         trajectory.clear();
 
-        pose[1]=pose[1]-0.03;
+        pose.setSubvector(0,pose.subVector(0,2)-shift);
         trajectory.push_back(pose1);
         trajectory.push_back(pose);
 
