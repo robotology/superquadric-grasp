@@ -146,7 +146,7 @@ service superquadricGrasping_IDL
     *@param shift value (as a Vector)
     *@return true/false on success/failure
     */
-    bool set_shiftt(1:Vector shift);
+    bool set_shift(1:Vector shift);
 
     /**
     * Get shift displacement for grasping

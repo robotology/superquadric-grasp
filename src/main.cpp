@@ -822,7 +822,10 @@ public:
                 go_on=showPoses(poseR,poseL,2,0);
             }
             else if (left_or_right=="right")
-                go_on=showPoses(poseR,poseL,1,0);
+            {
+                yDebug()<<"Show pose 2!!";
+                go_on=showPoses(poseR,poseL,1,0);               
+            }
             else
             {
                 go_on=showPoses(poseL,poseL,1,0);
@@ -848,7 +851,9 @@ public:
             }
             else if (left_or_right=="right")
             {
+                yDebug()<<"Show pose 5!! Pose R: "<<poseR.toString();
                 go_on=showPoses(poseR,poseR,1,100);
+                yDebug()<<"Show pose 6!!Pose tmp: "<<pose_tmp.toString();
                 go_on=showPoses(pose_tmp,pose_tmp2,1,0);
             }
             else
@@ -856,7 +861,24 @@ public:
                 go_on=showPoses(poseL,poseL,1,100);
                 go_on=showPoses(pose_tmp,pose_tmp2,1,0);
             }
+
+            if (left_or_right!="both")
+            {
+
+                if ((go_on==true))
+                    computeTrajectory(left_or_right, dir);
+
+                if (stop_var==true)
+                    go_on=false;
+
+                if ((go_on==true) && (viewer==true))
+                {
+                     yDebug()<<"Shown traj!!";
+                    go_on=showTrajectory();
+                }
+            }
         }
+
 
         if (chosen_pose)
         {
@@ -1156,12 +1178,12 @@ public:
 
         online=(rf.check("online", Value("no"))=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
-        distance=rf.check("distance", Value(0.05)).asDouble();
+        distance=rf.check("distance", Value(0.13)).asDouble();
         distance1=rf.check("distance1", Value(0.05)).asDouble();
         superq_name=rf.check("superq_name", Value("Sponge")).asString();
         shift.resize(3,0.0);
-        shift[0]=0.0;
-        shift[1]=0.03;
+        shift[0]=-0.03;
+        shift[1]=-0.03;
         shift[2]=0.0;
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
@@ -1702,7 +1724,7 @@ public:
 
                      if ((target_point.x<0) || (target_point.y<0) || (target_point.x>=320) || (target_point.y>=240))
                      {
-                         yError("Not acceptable pixels!");
+                         yError("Not acceptable pixels IN SUPERQ!");
                      }
                      else
                         imgOut.pixel(target_point.x, target_point.y)=color;
@@ -1840,7 +1862,7 @@ public:
 
         cout<<"Point to be observed: "<<waypoint.toString()<<endl;
 
-        igaze->lookAtFixationPoint(waypoint);
+        //igaze->lookAtFixationPoint(waypoint);
         portImgOut.write();
     }
 
