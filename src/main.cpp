@@ -817,7 +817,7 @@ public:
 
         if ((go_on==true) && (viewer==true))
         {            
-            if (left_or_right=="both")
+            /**if (left_or_right=="both")
             {
                 go_on=showPoses(poseR,poseL,2,0);
             }
@@ -829,7 +829,7 @@ public:
             else
             {
                 go_on=showPoses(poseL,poseL,1,0);
-            }
+            }*/
         }
 
         if ((go_on==true) && (calib_cam==true))
@@ -1182,8 +1182,8 @@ public:
         distance1=rf.check("distance1", Value(0.05)).asDouble();
         superq_name=rf.check("superq_name", Value("Sponge")).asString();
         shift.resize(3,0.0);
-        shift[0]=-0.03;
-        shift[1]=-0.03;
+        shift[0]=-0.0;
+        shift[1]=-0.0;
         shift[2]=0.0;
 
         portSuperqRpc.open("/superquadric-grasping/superq:rpc");
@@ -1520,6 +1520,18 @@ public:
         trajectory.clear();
 
         pose.setSubvector(0,pose.subVector(0,2)-shift);
+        //Matrix H_aux(4,4);
+        //H_aux=euler2dcm(pose.subVector(3,5));
+
+        //H_aux=SE3inv(H_aux);
+        //H_aux(0,3)=pose(0);
+        //H_aux(1,3)=pose(1);
+        //H_aux(2,3)=pose(2);
+
+        //Vector pose_aux(4,1.0);
+        //pose_aux.setSubvector(0,shift);
+        //pose_aux=H_aux*pose_aux;
+        //pose.setSubvector(0,pose_aux.subVector(0,2));
         trajectory.push_back(pose1);
         trajectory.push_back(pose);
 
