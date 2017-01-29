@@ -39,6 +39,10 @@ The complete pipeline is the following:
 5. The robot <b>grasps</b> and <b>lifts</b> the object.
 6. Finally the hand goes back to the initial pose.
 
+The described pipelin can be summarized by the following image:
+
+<img src="https://github.com/giuliavezzani/superquadric-grasping/blob/master/misc/superquadric-grasping.png">
+
 ## Documentation
 Online code documentation will be available soon.
 
