@@ -1,0 +1,88 @@
+
+  /**
+  *
+  * @ingroup  
+  * \defgroup superquadric-grasping superquadric-grasping
+  * Framework for grasping pose computation
+  * Version: 1.0
+  * \author  Giulia Vezzani giulia.vezzani@iit.it
+  * \n
+  * \copyright  Released under the terms of the GNU GPL v2.0 .
+  * \section intro_sec Description
+  *
+  
+   The module computes a <b> pose reachable</b> by the robot hand and  make it <b>grasp and lift the object</b>.
+The complete pipeline is the following:
+
+1. Given the <b>object model</b>, as a _superquadric_, and the <b> selected hand</b>, whose **graspable volume** is represented by an _ellipsoid_, a reachable pose  is computed. 
+    - The  **object model** can be provided from a _configuration file_ or by quering the [superquadric-model](https://github.com/robotology/superquadric-model), that computes _online_ a superquadric fitting the object of interest point cloud. 
+    - The user can select not only one hand, but also **both**. In this case, two poses will be computed, one for the left and one for the right hand.
+    
+2. The computed pose/<b>poses</b> is/are <b>shown</b> together with the superquadric representing the volume graspable by the hand, overlapped to the superquadric modelling the object.
+3. Then the user can  **ask the robot to grasp and lift the object**. If the poses for both of the arms are computed, the user can choose the best one.
+4. The <b>trajectory</b> is shown and the robot <b>reaches</b> the desired pose.
+5. The robot <b>grasps</b> and <b>lifts</b> the object.
+6. Finally the hand goes back to the initial pose.
+  
+  * \section parameters_sec Parameters     
+  
+  *- --robot: Robot used in the test
+  *- --left_or_right: Hand used
+  *- --calib_cam: Used calibrate points from vision or not
+  *- --lift: Lift the object after grasping or not
+  *- --dir: Appraching direction in hand frame
+  *- --eye: Eyes used to get image
+  *- --online: Work online or not
+  *- --calib_cam: Number of points sampled on the hand ellipsoid
+  *- --distance: Distance used for approach
+  *- --distance1: Distance used for grasping
+  *- --distance: Name of the object for asking the superquadric to superquadric-model 
+  *- --nameFileOut_right: Name of output file for right
+  *- --nameFileOut_left: Name of output file for left
+  *- --nameFileSolution_right: Name of solution file for right
+  *- --nameFileSolution_left: Name of solution file for left
+  *- --nameFileTrajectory: Name of trajectory file for selected hand
+  *- --tol: Tolerance for Ipopt solver
+  *- --constr_viol_tol: Tolerance of constraints in Ipopt solver
+  *- --acceptable_iter: Acceptable iter in Ipopt solver
+  *- --max_iter: Maximum number of iterations in Ipopt solver
+  *- --mu_strategy: Mu strategy in Ipopt solver
+  *- --nlp_scaling_method: NLP scaling method in Ipopt solver
+  * \section inputports_sec Input Ports
+  * 
+  *- /superquadric-grasping/img:i [yarp::sig::ImageOfPixelRgb]  [default carrier:tcp]: 
+            sends the image from the left camera 
+          
+  *
+  
+  *- /superquadric-grasping/superq:rpc [yarp::sig::Bottle]  [default carrier:rpc]: 
+            asks superquadric object model 
+          
+  *
+  
+  *- /superquadric-grasping/camcalib:rpc [yarp::sig::Bottle]  [default carrier:rpc]: 
+            asks calibrated points from vision
+          
+  *
+  
+  * \section outputports_sec Output Ports
+  * 
+  *- /superquadric-grasping/img:o [yarp::sig::ImageOfPixelRgb]  [default carrier:tcp]: 
+            shows the image from the left camera with the computed pose
+          
+  *
+  
+  *
+  * \section services_sec Services
+  * 
+  *- /superquadric-grasping/rpc
+  *  [rpc-server]: 
+  * service port
+  * . This service is described in superquadricGrasping_IDL (idl.thrift)
+  * 
+  *
+  * 
+  *
+  *
+  **/
+

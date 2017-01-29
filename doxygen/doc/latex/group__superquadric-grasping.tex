@@ -1,0 +1,69 @@
+\section{superquadric-\/grasping}
+\label{group__superquadric-grasping}\index{superquadric-\/grasping@{superquadric-\/grasping}}
+
+
+Framework for grasping pose computation Version\-: 1.\-0.  
+
+
+Framework for grasping pose computation Version\-: 1.\-0. \begin{DoxyAuthor}{Author}
+Giulia Vezzani \href{mailto:giulia.vezzani@iit.it}{\tt giulia.\-vezzani@iit.\-it} \par
+ 
+\end{DoxyAuthor}
+\begin{DoxyCopyright}{Copyright}
+Released under the terms of the G\-N\-U G\-P\-L v2.\-0 . 
+\end{DoxyCopyright}
+\hypertarget{group__superquadric-grasping_intro_sec}{}\subsection{Description}\label{group__superquadric-grasping_intro_sec}
+The module computes a {\bfseries  pose reachable} by the robot hand and make it {\bfseries grasp and lift the object}. The complete pipeline is the following\-:
+
+
+\begin{DoxyEnumerate}
+\item Given the {\bfseries object model}, as a {\itshape superquadric}, and the {\bfseries  selected hand}, whose {\bfseries graspable volume} is represented by an {\itshape ellipsoid}, a reachable pose is computed.
+\begin{DoxyItemize}
+\item The {\bfseries object model} can be provided from a {\itshape configuration file} or by quering the \href{https://github.com/robotology/superquadric-model}{\tt superquadric-\/model}, that computes {\itshape online} a superquadric fitting the object of interest point cloud.
+\item The user can select not only one hand, but also {\bfseries both}. In this case, two poses will be computed, one for the left and one for the right hand.
+\end{DoxyItemize}
+\item The computed pose/{\bfseries poses} is/are {\bfseries shown} together with the superquadric representing the volume graspable by the hand, overlapped to the superquadric modelling the object.
+\item Then the user can {\bfseries ask the robot to grasp and lift the object}. If the poses for both of the arms are computed, the user can choose the best one.
+\item The {\bfseries trajectory} is shown and the robot {\bfseries reaches} the desired pose.
+\item The robot {\bfseries grasps} and {\bfseries lifts} the object.
+\item Finally the hand goes back to the initial pose.
+\end{DoxyEnumerate}\hypertarget{group__superquadric-grasping_parameters_sec}{}\subsection{Parameters}\label{group__superquadric-grasping_parameters_sec}
+
+\begin{DoxyItemize}
+\item --robot\-: Robot used in the test
+\item --left\-\_\-or\-\_\-right\-: Hand used
+\item --calib\-\_\-cam\-: Used calibrate points from vision or not
+\item --lift\-: Lift the object after grasping or not
+\item --dir\-: Appraching direction in hand frame
+\item --eye\-: Eyes used to get image
+\item --online\-: Work online or not
+\item --calib\-\_\-cam\-: Number of points sampled on the hand ellipsoid
+\item --distance\-: Distance used for approach
+\item --distance1\-: Distance used for grasping
+\item --distance\-: Name of the object for asking the superquadric to superquadric-\/model
+\item --name\-File\-Out\-\_\-right\-: Name of output file for right
+\item --name\-File\-Out\-\_\-left\-: Name of output file for left
+\item --name\-File\-Solution\-\_\-right\-: Name of solution file for right
+\item --name\-File\-Solution\-\_\-left\-: Name of solution file for left
+\item --name\-File\-Trajectory\-: Name of trajectory file for selected hand
+\item --tol\-: Tolerance for Ipopt solver
+\item --constr\-\_\-viol\-\_\-tol\-: Tolerance of constraints in Ipopt solver
+\item --acceptable\-\_\-iter\-: Acceptable iter in Ipopt solver
+\item --max\-\_\-iter\-: Maximum number of iterations in Ipopt solver
+\item --mu\-\_\-strategy\-: Mu strategy in Ipopt solver
+\item --nlp\-\_\-scaling\-\_\-method\-: N\-L\-P scaling method in Ipopt solver 
+\end{DoxyItemize}\hypertarget{group__superquadric-grasping_inputports_sec}{}\subsection{Input Ports}\label{group__superquadric-grasping_inputports_sec}
+
+\begin{DoxyItemize}
+\item /superquadric-\/grasping/img\-:i \mbox{[}yarp\-::sig\-::\-Image\-Of\-Pixel\-Rgb\mbox{]} \mbox{[}default carrier\-:tcp\mbox{]}\-: sends the image from the left camera
+\item /superquadric-\/grasping/superq\-:rpc \mbox{[}yarp\-::sig\-::\-Bottle\mbox{]} \mbox{[}default carrier\-:rpc\mbox{]}\-: asks superquadric object model
+\item /superquadric-\/grasping/camcalib\-:rpc \mbox{[}yarp\-::sig\-::\-Bottle\mbox{]} \mbox{[}default carrier\-:rpc\mbox{]}\-: asks calibrated points from vision
+\end{DoxyItemize}\hypertarget{group__superquadric-grasping_outputports_sec}{}\subsection{Output Ports}\label{group__superquadric-grasping_outputports_sec}
+
+\begin{DoxyItemize}
+\item /superquadric-\/grasping/img\-:o \mbox{[}yarp\-::sig\-::\-Image\-Of\-Pixel\-Rgb\mbox{]} \mbox{[}default carrier\-:tcp\mbox{]}\-: shows the image from the left camera with the computed pose
+\end{DoxyItemize}\hypertarget{group__superquadric-grasping_services_sec}{}\subsection{Services}\label{group__superquadric-grasping_services_sec}
+
+\begin{DoxyItemize}
+\item /superquadric-\/grasping/rpc \mbox{[}rpc-\/server\mbox{]}\-: service port . This service is described in superquadric\-Grasping\-\_\-\-I\-D\-L (idl.\-thrift) 
+\end{DoxyItemize}
