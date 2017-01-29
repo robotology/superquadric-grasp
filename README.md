@@ -29,6 +29,8 @@ The complete pipeline is the following:
 5. The robot <b>grasps</b> and <b>lifts</b> the object.
 6. Finally the hand goes back to the initial pose.
 
+## Documentation
+Online code documentation will be available soon.
 
 ## License
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_
