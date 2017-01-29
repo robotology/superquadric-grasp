@@ -15,6 +15,16 @@ G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadr
 - [IOL](https://github.com/robotology/iol)
 - [superquadric-model](https://github.com/robotology/superquadric-model)
 
+## How to compile
+In `Linux systems` code can be compiled as follows:
+```
+git clone https://github.com/giuliavezzani/superquadric-grasping.git
+cd superquadric-grasping
+mkdir build; cd build
+ccmake ..
+make install
+```
+
 ##Module pipeline
 The module computes a <b> pose reachable</b> by the robot hand and  make it <b>grasp and lift the object</b>.
 The complete pipeline is the following:
