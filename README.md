@@ -44,7 +44,7 @@ The described pipelin can be summarized by the following image:
 <img src="https://github.com/giuliavezzani/superquadric-grasping/blob/master/misc/superquadric-grasping.png">
 
 ## Documentation
-Online code documentation will be available soon.
+Online code documentation is available [here](https://giuliavezzani.github.io/superquadric-grasping).
 
 ## License
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_
