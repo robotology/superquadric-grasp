@@ -715,7 +715,7 @@ public:
         conf_act_called=false;
         go_on=true;
         stop_var=false;
-        calib_cam=(rf.check("calib_cam", Value("yes"))=="yes");
+        calib_cam=(rf.check("calib_cam", Value("yes")).asString()=="yes");
 
         lift=rf.find("lift").asString().c_str();
         if(rf.find("lift").isNull())
@@ -1176,7 +1176,7 @@ public:
         poseR.resize(6,0.0);
         poseL.resize(6,0.0);
 
-        online=(rf.check("online", Value("no"))=="yes");
+        online=(rf.check("online", Value("no")).asString()=="yes");
         n_pointshand=rf.check("pointshand", Value(48)).asInt();
         distance=rf.check("distance", Value(0.13)).asDouble();
         distance1=rf.check("distance1", Value(0.05)).asDouble();
@@ -1253,12 +1253,12 @@ public:
         if (config_ok==true)
             config_ok=configPose(rf);
 
-        viewer=(rf.check("viewer", Value("no"))=="yes");
+        viewer=(rf.check("viewer", Value("no")).asString()=="yes");
 
         if (viewer)
             config_ok=configViewer(rf);
 
-        move=(rf.check("move", Value("no"))=="yes");
+        move=(rf.check("move", Value("no")).asString()=="yes");
 
         if ((config_ok==true) && (move==1))
         {            
