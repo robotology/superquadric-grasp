@@ -96,6 +96,19 @@ service superquadricGrasp_IDL
     bool calibrate_cam(1:string calib_or_not);
 
     /**
+    * Say the name of the object
+    *@return yes or no
+    */
+    string get_object_name();
+
+    /**
+    * Set the object name
+    *@param name of the object
+    *@return true/false on success/failure
+    */
+    bool set_object_name(1:string centry);
+
+    /**
     * Choose the hand to use to grasp the object
     *@param hand name (left or right)
     *@return true/false on success/failure

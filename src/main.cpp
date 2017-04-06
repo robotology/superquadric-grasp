@@ -231,6 +231,19 @@ public:
     }
 
     /************************************************************************/
+    bool set_object_name(const string &entry)
+    {
+        superq_name=entry;
+        return true;
+    }
+
+    /************************************************************************/
+    string get_object_name()
+    {      
+        return superq_name;
+    }
+
+    /************************************************************************/
     bool clear_poses()
     {
         poseR.resize(6,0.0);
@@ -817,7 +830,7 @@ public:
 
         if ((go_on==true) && (viewer==true))
         {            
-            if (left_or_right=="both")
+            /**if (left_or_right=="both")
             {
                 go_on=showPoses(poseR,poseL,2,0);
             }
@@ -829,7 +842,7 @@ public:
             else
             {
                 go_on=showPoses(poseL,poseL,1,0);
-            }
+            }*/
         }
 
         if ((go_on==true) && (calib_cam==true))
@@ -1560,8 +1573,8 @@ public:
         poses.push_back(pose);
         poses.push_back(pose2);
 
-        cv::Mat imgInMat=cv::Mat((IplImage*)imgIn->getIplImage());
-        cv::Mat imgOutMat=cv::Mat((IplImage*)imgOut.getIplImage());
+        cv::Mat imgInMat=cv::cvarrToMat((IplImage*)imgIn->getIplImage());
+        cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
         imgInMat.copyTo(imgOutMat);
 
         PixelRgb color(255,255,0);
@@ -1767,8 +1780,8 @@ public:
         imgOut=*imgIn;
         //imgOut.resize(imgIn->width(),imgIn->height());
 
-        cv::Mat imgInMat=cv::Mat((IplImage*)imgIn->getIplImage());
-        cv::Mat imgOutMat=cv::Mat((IplImage*)imgOut.getIplImage());
+        cv::Mat imgInMat=cv::cvarrToMat((IplImage*)imgIn->getIplImage());
+        cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
         imgInMat.copyTo(imgOutMat);
 
         PixelRgb color(255,255,0);

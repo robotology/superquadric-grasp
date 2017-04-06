@@ -30,10 +30,11 @@ source_group("Source Files" FILES ${sources})
 
 include_directories(${YARP_INCLUDE_DIRS} ${ICUB_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS} iKin)
 
-add_definitions(${YARP_DEFINES}${IPOPT_DEFINITIONS} -D_USE_MATH_DEFINES) 
+add_definitions(${YARP_DEFINES} ${IPOPT_DEFINITIONS} -D_USE_MATH_DEFINES) 
 
 add_executable(${PROJECT_NAME} ${sources} src/idl.thrift  ${IDL_GEN_FILES})
 target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib perceptiveModels actionPrimitives)
+set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${IPOPT_LINK_FLAGS}")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 icubcontrib_add_uninstall_target()
