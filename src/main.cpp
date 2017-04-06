@@ -817,7 +817,7 @@ public:
 
         if ((go_on==true) && (viewer==true))
         {            
-            /**if (left_or_right=="both")
+            if (left_or_right=="both")
             {
                 go_on=showPoses(poseR,poseL,2,0);
             }
@@ -829,7 +829,7 @@ public:
             else
             {
                 go_on=showPoses(poseL,poseL,1,0);
-            }*/
+            }
         }
 
         if ((go_on==true) && (calib_cam==true))
