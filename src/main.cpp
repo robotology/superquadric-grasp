@@ -899,9 +899,9 @@ public:
                 }
             }
         }
-
+        
         if (norm(object)!=0.0)
-            igaze->lookAtFixationPoint(object.subVector(5,7));
+            igaze->lookAtFixationPoint(object.subVector(5,7));        
 
         if (chosen_pose)
         {
@@ -931,6 +931,9 @@ public:
                 {
                     go_on=reachPose(i);
                 }
+
+                if (norm(object)!=0.0)
+                    igaze->lookAtFixationPoint(object.subVector(5,7));
             }
 
             if (stop_var==true)
@@ -950,8 +953,14 @@ public:
             if (stop_var==true)
                 go_on=false;
 
+            if (norm(object)!=0.0)
+                igaze->lookAtFixationPoint(object.subVector(5,7));
+
             if ((go_on==true) && (move==true))
                 go_on=comeBack();
+
+            if (norm(object)!=0.0)
+                igaze->lookAtFixationPoint(object.subVector(5,7));
 
             if (stop_var==true)
                 go_on=true;
@@ -1381,7 +1390,7 @@ public:
         Vector v_calib;
         v_calib=v;
 
-        yDebug()<<"Vector before calibration: "<<v.toString();
+        //yDebug()<<"Vector before calibration: "<<v.toString();
 
         cmd.addDouble(v[0]);
         cmd.addDouble(v[1]);
@@ -1395,7 +1404,7 @@ public:
             v_calib[2]=reply.get(3).asDouble();
         }
 
-        yDebug()<<"Vector after calibration: "<<v_calib.toString();
+       // yDebug()<<"Vector after calibration: "<<v_calib.toString();
         return v_calib;
     }
 
