@@ -631,6 +631,10 @@ public:
         home_xR[0]=-0.29;
         home_xR[1]=0.21;
         home_xR[2]= 0.11;
+        home_xR[3]=-0.35166;
+        home_xR[4]=-0.697078;
+        home_xR[5]=0.624835;
+        home_xR[6]=2.466923;
 
         graspDispL[0]=0.0;
         graspDispL[1]=0.0;
@@ -652,6 +656,10 @@ public:
         home_xL[0]=-0.29;
         home_xL[1]=-0.21;
         home_xL[2]= 0.11;
+        home_xL[3]=-0.35166;
+        home_xL[4]=0.697078;
+        home_xL[5]=-0.624835;
+        home_xL[6]=3.106923;
 
         action=NULL;
         firstRun=true;
@@ -892,6 +900,8 @@ public:
             }
         }
 
+        if (norm(object)!=0.0)
+            igaze->lookAtFixationPoint(object.subVector(5,7));
 
         if (chosen_pose)
         {
@@ -946,6 +956,8 @@ public:
             if (stop_var==true)
                 go_on=true;
         }
+
+
 
         return go_on;
     }
@@ -1681,8 +1693,6 @@ public:
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0+change_color,255-change_color));
         }        
 
-        //if (norm(object)!=0.0)
-            //igaze->lookAtFixationPoint(object.subVector(5,7));
         portImgOut.write();
 
         return true;
@@ -2106,15 +2116,20 @@ public:
 
             icart_arm->getPose(x_tmp, o_tmp);
 
-            action->pushAction(home_xR,"karate_hand");
+            //action->pushAction(home_xR,"karate_hand");
 
-            cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+            //cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
+            //action->checkActionsDone(f,true);
+
+            //action->checkActionsDone(f,true);
+            action->pushAction(home_xR.subVector(0,2), home_xR.subVector(3,6));
             action->checkActionsDone(f,true);
 
             icart_arm->getPose(x_tmp, o_tmp);
 
             cout<<"[Come back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+
         }
         else if ((chosen_hand=="left") && (left_or_right=="both"))
         {
@@ -2127,8 +2142,12 @@ public:
 
             cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
-            action2->pushAction(home_xL,"karate_hand");
+            //action2->pushAction(home_xL,"karate_hand");
 
+            //action2->checkActionsDone(f,true);
+
+            //action2->checkActionsDone(f,true);
+            action2->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
             action2->checkActionsDone(f,true);
 
             icart_arm2->getPose(x_tmp, o_tmp);
@@ -2146,8 +2165,12 @@ public:
 
             cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
-            action->pushAction(home_xL,"karate_hand");
+            //action->pushAction(home_xL,"karate_hand");
 
+            //action->checkActionsDone(f,true);
+
+            //action->checkActionsDone(f,true);
+            action->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
             action->checkActionsDone(f,true);
 
             icart_arm->getPose(x_tmp, o_tmp);
@@ -2159,6 +2182,7 @@ public:
 
         return true;
     }
+
 };
 
 /************************************************************************/
