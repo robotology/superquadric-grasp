@@ -150,8 +150,17 @@ public:
     /************************************************************************/
     bool start()
     {
-        go_on=true;
+       // go_on=true;
         stop_var=false;
+        return true;
+    }
+
+    /************************************************************************/
+    bool compute_pose()
+    {
+        go_on=false;
+        poseR.resize(6,0.0);
+        poseL.resize(6,0.0);
         return true;
     }
 
@@ -205,14 +214,14 @@ public:
     }
 
     /************************************************************************/
-    bool lift_object(const string &lift_or_not)
+    bool set_lift_object(const string &lift_or_not)
     {
         lift=(lift_or_not=="yes");
         return true;
     }
 
     /************************************************************************/
-    bool calibrate_cam(const string &calibration_or_not)
+    bool set_calibrate_cam(const string &calibration_or_not)
     {
         if (calibration_or_not=="yes")
             calib_cam=true;
@@ -254,14 +263,14 @@ public:
         poseL.resize(6,0.0);
         object.resize(11,0.0);
         chosen_pose=false;
-        go_on=true;
+        //go_on=true;
         stop_var=false;
 
         return true;
     }
 
     /************************************************************************/
-    bool grasping_method(const string &precision_or_power)
+    bool set_grasping_method(const string &precision_or_power)
     {
         if (precision_or_power=="power")
         {
@@ -322,7 +331,7 @@ public:
     }
 
     /************************************************************************/
-    bool trajectory_distance_x(const double dist)
+    bool set_trajectory_distance_x(const double dist)
     {
         if (dist>=0.0)
         {
@@ -334,7 +343,7 @@ public:
     }
 
     /************************************************************************/
-    bool trajectory_distance_z(const double dist)
+    bool set_trajectory_distance_z(const double dist)
     {
         if (dist>=0.0)
         {
@@ -358,7 +367,7 @@ public:
     }
 
     /************************************************************************/
-    bool hand_displacement(const Vector &disp)
+    bool set_hand_displacement(const Vector &disp)
     {
         yError()<<"disp size "<<disp.size();
         if (disp.size()>=1)
@@ -738,7 +747,7 @@ public:
         conf_dev_called=false;
         chosen_pose==true;
         conf_act_called=false;
-        go_on=true;
+        go_on=false;
         stop_var=false;
         calib_cam=(rf.check("calib_cam", Value("yes")).asString()=="yes");
 
@@ -814,7 +823,7 @@ public:
         if (online && norm(object)==0.0)
             askForObject(superq_name);
 
-        if (norm(hand)!=0.0 && norm(object)!=0.0 && (norm(poseR)==0.0) && (norm(poseL)==0.0))
+        if (norm(hand)!=0.0 && norm(object)!=0.0 && (norm(poseR)==0.0) && (norm(poseL)==0.0) && (go_on==false))
         {
             cout<<endl;
             cout<<" Computing pose ..."<<endl;
@@ -829,22 +838,43 @@ public:
             }
         }
 
+        if (norm(object)!=0.0)
+        {
+            int context_0;
+            igaze->storeContext(&context_0);
+            igaze->setSaccadesMode(false);
+            igaze->blockNeckRoll();
+
+            Vector shift(3,0.0);
+            shift[0]=-0.15;
+
+            cout<<" Object "<<object.subVector(5,7).toString()<<endl;
+            igaze->lookAtFixationPoint(object.subVector(5,7)+shift);
+
+            Vector x_test(3,0.0);
+            igaze->getFixationPoint(x_test);
+            cout<< " Fixed point "<<x_test.toString()<<endl;
+            cout<< " Final error: "<<norm(object.subVector(5,7)+shift-x_test)<<endl;
+            igaze->restoreContext(context_0);
+            igaze->deleteContext(context_0);
+            igaze->stopControl();
+        }
 
         if ((go_on==true) && (viewer==true) && (chosen_pose==false))
         {
             if (left_or_right=="both")
             {
-                go_on=showPoses(poseR,poseL,2,100);
+                showPoses(poseR,poseL,2,100);
             }
             else if (left_or_right=="right")
             {
                 yDebug()<<"Show pose right: "<<poseR.toString();
 
-                go_on=showPoses(poseR,poseR,1,100);
+                showPoses(poseR,poseR,1,100);
             }
             else
             {
-                go_on=showPoses(poseL,poseL,1,100);
+                showPoses(poseL,poseL,1,100);
             }
 
             if (left_or_right!="both")
@@ -860,24 +890,13 @@ public:
             }
         }
 
-        if (norm(object)!=0.0)
-        {
-            int context_0;
-            igaze->storeContext(&context_0);
-            igaze->setSaccadesMode(false);
-            igaze->blockNeckRoll();
-            igaze->lookAtFixationPoint(object.subVector(5,7));
-            igaze->restoreContext(context_0);
-            igaze->deleteContext(context_0);
-            igaze->stopControl();
-        }
-
         if (chosen_pose)
         {
-            if ((go_on==true))
+            //if ((go_on==true))
                 computeTrajectory(chosen_hand, dir);
 
-            if ((go_on==true) && (viewer==true))
+            //if ((go_on==true) && (viewer==true))
+            if ((viewer==true))
                 go_on=showTrajectory();
 
             for (size_t i=0; i<trajectory.size();i++)
@@ -890,14 +909,14 @@ public:
 
             if ((go_on==true) && (move==true) && (stop_var==false))
             {
-                if (grasped_object==false)
-                go_on=graspObject();
+                if (grasped_object==false && (reached_pose==true))
+                    go_on=graspObject();
 
-                if (go_on==true && lift==true && (stop_var==false) && (lifted_object==false))
+                if (go_on==true && lift==true && (stop_var==false) && (lifted_object==false) && (grasped_object==true))
                     liftObject();
             }
 
-            if ((go_on==true) && (move==true) && (stop_var==false) && (came_back==false))
+            if ((go_on==true) && (move==true) && (stop_var==false) && (came_back==false) && (lifted_object==true))
                 go_on=comeBack();
         }
 
@@ -2069,16 +2088,20 @@ public:
             action->pushAction("karate_hand");
             action->checkActionsDone(f,true);
             action->pushAction(point.subVector(0,2), orient);
-            action->checkActionsDone(f,true);
+            bool f1;
+            action->checkActionsDone(f1,true);
 
             icart_arm->getPose(x_tmp, o_tmp);
 
-            action->pushAction(home_xR.subVector(0,2), home_xR.subVector(3,6));
-            action->checkActionsDone(f,true);
+            if (f1)
+            {
+                action->pushAction(home_xR.subVector(0,2), home_xR.subVector(3,6));
+                action->checkActionsDone(f,true);
+            }
 
             icart_arm->getPose(x_tmp, o_tmp);
 
-            cout<<"[Come back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
+            cout<<"[Coming back home]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
         }
         else if ((chosen_hand=="left") && (left_or_right=="both"))
@@ -2086,15 +2109,18 @@ public:
             action2->pushAction("karate_hand");
             action2->checkActionsDone(f,true);
             action2->pushAction(point.subVector(0,2), orient);
-            action2->checkActionsDone(f,true);
+            bool f1;
+            action2->checkActionsDone(f1,true);
 
             icart_arm2->getPose(x_tmp, o_tmp);
 
             cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
-
-            action2->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
-            action2->checkActionsDone(f,true);
+            if (f1)
+            {
+                action2->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
+                action2->checkActionsDone(f,true);
+            }
 
             icart_arm2->getPose(x_tmp, o_tmp);
 
@@ -2104,15 +2130,19 @@ public:
         {
             action->pushAction("karate_hand");
             action->checkActionsDone(f,true);
+            bool f1;
             action->pushAction(point.subVector(0,2), orient);
-            action->checkActionsDone(f,true);
+            action->checkActionsDone(f1,true);
 
             icart_arm->getPose(x_tmp, o_tmp);
 
             cout<<"[Reached pose]: "<<x_tmp.toString()<<" "<<dcm2euler(axis2dcm(o_tmp)).toString()<<endl;
 
-            action->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
-            action->checkActionsDone(f,true);
+            if (f1)
+            {
+                action->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
+                action->checkActionsDone(f,true);
+            }
 
             icart_arm->getPose(x_tmp, o_tmp);
 
