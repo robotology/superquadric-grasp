@@ -68,9 +68,9 @@ public:
     {
         hand=handext;
         object=objectext;
-        yInfo()<<"Object to be grasp: "<<objectext.toString();
+        yInfo()<<" Object to be grasp: "<<objectext.toString();
 
-        yInfo()<<"Hand model: "<<handext.toString();
+        yInfo()<<" Initial hand model: "<<handext.toString();
 
         H_o2w.resize(4,4);
         H_h2w.resize(4,4);
@@ -95,7 +95,7 @@ public:
         euler[2]=hand[7];
         H_h2w.setSubcol(euler,0,3);
 
-        yInfo()<<n_handpoints<<" points on hand:";
+        yInfo()<<" "<<n_handpoints<<" points on hand:";
 
         for(int i=0; i<n_handpoints; i++)
         {
@@ -687,7 +687,7 @@ public:
         }
         else
             displacement=disp;
-        yDebug()<<"displacement "<<displacement.toString();
+        yDebug()<<" Displacement "<<displacement.toString();
     }
 
     /****************************************************************/
@@ -777,7 +777,7 @@ public:
        for (Ipopt::Index i=0; i<3; i++)
            solution[i]=H(i,3);
 
-       yDebug()<<"solution "<<solution.toString();
+       yInfo()<<" Solution (ellipse pose): "<<solution.toString();
 
         robot_pose.resize(6,0.0);
         robot_pose.setSubvector(3,dcm2euler(H));
@@ -793,9 +793,6 @@ public:
             robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
             robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
         }
-
-
-        cout<<"robot pose "<< robot_pose.toString()<<endl;
 
 
         /*********************/
