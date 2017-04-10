@@ -44,6 +44,18 @@ service superquadricGrasp_IDL
     bool start();
 
     /**
+    * Ask the robot to move
+    *@return true/false on success/failure
+    */
+    bool set_move(1:string entry);
+
+    /**
+    * Say if the robot is going to move or not
+    *@return true/false on success/failure
+    */
+    string get_move();
+
+    /**
     * Come back home
     *@param hand can be "left" or "right"
     *@return true/false on success/failure

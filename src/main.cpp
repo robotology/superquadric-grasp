@@ -124,6 +124,7 @@ protected:
     bool go_on;
     bool online;
     bool move;
+    bool go_move;
     bool viewer;
     bool stop_var;
     bool reached_pose;
@@ -145,6 +146,26 @@ public:
     bool attach(RpcServer &source)
     {
         return this->yarp().attachAsServer(source);
+    }
+
+    /************************************************************************/
+    string get_move()
+    {
+       // go_on=true;
+        if (go_move==true)
+            return "yes";
+        else
+            return "no";
+    }
+
+    /************************************************************************/
+    bool set_move(const string &entry)
+    {
+        if (entry=="yes")
+            go_move=true;
+        else 
+            go_move=false;
+        return true;
     }
 
     /************************************************************************/
@@ -181,12 +202,12 @@ public:
 
         if (hand=="right")
         {
-            action->pushAction(home_xR);
+            action->pushAction(home_xR.subVector(0,2), home_xR.subVector(3,6));
             action->checkActionsDone(f,true);
         }
         else if (hand=="left" && (left_or_right!="both"))
         {
-            action->pushAction(home_xL);
+            action->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
             action->checkActionsDone(f,true);
         }
         else if (hand=="left" && (left_or_right=="both"))
@@ -194,7 +215,7 @@ public:
             action2->pushAction("karate_hand");
             action2->checkActionsDone(f,true);
 
-            action2->pushAction(home_xL);
+            action2->pushAction(home_xL.subVector(0,2), home_xL.subVector(3,6));
             action2->checkActionsDone(f,true);
         }
 
@@ -247,6 +268,7 @@ public:
     bool set_object_name(const string &entry)
     {
         superq_name=entry;
+        object.resize(11,0.0);
         return true;
     }
 
@@ -644,7 +666,7 @@ public:
         home_xR[0]=-0.29;
         home_xR[1]=0.32;
         home_xR[2]= 0.11;
-        home_xR[3]=-0.35166;
+        home_xR[3]=-0.035166;
         home_xR[4]=-0.697078;
         home_xR[5]=0.624835;
         home_xR[6]=2.466923;
@@ -748,6 +770,7 @@ public:
         chosen_pose==true;
         conf_act_called=false;
         go_on=false;
+        go_move=false;
         stop_var=false;
         calib_cam=(rf.check("calib_cam", Value("yes")).asString()=="yes");
 
@@ -842,13 +865,19 @@ public:
         {
             int context_0;
             igaze->storeContext(&context_0);
-            igaze->setSaccadesMode(false);
-            igaze->blockNeckRoll();
+            igaze->setTrackingMode(false);
+            //igaze->blockNeckRoll();
+            igaze->setNeckTrajTime(0.5);
+            igaze->setEyesTrajTime(0.5);
 
             Vector shift(3,0.0);
-            shift[0]=-0.15;
+            shift[0]=-0.42;
+            //shift[1]=-0.03;
+            shift[2]=0.08;
+
 
             cout<<" Object "<<object.subVector(5,7).toString()<<endl;
+            cout<<" Object + shift"<<(object.subVector(5,7) + shift).toString()<<endl;
             igaze->lookAtFixationPoint(object.subVector(5,7)+shift);
 
             Vector x_test(3,0.0);
@@ -901,13 +930,13 @@ public:
 
             for (size_t i=0; i<trajectory.size();i++)
             {
-                if ((go_on==true) && (move==true) && (stop_var==false) && (reached_pose==false))
+                if ((go_on==true) && (go_move==true) && (stop_var==false) && (reached_pose==false))
                 {
                     go_on=reachPose(i);
                 }
             }
 
-            if ((go_on==true) && (move==true) && (stop_var==false))
+            if ((go_on==true) && (go_move==true) && (stop_var==false))
             {
                 if (grasped_object==false && (reached_pose==true))
                     go_on=graspObject();
@@ -916,11 +945,11 @@ public:
                     liftObject();
             }
 
-            if ((go_on==true) && (move==true) && (stop_var==false) && (came_back==false) && (lifted_object==true))
+            if ((go_on==true) && (go_move==true) && (stop_var==false) && (came_back==false) && (lifted_object==true))
                 go_on=comeBack();
         }
 
-       return go_on;
+       return true;
     }
 
     /****************************************************************/
@@ -2095,6 +2124,7 @@ public:
 
             if (f1)
             {
+                cout<<endl<<"going finally at Home!"<<endl<<endl;
                 action->pushAction(home_xR.subVector(0,2), home_xR.subVector(3,6));
                 action->checkActionsDone(f,true);
             }
