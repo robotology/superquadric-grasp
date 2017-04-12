@@ -41,7 +41,7 @@ The complete pipeline is the following:
 
 The described pipelin can be summarized by the following image:
 
-<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/superquadric-grasp.png">
+<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/superquadric-grasping.png">
 
 ## Documentation
 Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
