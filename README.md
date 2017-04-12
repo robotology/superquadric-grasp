@@ -18,7 +18,7 @@ G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadr
 ## How to compile
 In `Linux systems` code can be compiled as follows:
 ```
-git clone https://github.com/giuliavezzani/superquadric-grasp.git
+git clone https://github.com/robotology/superquadric-grasp.git
 cd superquadric-grasp
 mkdir build; cd build
 ccmake ..
@@ -41,7 +41,7 @@ The complete pipeline is the following:
 
 The described pipelin can be summarized by the following image:
 
-<img src="https://github.com/giuliavezzani/superquadric-grasp/blob/master/misc/superquadric-grasp.png">
+<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/superquadric-grasp.png">
 
 ## Documentation
 Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
