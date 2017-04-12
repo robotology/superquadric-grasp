@@ -31,7 +31,7 @@ struct Vector
 /**
 * superquadricGrasp_IDL
 *
-* IDL Interface to \ref superquadric-grasping services.
+* IDL Interface to \ref superquadric-grasp services.
 */
 
 service superquadricGrasp_IDL
