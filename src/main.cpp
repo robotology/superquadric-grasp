@@ -43,7 +43,7 @@
 #include <iCub/perception/tactileFingers.h>
 
 #include "computePose.cpp"
-#include "src/superquadricGrasping_IDL.h"
+#include "src/superquadricGrasp_IDL.h"
 
 #define AFFACTIONPRIMITIVESLAYER    ActionPrimitivesLayer1
 
@@ -57,7 +57,7 @@ using namespace iCub::action;
 using namespace iCub::iKin;
 
 class GraspingModule: public RFModule,
-                      public superquadricGrasping_IDL
+                      public superquadricGrasp_IDL
 {
 protected:
     AFFACTIONPRIMITIVESLAYER *action;
@@ -721,7 +721,7 @@ public:
         if(rf.find("lift").isNull())
             lift=true;
 
-        portRpc.open("/superquadric-grasping/rpc");
+        portRpc.open("/superquadric-grasp/rpc");
         attach(portRpc);
 
         displacement.resize(3,0.0);
@@ -950,7 +950,7 @@ public:
         {
             Property option_arm3("(device cartesiancontrollerclient)");
             option_arm3.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
-            option_arm3.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
+            option_arm3.put("local","/superquadric-grasp/cartesian/"+arm+"_arm");
 
             robotDevice3.open(option_arm3);
             if (!robotDevice3.isValid())
@@ -963,7 +963,7 @@ public:
 
             Property option_arm4("(device remote_controlboard)");
             option_arm4.put("remote","/"+robot+"/"+arm+"_arm");
-            option_arm4.put("local","/superquadric-grasping/joint/"+arm+"_arm");
+            option_arm4.put("local","/superquadric-grasp/joint/"+arm+"_arm");
 
             robotDevice4.open(option_arm4);
             if (!robotDevice4.isValid())
@@ -976,7 +976,7 @@ public:
         {
             Property option_arm("(device cartesiancontrollerclient)");
             option_arm.put("remote","/"+robot+"/cartesianController/"+arm+"_arm");
-            option_arm.put("local","/superquadric-grasping/cartesian/"+arm+"_arm");
+            option_arm.put("local","/superquadric-grasp/cartesian/"+arm+"_arm");
 
 
             robotDevice.open(option_arm);
@@ -990,7 +990,7 @@ public:
 
             Property option_arm2("(device remote_controlboard)");
             option_arm2.put("remote","/"+robot+"/"+arm+"_arm");
-            option_arm2.put("local","/superquadric-grasping/joint/"+arm+"_arm");
+            option_arm2.put("local","/superquadric-grasp/joint/"+arm+"_arm");
 
             robotDevice2.open(option_arm2);
             if (!robotDevice2.isValid())
@@ -1125,16 +1125,16 @@ public:
     /***********************************************************************/
     bool configViewer(ResourceFinder &rf)
     {
-        portImgIn.open("/superquadric-grasping/img:i");
-        portImgOut.open("/superquadric-grasping/img:o");
-        portCalibCamRpc.open("/superquadric-grasping/camcalib:rpc");
+        portImgIn.open("/superquadric-grasp/img:i");
+        portImgOut.open("/superquadric-grasp/img:o");
+        portCalibCamRpc.open("/superquadric-grasp/camcalib:rpc");
 
         eye=rf.check("eye", Value("left")).asString();
 
         Property optionG;
         optionG.put("device","gazecontrollerclient");
         optionG.put("remote","/iKinGazeCtrl");
-        optionG.put("local","/superquadric-grasping/gaze");
+        optionG.put("local","/superquadric-grasp/gaze");
 
         GazeCtrl.open(optionG);
         igaze=NULL;
@@ -1186,7 +1186,7 @@ public:
         shift[1]=-0.0;
         shift[2]=0.0;
 
-        portSuperqRpc.open("/superquadric-grasping/superq:rpc");
+        portSuperqRpc.open("/superquadric-grasp/superq:rpc");
 
         if (!online)
         {
@@ -2161,7 +2161,7 @@ int main(int argc, char *argv[])
    ResourceFinder rf;
    rf.setVerbose(true);
    rf.setDefaultConfigFile("config.ini");
-   rf.setDefaultContext("superquadric-grasping");
+   rf.setDefaultContext("superquadric-grasp");
    rf.setDefault("grasp_model_type","springy");
    rf.setDefault("grasp_model_file_right","grasp_model_right.ini");
    rf.setDefault("grasp_model_file_left","grasp_model_left.ini");
