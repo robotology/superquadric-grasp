@@ -4,24 +4,23 @@
 #
 # idl.thrift
 
-struct Property
-{
-} (
-   yarp.name = "yarp::os::Property"
-   yarp.includefile="yarp/os/Property.h"
-  )
 /**
 * Property
 *
 * IDL structure to set/show advanced parameters.
 */
-
 struct Property
 {
 } (
    yarp.name = "yarp::os::Property"
    yarp.includefile="yarp/os/Property.h"
   )
+
+/**
+* Vector
+*
+* IDL structure to set/show advanced parameters.
+*/
 struct Vector
 {
 } (
@@ -34,6 +33,7 @@ struct Vector
 *
 * IDL Interface to \ref superquadric-grasping services.
 */
+
 service superquadricGrasping_IDL
 {
     /**
