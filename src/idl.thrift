@@ -3,24 +3,6 @@
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 #
 # idl.thrift
-/**
-* Property
-*
-* IDL structure to set/show advanced parameters.
-*/
-
-/**
-* superquadricGrasping_IDL
-*
-* IDL Interface to \ref superquadric-grasping services.
-*/
-
-struct Vector
-{
-} (
-   yarp.name = "yarp::sig::Vector"
-   yarp.includefile="yarp/sig/Vector.h"
-  )
 
 struct Property
 {
@@ -28,7 +10,30 @@ struct Property
    yarp.name = "yarp::os::Property"
    yarp.includefile="yarp/os/Property.h"
   )
+/**
+* Property
+*
+* IDL structure to set/show advanced parameters.
+*/
 
+struct Property
+{
+} (
+   yarp.name = "yarp::os::Property"
+   yarp.includefile="yarp/os/Property.h"
+  )
+struct Vector
+{
+} (
+   yarp.name = "yarp::sig::Vector"
+   yarp.includefile="yarp/sig/Vector.h"
+  )
+
+/**
+* superquadricGrasping_IDL
+*
+* IDL Interface to \ref superquadric-grasping services.
+*/
 service superquadricGrasping_IDL
 {
     /**
