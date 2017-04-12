@@ -1,4 +1,4 @@
-# superquadric-grasping
+# superquadric-grasp
 Framework for computing a good grasping pose, by exploiting superquadric models for the object and the robot hand.
 
 ## Theoretical background
@@ -18,8 +18,8 @@ G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadr
 ## How to compile
 In `Linux systems` code can be compiled as follows:
 ```
-git clone https://github.com/giuliavezzani/superquadric-grasping.git
-cd superquadric-grasping
+git clone https://github.com/giuliavezzani/superquadric-grasp.git
+cd superquadric-grasp
 mkdir build; cd build
 ccmake ..
 make install
@@ -41,10 +41,10 @@ The complete pipeline is the following:
 
 The described pipelin can be summarized by the following image:
 
-<img src="https://github.com/giuliavezzani/superquadric-grasping/blob/master/misc/superquadric-grasping.png">
+<img src="https://github.com/giuliavezzani/superquadric-grasp/blob/master/misc/superquadric-grasp.png">
 
 ## Documentation
-Online code documentation is available [here](https://robotology.github.io/superquadric-grasping).
+Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
 
 ## License
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_
