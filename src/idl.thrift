@@ -45,13 +45,14 @@ service superquadricGrasping_IDL
 
     /**
     * Come back home
+    *@param hand can be "left" or "right"
     *@return true/false on success/failure
     */
     bool go_home(1:string hand);
 
     /**
     * Say if you want the robot to lift the object or not
-    *@param yes or no 
+    *@param lift_or_not yes or no 
     *@return true/false on success/failure
     */
     bool lift_object(1:string lift_or_not);
@@ -70,10 +71,10 @@ service superquadricGrasping_IDL
 
     /**
     * Select the kind of grasping you want the robot to perform:
-    *@param power or precision, for respectively power or precision grasp
+    *@param method can be power or precision, for respectively power or precision grasp
     *@return true/false on success/failure
     */
-    bool grasping_method(1:string lift_or_not);
+    bool grasping_method(1:string method);
 
     /**
     * Say the kind of selected grasping:
@@ -89,7 +90,7 @@ service superquadricGrasping_IDL
 
     /**
     * Enable or not depth2kin calibration
-    *@param yes or no
+    *@param calib_or_not can be yes or no
     *@return true/false on success/failure
     */
     bool calibrate_cam(1:string calib_or_not);
@@ -109,14 +110,14 @@ service superquadricGrasping_IDL
 
     /**
     * Choose the distance on x axis for approach
-    *@param the distance
+    *@param dis is the desired distance
     *@return true/false on success/failure
     */
     bool trajectory_distance_x(1:double dis);
 
     /**
     * Choose the distance on z axis for approach
-    *@param the distance
+    *@param dis is the desired distance
     *@return true/false on success/failure
     */
     bool trajectory_distance_z(1:double dis);
@@ -135,7 +136,7 @@ service superquadricGrasping_IDL
 
     /**
     * Change hand displacement for grasping
-    *@param displacement value (as a Vector)
+    *@param hand is the displacement value (as a Vector)
     *@return true/false on success/failure
     */
     bool hand_displacement(1:Vector hand);
@@ -173,7 +174,7 @@ service superquadricGrasping_IDL
 
     /** Set parameters of trajectory computation and 
     * poses reaching
-    *@params a Property object containing the parameters you want to change
+    *@params option is a Property object containing the parameters you want to change
     *@return true/false on success/failure
     */
     bool set_trajectory_options(1:Property options);
