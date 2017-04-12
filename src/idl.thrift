@@ -29,12 +29,12 @@ struct Vector
   )
 
 /**
-* superquadricGrasping_IDL
+* superquadricGrasp_IDL
 *
 * IDL Interface to \ref superquadric-grasping services.
 */
 
-service superquadricGrasping_IDL
+service superquadricGrasp_IDL
 {
     /**
     * Start entire pipeline: pose computation and
