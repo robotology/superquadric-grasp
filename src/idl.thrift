@@ -86,11 +86,7 @@ service superquadricGrasp_IDL
     *@param method can be power or precision, for respectively power or precision grasp
     *@return true/false on success/failure
     */
-<<<<<<< HEAD
-    bool grasping_method(1:string method);
-=======
     bool set_grasping_method(1:string lift_or_not);
->>>>>>> improving code
 
     /**
     * Say the kind of selected grasping:
