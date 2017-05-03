@@ -23,16 +23,18 @@ icubcontrib_set_default_prefix()
 
 find_package(IPOPT REQUIRED)
 
-set(sources src/computePose.cpp src/main.cpp)
+set(sources src/superquadric.cpp src/main.cpp src/graspModule.cpp)
+set(headers include/superquadric.h include/graspModule.h)
 yarp_add_idl(IDL_GEN_FILES src/idl.thrift)
 source_group("IDL Files" FILES src/idl.thrift)
 source_group("Source Files" FILES ${sources})
+source_group("Header Files" FILES ${headers})
 
-include_directories(${YARP_INCLUDE_DIRS} ${ICUB_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS} iKin)
+include_directories( ${PROJECT_SOURCE_DIR}/include ${YARP_INCLUDE_DIRS} ${ICUB_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS} iKin)
 
 add_definitions(${YARP_DEFINES} ${IPOPT_DEFINITIONS} -D_USE_MATH_DEFINES) 
 
-add_executable(${PROJECT_NAME} ${sources} src/idl.thrift  ${IDL_GEN_FILES})
+add_executable(${PROJECT_NAME} ${sources} ${headers} src/idl.thrift  ${IDL_GEN_FILES})
 target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib perceptiveModels actionPrimitives)
 set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${IPOPT_LINK_FLAGS}")
 
