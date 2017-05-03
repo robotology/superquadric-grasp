@@ -27,7 +27,7 @@
 #include <iCub/action/actionPrimitives.h>
 
 #include "superquadric.h"
-//#include "graspComputation.h"
+#include "graspComputation.h"
 //#include "graspVisualization.h"
 //#include "graspExecution.h"
 
@@ -44,7 +44,7 @@ protected:
 
     AFFACTIONPRIMITIVESLAYER *action;
     AFFACTIONPRIMITIVESLAYER *action2;
-    yarp::os::RpcServer                 portRpc;
+    yarp::os::RpcServer       portRpc;
 
     yarp::sig::Vector graspOrienR;
     yarp::sig::Vector graspDispR;
@@ -78,15 +78,19 @@ protected:
     yarp::sig::Vector poseR, solR;
     yarp::sig::Vector poseL, solL;
     yarp::sig::Vector pose_tmp, pose_tmp2;
-    double t,t0;
+    double t,t0, t_grasp;
+    std::deque<double> times_grasp;
 
     double tol, constr_viol_tol;
     int max_iter, acceptable_iter, object_provided;
     std::string mu_strategy,nlp_scaling_method;
+    double max_cpu_time;
+    
 
     yarp::sig::Vector object;
     yarp::sig::Vector hand, hand1;
     int n_pointshand;
+    int rate;
     double distance, distance1;
     std::string dir;
     yarp::sig::Vector displacement;
@@ -104,7 +108,7 @@ protected:
     yarp::sig::Matrix K,H;
 
     bool go_on;
-    bool online;
+    bool mode_online;
     bool move;
     bool go_move;
     bool viewer;
@@ -124,6 +128,13 @@ protected:
     std::string chosen_hand;
 
     yarp::os::Mutex mutex;
+
+    GraspComputation *graspComp;
+
+    yarp::os::Property complete_sol;
+    yarp::os::Property ipopt_par;
+    yarp::os::Property pose_par;
+    yarp::os::Property traj_par;
 
 public:
     /************************************************************************/
@@ -182,9 +193,6 @@ public:
 
     /***********************************************************************/
     std::string get_save_pose();
-
-    /************************************************************************/
-    GraspingModule();
 
     /************************************************************************/
     void getArmDependentOptions(yarp::os::Bottle &b, yarp::sig::Vector &_gOrien, yarp::sig::Vector &_gDisp,
