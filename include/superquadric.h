@@ -112,7 +112,7 @@ public:
                      Ipopt::Index *jCol, Ipopt::Number *values);
 
     /****************************************************************/
-    void configure(yarp::os::ResourceFinder *rf, const std::string &left_or_right, const yarp::sig::Vector &disp);
+    void configure(yarp::os::ResourceFinder *rf, const std::string &left_or_right, const yarp::sig::Vector &disp, const yarp::sig::Vector &pl);
 
     /****************************************************************/
     bool readMatrix(const std::string &tag, yarp::sig::Matrix &matrix, const int &dimension, yarp::os::ResourceFinder *rf);

@@ -44,7 +44,7 @@ protected:
     double distance, distance1;
     std::string dir;
     yarp::sig::Vector displacement;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector plane;
 
     yarp::os::Property ipopt_par;
     yarp::os::Property pose_par;
@@ -106,13 +106,16 @@ public:
     bool computeTrajectory(const std::string &chosen_hand, const std::string &direction);
 
     /***********************************************************************/
-    yarp::os::Property getSolution();
+    yarp::os::Property getSolution(const std::string &hand);
 
     /***********************************************************************/
     double getTime();
 
     /**********************************************************************/
-    yarp::os::Property fillProperty();
+    yarp::os::Property fillProperty(const std::string &hand);
+
+    /**********************************************************************/
+    void setPar(const std::string &tag, const std::string &value);
 
 };
 

@@ -79,7 +79,6 @@ void grasping_NLP::init(Vector &objectext, Vector &handext, int &n_handpoints, c
     for(int i=0; i<n_handpoints; i++)
     {
         points_on.push_back(computePointsHand(hand,i, n_handpoints, str_hand));
-        //cout<<points_on[i].toString()<<endl;
     }
 
     aux_objvalue=0.0;
@@ -632,7 +631,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
 /****************************************************************/
-void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, const Vector &disp)
+void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, const Vector &disp, const Vector &pl)
 {
     Matrix x0_tmp;
     x0_tmp.resize(6,1);
@@ -646,27 +645,10 @@ void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, co
     bounds_constr.resize(6,2);
     readMatrix("bounds_constr_"+left_or_right,bounds_constr,6 , rf);
     plane.resize(4,1);
-    readMatrix("plane", plane,4,rf);
 
     l_o_r=left_or_right;
-
-    if (norm(disp)==0.0 && left_or_right=="right")
-    {
-        displacement.resize(3,0.0);
-        displacement[0]=rf->check("disp_x_right", Value(0.025)).asDouble();
-        displacement[1]=rf->check("disp_y_right", Value(0.0)).asDouble();
-        displacement[2]=rf->check("disp_z_right", Value(0.0)).asDouble();
-    }
-    else if (norm(disp)==0.0 && left_or_right=="left")
-    {
-        displacement.resize(3,0.0);
-        displacement[0]=rf->check("disp_x_left", Value(0.025)).asDouble();
-        displacement[1]=rf->check("disp_y_left", Value(0.0)).asDouble();
-        displacement[2]=rf->check("disp_z_left", Value(0.0)).asDouble();
-    }
-    else
-        displacement=disp;
-    yDebug()<<" Displacement "<<displacement.toString();
+    displacement=disp;
+    plane.setCol(0,pl);
 }
 
 /****************************************************************/

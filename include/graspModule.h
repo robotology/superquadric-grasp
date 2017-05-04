@@ -24,8 +24,6 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <iCub/action/actionPrimitives.h>
-
 #include "superquadric.h"
 #include "graspComputation.h"
 //#include "graspVisualization.h"
@@ -34,190 +32,117 @@
 #include "src/superquadricGrasp_IDL.h"
 
 
-#define AFFACTIONPRIMITIVESLAYER    iCub::action::ActionPrimitivesLayer1
-
 /*******************************************************************************/
 class GraspingModule: public yarp::os::RFModule,
                       public superquadricGrasp_IDL
 {
 protected:
 
-    AFFACTIONPRIMITIVESLAYER *action;
-    AFFACTIONPRIMITIVESLAYER *action2;
-    yarp::os::RpcServer       portRpc;
-
-    yarp::sig::Vector graspOrienR;
-    yarp::sig::Vector graspDispR;
-    yarp::sig::Vector dOffsR;
-    yarp::sig::Vector dLiftR;
-    yarp::sig::Vector home_xR;
-
-    yarp::sig::Vector graspOrienL;
-    yarp::sig::Vector graspDispL;
-    yarp::sig::Vector dOffsL;
-    yarp::sig::Vector dLiftL;
-    yarp::sig::Vector home_xL;
-
-    bool firstRun;
-
-    yarp::dev::PolyDriver robotDevice;
-    yarp::dev::PolyDriver robotDevice2;
-    yarp::dev::PolyDriver robotDevice3;
-    yarp::dev::PolyDriver robotDevice4;
-
-    yarp::dev::ICartesianControl *icart_arm;
-    yarp::dev::ICartesianControl *icart_arm2;
-    yarp::dev::IEncoders *enc;
+    yarp::os::ResourceFinder *rf;
 
     std::string robot;
     std::string left_or_right;
+    std::string homeContextPath;
 
-    yarp::os::ResourceFinder *rf;
-
-    std::deque<yarp::sig::Vector> trajectory;
-    yarp::sig::Vector poseR, solR;
     yarp::sig::Vector poseL, solL;
-    yarp::sig::Vector pose_tmp, pose_tmp2;
+    yarp::sig::Vector poseR, solR;
+    std::deque<yarp::sig::Vector> trajectory_right;
+    std::deque<yarp::sig::Vector> trajectory_left;
+
+    int rate;
     double t,t0, t_grasp;
     std::deque<double> times_grasp;
 
-    double tol, constr_viol_tol;
-    int max_iter, acceptable_iter, object_provided;
-    std::string mu_strategy,nlp_scaling_method;
+    double tol;
+    int max_iter;
+    int n_pointshand;
+    int acceptable_iter;
+    int object_provided;
+    double constr_viol_tol;
+    std::string mu_strategy;
+    std::string nlp_scaling_method;
     double max_cpu_time;
     
-
+    std::string dir;
     yarp::sig::Vector object;
     yarp::sig::Vector hand, hand1;
-    int n_pointshand;
-    int rate;
-    double distance, distance1;
-    std::string dir;
+    double distance, distance1;    
     yarp::sig::Vector displacement;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector plane;
 
-    yarp::os::RpcClient portSuperqRpc;
-    yarp::os::RpcClient portCalibCamRpc;
-    std::string superq_name;
-
+    yarp::os::RpcServer portRpc;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
+    yarp::os::BufferedPort<yarp::os::Property > portPose;
+
     std::string eye;
+    yarp::sig::Matrix K,H;
     yarp::dev::PolyDriver GazeCtrl;
     yarp::dev::IGazeControl *igaze;
-    yarp::sig::Matrix K,H;
 
     bool go_on;
-    bool mode_online;
-    bool move;
-    bool go_move;
     bool viewer;
-    bool stop_var;
-    bool reached_pose;
-    bool grasped_object;
-    bool lifted_object;
-    bool came_back;
-    bool conf_dev_called;
-    bool chosen_pose;
-    bool conf_act_called;
-    bool calib_cam;
-    bool lift;
+    bool mode_online;    
+    bool save_poses;
 
-    std::string nameFileOut_right, nameFileSolution_right, nameFileTrajectory;
-    std::string nameFileOut_left, nameFileSolution_left;
     std::string chosen_hand;
+    std::string nameFileOut_right, nameFileTrajectory_right;
+    std::string nameFileOut_left, nameFileTrajectory_left;
 
     yarp::os::Mutex mutex;
 
     GraspComputation *graspComp;
 
-    yarp::os::Property complete_sol;
-    yarp::os::Property ipopt_par;
     yarp::os::Property pose_par;
     yarp::os::Property traj_par;
+    yarp::os::Property ipopt_par;
+    yarp::os::Property complete_sol;
 
 public:
     /************************************************************************/
     bool attach(yarp::os::RpcServer &source);
 
     /************************************************************************/
-    bool set_tag_file(const std::string &tag_file);
-
-    /************************************************************************/
-    std::string get_tag_file();
-
-    /**********************************************************************/
     std::string get_visualization();
 
-    /**********************************************************************/
+    /************************************************************************/
     bool set_visualization(const std::string &e);
 
     /************************************************************************/
-    std::string get_movement();
+    yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
 
     /************************************************************************/
-    bool set_movement(const std::string &entry);
+    yarp::os::Property get_options(const std::string &field);
 
     /************************************************************************/
-    bool start();
+    bool set_options(const yarp::os::Property &newOptions, const std::string &field);
 
-    /**********************************************************************/
-    yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric);
+    /************************************************************************/
+    bool set_save_poses(const std::string &entry);
 
-    /**********************************************************************/
+    /************************************************************************/
+    std::string get_save_poses();
+
+    /************************************************************************/
     yarp::os::Property fillProperty(const yarp::sig::Vector &sol);
-
-    /************************************************************************/
-    bool stop();
-
-    /************************************************************************/
-    bool go_home(const std::string &hand);
 
     /************************************************************************/
     bool clear_poses();
 
     /************************************************************************/
-    bool set_hand(const std::string &str_hand);
-
-    /************************************************************************/
-    std::string get_hand();
-
-    /**********************************************************************/
-    yarp::os::Property get_options(const std::string &field);
-
-    /**********************************************************************/
-    bool set_options(const yarp::os::Property &newOptions, const std::string &field);
-
-    /***********************************************************************/
-    bool set_save_pose(const std::string &entry);
-
-    /***********************************************************************/
-    std::string get_save_pose();
-
-    /************************************************************************/
-    void getArmDependentOptions(yarp::os::Bottle &b, yarp::sig::Vector &_gOrien, yarp::sig::Vector &_gDisp,
-                                yarp::sig::Vector &_dOffs, yarp::sig::Vector &_dLift, yarp::sig::Vector &_home_x);
-
-    /****************************************************************/
     bool configBasics(yarp::os::ResourceFinder &rf);
 
-    /****************************************************************/
+    /************************************************************************/
     bool close();
 
-    /****************************************************************/
+    /************************************************************************/
     bool interruptModule();
 
-    /****************************************************************/
+    /************************************************************************/
     bool updateModule();
 
-    /****************************************************************/
+    /************************************************************************/
     double getPeriod();
-
-    /****************************************************************/
-    bool configDevices(yarp::os::ResourceFinder &rf, const std::string &arm);
-
-    /****************************************************************/
-    bool configAction(yarp::os::ResourceFinder &rf, const std::string &l_o_r);
 
     /***********************************************************************/
     bool configViewer(yarp::os::ResourceFinder &rf);
@@ -228,8 +153,11 @@ public:
     /***********************************************************************/
     bool configure(yarp::os::ResourceFinder &rf);
 
-    /****************************************************************/
+    /************************************************************************/
     bool readSuperq(const std::string &name_obj, yarp::sig::Vector &x, const int &dimension, yarp::os::ResourceFinder *rf);
+
+    /************************************************************************/
+    void saveSol(const yarp::os::Property &sol);
 
 
 };

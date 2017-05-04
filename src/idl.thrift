@@ -37,171 +37,88 @@ struct Vector
 service superquadricGrasp_IDL
 {
     /**
-    * Start entire pipeline: pose computation and
-    * grasping
-    *@return true/false on success/failure
-    */
-    bool start();
-
-    /**
-    * Ask the robot to move
-    *@return true/false on success/failure
-    */
-    bool set_move(1:string entry);
-
-    /**
-    * Say if the robot is going to move or not
-    *@return true/false on success/failure
-    */
-    string get_move();
-
-    /**
-    * Come back home
-    *@param hand can be "left" or "right"
-    *@return true/false on success/failure
-    */
-    bool go_home(1:string hand);
-
-    /**
-    * Say if you want the robot to lift the object or not
-    *@param lift_or_not yes or no 
-    *@return true/false on success/failure
-    */
-    bool set_lift_object(1:string lift_or_not);
-
-    /**
-    * Say if the robot is going to lift the object or not 
-    *@return yes or no
-    */
-    string get_lift_object(); 
-
-    /**
-    * Remove computed poses 
-    *@return true/false on success/failure
+    * Remove computed poses.
+    *@return true/false on success/failure.
     */
     bool clear_poses();
 
     /**
-    * Select the kind of grasping you want the robot to perform:
-    *@param method can be power or precision, for respectively power or precision grasp
-    *@return true/false on success/failure
+    * Choose the hand to use to grasp the object.
+    *@param hand name (left or right).
+    *@return true/false on success/failure.
     */
-    bool set_grasping_method(1:string lift_or_not);
+    bool set_hand(1:string hand);
 
     /**
-    * Say the kind of selected grasping:
-    *@return power or precision
+    * Get the chosen hand. 
+    *@return left or right.
     */
-    string get_grasping_method();
+    string get_hand();
 
     /**
-    * Say if enabled depth2kin calibration
-    *@return yes or no
+    * Set if to save or not the computed poses 
+    * and trajectory.
+    *@param entry can be "on" or "off".
+    *@return true/false on success/failure.
     */
-    string get_calibrate_cam();
+    bool set_save_poses(1:string entry);
 
     /**
-    * Enable or not depth2kin calibration
-    *@param calib_or_not can be yes or no
-    *@return true/false on success/failure
+    * Get if the saving process is on or off.
+    *@return "on" or "off".
     */
-    bool set_calibrate_cam(1:string calib_or_not);
+    string get_save_poses();
 
     /**
-    * Say the name of the object
-    *@return yes or no
+    * Set the  parameters of the module. The user 
+    * must pay attention in changing them.
+    * @param options is a Property containing the 
+    * parameters the user want to change.
+    * @param field is a string specifying which
+    * can of parameter we are going to change.
+    * Field can be: "pose", "trajectory" or "optimization".
+    * You can set the  parameters typing, for instance: 
+    * command:  set_options ((n_pointshand <points-value>)
+    * (hand_displacement_x <displacement-value>)) pose.
+    * @return true/false on success/failure.
     */
-    string get_object_name();
+    bool set_options(1:Property options, 2: string field);
+
 
     /**
-    * Set the object name
-    *@param name of the object
-    *@return true/false on success/failure
+    * Get the  parameters of the module. The user must
+    * pay attention in changing them.
+    * @param field can be "pose", "trajectory",
+    * "optimization" or "statistics".
+    * depending on which parameters we are interested in.
+    * @return the Property including all the  parameter values.
     */
-    bool set_object_name(1:string centry);
+    Property get_options(1: string field);
 
-    /**
-    * Choose the hand to use to grasp the object
-    *@param hand name (left or right)
-    *@return true/false on success/failure
+    /** Return the estimated grasping poses given
+    * an estimated superquadric.
+    *@param estimated_superq is a Property containing
+    * the superquadric.
+    *@param hand is the hand for which we want
+    * to solve the grasping problem (right, left or both).
+    *@return a property containing the solution.
+    * Note: the estimated superquadric must be 
+    * provide in the following format:  (dimensions (x0 x1 x2)) 
+    * (exponents (x3 x4)) (center (x5 x6 x7)) (orientation (x8 x9 x10 x11))
+    * where x0, x1,x2 are the semi axes of the superquadric,
+    * x3, x4 are the responsible for the shape, x5 x6 x7 are the coordinates
+    * of the superquadric center and x8 x9 x10 x11
+    * are the axis-angle representation of the superquadric orientation.
+    * The solution is given in the form: (pose_right (h0 h1 h2 h3 h4 h5 h6))
+    * (trajectory_right (t0 t1 t2 t3 t4 t5) ... ) for the right hand,
+    * and the same for the left hand (according to the  value of the
+    * string hand are input parameter. The quantity "pose_right" is the pose
+    * computed for the robot hand (x0,x1,x2,  are the 3D coordinates of the end-effector
+    * and x3,x4,x5 are the Euler angles representing the end-effector orientation)
+    * The quantity "trajectory_right"  includes all the waypoint of the
+    * computed trajectory, in the form center of the end-effector
+    * (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5).
     */
-    bool choose_hand(1:string hand);
-
-    /**
-    * Get the chosen hand 
-    *@return left or right
-    */
-    string get_chosen_hand();
-
-    /**
-    * Choose the distance on x axis for approach
-    *@param dis is the desired distance
-    *@return true/false on success/failure
-    */
-    bool set_trajectory_distance_x(1:double dis);
-
-    /**
-    * Choose the distance on z axis for approach
-    *@param dis is the desired distance
-    *@return true/false on success/failure
-    */
-    bool set_trajectory_distance_z(1:double dis);
-
-    /**
-    * Get the distance on x axis for approach
-    *@return the distance value
-    */
-    double get_trajectory_distance_x();
-
-    /**
-    * Get the distance on z axis for approach
-    *@return true/false on success/failure
-    */
-    double get_trajectory_distance_z();
-
-    /**
-    * Change hand displacement for grasping
-    *@param hand is the displacement value (as a Vector)
-    *@return true/false on success/failure
-    */
-    bool set_hand_displacement(1:Vector hand);
-
-    /**
-    * Get hand displacement for grasping
-    *@return the vector of displacement
-    */
-    list<double> get_hand_displacement();
-
-    /**
-    * Change pose shift for grasping
-    *@param shift value (as a Vector)
-    *@return true/false on success/failure
-    */
-    bool set_shift(1:Vector shift);
-
-    /**
-    * Get shift displacement for grasping
-    *@return the vector of shift
-    */
-    list<double> get_shift();
-
-    /**
-    * Stop all robot movements but not the module
-    *@return true/false on success/failure
-    */
-    bool stop();
-
-    /**
-    * Compute, show and send pose
-    *@return true
-    */
-    bool compute_pose();
-
-    /** Set parameters of trajectory computation and 
-    * poses reaching
-    *@params option is a Property object containing the parameters you want to change
-    *@return true/false on success/failure
-    */
-    bool set_trajectory_options(1:Property options);
+    Property get_grasping_pose(1: Property estimated_superq, 2: string hand);
 }
     

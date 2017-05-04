@@ -17,8 +17,6 @@
 
 #include <csignal>
 #include <cmath>
-#include <limits>
-#include <algorithm>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -27,10 +25,6 @@
 
 #include <yarp/math/Math.h>
 #include <yarp/dev/Drivers.h>
-#include <iCub/iKin/iKinFwd.h>
-#include <iCub/perception/models.h>
-#include <iCub/perception/sensors.h>
-#include <iCub/perception/tactileFingers.h>
 
 #include "graspModule.h"
 #include "superquadric.h"
@@ -41,9 +35,6 @@ using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::dev;
 using namespace yarp::math;
-using namespace iCub::perception;
-using namespace iCub::action;
-using namespace iCub::iKin;
 
 /************************************************************************/
 bool GraspingModule::attach(RpcServer &source)
@@ -52,72 +43,11 @@ bool GraspingModule::attach(RpcServer &source)
 }
 
 /************************************************************************/
-string GraspingModule::get_movement()
-{
-   // go_on=true;
-    if (go_move==true)
-        return "yes";
-    else
-        return "no";
-}
-
-/************************************************************************/
-bool GraspingModule::set_movement(const string &entry)
-{
-    if (entry=="yes")
-        go_move=true;
-    else
-        go_move=false;
-    return true;
-}
-
-/************************************************************************/
-bool GraspingModule::start()
-{
-   // go_on=true;
-    stop_var=false;
-    return true;
-}
-
-/************************************************************************/
-bool GraspingModule::stop()
-{
-    stop_var=true;
-    return true;
-}
-
-/************************************************************************/
-bool GraspingModule::go_home(const string &hand)
-{
-    bool f;
-    f=false;
-    // DA DEFINIRE
-    return f;
-}
-
-/************************************************************************/
-bool GraspingModule::set_tag_file(const string &entry)
-{
-    superq_name=entry;
-    object.resize(11,0.0);
-    return true;
-}
-
-/************************************************************************/
-string GraspingModule::get_tag_file()
-{
-    return superq_name;
-}
-
-/************************************************************************/
 bool GraspingModule::clear_poses()
 {
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     object.resize(11,0.0);
-    chosen_pose=false;
-    //go_on=true;
-    stop_var=false;
 
     return true;
 }
@@ -125,6 +55,8 @@ bool GraspingModule::clear_poses()
 /****************************************************************/
 bool GraspingModule::configBasics(ResourceFinder &rf)
 {
+    homeContextPath=rf.getHomeContextPath().c_str();
+
     robot=rf.find("robot").asString().c_str();
     if(rf.find("robot").isNull())
         robot="iCubsim";
@@ -133,26 +65,16 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     if(rf.find("which_hand").isNull())
         left_or_right="right";
 
-    // Vediamo quali servono e quali no
-    conf_dev_called=false;
-    chosen_pose==true;
-    conf_act_called=false;
-    go_on=false;
-    go_move=false;
-    stop_var=false;
-
-    lift=rf.find("lift").asString().c_str();
-    if(rf.find("lift").isNull())
-        lift=true;
-
     portRpc.open("/superquadric-grasp/rpc");
     attach(portRpc);
 
-    displacement.resize(3,0.0);
     dir=rf.check("approaching_direction", Value("z")).asString();
-
     rate=rf.check("rate", Value(100)).asInt();
     mode_online=(rf.check("mode_online", Value("on")).asString()=="on");
+    save_poses=(rf.check("save_poses", Value("on")).asString()=="on");
+    viewer=(rf.check("viewer", Value("no")).asString()=="yes");
+
+    go_on=false;
 
     return true;
 }
@@ -166,8 +88,8 @@ bool GraspingModule::close()
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
-    if (portSuperqRpc.asPort().isOpen())
-        portSuperqRpc.close();
+    if (portPose.isClosed())
+        portPose.close();
 
     if (viewer==true)
     {
@@ -199,9 +121,11 @@ bool GraspingModule::updateModule()
 
     if (mode_online)
     {
-        complete_sol=graspComp->getSolution();
+        Property &complete_sol=portPose.prepare();
 
-        yInfo()<<" [GraspModule]: Complete solution "<<complete_sol.toString();
+        complete_sol=graspComp->getSolution(left_or_right);
+
+        yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
         if (times_grasp.size()<10)
             times_grasp.push_back(graspComp->getTime());
@@ -216,19 +140,30 @@ bool GraspingModule::updateModule()
         }
         else
         times_grasp.clear();
+
+        portPose.write();
     }
     else
     {
         graspComp->threadInit();
+        graspComp->setPar("one_shot", "on");
         graspComp->object=object;
         graspComp->step();
 
-        complete_sol=graspComp->getSolution();
+        complete_sol=graspComp->getSolution(left_or_right);
+        t_grasp=graspComp->getTime();
 
-        yInfo()<<" [GraspModule]: Complete solution "<<complete_sol.toString();
-        return false;
+        yInfo()<<" [GraspingModule]: Complete solution: "<<complete_sol.toString();
 
+        if (save_poses)
+            saveSol(complete_sol);
+
+        return true;
     }
+
+    if (save_poses)
+        saveSol(complete_sol);
+
    return true;
 }
 
@@ -242,7 +177,7 @@ double GraspingModule::getPeriod()
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
     portImgIn.open("/superquadric-grasp/img:i");
-    portImgOut.open("/superquadric-grasp/img:o");
+    portImgOut.open("/superquadric-grasp/img:o");   
 
     eye=rf.check("eye", Value("left")).asString();
 
@@ -288,21 +223,10 @@ bool GraspingModule::configPose(ResourceFinder &rf)
 {
     this->rf=&rf;
 
-    poseR.resize(6,0.0);
-    poseL.resize(6,0.0);
-
-    mode_online=(rf.check("online", Value("no")).asString()=="yes");
     n_pointshand=rf.check("pointshand", Value(48)).asInt();
     distance=rf.check("distance", Value(0.13)).asDouble();
     distance1=rf.check("distance1", Value(0.05)).asDouble();
-    superq_name=rf.check("superq_name", Value("Sponge")).asString();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
-    shift.resize(3,0.0);
-    shift[0]=-0.0;
-    shift[1]=-0.0;
-    shift[2]=0.0;
-
-    portSuperqRpc.open("/superquadric-grasp/superq:rpc");
 
     if (!mode_online)
     {
@@ -313,38 +237,33 @@ bool GraspingModule::configPose(ResourceFinder &rf)
 
     readSuperq("hand",hand,11,this->rf);
 
-
-    cout<<"left or oright "<<left_or_right<<endl;
     if (left_or_right=="both")
     {
         readSuperq("hand1",hand1,11,this->rf);
     }
 
+    readSuperq("displacement",displacement,3,this->rf);
+    readSuperq("plane",plane,4,this->rf);
+
     nameFileOut_right=rf.find("nameFileOut_right").asString().c_str();
     if(rf.find("nameFileOut_right").isNull())
        nameFileOut_right="test_right";
 
-    nameFileSolution_right=rf.find("nameFileSolution_right").asString();
-    if(rf.find("nameFileSolution_right").isNull())
-       nameFileSolution_right="solution_right.txt";
-
-    nameFileTrajectory=rf.find("nameFileTrajectory_right").asString().c_str();
+    nameFileTrajectory_right=rf.find("nameFileTrajectory_right").asString().c_str();
     if(rf.find("nameFileTrajectory_right").isNull())
-       nameFileTrajectory="test-trajectory_right.txt";
+       nameFileTrajectory_right="test-trajectory_right.txt";
 
     nameFileOut_left=rf.find("nameFileOut_left").asString().c_str();
     if(rf.find("nameFileOut_left").isNull())
        nameFileOut_left="test_left";
 
-    nameFileSolution_left=rf.find("nameFileSolution_left").asString();
-    if(rf.find("nameFileSolution_left").isNull())
-       nameFileSolution_left="solution_left.txt";
+    nameFileTrajectory_left=rf.find("nameFileTrajectory_left").asString().c_str();
+    if(rf.find("nameFileTrajectory_left").isNull())
+       nameFileTrajectory_left="test-trajectory_left.txt";
 
     tol=rf.check("tol", Value(1e-3)).asDouble();
     constr_viol_tol=rf.check("constr_tol", Value(1e-2)).asDouble();
-
     acceptable_iter=rf.check("acceptable_iter", Value(0)).asInt();
-
     max_iter=rf.check("max_iter", Value(1e8)).asInt();
 
     mu_strategy=rf.find("mu_strategy").asString().c_str();
@@ -364,13 +283,26 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     ipopt_par.put("IPOPT_nlp_scaling_method",nlp_scaling_method);
 
     pose_par.put("n_pointshand",n_pointshand);
-    pose_par.put("hand_displacement_x",displacement[0]);
-    pose_par.put("hand_displacement_y",displacement[1]);
-    pose_par.put("hand_displacement_z",displacement[2]);
+    Bottle planed;
+    Bottle &pd=planed.addList();
+    pd.addDouble(displacement[0]); pd.addDouble(displacement[1]);
+    pd.addDouble(displacement[2]);
+    pose_par.put("hand_displacement",planed.get(0));
+    Bottle planeb;
+    Bottle &p2=planeb.addList();
+    p2.addDouble(plane[0]); p2.addDouble(plane[1]);
+    p2.addDouble(plane[2]); p2.addDouble(plane[3]);
+    pose_par.put("plane", planeb.get(0));
+
 
     traj_par.put("distance_on_x",distance);
     traj_par.put("distance_on_z",distance1);
     traj_par.put("approaching_direction",dir);
+
+    poseR.resize(6,0.0);
+    poseL.resize(6,0.0);
+
+    portPose.open("/superquadric-grasp/pose:o");
 
     return true;
 }
@@ -397,15 +329,11 @@ bool GraspingModule::configure(ResourceFinder &rf)
             yError()<<"[GraspComputation]: Problems in starting the thread!";
     }
 
-    viewer=(rf.check("viewer", Value("no")).asString()=="yes");
-
     if (viewer)
         config=configViewer(rf);
 
     if (config==false)
         return false;
-
-    move=(rf.check("movement", Value("off")).asString()=="on");
 
     return true;
 }
@@ -423,6 +351,255 @@ bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &di
         return true;
     }
 }
+
+
+/**********************************************************************/
+string GraspingModule::get_save_poses()
+{
+    if (save_poses)
+    {
+        return "on";
+    }
+    else
+    {
+        return "off";
+    }
+}
+
+/**********************************************************************/
+bool GraspingModule::set_save_poses(const string &entry)
+{
+    if ((entry=="on") || (entry=="off"))
+    {
+        save_poses=(entry=="on");
+    }
+}
+
+/**********************************************************************/
+void GraspingModule::saveSol(const Property &poses)
+{
+    Bottle &pose=poses.findGroup("pose_right");
+    if (!pose.isNull())
+    {
+        Bottle *p=pose.get(1).asList();
+
+        for (size_t i=0; i<p->size(); i++)
+            poseR[i]=p->get(i).asDouble();
+    }
+    else
+        yError()<<"[GraspingModule]: No pose right found!";
+
+    Bottle &pose1=poses.findGroup("pose_left");
+    if (!pose1.isNull())
+    {
+        Bottle *p=pose1.get(1).asList();
+
+        for (size_t i=0; i<p->size(); i++)
+            poseL[i]=p->get(i).asDouble();
+    }
+    else
+        yError()<<"[GraspingModule]: No pose left found!";
+
+    if (left_or_right=="right" || left_or_right=="both")
+    {
+        ofstream fout((homeContextPath+"/"+nameFileOut_right).c_str());
+
+        yDebug()<<"[GraspingModule]: Saving solution for right hand in "<<(homeContextPath+"/"+nameFileOut_right).c_str();
+
+        if(fout.is_open())
+        {
+            fout<<"Initial right hand volume pose: "<<endl<<"["<<hand.toString(3,3).c_str()<<"]"<<endl<<endl;
+
+            fout<<"Final right hand pose: "<<endl<<"["<<poseR.toString(3,3)<<"]"<<endl<<endl;
+
+            fout<<"Average time for computation: "<<endl<<t_grasp<<endl<<endl;
+
+            fout<<"object: "<<endl<<"["<<object.toString(3,3)<<"]"<<endl<<endl;
+        }
+    }
+
+    if (left_or_right=="left" || left_or_right=="both")
+    {
+        ofstream fout((homeContextPath+"/"+nameFileOut_left).c_str());
+
+        yDebug()<<"[GraspingModule]: Saving solution for left hand in "<<(homeContextPath+"/"+nameFileOut_left).c_str();
+
+        if(fout.is_open())
+        {
+            if (left_or_right=="left")
+                fout<<"Initial left hand volume pose: "<<endl<<"["<<hand.toString(3,3).c_str()<<"]"<<endl<<endl;
+            else
+                fout<<"Initial left hand volume pose: "<<endl<<"["<<hand1.toString(3,3).c_str()<<"]"<<endl<<endl;
+
+            fout<<"Final left hand pose: "<<endl<<"["<<poseL.toString(3,3)<<"]"<<endl<<endl;
+
+            fout<<"Average time for computation: "<<endl<<t_grasp<<endl<<endl;
+
+            fout<<"object: "<<endl<<"["<<object.toString(3,3)<<"]"<<endl<<endl;
+        }
+    }
+
+    Vector tmp(6,0.0);
+    Bottle &pose2=poses.findGroup("trajectory_right");
+
+    if (!pose2.isNull())
+    {
+        Bottle *p=pose2.get(1).asList();
+        for (size_t i=0; i<p->size(); i++)
+        {
+            Bottle *p1=p->get(i).asList();
+
+
+            for (size_t j=0; j<p1->size(); j++)
+            {
+                tmp[i]=p1->get(j).asDouble();
+            }
+            trajectory_right.push_back(tmp);
+        }
+    }
+    else
+        yError()<<"[GraspingModule]: No trajectory right found!";
+
+    Bottle &pose3=poses.findGroup("trajectory_left");
+
+    if (!pose3.isNull())
+    {
+        Bottle *p=pose3.get(1).asList();
+        for (size_t i=0; i<p->size(); i++)
+        {
+            Bottle *p1=p->get(i).asList();
+
+
+            for (size_t j=0; j<p1->size(); j++)
+            {
+                tmp[i]=p1->get(j).asDouble();
+            }
+            trajectory_left.push_back(tmp);
+        }
+    }
+    else
+        yError()<<"[GraspingModule]: No trajectory left found!";
+
+    if (left_or_right=="right" || left_or_right=="both")
+    {
+        ofstream fout((homeContextPath+"/"+nameFileTrajectory_right).c_str());
+
+        yDebug()<<"[GraspingModule]: Saving trajectory for right hand in "<<(homeContextPath+nameFileOut_left).c_str();
+
+        if(fout.is_open())
+        {
+            fout<<"Trajectory for right hand: "<<endl;
+            for (size_t i=0; i<trajectory_right.size(); i++)
+            {
+                fout<<"["<<trajectory_right[i].toString(3,3).c_str()<<"]"<<endl<<endl;
+            }
+        }
+    }
+
+    if (left_or_right=="left" || left_or_right=="both")
+    {
+        ofstream fout((homeContextPath+"/"+nameFileTrajectory_left).c_str());
+
+        yDebug()<<"[GraspingModule]: Saving trajectory for left hand in "<<(homeContextPath+nameFileOut_left).c_str();
+
+        if(fout.is_open())
+        {
+            fout<<"Trajectory for left hand: "<<endl;
+            for (size_t i=0; i<trajectory_left.size(); i++)
+            {
+                fout<<"["<<trajectory_left[i].toString(3,3).c_str()<<"]"<<endl<<endl;
+            }
+        }
+    }
+}
+
+/**********************************************************************/
+Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
+{
+    Property pose;
+
+    Bottle *dim=estimated_superq.find("dimensions").asList();
+
+    if (!estimated_superq.find("dimensions").isNull())
+    {
+        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
+    }
+
+    Bottle *shape=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
+    }
+
+    Bottle *exp=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
+    }
+
+    Bottle *center=estimated_superq.find("center").asList();
+
+    if (!estimated_superq.find("center").isNull())
+    {
+        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
+    }
+
+    Bottle *orientation=estimated_superq.find("orientation").asList();
+
+    if (!estimated_superq.find("orientation").isNull())
+    {
+        Vector axis(4,0.0);
+        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
+        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
+    }
+
+
+    graspComp->object=object;
+    graspComp->setPar("left_or_right", hand);
+
+    pose=graspComp->getSolution(hand);
+
+    graspComp->setPar("left_or_right", left_or_right);
+    graspComp->object.resize(11,0.0);
+
+    return pose;
+}
+
+/**********************************************************************/
+bool GraspingModule::set_options(const Property &newOptions, const string &field)
+{
+    if (field=="pose")
+        graspComp->setPosePar(newOptions);
+    else if (field=="trajectory")
+        graspComp->setTrajectoryPar(newOptions);
+    else if (field=="optimization")
+        graspComp->setIpoptPar(newOptions);
+    else
+        return false;
+
+    return true;
+}
+
+/**********************************************************************/
+Property GraspingModule::get_options(const string &field)
+{
+    Property advOptions;
+    if (field=="pose")
+        advOptions=graspComp->getPosePar();
+    else if (field=="trajectory")
+        advOptions=graspComp->getTrajectoryPar();
+    else if (field=="optimization")
+        advOptions=graspComp->getIpoptPar();
+    else if (field=="statistics")
+    {
+        advOptions.put("average_computation_time", t_grasp);
+    }
+
+    return advOptions;
+}
+
 
 
 
