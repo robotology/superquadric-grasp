@@ -499,11 +499,22 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
         }
     }
 
-    trajectory.clear();
+    if (chosen_hand=="right")
+    {
+        trajectory_right.clear();
 
-    pose.setSubvector(0,pose.subVector(0,2));
-    trajectory.push_back(pose1);
-    trajectory.push_back(pose);
+        pose.setSubvector(0,pose.subVector(0,2));
+        trajectory_right.push_back(pose1);
+        trajectory_right.push_back(pose);
+    }
+    else
+    {
+        trajectory_left.clear();
+
+        pose.setSubvector(0,pose.subVector(0,2));
+        trajectory_left.push_back(pose1);
+        trajectory_left.push_back(pose);
+    }
 
     return true;
 }
@@ -585,14 +596,21 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         }
         poses.put("pose_right", bottle.get(0));
 
+        Bottle &bright1=bottle.addList();
+        for (size_t i=0; i<solR.size(); i++)
+        {
+            bright1.addDouble(solR[i]);
+        }
+        poses.put("solution_right", bottle.get(1));
+
         Bottle &bright3=bottle.addList();
-        for (size_t i=0; i<trajectory.size(); i++)
+        for (size_t i=0; i<trajectory_right.size(); i++)
         {
             Bottle &bb=bright3.addList();
-            for (size_t j=0; j<trajectory[i].size();j++)
-                bb.addDouble(trajectory[i][j]);
+            for (size_t j=0; j<trajectory_right[i].size();j++)
+                bb.addDouble(trajectory_right[i][j]);
         }
-        poses.put("trajectory_right", bottle.get(1));
+        poses.put("trajectory_right", bottle.get(2));
     }
 
     if ((l_o_r=="left") || (l_o_r=="both"))
@@ -602,16 +620,23 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         {
             bleft2.addDouble(poseL[i]);
         }
-        poses.put("pose_left", bottle.get(2));
+        poses.put("pose_left", bottle.get(3));
+
+        Bottle &bleft1=bottle.addList();
+        for (size_t i=0; i<solL.size(); i++)
+        {
+            bleft1.addDouble(solL[i]);
+        }
+        poses.put("solution_right", bottle.get(4));
 
         Bottle &bright3=bottle.addList();
-        for (size_t i=0; i<trajectory.size(); i++)
+        for (size_t i=0; i<trajectory_left.size(); i++)
         {
             Bottle &bb=bright3.addList();
-            for (size_t j=0; j<trajectory[i].size();j++)
-                bb.addDouble(trajectory[i][j]);
+            for (size_t j=0; j<trajectory_left[i].size();j++)
+                bb.addDouble(trajectory_left[i][j]);
         }
-        poses.put("trajectory_left", bottle.get(3));
+        poses.put("trajectory_left", bottle.get(5));
     }
 
     return poses;

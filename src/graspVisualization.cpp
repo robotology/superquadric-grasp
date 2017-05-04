@@ -17,7 +17,7 @@
 
 #include <yarp/math/Math.h>
 
-#include "superqVisualization.h"
+#include "graspVisualization.h"
 
 using namespace std;
 using namespace yarp::os;
@@ -33,58 +33,58 @@ GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl
 
 }
 
-
 /***********************************************************************/
-bool showTrajectory()
+bool GraspVisualization::showTrajectory(const string &hand_str)
 {
-   ImageOf<PixelRgb> *imgIn=portImgIn.read();
-   if (imgIn==NULL)
-       return false;
+    ImageOf<PixelRgb> *imgIn=portImgIn.read();
+    if (imgIn==NULL)
+        return false;
 
-   ImageOf<PixelRgb> &imgOut=portImgOut.prepare();
-   imgOut=*imgIn;
-   //imgOut.resize(imgIn->width(),imgIn->height());
+    ImageOf<PixelRgb> &imgOut=portImgOut.prepare();
+    imgOut=*imgIn;
 
-   cv::Mat imgInMat=cv::Mat((IplImage*)imgIn->getIplImage());
-   cv::Mat imgOutMat=cv::Mat((IplImage*)imgOut.getIplImage());
-   imgInMat.copyTo(imgOutMat);
+    cv::Mat imgInMat=cv::Mat((IplImage*)imgIn->getIplImage());
+    cv::Mat imgOutMat=cv::Mat((IplImage*)imgOut.getIplImage());
+    imgInMat.copyTo(imgOutMat);
 
-   PixelRgb color(255,255,0);
+    PixelRgb color(255,255,0);
 
-   Vector waypoint(6,0.0);
-   Vector waypoint2D(2,0.0);
+    Vector waypoint(6,0.0);
+    Vector waypoint2D(2,0.0);
 
-   Vector x(3,0.0);
-   Vector y(3,0.0);
-   Vector z(3,0.0);
-   double length=0.08;
-   Vector dir_x(3,0.0);
-   Vector dir_y(3,0.0);
-   Vector dir_z(3,0.0);
-   Vector x2D(2,0.0);
-   Vector y2D(2,0.0);
-   Vector z2D(2,0.0);
+    Vector x(3,0.0);
+    Vector y(3,0.0);
+    Vector z(3,0.0);
+    double length=0.08;
+    Vector dir_x(3,0.0);
+    Vector dir_y(3,0.0);
+    Vector dir_z(3,0.0);
+    Vector x2D(2,0.0);
+    Vector y2D(2,0.0);
+    Vector z2D(2,0.0);
+    deque<Vector> trajectory;
 
-   addSuperq(object,imgOut,255);
-   Vector hand_in_pose(11,0.0);
+    addSuperq(object,imgOut,255);
 
-   if (chosen_hand=="right")
-   {
-       hand_in_pose.setSubvector(0,hand);
-       hand_in_pose.setSubvector(5,solR);
-       addSuperq(hand_in_pose,imgOut,0);
-   }
-   else
-   {
-       hand_in_pose.setSubvector(0,hand1);
-       hand_in_pose.setSubvector(5,solL);
-       addSuperq(hand_in_pose,imgOut,0);
-   }
+    if (hand_str=="right")
+    {
+        hand_in_poseR.setSubvector(0,hand);
+        hand_in_poseR.setSubvector(5,solR);
+        addSuperq(hand_in_poseR,imgOut,0);
+        trajectory=trajectory_right;
+    }
+    else
+    {
+        hand_in_poseL.setSubvector(0,hand1);
+        hand_in_poseL.setSubvector(5,solL);
+        addSuperq(hand_in_poseL,imgOut,0);
+        trajectory_left;
+    }
 
    for (size_t i=0; i<trajectory.size(); i++)
    {
        waypoint=trajectory[i];
-       yDebug()<<"waypoint "<<i<<waypoint.toString();
+       yDebug()<<" waypoint "<<i<<waypoint.toString();
 
        if (eye=="left")
            igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
@@ -150,143 +150,11 @@ bool showTrajectory()
            cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
    }
 
-   cout<<"Point to be observed: "<<waypoint.toString()<<endl;
-
-   //igaze->lookAtFixationPoint(waypoint);
    portImgOut.write();
 }
 
 /***********************************************************************/
-bool showPoses(Vector &pose, Vector &pose2, const int &n_poses, int change_color)
-{
-   ImageOf<PixelRgb> *imgIn=portImgIn.read();
-   if (imgIn==NULL)
-       return false;
-
-   ImageOf<PixelRgb> &imgOut=portImgOut.prepare();
-   imgOut=*imgIn;
-
-   deque<Vector> poses;
-   poses.push_back(pose);
-   poses.push_back(pose2);
-
-   cv::Mat imgInMat=cv::Mat((IplImage*)imgIn->getIplImage());
-   cv::Mat imgOutMat=cv::Mat((IplImage*)imgOut.getIplImage());
-   imgInMat.copyTo(imgOutMat);
-
-   PixelRgb color(255,255,0);
-
-   Vector waypoint(6,0.0);
-   Vector waypoint2D(2,0.0);
-
-   Vector x(3,0.0);
-   Vector y(3,0.0);
-   Vector z(3,0.0);
-   double length=0.08;
-   Vector dir_x(3,0.0);
-   Vector dir_y(3,0.0);
-   Vector dir_z(3,0.0);
-   Vector x2D(2,0.0);
-   Vector y2D(2,0.0);
-   Vector z2D(2,0.0);
-
-   addSuperq(object,imgOut,255);
-   Vector hand_in_pose(11,0.0);
-
-   if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
-       hand[1]=findMax(object.subVector(0,2));
-
-   if (n_poses==1)
-   {
-       hand_in_pose.setSubvector(0,hand);
-       hand_in_pose.setSubvector(5,solR);
-       addSuperq(hand_in_pose,imgOut,0);
-   }
-   else if (n_poses==2)
-   {
-       hand_in_pose.setSubvector(0,hand);
-       hand_in_pose.setSubvector(5,solR);
-       addSuperq(hand_in_pose,imgOut,0);
-       hand_in_pose.setSubvector(0,hand1);
-       hand_in_pose.setSubvector(5,solL);
-       addSuperq(hand_in_pose,imgOut,0);
-   }
-
-   for (int i=0; i<n_poses; i++)
-   {
-       waypoint=poses[i];
-
-       if (eye=="left")
-           igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
-       else
-           igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
-
-       Matrix H=euler2dcm(waypoint.subVector(3,5));
-
-       dir_x=H.subcol(0,0,3);
-       dir_y=H.subcol(0,1,3);
-       dir_z=H.subcol(0,2,3);
-
-       x[0]=waypoint[0]+length*dir_x[0]; x[1]=waypoint[1]+length*dir_x[1]; x[2]=waypoint[2]+length*dir_x[2];
-       y[0]=waypoint[0]+length*dir_y[0]; y[1]=waypoint[1]+length*dir_y[1]; y[2]=waypoint[2]+length*dir_y[2];
-       z[0]=waypoint[0]+length*dir_z[0]; z[1]=waypoint[1]+length*dir_z[1]; z[2]=waypoint[2]+length*dir_z[2];
-
-       if (eye=="left")
-       {
-           igaze->get2DPixel(0,x,x2D);
-           igaze->get2DPixel(0,y,y2D);
-           igaze->get2DPixel(0,z,z2D);
-       }
-       else
-       {
-           igaze->get2DPixel(1,x,x2D);
-           igaze->get2DPixel(1,y,y2D);
-           igaze->get2DPixel(1,z,z2D);
-       }
-
-       cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
-       cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
-       cv::Point  target_pointy((int)y2D[0],(int)y2D[1]);
-       cv::Point  target_pointz((int)z2D[0],(int)z2D[1]);
-
-       if ((target_point.x<0) || (target_point.y<0) || (target_point.x>=320) || (target_point.y>=240))
-       {
-           yError("Not acceptable pixels!");
-       }
-       else
-           imgOut.pixel(target_point.x, target_point.y)= color;
-
-       if ((target_pointx.x<0) || (target_pointx.y<0) || (target_pointx.x>=320) || (target_pointx.y>=240))
-       {
-           yError("Not acceptable pixels!");
-       }
-       else
-           cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255-change_color,0+change_color,0));
-
-       if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
-       {
-           yError("Not acceptable pixels!");
-       }
-       else
-           cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0+change_color,255-change_color,0));
-
-       if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
-       {
-           yError("Not acceptable pixels!");
-       }
-       else
-           cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0+change_color,255-change_color));
-   }
-
-   //if (norm(object)!=0.0)
-       //igaze->lookAtFixationPoint(object.subVector(5,7));
-   portImgOut.write();
-
-   return true;
-}
-
-/***********************************************************************/
-void addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
+void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
 {
     PixelRgb color(col,255,0);
     Vector pos, orient;
@@ -357,7 +225,7 @@ void addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
 }
 
 /*******************************************************************************/
-Vector from3Dto2D(const Vector &point3D)
+Vector GraspVisualization::from3Dto2D(const Vector &point3D)
 {
     Vector point2D(3,0.0);
     Vector point_aux(4,1.0);
@@ -371,6 +239,7 @@ bool GraspVisualization::threadInit()
 {
     yInfo()<<"[GraspVisualization]: Thread initing ... ";
 
+    portImgIn.open("/superquadric-grasp/img:i");
     portImgOut.open("/superquadric-grasp/img:o");
 
     R.resize(4,4);
@@ -382,8 +251,25 @@ bool GraspVisualization::threadInit()
 
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
+    solR.resize(6,0.0);
+    solL.resize(6,0.0);
+
+    hand_in_poseR.resize(11,0.0);
+    hand_in_poseL.resize(11,0.0);
 
     return true;
+}
+
+/***********************************************************************/
+void GraspVisualization::threadRelease()
+{
+    yInfo()<<"[GraspVisualization]: Thread releasing ... ";
+
+    if (!portImgIn.isClosed())
+        portImgOut.close();
+
+    if (!portImgOut.isClosed())
+        portImgOut.close();
 }
 
 /***********************************************************************/
@@ -391,38 +277,90 @@ void GraspVisualization::run()
 {
     double t0=Time::now();
     if (left_or_right=="both")
-        showPoses(poseR, poseL, 2,0);
-    else if (left_or_right=="right")
-        showPoses(poseR, poseR, 1,0);
+    {
+        showTrajectory("left");
+        showTrajectory("right");
+    }
     else
-        showPoses(poseL, poseL, 1,0);
-
-    //showTrajectory();
+        showTrajectory(left_or_right);
 
     t_vis=Time::now()-t0;
 }
 
 /***********************************************************************/
-void getPoses(yarp::os::Property &poses)
+void GraspVisualization::getPoses(yarp::os::Property &poses)
 {
     LockGuard lg(mutex);
+    Vector tmp(6,0.0);
 
-    Bottle &pose=poses.findGroup("pose_right");
-    if (!poses.isNull())
+    Bottle &pose2=poses.findGroup("trajectory_right");
+
+    if (!pose2.isNull())
     {
-        for (size_t i=0; i<pose.size(); i++)
-            poseR[i]=pose.get(i).asDouble();
+        Bottle *p=pose2.get(1).asList();
+        for (size_t i=0; i<p->size(); i++)
+        {
+            Bottle *p1=p->get(i).asList();
+
+
+            for (size_t j=0; j<p1->size(); j++)
+            {
+                tmp[i]=p1->get(j).asDouble();
+            }
+            trajectory_right.push_back(tmp);
+        }
     }
     else
-        yError()<<"[GraspVisualization]: No pose right received!";
+        yError()<<"[GraspVisualization]: No trajectory right found!";
 
-    Bottle &pose2=poses.findGroup("pose_right");
-    if (!poses2.isNull())
+    Bottle &pose3=poses.findGroup("trajectory_left");
+
+    if (!pose3.isNull())
     {
-        for (size_t i=0; i<pose2.size(); i++)
-            poseL[i]=pose2.get(i).asDouble();
+        Bottle *p=pose3.get(1).asList();
+        for (size_t i=0; i<p->size(); i++)
+        {
+            Bottle *p1=p->get(i).asList();
+
+
+            for (size_t j=0; j<p1->size(); j++)
+            {
+                tmp[i]=p1->get(j).asDouble();
+            }
+            trajectory_left.push_back(tmp);
+        }
     }
     else
-        yError()<<"[GraspVisualization]: No pose right received!";
+        yError()<<"[GraspVisualization]: No trajectory left found!";
+
+    Bottle &pose=poses.findGroup("solution_right");
+    if (!pose.isNull())
+    {
+        Bottle *p=pose.get(1).asList();
+
+        for (size_t i=0; i<p->size(); i++)
+            solR[i]=p->get(i).asDouble();
+    }
+    else
+        yError()<<"[GraspVisualization]: No solution right found!";
+
+    Bottle &pose1=poses.findGroup("solution_left");
+    if (!pose1.isNull())
+    {
+        Bottle *p=pose1.get(1).asList();
+
+        for (size_t i=0; i<p->size(); i++)
+            solL[i]=p->get(i).asDouble();
+    }
+    else
+        yError()<<"[GraspVisualization]: No solution left found!";
+}
+
+
+/***********************************************************************/
+double GraspVisualization::getTime()
+{
+    LockGuard lg(mutex);
+    return t_vis;
 }
 

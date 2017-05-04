@@ -70,9 +70,10 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 
     dir=rf.check("approaching_direction", Value("z")).asString();
     rate=rf.check("rate", Value(100)).asInt();
+    rate_vis=rf.check("rate_vis", Value(100)).asInt();
     mode_online=(rf.check("mode_online", Value("on")).asString()=="on");
     save_poses=(rf.check("save_poses", Value("on")).asString()=="on");
-    viewer=(rf.check("viewer", Value("no")).asString()=="yes");
+    visualization=(rf.check("visualization", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -85,21 +86,18 @@ bool GraspingModule::close()
     graspComp->stop();
     delete graspComp;
 
+    graspVis->stop();
+    delete graspVis;
+
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
     if (portPose.isClosed())
         portPose.close();
 
-    if (viewer==true)
+    if (visualization==true)
     {
         GazeCtrl.close();
-
-        if (!portImgIn.isClosed())
-            portImgIn.close();
-
-        if (!portImgOut.isClosed())
-            portImgOut.close();
     }
 
     return true;
@@ -107,9 +105,8 @@ bool GraspingModule::close()
 
 /****************************************************************/
 bool GraspingModule::interruptModule()
-{
-    if (viewer)
-        portImgIn.interrupt();
+{   
+    portPose.interrupt();
 
     return true;
 }
@@ -142,6 +139,25 @@ bool GraspingModule::updateModule()
         times_grasp.clear();
 
         portPose.write();
+
+        if (visualization)
+        {
+            graspVis->getPoses(complete_sol);
+
+            if (times_vis.size()<10)
+            times_vis.push_back(graspVis->getTime());
+            else if (times_vis.size()==10)
+            {
+                for (size_t i=0; i<times_vis.size(); i++)
+                {
+                    t_vis+=times_vis[i];
+                }
+                t_vis=t_vis/times_vis.size();
+                times_vis.push_back(0.0);
+            }
+            else
+                times_vis.clear();
+        }
     }
     else
     {
@@ -158,7 +174,7 @@ bool GraspingModule::updateModule()
         if (save_poses)
             saveSol(complete_sol);
 
-        return true;
+        return false;
     }
 
     if (save_poses)
@@ -176,9 +192,6 @@ double GraspingModule::getPeriod()
 /***********************************************************************/
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
-    portImgIn.open("/superquadric-grasp/img:i");
-    portImgOut.open("/superquadric-grasp/img:o");   
-
     eye=rf.check("eye", Value("left")).asString();
 
     Property optionG;
@@ -329,11 +342,26 @@ bool GraspingModule::configure(ResourceFinder &rf)
             yError()<<"[GraspComputation]: Problems in starting the thread!";
     }
 
-    if (viewer)
-        config=configViewer(rf);
+    config=configViewer(rf);
 
     if (config==false)
         return false;
+
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right);
+
+    if (visualization)
+    {
+        bool thread_started=graspVis->start();
+
+        if (thread_started)
+            yInfo()<<"[GraspVisualization]: Thread started!";
+        else
+            yError()<<"[GraspVisualization]: Problems in starting the thread!";
+    }
+    else
+    {
+            graspVis->threadInit();
+    }
 
     return true;
 }
@@ -595,9 +623,46 @@ Property GraspingModule::get_options(const string &field)
     else if (field=="statistics")
     {
         advOptions.put("average_computation_time", t_grasp);
+        advOptions.put("average_visualization_time", t_vis);
     }
 
     return advOptions;
+}
+
+/**********************************************************************/
+string GraspingModule::get_visualization()
+{
+    if (visualization)
+        return "on";
+    else
+        return "off";
+}
+
+/**********************************************************************/
+bool GraspingModule::set_visualization(const string &e)
+{
+    if ((e=="on") || (e=="off"))
+    {
+        LockGuard lg(mutex);
+
+        if ((visualization==false) && (e=="on"))
+        {
+            graspVis->resume();
+
+            visualization=true;
+
+        }
+        else if ((visualization==true) && (e=="off"))
+        {
+            graspVis->suspend();
+            visualization=false;
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 

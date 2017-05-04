@@ -1,13 +1,12 @@
 <application>
-    <name>superquadric-grasping</name>
+    <name>superquadric-grasp</name>
 
     <dependencies>
         <port>/icub/camcalib/left/out</port>
-        <port>/superquadric-model/rpc</port>
     </dependencies>
 
     <module>
-       <name>superquadric-grasping</name>
+       <name>superquadric-grasp</name>
        <node>icub21</node>
     </module>
 
@@ -18,27 +17,15 @@
     </module>
 
     <connection>
-        <from>/superquadric-grasping/superq:rpc</from>
-        <to>/superquadric-model/rpc</to>
-        <protocol>tcp</protocol>
-    </connection>
-
-    <connection>
-        <from>/superquadric-grasping/img:o</from>
+        <from>/superquadric-grasp/img:o</from>
         <to>/dispPose</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/left/out</from>
-        <to>/superquadric-grasping/img:i</to>
+        <to>/superquadric-grasp/img:i</to>
         <protocol>udp</protocol>
-    </connection>
-    
-    <connection>
-        <from>/superquadric-grasping/camcalib:rpc</from>
-        <to>/depth2kin/rpc</to>
-        <protocol>tcp</protocol>
     </connection>
 
 </application>

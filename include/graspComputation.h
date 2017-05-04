@@ -29,7 +29,8 @@ protected:
 
     std::string left_or_right;
 
-    std::deque<yarp::sig::Vector> trajectory;
+    std::deque<yarp::sig::Vector> trajectory_right;
+    std::deque<yarp::sig::Vector> trajectory_left;
     yarp::sig::Vector poseR, solR;
     yarp::sig::Vector poseL, solL;
     yarp::sig::Vector pose_tmp, pose_tmp2;

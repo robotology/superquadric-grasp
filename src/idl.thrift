@@ -120,5 +120,17 @@ service superquadricGrasp_IDL
     * (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5).
     */
     Property get_grasping_pose(1: Property estimated_superq, 2: string hand);
+
+    /**
+    * Set if the visualization has to be enabled.
+    *@return  true/false on success/failure.
+    */
+    bool set_visualization(1:string e)
+
+    /**
+    * Get if visualization is enabled.
+    *@return "on" or "off".
+    */
+    string get_visualization()
 }
     

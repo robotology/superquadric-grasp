@@ -23,8 +23,8 @@ icubcontrib_set_default_prefix()
 
 find_package(IPOPT REQUIRED)
 
-set(sources src/superquadric.cpp src/main.cpp src/graspModule.cpp src/graspComputation.cpp)
-set(headers include/superquadric.h include/graspModule.h include/graspComputation.h)
+set(sources src/superquadric.cpp src/main.cpp src/graspModule.cpp src/graspComputation.cpp src/graspVisualization.cpp)
+set(headers include/superquadric.h include/graspModule.h include/graspComputation.h include/graspVisualization.h)
 yarp_add_idl(IDL_GEN_FILES src/idl.thrift)
 source_group("IDL Files" FILES src/idl.thrift)
 source_group("Source Files" FILES ${sources})

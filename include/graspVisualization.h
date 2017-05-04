@@ -39,18 +39,26 @@ protected:
     yarp::dev::IGazeControl *igaze;
     yarp::sig::Matrix K,H;
 
-    yarp::sig::Vector poseR, poseL;
+    yarp::sig::Vector poseR, poseL, solR, solL;
+    yarp::sig::Vector hand_in_poseL, hand_in_poseR, hand, hand1;
+    std::deque<yarp::sig::Vector> trajectory_right;
+    std::deque<yarp::sig::Vector> trajectory_left;
+    yarp::sig::Vector point2D, point, point1, superq;
+    yarp::sig::Vector object;
+    yarp::sig::Matrix R;
 
 public:
 
+    double t_vis;
+    yarp::os::Mutex mutex;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
-    /***********************************************************************/
-    GraspVisualization(int rate, const std::string &_eye,std::string left_or_right,
-                        yarp::dev::IGazeControl *_igaze, const yarp::sig::Matrix _K);
+    yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
+    yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
 
     /***********************************************************************/
-    bool showPoses(yarp::sig::Vector &pose, yarp::sig::Vector &pose2, const int &n_poses, int change_color);
+    GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
+                       const yarp::sig::Matrix _K,  std::string left_or_right);
 
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);
@@ -59,7 +67,7 @@ public:
     yarp::sig::Vector from3Dto2D(const yarp::sig::Vector &point3D);
 
     /***********************************************************************/
-    bool showTrajectory();
+    bool showTrajectory(const std::string &hand);
 
     /***********************************************************************/
     virtual bool threadInit();

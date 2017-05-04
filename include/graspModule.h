@@ -26,7 +26,7 @@
 
 #include "superquadric.h"
 #include "graspComputation.h"
-//#include "graspVisualization.h"
+#include "graspVisualization.h"
 //#include "graspExecution.h"
 
 #include "src/superquadricGrasp_IDL.h"
@@ -49,9 +49,10 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
 
-    int rate;
-    double t,t0, t_grasp;
+    int rate, rate_vis;
+    double t,t0, t_grasp, t_vis;
     std::deque<double> times_grasp;
+    std::deque<double> times_vis;
 
     double tol;
     int max_iter;
@@ -71,8 +72,6 @@ protected:
     yarp::sig::Vector plane;
 
     yarp::os::RpcServer portRpc;
-    yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
-    yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
     yarp::os::BufferedPort<yarp::os::Property > portPose;
 
     std::string eye;
@@ -81,7 +80,7 @@ protected:
     yarp::dev::IGazeControl *igaze;
 
     bool go_on;
-    bool viewer;
+    bool visualization;
     bool mode_online;    
     bool save_poses;
 
@@ -92,6 +91,7 @@ protected:
     yarp::os::Mutex mutex;
 
     GraspComputation *graspComp;
+    GraspVisualization *graspVis;
 
     yarp::os::Property pose_par;
     yarp::os::Property traj_par;
