@@ -23,7 +23,7 @@
 #include "superquadric.h"
 
 /*******************************************************************************/
-class GraspComputation : public yarp::os::RateThread
+class GraspComputation
 {
 protected:
 
@@ -60,14 +60,12 @@ protected:
 
     yarp::os::ResourceFinder *rf;
 
-    yarp::os::BufferedPort<yarp::os::Property> objectPort;
-
 public:
     
-    yarp::os::Property *estimated_superq;
+//    yarp::os::Property estimated_superq;
     yarp::sig::Vector object;
     /*******************************************************************************/
-    GraspComputation(int rate, const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
+    GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf);
 
@@ -90,16 +88,16 @@ public:
     yarp::os::Property getTrajectoryPar();
 
     /***********************************************************************/
-    virtual bool threadInit();
+    bool init();
 
     /***********************************************************************/
-    virtual void run();
+    void run();
 
     /***********************************************************************/
-    virtual void threadRelease();
+    void release();
 
     /***********************************************************************/
-    void getSuperq();
+    void getSuperq(const yarp::os::Property &superq);
 
     /***********************************************************************/
     bool computePose(yarp::sig::Vector &hand, const std::string &left_or_right);
@@ -120,7 +118,7 @@ public:
     void setPar(const std::string &tag, const std::string &value);
 
     /**********************************************************************/
-    yarp::os::Property getObjectSuperq();
+    yarp::sig::Vector getObjectSuperq();
 
 };
 

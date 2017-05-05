@@ -102,14 +102,11 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     for (size_t i=0; i<trajectory.size(); i++)
     {
         waypoint=trajectory[i];
-        //yDebug()<<" waypoint "<<i<<waypoint.toString();
 
         if (eye=="left")
             igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
         else
             igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
-
-        //yDebug()<<"2D waypoint "<<i<<waypoint2D.toString(); 
 
         Matrix H=euler2dcm(waypoint.subVector(3,5));
 
@@ -296,16 +293,11 @@ void GraspVisualization::threadRelease()
 /***********************************************************************/
 void GraspVisualization::run()
 {
+    yInfo()<<"[GraspVisualization]: Thread running ... ";
     double t0=Time::now();
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
-        //if (left_or_right=="both")
-        //{
-        //    showTrajectory("left");
-       //     showTrajectory("right");
-        //}
-       // else
-            showTrajectory(left_or_right);
+        showTrajectory(left_or_right);
     }
     else
         yError()<<"[GraspVisualization]: No solution to be visualized!";
@@ -384,44 +376,9 @@ void GraspVisualization::getPoses(yarp::os::Property &poses)
 }
 
 /***********************************************************************/
-void GraspVisualization::getObject(yarp::os::Property &obj)
+void GraspVisualization::getObject(Vector &obj)
 {
-    Bottle *dim=obj.find("dimensions").asList();
-
-    if (!obj.find("dimensions").isNull())
-    {
-        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
-    }
-
-    Bottle *shape=obj.find("exponents").asList();
-
-    if (!obj.find("exponents").isNull())
-    {
-        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
-    }
-
-    Bottle *exp=obj.find("exponents").asList();
-
-    if (!obj.find("exponents").isNull())
-    {
-        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
-    }
-
-    Bottle *center=obj.find("center").asList();
-
-    if (!obj.find("center").isNull())
-    {
-        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
-    }
-
-    Bottle *orientation=obj.find("orientation").asList();
-
-    if (!obj.find("orientation").isNull())
-    {
-        Vector axis(4,0.0);
-        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
-        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
-    }
+    object=obj;
 }
 
 

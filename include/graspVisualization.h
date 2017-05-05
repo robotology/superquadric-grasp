@@ -80,7 +80,7 @@ public:
     virtual void threadRelease();
 
     /***********************************************************************/
-    void getObjectSuperq(yarp::os::Property &superq);
+    void getObjectSuperq(yarp::sig::Vector &superq);
     
     /***********************************************************************/
     void getPoses(yarp::os::Property &poses);
@@ -89,7 +89,7 @@ public:
     double getTime();
     
     /***********************************************************************/
-    void getObject(yarp::os::Property &obj);
+    void getObject(yarp::sig::Vector &obj);
 
 };
 

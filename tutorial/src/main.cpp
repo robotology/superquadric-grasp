@@ -76,35 +76,6 @@ public:
     }
 
     /************************************************************************/
-    void  sendObject()
-    {
-        Property &superq=superqPort.prepare();
-
-        Bottle bottle;
-        Bottle &b1=bottle.addList();
-        b1.addDouble(sol[0]); b1.addDouble(sol[1]); b1.addDouble(sol[2]);
-        superq.put("dimensions", bottle.get(0));
-
-        Bottle &b2=bottle.addList();
-        b2.addDouble(sol[3]); b2.addDouble(sol[4]);
-        superq.put("exponents", bottle.get(1));
-
-        Bottle &b3=bottle.addList();
-        b3.addDouble(sol[5]); b3.addDouble(sol[6]); b3.addDouble(sol[7]);
-        superq.put("center", bottle.get(2));
-
-        Bottle &b4=bottle.addList();
-        Vector orient=dcm2axis(euler2dcm(sol.subVector(8,10)));
-        b4.addDouble(orient[0]); b4.addDouble(orient[1]); b4.addDouble(orient[2]); b4.addDouble(orient[3]);
-        superq.put("orientation", bottle.get(3));
-        
-        cout<<"Superq sent "<<superq.toString()<<endl;
-
-
-        superqPort.write();
-    }
-
-    /************************************************************************/
     bool getperiod()
     {
         return 0.0;
@@ -178,7 +149,7 @@ public:
             Bottle &b8=b1.addList();
             b8.addString("center");
             Bottle &b9=b8.addList();
-            b9.addDouble(sol[0]); b9.addDouble(sol[1]); b9.addDouble(sol[2]);
+            b9.addDouble(sol[5]); b9.addDouble(sol[6]); b9.addDouble(sol[7]);
 
     
             Bottle &b11=b1.addList();

@@ -69,7 +69,6 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     attach(portRpc);
 
     dir=rf.check("approaching_direction", Value("z")).asString();
-    rate=rf.check("rate", Value(100)).asInt();
     rate_vis=rf.check("rate_vis", Value(100)).asInt();
     mode_online=(rf.check("mode_online", Value("on")).asString()=="on");
     save_poses=(rf.check("save_poses", Value("on")).asString()=="on");
@@ -83,7 +82,6 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::close()
 {
-    graspComp->stop();
     delete graspComp;
 
     graspVis->stop();
@@ -91,9 +89,6 @@ bool GraspingModule::close()
 
     if (portRpc.asPort().isOpen())
         portRpc.close();
-
-    if (portPose.isClosed())
-        portPose.close();
 
     if (visualization==true)
     {
@@ -105,9 +100,7 @@ bool GraspingModule::close()
 
 /****************************************************************/
 bool GraspingModule::interruptModule()
-{   
-    portPose.interrupt();
-
+{
     return true;
 }
 
@@ -116,68 +109,28 @@ bool GraspingModule::updateModule()
 {    
     LockGuard lg(mutex);
 
-    if (mode_online)
+    //complete_sol=graspComp->getSolution(left_or_right);
+
+    if (visualization)
     {
-        Property &complete_sol=portPose.prepare();
+        object=graspComp->getObjectSuperq();
+            cout<<"Object "<<object.toString()<<endl;
+        graspVis->getPoses(complete_sol);
+        graspVis->getObject(object);
 
-        complete_sol=graspComp->getSolution(left_or_right);
-
-        yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
-
-        if (times_grasp.size()<10)
-            times_grasp.push_back(graspComp->getTime());
-
-        else if (times_grasp.size()==10)
+        if (times_vis.size()<10)
+        times_vis.push_back(graspVis->getTime());
+        else if (times_vis.size()==10)
         {
-            for (size_t i=0; i<times_grasp.size(); i++)
+            for (size_t i=0; i<times_vis.size(); i++)
             {
-                t_grasp+=times_grasp[i];
+                t_vis+=times_vis[i];
             }
-            t_grasp=t_grasp/times_grasp.size();
-            times_grasp.push_back(0.0);
+            t_vis=t_vis/times_vis.size();
+            times_vis.push_back(0.0);
         }
         else
-        times_grasp.clear();
-
-        portPose.write();
-
-        if (visualization)
-        {
-            object_property=graspComp->getObjectSuperq();
-            graspVis->getPoses(complete_sol);
-            graspVis->getObject(object_property);
-
-            if (times_vis.size()<10)
-            times_vis.push_back(graspVis->getTime());
-            else if (times_vis.size()==10)
-            {
-                for (size_t i=0; i<times_vis.size(); i++)
-                {
-                    t_vis+=times_vis[i];
-                }
-                t_vis=t_vis/times_vis.size();
-                times_vis.push_back(0.0);
-            }
-            else
-                times_vis.clear();
-        }
-    }
-    else
-    {
-        graspComp->threadInit();
-        graspComp->setPar("one_shot", "on");
-        graspComp->object=object;
-        graspComp->step();
-
-        complete_sol=graspComp->getSolution(left_or_right);
-        t_grasp=graspComp->getTime();
-
-        yInfo()<<" [GraspingModule]: Complete solution: "<<complete_sol.toString();
-
-        if (save_poses)
-            saveSol(complete_sol);
-
-        return false;
+            times_vis.clear();
     }
 
     if (save_poses)
@@ -244,11 +197,11 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     distance1=rf.check("distance1", Value(0.05)).asDouble();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
-    if (!mode_online)
-    {
-        readSuperq("object",object,11,this->rf);
-    }
-    else
+//    if (!mode_online)
+//    {
+//        readSuperq("object",object,11,this->rf);
+//    }
+//    else
         object.resize(11,0.0);
 
     readSuperq("hand",hand,11,this->rf);
@@ -323,8 +276,6 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
 
-    portPose.open("/superquadric-grasp/pose:o");
-
     return true;
 }
 
@@ -338,17 +289,9 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(rate, ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf);
 
-    if (mode_online)
-    {
-        bool thread_started=graspComp->start();
-
-        if (thread_started)
-            yInfo()<<"[GraspComputation]: Thread started!";
-        else
-            yError()<<"[GraspComputation]: Problems in starting the thread!";
-    }
+    graspComp->init();
 
     config=configViewer(rf);
 
@@ -552,7 +495,7 @@ void GraspingModule::saveSol(const Property &poses)
 /**********************************************************************/
 Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
 {
-    Property pose;
+    LockGuard lg(mutex);
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -594,13 +537,14 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     graspComp->object=object;
     graspComp->setPar("left_or_right", hand);
+    graspComp->run();
+    complete_sol=graspComp->getSolution(hand);
 
-    pose=graspComp->getSolution(hand);
+    yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
-    graspComp->setPar("left_or_right", left_or_right);
-    graspComp->object.resize(11,0.0);
+    t_grasp=graspComp->getTime();
 
-    return pose;
+    return complete_sol;
 }
 
 /**********************************************************************/

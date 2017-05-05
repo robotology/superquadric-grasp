@@ -16,10 +16,10 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspComputation::GraspComputation(int _rate, const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
+GraspComputation::GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                                    const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                                    const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, ResourceFinder *_rf):
-                                   RateThread(_rate), ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
+                                   ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_or_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf)
 
 {
@@ -337,7 +337,7 @@ Property GraspComputation::getTrajectoryPar()
 }
 
 /***********************************************************************/
-bool GraspComputation::threadInit()
+bool GraspComputation::init()
 {
     yInfo()<<"[GraspComputation]: Thread initing ... ";
 
@@ -352,10 +352,6 @@ bool GraspComputation::threadInit()
     object.resize(11,0.0);
 
     go_on=false;
-    one_shot=false;
-
-    if (!one_shot)
-        objectPort.open("/superquadric-grasp/object:i");
 
     return true;
 }
@@ -365,9 +361,6 @@ void GraspComputation::run()
 {
     t0=Time::now();
     LockGuard lg(mutex);
-
-    if (one_shot==false)
-        getSuperq();
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
     {
@@ -397,10 +390,8 @@ void GraspComputation::run()
 }
 
 /***********************************************************************/
-void GraspComputation::threadRelease()
+void GraspComputation::release()
 {
-    if (!objectPort.isClosed())
-        objectPort.close();
 }
 
 /***********************************************************************/
@@ -520,53 +511,47 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
 }
 
 /***********************************************************************/
-void GraspComputation::getSuperq()
+void GraspComputation::getSuperq(const Property &estimated_superq)
 {
-    estimated_superq=objectPort.read(false);   
+    cout<<"Estimated_superq "<<estimated_superq.toString()<<endl<<endl;
+    yInfo()<<"[GraspComputation]: Superquadric received "<<estimated_superq.toString();
 
-    if (estimated_superq!=NULL)
+    Bottle *dim=estimated_superq.find("dimensions").asList();
+
+    if (!estimated_superq.find("dimensions").isNull())
     {
-        yInfo()<<"[GraspComputation]: Superquadric received "<<estimated_superq->toString();
-
-        Bottle *dim=estimated_superq->find("dimensions").asList();
-
-        if (!estimated_superq->find("dimensions").isNull())
-        {
-            object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
-        }
-
-        Bottle *shape=estimated_superq->find("exponents").asList();
-
-        if (!estimated_superq->find("exponents").isNull())
-        {
-            object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
-        }
-
-        Bottle *exp=estimated_superq->find("exponents").asList();
-
-        if (!estimated_superq->find("exponents").isNull())
-        {
-            object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
-        }
-
-        Bottle *center=estimated_superq->find("center").asList();
-
-        if (!estimated_superq->find("center").isNull())
-        {
-            object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
-        }
-
-        Bottle *orientation=estimated_superq->find("orientation").asList();
-
-        if (!estimated_superq->find("orientation").isNull())
-        {
-            Vector axis(4,0.0);
-            axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
-            object.setSubvector(8,dcm2euler(axis2dcm(axis)));
-        }
+        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
     }
-    else
-        yError()<<"[GraspComputation]: No superquadric received!";
+
+    Bottle *shape=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
+    }
+
+    Bottle *exp=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
+    }
+
+    Bottle *center=estimated_superq.find("center").asList();
+
+    if (!estimated_superq.find("center").isNull())
+    {
+        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
+    }
+
+    Bottle *orientation=estimated_superq.find("orientation").asList();
+
+    if (!estimated_superq.find("orientation").isNull())
+    {
+        Vector axis(4,0.0);
+        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
+        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
+    }
 }
 
 /***********************************************************************/
@@ -586,15 +571,9 @@ Property GraspComputation::getSolution(const string &hand)
 }
 
 /***********************************************************************/
-Property GraspComputation::getObjectSuperq()
+Vector GraspComputation::getObjectSuperq()
 {
-    if (estimated_superq!=NULL)
-        return *estimated_superq;
-    else
-    {
-        Property test;
-        return test;
-    }
+    return object;
 }
 
 /**********************************************************************/
@@ -664,6 +643,4 @@ void GraspComputation::setPar(const string &par_name, const string &value)
     LockGuard lg(mutex);
     if (par_name=="hand")
         left_or_right=value;
-    if (par_name=="one_shot")
-        one_shot=(value=="on");
 }

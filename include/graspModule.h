@@ -49,9 +49,8 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
 
-    int rate, rate_vis;
+    int rate_vis;
     double t,t0, t_grasp, t_vis;
-    std::deque<double> times_grasp;
     std::deque<double> times_vis;
 
     double tol;
@@ -72,7 +71,6 @@ protected:
     yarp::sig::Vector plane;
 
     yarp::os::RpcServer portRpc;
-    yarp::os::BufferedPort<yarp::os::Property > portPose;
 
     std::string eye;
     yarp::sig::Matrix K,H;
@@ -97,7 +95,7 @@ protected:
     yarp::os::Property traj_par;
     yarp::os::Property ipopt_par;
     yarp::os::Property complete_sol;
-    yarp::os::Property object_property;
+    //yarp::os::Property object_property;
 
 public:
     /************************************************************************/
