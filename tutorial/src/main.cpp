@@ -64,18 +64,6 @@ public:
     }
 
     /************************************************************************/
-    bool  set_streaming_mode(const string &entry)
-    {
-        if (entry=="on" || entry=="off")
-        {
-            streaming=(entry=="on");
-            return true;
-        }
-        else
-            return false;
-    }
-
-    /************************************************************************/
     bool  set_hand(const string &entry)
     {
         if (entry=="right" || entry=="left" || entry=="both")
@@ -127,7 +115,6 @@ public:
     {
         this->rf=&rf;
         hand=rf.check("hand", Value("right")).asString();
-        streaming=(rf.check("streaming", Value("off")).asString()=="on");
 
         readSuperq("object", sol, 11, this->rf);
 
@@ -135,8 +122,6 @@ public:
 
         portRpc.open("/testing-graspmodule/rpc");
         graspRpc.open("/testing-graspmodule/superq:rpc");
-
-        superqPort.open("/testing-graspmodule/superq:o");
 
         attach(portRpc);
         return true;
@@ -160,12 +145,11 @@ public:
     /**********************************************************************/
     bool close()
     {
-
-        if (!superqPort.isClosed())
-            superqPort.close();
-
         if (portRpc.asPort().isOpen())
             portRpc.close();
+
+        if (graspRpc.asPort().isOpen())
+            graspRpc.close();
 
         return true;
     }
@@ -173,9 +157,7 @@ public:
     /**********************************************************************/
     bool updateModule()
     {
-        if (norm(sol)>0.0 && streaming==true)
-            sendObject();
-        else if (!streaming)
+        if (norm(sol)>0.0)
         {
             Bottle cmd, reply;
             cmd.addString("get_grasping_pose");
@@ -216,7 +198,6 @@ public:
 
         return true;
     }
-
 };
 
 /**********************************************************************/
