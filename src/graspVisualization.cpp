@@ -76,13 +76,27 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         for (size_t i=0; i<trajectory_right.size(); i++)
             trajectory.push_back(trajectory_right[i]);
     }
-    else
+    else if (hand_str=="left")
     {
         hand_in_poseL.setSubvector(0,hand1);
         hand_in_poseL.setSubvector(5,solL);
         addSuperq(hand_in_poseL,imgOut,255);
         for (size_t i=0; i<trajectory_left.size(); i++)
             trajectory.push_back(trajectory_left[i]);
+    }
+    else 
+    {
+        hand_in_poseR.setSubvector(0,hand);
+        hand_in_poseR.setSubvector(5,solR);
+        addSuperq(hand_in_poseR,imgOut,255);
+        for (size_t i=0; i<trajectory_right.size(); i++)
+            trajectory.push_back(trajectory_right[i]);
+          hand_in_poseL.setSubvector(0,hand1);
+        hand_in_poseL.setSubvector(5,solL);
+        addSuperq(hand_in_poseL,imgOut,255);
+        for (size_t i=0; i<trajectory_left.size(); i++)
+            trajectory.push_back(trajectory_left[i]);
+
     }
    
     for (size_t i=0; i<trajectory.size(); i++)
@@ -285,12 +299,12 @@ void GraspVisualization::run()
     double t0=Time::now();
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
-        if (left_or_right=="both")
-        {
-            showTrajectory("left");
-            showTrajectory("right");
-        }
-        else
+        //if (left_or_right=="both")
+        //{
+        //    showTrajectory("left");
+       //     showTrajectory("right");
+        //}
+       // else
             showTrajectory(left_or_right);
     }
     else
