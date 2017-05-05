@@ -1,0 +1,21 @@
+<application>
+    <name>testing-graspmodule</name>
+   
+    <module>
+       <name>testing-graspmodule</name>
+       <node>icub21</node>
+    </module>
+
+    <connection>
+        <from>/testing-graspmodule/super:o</from>
+        <to>/superquadric-grasp/superq:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/testing-graspmodule/superq:rpc</from>
+        <to>/superquadric-grasp/rpc</to>
+        <protocol>tcp</protocol>
+    </connection>
+</application>
+

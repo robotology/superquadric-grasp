@@ -1,0 +1,218 @@
+/*
+ * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
+ * Author: Giulia Vezzani
+ * email:  giulia.vezzani@iit.it
+ * Permission is granted to copy, distribute, and/or modify this program
+ * under the terms of the GNU General Public License, version 2 or any
+ * later version published by the Free Software Foundation.
+ *
+ * A copy of the license can be found at
+ * http://www.robotcub.org/icub/license/gpl.txt
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details
+*/
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <deque>
+#include <map>
+#include <set>
+#include <fstream>
+#include <iomanip>
+
+#include <yarp/os/all.h>
+#include <yarp/dev/all.h>
+#include <yarp/sig/all.h>
+#include <yarp/math/Math.h>
+
+#include <opencv2/opencv.hpp>
+
+
+#include "src/testingGraspmodule_IDL.h"
+
+using namespace std;
+using namespace yarp::os;
+using namespace yarp::dev;
+using namespace yarp::sig;
+using namespace yarp::math;
+
+class sendSuperq : public RFModule,
+                    testingGraspmodule_IDL
+{
+    RpcClient graspRpc;
+    RpcServer portRpc;
+
+    BufferedPort<Property > superqPort;
+
+    Mutex mutex;
+
+    bool streaming;
+    string hand;
+    Vector sol;
+
+    ResourceFinder *rf;
+
+public:
+
+    /************************************************************************/
+    bool attach(RpcServer &source)
+    {
+        return this->yarp().attachAsServer(source);
+    }
+
+    /************************************************************************/
+    bool  set_streaming_mode(const string &entry)
+    {
+        if (entry=="on" || entry=="off")
+        {
+            streaming=(entry=="on");
+            return true;
+        }
+        else
+            return false;
+    }
+
+    /************************************************************************/
+    bool  set_hand(const string &entry)
+    {
+        if (entry=="right" || entry=="left" || entry=="both")
+        {
+            hand=entry;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    /************************************************************************/
+    void  sendObject()
+    {
+        Property &superq=superqPort.prepare();
+
+        Bottle bottle;
+        Bottle &b1=bottle.addList();
+        b1.addDouble(sol[0]); b1.addDouble(sol[1]); b1.addDouble(sol[2]);
+        superq.put("dimensions", bottle.get(0));
+
+        Bottle &b2=bottle.addList();
+        b2.addDouble(sol[3]); b2.addDouble(sol[4]);
+        superq.put("exponents", bottle.get(1));
+
+        Bottle &b3=bottle.addList();
+        b3.addDouble(sol[5]); b3.addDouble(sol[6]); b3.addDouble(sol[7]);
+        superq.put("center", bottle.get(2));
+
+        Bottle &b4=bottle.addList();
+        Vector orient=dcm2axis(euler2dcm(sol.subVector(8,10)));
+        b4.addDouble(orient[0]); b4.addDouble(orient[1]); b4.addDouble(orient[2]); b4.addDouble(orient[3]);
+        superq.put("orientation", bottle.get(3));
+
+
+        superqPort.write();
+    }
+
+    /************************************************************************/
+    bool getperiod()
+    {
+        return 0.0;
+    }
+
+    /**********************************************************************/
+    bool configure(ResourceFinder &rf)
+    {
+        this->rf=&rf;
+        hand=rf.check("hand", Value("right")).asString();
+        streaming=(rf.check("streaming", Value("off")).asString()=="on");
+
+        readSuperq("object", sol, 11, this->rf);
+
+        portRpc.open("/testing-graspmodule/rpc");
+
+        superqPort.open("/testing-graspmodule/blob:o");
+
+        attach(portRpc);
+        return true;
+    }
+
+    /****************************************************************/
+    bool readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
+    {
+        if (Bottle *b=rf->find(name_obj.c_str()).asList())
+        {
+            if (b->size()>=dimension)
+            {
+                for(size_t i=0; i<b->size();i++)
+                    x.push_back(b->get(i).asDouble());
+            }
+            return true;
+        }
+    }
+
+
+    /**********************************************************************/
+    bool close()
+    {
+
+        if (!superqPort.isClosed())
+            superqPort.close();
+
+        if (portRpc.asPort().isOpen())
+            portRpc.close();
+
+        return true;
+    }
+
+    /**********************************************************************/
+    bool updateModule()
+    {
+        if (norm(sol)>0 && streaming==true)
+            sendObject();
+        else if (!streaming)
+        {
+            Bottle cmd, reply;
+            cmd.addString("get_grasping_pose");
+
+            Bottle &b1=cmd.addList();
+            b1.addDouble(sol[0]); b1.addDouble(sol[1]); b1.addDouble(sol[2]);
+
+            Bottle &b2=cmd.addList();
+            b2.addDouble(sol[3]); b2.addDouble(sol[4]);
+
+            Bottle &b3=cmd.addList();
+            b3.addDouble(sol[5]); b3.addDouble(sol[6]); b3.addDouble(sol[7]);
+
+            Bottle &b4=cmd.addList();
+            Vector orient=dcm2axis(euler2dcm(sol.subVector(8,10)));
+            b4.addDouble(orient[0]); b4.addDouble(orient[1]); b4.addDouble(orient[2]); b4.addDouble(orient[3]);
+
+            cmd.addString(hand);
+
+
+            graspRpc.write(cmd, reply);
+            cout<<"Received solution: "<<reply.toString()<<endl;
+        }
+
+        return true;
+    }
+
+};
+
+/**********************************************************************/
+int main(int argc,char *argv[])
+{
+    Network yarp;
+    if (!yarp.checkNetwork())
+    {
+        yError("unable to find YARP server!");
+        return 1;
+    }
+
+    sendSuperq mod;
+    ResourceFinder rf;
+    rf.setDefaultContext("testing-graspmodule");
+    rf.configure(argc,argv);
+    return mod.runModule(rf);
+}
