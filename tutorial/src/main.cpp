@@ -109,6 +109,8 @@ public:
         Vector orient=dcm2axis(euler2dcm(sol.subVector(8,10)));
         b4.addDouble(orient[0]); b4.addDouble(orient[1]); b4.addDouble(orient[2]); b4.addDouble(orient[3]);
         superq.put("orientation", bottle.get(3));
+        
+        cout<<"Superq sent "<<superq.toString()<<endl;
 
 
         superqPort.write();
@@ -129,9 +131,12 @@ public:
 
         readSuperq("object", sol, 11, this->rf);
 
-        portRpc.open("/testing-graspmodule/rpc");
+        cout<<"sol"<<sol.toString()<<endl;
 
-        superqPort.open("/testing-graspmodule/blob:o");
+        portRpc.open("/testing-graspmodule/rpc");
+        graspRpc.open("/testing-graspmodule/superq:rpc");
+
+        superqPort.open("/testing-graspmodule/superq:o");
 
         attach(portRpc);
         return true;
@@ -168,7 +173,7 @@ public:
     /**********************************************************************/
     bool updateModule()
     {
-        if (norm(sol)>0 && streaming==true)
+        if (norm(sol)>0.0 && streaming==true)
             sendObject();
         else if (!streaming)
         {
@@ -176,19 +181,33 @@ public:
             cmd.addString("get_grasping_pose");
 
             Bottle &b1=cmd.addList();
-            b1.addDouble(sol[0]); b1.addDouble(sol[1]); b1.addDouble(sol[2]);
+            Bottle &b2=b1.addList();
+            b2.addString("dimensions");
+            Bottle &b3=b2.addList();
+            b3.addDouble(sol[0]); b3.addDouble(sol[1]); b3.addDouble(sol[2]);
 
-            Bottle &b2=cmd.addList();
-            b2.addDouble(sol[3]); b2.addDouble(sol[4]);
+  
+            Bottle &b5=b1.addList();
+            b5.addString("exponents");
+            Bottle &b6=b5.addList();
+            b6.addDouble(sol[3]); b6.addDouble(sol[4]);
 
-            Bottle &b3=cmd.addList();
-            b3.addDouble(sol[5]); b3.addDouble(sol[6]); b3.addDouble(sol[7]);
+  
+            Bottle &b8=b1.addList();
+            b8.addString("center");
+            Bottle &b9=b8.addList();
+            b9.addDouble(sol[0]); b9.addDouble(sol[1]); b9.addDouble(sol[2]);
 
-            Bottle &b4=cmd.addList();
+    
+            Bottle &b11=b1.addList();
+            b11.addString("orientation");
+            Bottle &b12=b11.addList();
             Vector orient=dcm2axis(euler2dcm(sol.subVector(8,10)));
-            b4.addDouble(orient[0]); b4.addDouble(orient[1]); b4.addDouble(orient[2]); b4.addDouble(orient[3]);
+            b12.addDouble(orient[0]); b12.addDouble(orient[1]); b12.addDouble(orient[2]); b12.addDouble(orient[3]);
 
             cmd.addString(hand);
+
+            cout<<"Command asked "<<cmd.toString()<<endl;
 
 
             graspRpc.write(cmd, reply);

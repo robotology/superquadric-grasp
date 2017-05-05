@@ -63,10 +63,11 @@ protected:
     yarp::os::BufferedPort<yarp::os::Property> objectPort;
 
 public:
-
+    
+    yarp::os::Property *estimated_superq;
     yarp::sig::Vector object;
     /*******************************************************************************/
-    GraspComputation(const int rate, const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
+    GraspComputation(int rate, const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf);
 
@@ -117,6 +118,9 @@ public:
 
     /**********************************************************************/
     void setPar(const std::string &tag, const std::string &value);
+
+    /**********************************************************************/
+    yarp::os::Property getObjectSuperq();
 
 };
 

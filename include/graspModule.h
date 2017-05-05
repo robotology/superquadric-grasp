@@ -97,6 +97,7 @@ protected:
     yarp::os::Property traj_par;
     yarp::os::Property ipopt_par;
     yarp::os::Property complete_sol;
+    yarp::os::Property object_property;
 
 public:
     /************************************************************************/

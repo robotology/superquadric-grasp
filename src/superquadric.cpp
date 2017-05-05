@@ -47,9 +47,6 @@ void grasping_NLP::init(Vector &objectext, Vector &handext, int &n_handpoints, c
 {
     hand=handext;
     object=objectext;
-    yInfo()<<" Object to be grasp: "<<objectext.toString();
-
-    yInfo()<<" Initial hand model: "<<handext.toString();
 
     H_o2w.resize(4,4);
     H_h2w.resize(4,4);
@@ -73,8 +70,6 @@ void grasping_NLP::init(Vector &objectext, Vector &handext, int &n_handpoints, c
     euler[1]=hand[6];
     euler[2]=hand[7];
     H_h2w.setSubcol(euler,0,3);
-
-    yInfo()<<" "<<n_handpoints<<" points on hand:";
 
     for(int i=0; i<n_handpoints; i++)
     {
@@ -737,8 +732,6 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
    for (Ipopt::Index i=0; i<3; i++)
        solution[i]=H(i,3);
-
-   yInfo()<<" Solution (ellipse pose): "<<solution.toString();
 
     robot_pose.resize(6,0.0);
     robot_pose.setSubvector(3,dcm2euler(H));

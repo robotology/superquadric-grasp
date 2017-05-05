@@ -16,7 +16,7 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspComputation::GraspComputation(const int _rate, const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
+GraspComputation::GraspComputation(int _rate, const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                                    const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                                    const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, ResourceFinder *_rf):
                                    RateThread(_rate), ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
@@ -366,7 +366,7 @@ void GraspComputation::run()
     t0=Time::now();
     LockGuard lg(mutex);
 
-    if (!one_shot)
+    if (one_shot==false)
         getSuperq();
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
@@ -431,19 +431,19 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         {
             solR=grasp_nlp->get_result();
             poseR=grasp_nlp->robot_pose;
-            yInfo()<<" Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString().c_str();
+            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString().c_str();
         }
         else
         {
             solL=grasp_nlp->get_result();
             poseL=grasp_nlp->robot_pose;
-            yInfo()<<" Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString().c_str();
+            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString().c_str();
         }
         return true;
     }
     else
     {
-        yError()<<" Problem not solved!";
+        yError()<<"[GraspComputation]: Problem not solved!";
         return false;
     }
 }
@@ -522,54 +522,58 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
 /***********************************************************************/
 void GraspComputation::getSuperq()
 {
-    LockGuard lg(mutex);
+    estimated_superq=objectPort.read(false);   
 
-    Property *estimated_superq;
-
-    estimated_superq=objectPort.read(false);
-
-    Bottle *dim=estimated_superq->find("dimensions").asList();
-
-    if (!estimated_superq->find("dimensions").isNull())
+    if (estimated_superq!=NULL)
     {
-        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
+        yInfo()<<"[GraspComputation]: Superquadric received "<<estimated_superq->toString();
+
+        Bottle *dim=estimated_superq->find("dimensions").asList();
+
+        if (!estimated_superq->find("dimensions").isNull())
+        {
+            object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
+        }
+
+        Bottle *shape=estimated_superq->find("exponents").asList();
+
+        if (!estimated_superq->find("exponents").isNull())
+        {
+            object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
+        }
+
+        Bottle *exp=estimated_superq->find("exponents").asList();
+
+        if (!estimated_superq->find("exponents").isNull())
+        {
+            object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
+        }
+
+        Bottle *center=estimated_superq->find("center").asList();
+
+        if (!estimated_superq->find("center").isNull())
+        {
+            object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
+        }
+
+        Bottle *orientation=estimated_superq->find("orientation").asList();
+
+        if (!estimated_superq->find("orientation").isNull())
+        {
+            Vector axis(4,0.0);
+            axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
+            object.setSubvector(8,dcm2euler(axis2dcm(axis)));
+        }
     }
-
-    Bottle *shape=estimated_superq->find("exponents").asList();
-
-    if (!estimated_superq->find("exponents").isNull())
-    {
-        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
-    }
-
-    Bottle *exp=estimated_superq->find("exponents").asList();
-
-    if (!estimated_superq->find("exponents").isNull())
-    {
-        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
-    }
-
-    Bottle *center=estimated_superq->find("center").asList();
-
-    if (!estimated_superq->find("center").isNull())
-    {
-        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
-    }
-
-    Bottle *orientation=estimated_superq->find("orientation").asList();
-
-    if (!estimated_superq->find("orientation").isNull())
-    {
-        Vector axis(4,0.0);
-        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
-        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
-    }
+    else
+        yError()<<"[GraspComputation]: No superquadric received!";
 }
 
 /***********************************************************************/
 double GraspComputation::getTime()
 {
     LockGuard lg(mutex);
+    
     return t_grasp;
 }
 
@@ -579,6 +583,18 @@ Property GraspComputation::getSolution(const string &hand)
     Property sol;
     sol=fillProperty(hand);
     return sol;
+}
+
+/***********************************************************************/
+Property GraspComputation::getObjectSuperq()
+{
+    if (estimated_superq!=NULL)
+        return *estimated_superq;
+    else
+    {
+        Property test;
+        return test;
+    }
 }
 
 /**********************************************************************/
@@ -627,7 +643,7 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         {
             bleft1.addDouble(solL[i]);
         }
-        poses.put("solution_right", bottle.get(4));
+        poses.put("solution_left", bottle.get(4));
 
         Bottle &bright3=bottle.addList();
         for (size_t i=0; i<trajectory_left.size(); i++)

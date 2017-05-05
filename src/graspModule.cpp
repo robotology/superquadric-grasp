@@ -126,6 +126,7 @@ bool GraspingModule::updateModule()
 
         if (times_grasp.size()<10)
             times_grasp.push_back(graspComp->getTime());
+
         else if (times_grasp.size()==10)
         {
             for (size_t i=0; i<times_grasp.size(); i++)
@@ -142,7 +143,9 @@ bool GraspingModule::updateModule()
 
         if (visualization)
         {
+            object_property=graspComp->getObjectSuperq();
             graspVis->getPoses(complete_sol);
+            graspVis->getObject(object_property);
 
             if (times_vis.size()<10)
             times_vis.push_back(graspVis->getTime());
@@ -258,6 +261,12 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     readSuperq("displacement",displacement,3,this->rf);
     readSuperq("plane",plane,4,this->rf);
 
+    if (plane.size()==0 && displacement.size()==0)
+    {
+        yError()<<"No plane and displacement provided!";
+        return false;
+    }
+
     nameFileOut_right=rf.find("nameFileOut_right").asString().c_str();
     if(rf.find("nameFileOut_right").isNull())
        nameFileOut_right="test_right";
@@ -306,7 +315,6 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     p2.addDouble(plane[0]); p2.addDouble(plane[1]);
     p2.addDouble(plane[2]); p2.addDouble(plane[3]);
     pose_par.put("plane", planeb.get(0));
-
 
     traj_par.put("distance_on_x",distance);
     traj_par.put("distance_on_z",distance1);

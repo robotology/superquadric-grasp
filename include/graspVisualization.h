@@ -44,13 +44,14 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
     yarp::sig::Vector point2D, point, point1, superq;
-    yarp::sig::Vector object;
+    std::deque<yarp::sig::Vector> trajectory;
     yarp::sig::Matrix R;
 
 public:
 
     double t_vis;
     yarp::os::Mutex mutex;
+    yarp::sig::Vector object;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
@@ -86,6 +87,9 @@ public:
 
     /***********************************************************************/
     double getTime();
+    
+    /***********************************************************************/
+    void getObject(yarp::os::Property &obj);
 
 };
 
