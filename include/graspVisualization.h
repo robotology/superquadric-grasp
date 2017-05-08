@@ -22,7 +22,6 @@
 #include <deque>
 #include <map>
 
-
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/dev/all.h>
@@ -51,15 +50,17 @@ public:
 
     double t_vis;
     yarp::os::Mutex mutex;
-    yarp::sig::Vector object;
+    const yarp::sig::Vector &object;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
+
+    const yarp::os::Property &complete_sol;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
 
     /***********************************************************************/
     GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
-                       const yarp::sig::Matrix _K,  std::string left_or_right);
+                       const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol, const yarp::sig::Vector &_object);
 
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);
@@ -80,17 +81,10 @@ public:
     virtual void threadRelease();
 
     /***********************************************************************/
-    void getObjectSuperq(yarp::sig::Vector &superq);
-    
-    /***********************************************************************/
-    void getPoses(yarp::os::Property &poses);
-
-    /***********************************************************************/
     double getTime();
-    
-    /***********************************************************************/
-    void getObject(yarp::sig::Vector &obj);
 
+    /***********************************************************************/
+    void getPoses(const yarp::os::Property &poses);
 };
 
 #endif

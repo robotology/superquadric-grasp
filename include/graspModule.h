@@ -22,15 +22,12 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 
-#include <opencv2/opencv.hpp>
-
 #include "superquadric.h"
 #include "graspComputation.h"
 #include "graspVisualization.h"
 //#include "graspExecution.h"
 
 #include "src/superquadricGrasp_IDL.h"
-
 
 /*******************************************************************************/
 class GraspingModule: public yarp::os::RFModule,
@@ -57,7 +54,6 @@ protected:
     int max_iter;
     int n_pointshand;
     int acceptable_iter;
-    int object_provided;
     double constr_viol_tol;
     std::string mu_strategy;
     std::string nlp_scaling_method;
@@ -82,7 +78,6 @@ protected:
     bool mode_online;    
     bool save_poses;
 
-    std::string chosen_hand;
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
 
@@ -95,7 +90,6 @@ protected:
     yarp::os::Property traj_par;
     yarp::os::Property ipopt_par;
     yarp::os::Property complete_sol;
-    //yarp::os::Property object_property;
 
 public:
     /************************************************************************/
@@ -115,6 +109,12 @@ public:
 
     /************************************************************************/
     bool set_options(const yarp::os::Property &newOptions, const std::string &field);
+
+    /**********************************************************************/
+    std::string get_hand();
+
+    /**********************************************************************/
+    bool set_hand(const std::string &e);
 
     /************************************************************************/
     bool set_save_poses(const std::string &entry);

@@ -33,7 +33,6 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_left;
     yarp::sig::Vector poseR, solR;
     yarp::sig::Vector poseL, solL;
-    yarp::sig::Vector pose_tmp, pose_tmp2;
 
     double tol, constr_viol_tol;
     int max_iter, acceptable_iter, object_provided;
@@ -52,8 +51,6 @@ protected:
     yarp::os::Property trajectory_par;
 
     bool go_on;
-    bool one_shot;
-    bool compute_traj;
     double t0, t_grasp;
 
     yarp::os::Mutex mutex;
@@ -62,12 +59,14 @@ protected:
 
 public:
     
-//    yarp::os::Property estimated_superq;
-    yarp::sig::Vector object;
+    yarp::os::Property &complete_sol;
+    const yarp::sig::Vector &object;
+
     /*******************************************************************************/
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
-                     const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf);
+                     const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
+                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
 
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions);
@@ -94,19 +93,13 @@ public:
     void run();
 
     /***********************************************************************/
-    void release();
-
-    /***********************************************************************/
-    void getSuperq(const yarp::os::Property &superq);
-
-    /***********************************************************************/
     bool computePose(yarp::sig::Vector &hand, const std::string &left_or_right);
 
     /***********************************************************************/
     bool computeTrajectory(const std::string &chosen_hand, const std::string &direction);
 
     /***********************************************************************/
-    yarp::os::Property getSolution(const std::string &hand);
+    void getSolution(const std::string &hand);
 
     /***********************************************************************/
     double getTime();
@@ -116,13 +109,6 @@ public:
 
     /**********************************************************************/
     void setPar(const std::string &tag, const std::string &value);
-
-    /**********************************************************************/
-    yarp::sig::Vector getObjectSuperq();
-
 };
-
-
-
 
 #endif

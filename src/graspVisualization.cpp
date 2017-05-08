@@ -27,8 +27,9 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right):
-                                       RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right)
+GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
+                                       const Property &_complete_sol, const Vector &_object):
+                                       RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol), object(_object)
 {
 
 }
@@ -36,6 +37,7 @@ GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl
 /***********************************************************************/
 bool GraspVisualization::showTrajectory(const string &hand_str)
 {
+    int count=0;
     ImageOf<PixelRgb> *imgIn=portImgIn.read();
     if (imgIn==NULL)
         return false;
@@ -55,7 +57,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     Vector x(3,0.0);
     Vector y(3,0.0);
     Vector z(3,0.0);
-    double length=0.08;
+    double length=0.04;
     Vector dir_x(3,0.0);
     Vector dir_y(3,0.0);
     Vector dir_z(3,0.0);
@@ -73,6 +75,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         hand_in_poseR.setSubvector(0,hand);
         hand_in_poseR.setSubvector(5,solR);
         addSuperq(hand_in_poseR,imgOut,255);
+
         for (size_t i=0; i<trajectory_right.size(); i++)
             trajectory.push_back(trajectory_right[i]);
     }
@@ -81,6 +84,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         hand_in_poseL.setSubvector(0,hand1);
         hand_in_poseL.setSubvector(5,solL);
         addSuperq(hand_in_poseL,imgOut,255);
+
         for (size_t i=0; i<trajectory_left.size(); i++)
             trajectory.push_back(trajectory_left[i]);
     }
@@ -89,14 +93,16 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         hand_in_poseR.setSubvector(0,hand);
         hand_in_poseR.setSubvector(5,solR);
         addSuperq(hand_in_poseR,imgOut,255);
+
         for (size_t i=0; i<trajectory_right.size(); i++)
             trajectory.push_back(trajectory_right[i]);
-          hand_in_poseL.setSubvector(0,hand1);
+
+        hand_in_poseL.setSubvector(0,hand1);
         hand_in_poseL.setSubvector(5,solL);
         addSuperq(hand_in_poseL,imgOut,255);
+
         for (size_t i=0; i<trajectory_left.size(); i++)
             trajectory.push_back(trajectory_left[i]);
-
     }
    
     for (size_t i=0; i<trajectory.size(); i++)
@@ -138,39 +144,43 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 
         if ((target_point.x<0) || (target_point.y<0) || (target_point.x>=320) || (target_point.y>=240))
         {
-            yError("[GraspVisualization]: Not acceptable pixels!");
+            count++;
         }
         else
             imgOut.pixel(target_point.x, target_point.y)= color;
 
         if ((target_pointx.x<0) || (target_pointx.y<0) || (target_pointx.x>=320) || (target_pointx.y>=240))
         {
-            yError("[GraspVisualization]: Not acceptable pixels!");
+            count++;
         }
         else
             cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
 
         if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
         {
-            yError("[GraspVisualization]: Not acceptable pixels!");
+            count++;
         }
         else
             cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
 
         if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
         {
-            yError("[GraspVisualization]: Not acceptable pixels!");
+            count++;
         }
         else
-            cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
-   } 
+            cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));        
+    }
 
-   portImgOut.write();
+    if (count>0)
+        yError()<<"[GraspVisualization]: Some pixels are not visible!!";
+
+    portImgOut.write();
 }
 
 /***********************************************************************/
 void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
 {
+    int count=0;
     PixelRgb color(col,0,0);
     Vector pos, orient;
     double co,so,ce,se;
@@ -229,13 +239,15 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 
                  if ((target_point.x<0) || (target_point.y<0) || (target_point.x>=320) || (target_point.y>=240))
                  {
-                     yError("[GraspVisualization]: Not acceptable pixels IN SUPERQ!");
+                     count++;
                  }
                  else
                     imgOut.pixel(target_point.x, target_point.y)=color;
-
              }
          }
+
+        if (count>0)
+            yError()<<"[GraspVisualization]: Some pixels are not visible!!";
     }
 }
 
@@ -268,7 +280,7 @@ bool GraspVisualization::threadInit()
     poseL.resize(6,0.0);
     solR.resize(6,0.0);
     solL.resize(6,0.0);
-    object.resize(11,0.0);
+    //object.resize(11,0.0);
 
     hand_in_poseR.resize(11,0.0);
     hand_in_poseL.resize(11,0.0);
@@ -293,23 +305,24 @@ void GraspVisualization::threadRelease()
 /***********************************************************************/
 void GraspVisualization::run()
 {
-    yInfo()<<"[GraspVisualization]: Thread running ... ";
     double t0=Time::now();
+    getPoses(complete_sol);
+
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
         showTrajectory(left_or_right);
     }
-    else
-        yError()<<"[GraspVisualization]: No solution to be visualized!";
 
     t_vis=Time::now()-t0;
 }
 
 /***********************************************************************/
-void GraspVisualization::getPoses(yarp::os::Property &poses)
+void GraspVisualization::getPoses(const yarp::os::Property &poses)
 {
     LockGuard lg(mutex);
     Vector tmp(6,0.0);
+    trajectory_right.clear();
+    trajectory_left.clear();
 
     Bottle &pose2=poses.findGroup("trajectory_right");
 
@@ -329,8 +342,8 @@ void GraspVisualization::getPoses(yarp::os::Property &poses)
             trajectory_right.push_back(tmp);
         }
     }
-    else
-        yError()<<"[GraspVisualization]: No trajectory right found!";
+    //else
+    //    yError()<<"[GraspVisualization]: No trajectory right found!";
 
     Bottle &pose3=poses.findGroup("trajectory_left");
 
@@ -349,8 +362,8 @@ void GraspVisualization::getPoses(yarp::os::Property &poses)
             trajectory_left.push_back(tmp);
         }
     }
-    else
-        yError()<<"[GraspVisualization]: No trajectory left found!";
+    // else
+    //    yError()<<"[GraspVisualization]: No trajectory left found!";
 
     Bottle &pose=poses.findGroup("solution_right");
     if (!pose.isNull())
@@ -360,8 +373,8 @@ void GraspVisualization::getPoses(yarp::os::Property &poses)
         for (size_t i=0; i<p->size(); i++)
             solR[i]=p->get(i).asDouble();
     }
-    else
-        yError()<<"[GraspVisualization]: No solution right found!";
+    //else
+    //    yError()<<"[GraspVisualization]: No solution right found!";
 
     Bottle &pose1=poses.findGroup("solution_left");
     if (!pose1.isNull())
@@ -371,16 +384,9 @@ void GraspVisualization::getPoses(yarp::os::Property &poses)
         for (size_t i=0; i<p->size(); i++)
             solL[i]=p->get(i).asDouble();
     }
-    else
-        yError()<<"[GraspVisualization]: No solution left found!";
+    //else
+    //    yError()<<"[GraspVisualization]: No solution left found!";
 }
-
-/***********************************************************************/
-void GraspVisualization::getObject(Vector &obj)
-{
-    object=obj;
-}
-
 
 /***********************************************************************/
 double GraspVisualization::getTime()

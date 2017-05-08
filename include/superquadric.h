@@ -53,7 +53,7 @@ public:
     std::string l_o_r;
 
     /****************************************************************/
-    void init(yarp::sig::Vector &objectext, yarp::sig::Vector &handext, int &n_handpoints, const std::string &str_hand);
+    void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext, int &n_handpoints, const std::string &str_hand);
 
     /****************************************************************/
     void checkZbound();

@@ -43,7 +43,7 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 /****************************************************************/
-void grasping_NLP::init(Vector &objectext, Vector &handext, int &n_handpoints, const string &str_hand)
+void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoints, const string &str_hand)
 {
     hand=handext;
     object=objectext;

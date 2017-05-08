@@ -28,9 +28,6 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <opencv2/opencv.hpp>
-
-
 #include "src/testingGraspmodule_IDL.h"
 
 using namespace std;
@@ -44,8 +41,6 @@ class sendSuperq : public RFModule,
 {
     RpcClient graspRpc;
     RpcServer portRpc;
-
-    BufferedPort<Property > superqPort;
 
     Mutex mutex;
 
@@ -88,8 +83,6 @@ public:
         hand=rf.check("hand", Value("right")).asString();
 
         readSuperq("object", sol, 11, this->rf);
-
-        cout<<"sol"<<sol.toString()<<endl;
 
         portRpc.open("/testing-graspmodule/rpc");
         graspRpc.open("/testing-graspmodule/superq:rpc");
@@ -160,11 +153,10 @@ public:
 
             cmd.addString(hand);
 
-            cout<<"Command asked "<<cmd.toString()<<endl;
-
+            yInfo()<<"Command asked "<<cmd.toString();
 
             graspRpc.write(cmd, reply);
-            cout<<"Received solution: "<<reply.toString()<<endl;
+            yInfo()<<"Received solution: "<<reply.toString();
         }
 
         return true;

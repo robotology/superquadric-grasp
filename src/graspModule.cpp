@@ -52,6 +52,173 @@ bool GraspingModule::clear_poses()
     return true;
 }
 
+/**********************************************************************/
+Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
+{
+    LockGuard lg(mutex);
+
+    Bottle *dim=estimated_superq.find("dimensions").asList();
+
+    if (!estimated_superq.find("dimensions").isNull())
+    {
+        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
+    }
+
+    Bottle *shape=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
+    }
+
+    Bottle *exp=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
+    }
+
+    Bottle *center=estimated_superq.find("center").asList();
+
+    if (!estimated_superq.find("center").isNull())
+    {
+        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
+    }
+
+    Bottle *orientation=estimated_superq.find("orientation").asList();
+
+    if (!estimated_superq.find("orientation").isNull())
+    {
+        Vector axis(4,0.0);
+        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
+        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
+    }
+
+    graspComp->setPar("left_or_right", hand);
+    graspComp->run();
+    graspComp->getSolution(hand);
+
+    yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
+
+    t_grasp=graspComp->getTime();
+
+    return complete_sol;
+}
+
+/**********************************************************************/
+string GraspingModule::get_visualization()
+{
+    if (visualization)
+        return "on";
+    else
+        return "off";
+}
+
+/**********************************************************************/
+bool GraspingModule::set_visualization(const string &e)
+{
+    if ((e=="on") || (e=="off"))
+    {
+        LockGuard lg(mutex);
+
+        if ((visualization==false) && (e=="on"))
+        {
+            graspVis->resume();
+
+            visualization=true;
+
+        }
+        else if ((visualization==true) && (e=="off"))
+        {
+            graspVis->suspend();
+            visualization=false;
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**********************************************************************/
+string GraspingModule::get_hand()
+{
+    return left_or_right;
+}
+
+/**********************************************************************/
+bool GraspingModule::set_hand(const string &e)
+{
+    if ((e=="right") || (e=="left") || (e=="both"))
+    {
+        LockGuard lg(mutex);
+
+        left_or_right=e;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**********************************************************************/
+bool GraspingModule::set_options(const Property &newOptions, const string &field)
+{
+    if (field=="pose")
+        graspComp->setPosePar(newOptions);
+    else if (field=="trajectory")
+        graspComp->setTrajectoryPar(newOptions);
+    else if (field=="optimization")
+        graspComp->setIpoptPar(newOptions);
+    else
+        return false;
+
+    return true;
+}
+
+/**********************************************************************/
+Property GraspingModule::get_options(const string &field)
+{
+    Property advOptions;
+    if (field=="pose")
+        advOptions=graspComp->getPosePar();
+    else if (field=="trajectory")
+        advOptions=graspComp->getTrajectoryPar();
+    else if (field=="optimization")
+        advOptions=graspComp->getIpoptPar();
+    else if (field=="statistics")
+    {
+        advOptions.put("average_computation_time", t_grasp);
+        advOptions.put("average_visualization_time", t_vis);
+    }
+
+    return advOptions;
+}
+
+/**********************************************************************/
+string GraspingModule::get_save_poses()
+{
+    if (save_poses)
+    {
+        return "on";
+    }
+    else
+    {
+        return "off";
+    }
+}
+
+/**********************************************************************/
+bool GraspingModule::set_save_poses(const string &entry)
+{
+    if ((entry=="on") || (entry=="off"))
+    {
+        save_poses=(entry=="on");
+    }
+}
+
 /****************************************************************/
 bool GraspingModule::configBasics(ResourceFinder &rf)
 {
@@ -109,17 +276,10 @@ bool GraspingModule::updateModule()
 {    
     LockGuard lg(mutex);
 
-    //complete_sol=graspComp->getSolution(left_or_right);
-
     if (visualization)
     {
-        object=graspComp->getObjectSuperq();
-            cout<<"Object "<<object.toString()<<endl;
-        graspVis->getPoses(complete_sol);
-        graspVis->getObject(object);
-
         if (times_vis.size()<10)
-        times_vis.push_back(graspVis->getTime());
+            times_vis.push_back(graspVis->getTime());
         else if (times_vis.size()==10)
         {
             for (size_t i=0; i<times_vis.size(); i++)
@@ -197,12 +357,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     distance1=rf.check("distance1", Value(0.05)).asDouble();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
-//    if (!mode_online)
-//    {
-//        readSuperq("object",object,11,this->rf);
-//    }
-//    else
-        object.resize(11,0.0);
+    object.resize(11,0.0);
 
     readSuperq("hand",hand,11,this->rf);
 
@@ -289,7 +444,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object);
 
     graspComp->init();
 
@@ -298,7 +453,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object);
 
     if (visualization)
     {
@@ -311,7 +466,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
     }
     else
     {
-            graspVis->threadInit();
+        graspVis->start();
+        graspVis->suspend();
     }
 
     return true;
@@ -328,29 +484,6 @@ bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &di
                 x.push_back(b->get(i).asDouble());
         }
         return true;
-    }
-}
-
-
-/**********************************************************************/
-string GraspingModule::get_save_poses()
-{
-    if (save_poses)
-    {
-        return "on";
-    }
-    else
-    {
-        return "off";
-    }
-}
-
-/**********************************************************************/
-bool GraspingModule::set_save_poses(const string &entry)
-{
-    if ((entry=="on") || (entry=="off"))
-    {
-        save_poses=(entry=="on");
     }
 }
 
@@ -492,130 +625,10 @@ void GraspingModule::saveSol(const Property &poses)
     }
 }
 
-/**********************************************************************/
-Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
-{
-    LockGuard lg(mutex);
-
-    Bottle *dim=estimated_superq.find("dimensions").asList();
-
-    if (!estimated_superq.find("dimensions").isNull())
-    {
-        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
-    }
-
-    Bottle *shape=estimated_superq.find("exponents").asList();
-
-    if (!estimated_superq.find("exponents").isNull())
-    {
-        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
-    }
-
-    Bottle *exp=estimated_superq.find("exponents").asList();
-
-    if (!estimated_superq.find("exponents").isNull())
-    {
-        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
-    }
-
-    Bottle *center=estimated_superq.find("center").asList();
-
-    if (!estimated_superq.find("center").isNull())
-    {
-        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
-    }
-
-    Bottle *orientation=estimated_superq.find("orientation").asList();
-
-    if (!estimated_superq.find("orientation").isNull())
-    {
-        Vector axis(4,0.0);
-        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
-        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
-    }
 
 
-    graspComp->object=object;
-    graspComp->setPar("left_or_right", hand);
-    graspComp->run();
-    complete_sol=graspComp->getSolution(hand);
 
-    yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
-    t_grasp=graspComp->getTime();
-
-    return complete_sol;
-}
-
-/**********************************************************************/
-bool GraspingModule::set_options(const Property &newOptions, const string &field)
-{
-    if (field=="pose")
-        graspComp->setPosePar(newOptions);
-    else if (field=="trajectory")
-        graspComp->setTrajectoryPar(newOptions);
-    else if (field=="optimization")
-        graspComp->setIpoptPar(newOptions);
-    else
-        return false;
-
-    return true;
-}
-
-/**********************************************************************/
-Property GraspingModule::get_options(const string &field)
-{
-    Property advOptions;
-    if (field=="pose")
-        advOptions=graspComp->getPosePar();
-    else if (field=="trajectory")
-        advOptions=graspComp->getTrajectoryPar();
-    else if (field=="optimization")
-        advOptions=graspComp->getIpoptPar();
-    else if (field=="statistics")
-    {
-        advOptions.put("average_computation_time", t_grasp);
-        advOptions.put("average_visualization_time", t_vis);
-    }
-
-    return advOptions;
-}
-
-/**********************************************************************/
-string GraspingModule::get_visualization()
-{
-    if (visualization)
-        return "on";
-    else
-        return "off";
-}
-
-/**********************************************************************/
-bool GraspingModule::set_visualization(const string &e)
-{
-    if ((e=="on") || (e=="off"))
-    {
-        LockGuard lg(mutex);
-
-        if ((visualization==false) && (e=="on"))
-        {
-            graspVis->resume();
-
-            visualization=true;
-
-        }
-        else if ((visualization==true) && (e=="off"))
-        {
-            graspVis->suspend();
-            visualization=false;
-        }
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
 
 
 

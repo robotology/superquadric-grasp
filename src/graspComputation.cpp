@@ -16,11 +16,12 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspComputation::GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
-                                   const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
-                                   const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, ResourceFinder *_rf):
+GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
+                                   const Property &_trajectory_par, const string &_left_or_right,
+                                   const Vector &_hand, const Vector &_hand1, ResourceFinder *_rf,
+                                   Property &_complete_sol, const Vector &_object):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
-                                   left_or_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf)
+                                   left_or_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), complete_sol(_complete_sol), object(_object)
 
 {
 
@@ -150,7 +151,6 @@ void GraspComputation::setIpoptPar(const Property &newOptions)
         }
     }
 }
-
 
 /***********************************************************************/
 Property GraspComputation::getIpoptPar()
@@ -312,7 +312,7 @@ void GraspComputation::setTrajectoryPar(const Property &newOptions)
     }
     else
     {
-        if ((direct=="z"))
+        if (direct=="z")
         {
             dir=direct;
         }
@@ -349,7 +349,6 @@ bool GraspComputation::init()
     solL.resize(11,0.0);
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
-    object.resize(11,0.0);
 
     go_on=false;
 
@@ -387,11 +386,6 @@ void GraspComputation::run()
     }
 
     t_grasp=Time::now() - t0;
-}
-
-/***********************************************************************/
-void GraspComputation::release()
-{
 }
 
 /***********************************************************************/
@@ -511,50 +505,6 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
 }
 
 /***********************************************************************/
-void GraspComputation::getSuperq(const Property &estimated_superq)
-{
-    cout<<"Estimated_superq "<<estimated_superq.toString()<<endl<<endl;
-    yInfo()<<"[GraspComputation]: Superquadric received "<<estimated_superq.toString();
-
-    Bottle *dim=estimated_superq.find("dimensions").asList();
-
-    if (!estimated_superq.find("dimensions").isNull())
-    {
-        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
-    }
-
-    Bottle *shape=estimated_superq.find("exponents").asList();
-
-    if (!estimated_superq.find("exponents").isNull())
-    {
-        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
-    }
-
-    Bottle *exp=estimated_superq.find("exponents").asList();
-
-    if (!estimated_superq.find("exponents").isNull())
-    {
-        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
-    }
-
-    Bottle *center=estimated_superq.find("center").asList();
-
-    if (!estimated_superq.find("center").isNull())
-    {
-        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
-    }
-
-    Bottle *orientation=estimated_superq.find("orientation").asList();
-
-    if (!estimated_superq.find("orientation").isNull())
-    {
-        Vector axis(4,0.0);
-        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
-        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
-    }
-}
-
-/***********************************************************************/
 double GraspComputation::getTime()
 {
     LockGuard lg(mutex);
@@ -563,17 +513,11 @@ double GraspComputation::getTime()
 }
 
 /***********************************************************************/
-Property GraspComputation::getSolution(const string &hand)
+void GraspComputation::getSolution(const string &hand)
 {
-    Property sol;
-    sol=fillProperty(hand);
-    return sol;
-}
+    LockGuard lg(mutex);
 
-/***********************************************************************/
-Vector GraspComputation::getObjectSuperq()
-{
-    return object;
+    complete_sol=fillProperty(hand);
 }
 
 /**********************************************************************/
@@ -608,7 +552,7 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         poses.put("trajectory_right", bottle.get(2));
     }
 
-    if ((l_o_r=="left") || (l_o_r=="both"))
+    if (l_o_r=="both")
     {
         Bottle &bleft2=bottle.addList();
         for (size_t i=0; i<poseL.size(); i++)
@@ -632,6 +576,31 @@ Property GraspComputation::fillProperty(const string &l_o_r)
                 bb.addDouble(trajectory_left[i][j]);
         }
         poses.put("trajectory_left", bottle.get(5));
+    }
+    if (l_o_r=="left")
+    {
+        Bottle &bleft2=bottle.addList();
+        for (size_t i=0; i<poseL.size(); i++)
+        {
+            bleft2.addDouble(poseL[i]);
+        }
+        poses.put("pose_left", bottle.get(0));
+
+        Bottle &bleft1=bottle.addList();
+        for (size_t i=0; i<solL.size(); i++)
+        {
+            bleft1.addDouble(solL[i]);
+        }
+        poses.put("solution_left", bottle.get(1));
+
+        Bottle &bright3=bottle.addList();
+        for (size_t i=0; i<trajectory_left.size(); i++)
+        {
+            Bottle &bb=bright3.addList();
+            for (size_t j=0; j<trajectory_left[i].size();j++)
+                bb.addDouble(trajectory_left[i][j]);
+        }
+        poses.put("trajectory_left", bottle.get(2));
     }
 
     return poses;
