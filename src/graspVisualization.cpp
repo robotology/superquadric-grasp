@@ -280,7 +280,6 @@ bool GraspVisualization::threadInit()
     poseL.resize(6,0.0);
     solR.resize(6,0.0);
     solL.resize(6,0.0);
-    //object.resize(11,0.0);
 
     hand_in_poseR.resize(11,0.0);
     hand_in_poseL.resize(11,0.0);
@@ -296,10 +295,12 @@ void GraspVisualization::threadRelease()
     yInfo()<<"[GraspVisualization]: Thread releasing ... ";
 
     if (!portImgIn.isClosed())
-        portImgOut.close();
+        portImgIn.close();
 
     if (!portImgOut.isClosed())
         portImgOut.close();
+
+    igaze->stopControl();
 }
 
 /***********************************************************************/
@@ -312,6 +313,9 @@ void GraspVisualization::run()
     {
         showTrajectory(left_or_right);
     }
+
+    if (norm(object)>0.0)
+        igaze->lookAtFixationPoint(object.subVector(5,7));
 
     t_vis=Time::now()-t0;
 }

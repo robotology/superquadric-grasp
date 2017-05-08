@@ -172,6 +172,8 @@ bool GraspingModule::set_options(const Property &newOptions, const string &field
         graspComp->setTrajectoryPar(newOptions);
     else if (field=="optimization")
         graspComp->setIpoptPar(newOptions);
+    else if (field=="execution")
+        graspExec->setPosePar(newOptions);
     else
         return false;
 
@@ -219,6 +221,34 @@ bool GraspingModule::set_save_poses(const string &entry)
     }
 }
 
+/**********************************************************************/
+bool GraspingModule::move(const string &entry)
+{
+    if ((entry=="right") || (entry=="left"))
+    {
+        hand_to_move=entry;
+        executed=false;
+
+        return true;
+    }
+
+    return false;
+}
+
+/**********************************************************************/
+bool GraspingModule::go_home(const string &entry)
+{
+    if ((entry=="right") || (entry=="left"))
+    {
+        graspExec->stop();
+        graspExec->goHome(entry);
+
+        return true;
+    }
+
+    return false;
+}
+
 /****************************************************************/
 bool GraspingModule::configBasics(ResourceFinder &rf)
 {
@@ -247,9 +277,55 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 }
 
 /****************************************************************/
+bool GraspingModule::configMovements(ResourceFinder &rf)
+{
+    traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
+    traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
+
+    shift.resize(3,0.0);
+    home_right.resize(7,0.0);
+    home_left.resize(7,0.0);
+
+    readSuperq("shift",shift,3,this->rf);
+    readSuperq("home_right",home_right,7,this->rf);
+    readSuperq("home_left",home_left,7,this->rf);
+
+    movement_par.put("robot",robot);
+    movement_par.put("hand",left_or_right);
+    movement_par.put("traj_time",traj_time);
+    movement_par.put("traj_tol",traj_tol);
+    Bottle planed;
+    Bottle &pd=planed.addList();
+    pd.addDouble(shift[0]); pd.addDouble(shift[1]);
+    pd.addDouble(shift[2]);
+    pose_par.put("shift",planed.get(0));
+    Bottle planeb;
+    Bottle &p2=planeb.addList();
+    p2.addDouble(home_right[0]); p2.addDouble(home_right[1]);
+    p2.addDouble(home_right[2]); p2.addDouble(home_right[3]);
+    p2.addDouble(home_right[4]); p2.addDouble(home_right[5]);p2.addDouble(home_right[6]);
+    pose_par.put("home_right", planeb.get(0));
+
+    Bottle planebl;
+    Bottle &p2l=planebl.addList();
+    p2l.addDouble(home_left[0]); p2l.addDouble(home_left[1]);
+    p2l.addDouble(home_left[2]); p2l.addDouble(home_left[3]);
+    p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2.addDouble(home_left[6]);
+    pose_par.put("home_left", planeb.get(0));
+
+    executed=true;
+    hand_to_move="right";
+
+    return true;
+}
+
+/****************************************************************/
 bool GraspingModule::close()
 {
     delete graspComp;
+
+    graspExec->release();
+    delete graspExec;
 
     graspVis->stop();
     delete graspVis;
@@ -257,10 +333,7 @@ bool GraspingModule::close()
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
-    if (visualization==true)
-    {
-        GazeCtrl.close();
-    }
+    GazeCtrl.close();
 
     return true;
 }
@@ -291,6 +364,13 @@ bool GraspingModule::updateModule()
         }
         else
             times_vis.clear();
+    }
+
+    if (executed==false)
+    {
+        yDebug()<<"[GraspModule] waiting for moving";
+        graspExec->getPoses(complete_sol);
+        executed=graspExec->executeTrajectory(hand_to_move);
     }
 
     if (save_poses)
@@ -469,6 +549,12 @@ bool GraspingModule::configure(ResourceFinder &rf)
         graspVis->start();
         graspVis->suspend();
     }
+
+    configMovements(rf);
+
+    graspExec= new GraspExecution(movement_par, complete_sol);
+
+    graspExec->configure();
 
     return true;
 }

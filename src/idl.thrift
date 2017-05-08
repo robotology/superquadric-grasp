@@ -132,5 +132,20 @@ service superquadricGrasp_IDL
     *@return "on" or "off".
     */
     string get_visualization()
+
+    /**
+    * Move the right or the left arm (according to the
+    * string e).
+    *@return "on" or "off" if e is right or left.
+    */
+    bool move(1: string e)
+
+    /**
+    * Move the right or the left arm  back to home position (according to the
+    * string e).
+    *@return "on" or "off" if e is right or left.
+    */
+    bool go_home(1: string e)
+
 }
     

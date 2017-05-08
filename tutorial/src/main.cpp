@@ -46,6 +46,7 @@ class sendSuperq : public RFModule,
 
     bool streaming;
     string hand;
+    string hand_to_move;
     Vector sol;
 
     ResourceFinder *rf;
@@ -81,6 +82,7 @@ public:
     {
         this->rf=&rf;
         hand=rf.check("hand", Value("right")).asString();
+        hand_to_move=rf.check("hand_to_move", Value("right")).asString();
 
         readSuperq("object", sol, 11, this->rf);
 
@@ -121,7 +123,9 @@ public:
     /**********************************************************************/
     bool updateModule()
     {
-        if (norm(sol)>0.0)
+        Bottle cmd, reply;
+
+        if ((norm(sol)>0.0) && (reply.get(0).asString()!="ok"))
         {
             Bottle cmd, reply;
             cmd.addString("get_grasping_pose");
@@ -157,8 +161,20 @@ public:
 
             graspRpc.write(cmd, reply);
             yInfo()<<"Received solution: "<<reply.toString();
-        }
 
+            cmd.clear();
+            cmd.addString("move");
+            cmd.addString(hand_to_move);
+
+            yInfo()<<"Asked to move: "<<cmd.toString();
+            graspRpc.write(cmd, reply);
+
+            if (reply.get(0).asString()=="ok")
+            {
+                yInfo()<<"The robot is moving";
+                return false;
+            }
+        }
         return true;
     }
 };

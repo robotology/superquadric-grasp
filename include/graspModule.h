@@ -25,7 +25,7 @@
 #include "superquadric.h"
 #include "graspComputation.h"
 #include "graspVisualization.h"
-//#include "graspExecution.h"
+#include "graspExecution.h"
 
 #include "src/superquadricGrasp_IDL.h"
 
@@ -74,9 +74,16 @@ protected:
     yarp::dev::IGazeControl *igaze;
 
     bool go_on;
+    bool executed;
     bool visualization;
     bool mode_online;    
     bool save_poses;
+
+    double traj_time, traj_tol;
+    yarp::sig::Vector shift;
+    yarp::sig::Vector home_right;
+    yarp::sig::Vector home_left;
+    std::string hand_to_move;
 
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
@@ -85,10 +92,12 @@ protected:
 
     GraspComputation *graspComp;
     GraspVisualization *graspVis;
+    GraspExecution *graspExec;
 
     yarp::os::Property pose_par;
     yarp::os::Property traj_par;
     yarp::os::Property ipopt_par;
+    yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
 
 public:
@@ -128,6 +137,9 @@ public:
     /************************************************************************/
     bool clear_poses();
 
+    /**********************************************************************/
+    bool move(const std::string &entry);
+
     /************************************************************************/
     bool configBasics(yarp::os::ResourceFinder &rf);
 
@@ -150,6 +162,9 @@ public:
     bool configPose(yarp::os::ResourceFinder &rf);
 
     /***********************************************************************/
+    bool configMovements(yarp::os::ResourceFinder &rf);
+
+    /***********************************************************************/
     bool configure(yarp::os::ResourceFinder &rf);
 
     /************************************************************************/
@@ -158,6 +173,8 @@ public:
     /************************************************************************/
     void saveSol(const yarp::os::Property &sol);
 
+    /**********************************************************************/
+    bool go_home(const std::string &entry);
 
 };
 
