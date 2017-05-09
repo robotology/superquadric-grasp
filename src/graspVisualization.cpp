@@ -38,7 +38,7 @@ GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl
 bool GraspVisualization::showTrajectory(const string &hand_str)
 {
     int count=0;
-    ImageOf<PixelRgb> *imgIn=portImgIn.read();
+    ImageOf<PixelRgb> *imgIn=portImgIn.read(false);
     if (imgIn==NULL)
         return false;
 

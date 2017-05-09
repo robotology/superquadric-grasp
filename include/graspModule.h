@@ -74,11 +74,13 @@ protected:
     yarp::dev::IGazeControl *igaze;
 
     bool go_on;
+    bool grasp;
     bool executed;
     bool visualization;
     bool mode_online;    
     bool save_poses;
 
+    double lift_z;
     double traj_time, traj_tol;
     yarp::sig::Vector shift;
     yarp::sig::Vector home_right;
@@ -88,14 +90,19 @@ protected:
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
 
+    //Temporary
+    std::string modelFileRight, modelFileLeft;
+
     yarp::os::Mutex mutex;
 
     GraspComputation *graspComp;
     GraspVisualization *graspVis;
     GraspExecution *graspExec;
 
+
     yarp::os::Property pose_par;
     yarp::os::Property traj_par;
+    yarp::os::Property grasp_par;
     yarp::os::Property ipopt_par;
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
@@ -163,6 +170,9 @@ public:
 
     /***********************************************************************/
     bool configMovements(yarp::os::ResourceFinder &rf);
+
+    /***********************************************************************/
+    bool configGrasp(yarp::os::ResourceFinder &rf);
 
     /***********************************************************************/
     bool configure(yarp::os::ResourceFinder &rf);

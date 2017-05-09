@@ -6,6 +6,7 @@
 
 #include <yarp/math/Math.h>
 #include <iCub/iKin/iKinFwd.h>
+#include <iCub/perception/models.h>
 
 #include "graspExecution.h"
 
@@ -14,10 +15,15 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
+using namespace iCub::action;
+using namespace iCub::perception;
 
 /*******************************************************************************/
-GraspExecution::GraspExecution(Property &_movement_par, const Property &_complete_sol):
-               movement_par(_movement_par), complete_sol(_complete_sol)
+GraspExecution::GraspExecution(Property &_movement_par, Property &_grasp_par, const Property &_complete_sol,
+                               bool _grasp, string _modelFileRight, string _modelFileLeft):
+                                movement_par(_movement_par), grasp_par(_grasp_par), complete_sol(_complete_sol),
+                                grasp(_grasp), modelFileRight(_modelFileRight), modelFileLeft(_modelFileLeft)
+
 {
 
 }
@@ -25,6 +31,8 @@ GraspExecution::GraspExecution(Property &_movement_par, const Property &_complet
 /*******************************************************************************/
 bool GraspExecution::configure()
 {
+    bool config;
+
     home_right.resize(7,0.0);
     home_left.resize(7,0.0);
     shift.resize(3,0.0);
@@ -35,20 +43,31 @@ bool GraspExecution::configure()
 
     if (left_or_right!="both")
     {
-        configDev(left_or_right);
+        config=configCartesian(left_or_right);
     }
     else
     {
-        configDev("right");
-        configDev("left");
+        config=configCartesian("right");
+        config=config && configCartesian("left");
+    }
+
+    if (grasp)
+    {
+        config=config && configGrasp();
+
+        yDebug()<<"Grasped configured: "<<config;
     }
 
     reached=false;
+
+    return config;
 }
 
 /*******************************************************************************/
-bool GraspExecution::configDev(const string &which_hand)
+bool GraspExecution::configCartesian(const string &which_hand)
 {
+    bool done;
+
     if (which_hand=="right")
     {
         Property option_arm_r("(device cartesiancontrollerclient)");
@@ -76,7 +95,12 @@ bool GraspExecution::configDev(const string &which_hand)
         icart_right->storeContext(&context_right);
 
         icart_right->setTrajTime(traj_time);
+
         icart_right->setInTargetTol(traj_tol);
+
+        icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
+        icart_right->waitMotionDone();
+        icart_right->checkMotionDone(&done);
     }
     else if (which_hand=="left")
     {
@@ -99,6 +123,79 @@ bool GraspExecution::configDev(const string &which_hand)
         icart_left->setTrajTime(traj_time);
 
         icart_left->setInTargetTol(traj_tol);
+
+        icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
+        icart_left->waitMotionDone();
+        icart_left->checkMotionDone(&done);
+    }
+
+    return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::configGrasp()
+{
+    if (left_or_right!="both")
+        action= new AFFACTIONPRIMITIVESLAYER(grasp_par);
+    else
+    {
+        grasp_par2=grasp_par;
+        grasp_par2.put("part", "left_arm");
+        grasp_par.put("part", "right_arm");
+
+        grasp_par.put("grasp_model_file",modelFileRight);
+        grasp_par2.put("grasp_model_file",modelFileLeft);
+
+        action= new AFFACTIONPRIMITIVESLAYER(grasp_par);
+        action2= new AFFACTIONPRIMITIVESLAYER(grasp_par2);
+    }
+
+    if (!action->isValid())
+    {
+        delete action;
+        return false;
+    }
+
+    if ((left_or_right=="both") && (!action2->isValid()))
+    {
+        delete action2;
+        return false;
+    }
+
+    deque<string> q=action->getHandSeqList();
+    yDebug()<<"[GraspExecution]: List of available hand sequence keys:";
+    for (size_t i=0; i<q.size(); i++)
+        yDebug()<<q[i];
+
+    Model *model; action->getGraspModel(model);
+
+    Model *model2;
+
+    if (left_or_right=="both")
+         action2->getGraspModel(model2);
+
+    if (model!=NULL)
+    {
+        if (!model->isCalibrated())
+        {
+            Property prop;
+            prop.put("finger","all");
+            model->calibrate(prop);
+        }
+        else
+            return false;
+    }
+
+    if ((left_or_right=="both") && (model2!=NULL))
+    {
+        if (!model2->isCalibrated())
+        {
+            Property prop;
+            prop.put("finger","all");
+            model2->calibrate(prop);
+        }
+        else
+            return false;
     }
 
     return true;
@@ -178,13 +275,32 @@ void GraspExecution::setPosePar(const Property &newOptions)
         else
         {
             traj_tol=0.005;
+
+        }
+    }
+
+    double lz=newOptions.find("lift_z").asDouble();
+
+    if (newOptions.find("lift_z").isNull())
+    {
+        lift_z=0.15;
+    }
+    else
+    {
+        if ((lz>=0.05) && (lz<=0.3))
+        {
+            lift_z=lz;
+        }
+        else
+        {
+            lift_z=0.15;
         }
     }
 
     Bottle *sh=newOptions.find("shift").asList();
     if (newOptions.find("shift").isNull())
     {
-        shift[0]=0.05;
+        shift[0]=0.0;
         shift[1]=0.0;
         shift[2]=0.0;
     }
@@ -201,28 +317,29 @@ void GraspExecution::setPosePar(const Property &newOptions)
         }
         else
         {
-            shift[0]=0.05;
+            shift[0]=0.0;
             shift[1]=0.0;
             shift[2]=0.0;
         }
     }
 
-    Bottle *pl=newOptions.find("home_position_right").asList();
-    if (newOptions.find("home_position_right").isNull())
+    Bottle *pl=newOptions.find("home_right").asList();
+    if (newOptions.find("home_right").isNull())
     {
         home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
         home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
     }
     else
     {
-        Vector tmp(4,0.0);
+        Vector tmp(7,0.0);
         tmp[0]=pl->get(0).asDouble();
         tmp[1]=pl->get(1).asDouble();
         tmp[2]=pl->get(2).asDouble();
         tmp[3]=pl->get(3).asDouble();
-        tmp[1]=pl->get(4).asDouble();
-        tmp[2]=pl->get(5).asDouble();
-        tmp[3]=pl->get(6).asDouble();
+        tmp[4]=pl->get(4).asDouble();
+        tmp[5]=pl->get(5).asDouble();
+        tmp[6]=pl->get(6).asDouble();
+
         if (norm(tmp)>0.0)
         {
             home_right=tmp;
@@ -234,22 +351,22 @@ void GraspExecution::setPosePar(const Property &newOptions)
         }
     }
 
-    Bottle *pll=newOptions.find("home_position_left").asList();
-    if (newOptions.find("home_position_left").isNull())
+    Bottle *pll=newOptions.find("home_left").asList();
+    if (newOptions.find("home_left").isNull())
     {
         home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
         home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
     }
     else
     {
-        Vector tmp(4,0.0);
+        Vector tmp(7,0.0);
         tmp[0]=pll->get(0).asDouble();
         tmp[1]=pll->get(1).asDouble();
         tmp[2]=pll->get(2).asDouble();
         tmp[3]=pll->get(3).asDouble();
-        tmp[1]=pll->get(4).asDouble();
-        tmp[2]=pll->get(5).asDouble();
-        tmp[3]=pll->get(6).asDouble();
+        tmp[4]=pll->get(4).asDouble();
+        tmp[5]=pll->get(5).asDouble();
+        tmp[6]=pll->get(6).asDouble();
         if (norm(tmp)>0.0)
         {
             home_left=tmp;
@@ -272,6 +389,7 @@ Property GraspExecution::getPosePar()
     advOptions.put("hand",left_or_right);
     advOptions.put("traj_time",traj_time);
     advOptions.put("traj_tol",traj_tol);
+    advOptions.put("lift_z",lift_z);
     Bottle s;
     Bottle &pd=s.addList();
     pd.addDouble(shift[0]); pd.addDouble(shift[1]);
@@ -352,16 +470,30 @@ bool GraspExecution::executeTrajectory(string &hand)
         for (size_t i=0; i<trajectory_right.size(); i++)
             trajectory.push_back(trajectory_right[i]);
 
+            liftObject(trajectory, trajectory_right.size());
+
         for (size_t i=1; i<trajectory_right.size(); i++)
             trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
+
+        trajectory.push_back(home_right);
     }
     else
     {
         for (size_t i=0; i<trajectory_left.size(); i++)
             trajectory.push_back(trajectory_left[i]);
 
+            liftObject(trajectory, trajectory_left.size());
+
         for (size_t i=1; i<trajectory_left.size(); i++)
             trajectory.push_back(trajectory_left[trajectory_right.size()-1-i]);
+
+        trajectory.push_back(home_left);
+    }
+
+    yDebug()<<"[GraspExecution]: Complete trajectory ";
+    for (size_t k=0; k<trajectory.size(); k++)
+    {
+        yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString();
     }
 
     if (i==-1)
@@ -375,6 +507,15 @@ bool GraspExecution::executeTrajectory(string &hand)
     {
         yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString();
         reached=reachWaypoint(i, hand);
+
+        if (grasp==true && reached==true)
+        {
+            if (((i==trajectory_right.size()-1) && (hand=="right")) || ((i==trajectory_left.size()-1) && (hand=="left")))
+                reached=graspObject(hand);
+
+            if (((i==trajectory_right.size()+1) && (hand=="right")) || ((i==trajectory_left.size()+1) && (hand=="left")))
+                reached=releaseObject(hand);
+        }
     }
 
     if (reached==true)
@@ -397,28 +538,52 @@ bool GraspExecution::executeTrajectory(string &hand)
 bool GraspExecution::reachWaypoint(int i, string &hand)
 {
     bool done;
+    int context_tmp;
 
     Vector x(3,0.0);
     Vector o(4,0.0);
 
     x=trajectory[i].subVector(0,2);
-    o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
+    if (trajectory[i].size()==6)
+        o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
+    else
+        o=trajectory[i].subVector(3,6);
 
     if (hand=="right")
     {
+        if(i==trajectory.size()-1)
+        {
+            icart_right->storeContext(&context_tmp);
+            icart_right->setLimits(0,0.0,0.0);
+            icart_right->setLimits(1,0.0,0.0);
+            icart_right->setLimits(2,0.0,0.0);
+        }
+
         icart_right->goToPoseSync(x,o);
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
+
         if (done)
         {
-            Vector x_reached(3,0.0);
-            Vector o_reached(4,0.0);
-            icart_right->getPose(x_reached, o_reached);
+             Vector x_reached(3,0.0);
+             Vector o_reached(4,0.0);
+             icart_right->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
+
+        if(i==trajectory.size()-1)
+            icart_right->restoreContext(context_tmp);
     }
     if (hand=="left")
     {
+        if(i==trajectory.size()-1)
+        {
+            icart_left->storeContext(&context_tmp);
+            icart_left->setLimits(0,0.0,0.0);
+            icart_left->setLimits(1,0.0,0.0);
+            icart_left->setLimits(2,0.0,0.0);
+        }
+
         icart_left->goToPoseSync(x,o);
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
@@ -429,6 +594,9 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
             icart_left->getPose(x_reached, o_reached);
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
+
+        if(i==trajectory.size()-1)
+            icart_left->restoreContext(context_tmp);
     }
 
     return done;
@@ -449,39 +617,64 @@ bool GraspExecution::release()
         robotDevice_right.close();
     if (left_or_right=="both" || left_or_right=="left")
         robotDevice_left.close();
+
+    if (grasp==true)
+    {
+        if (action!=NULL)
+            delete action;
+
+        if ((action2!=NULL) && (left_or_right=="both"))
+            delete action2;
+    }
 }
 
 /*******************************************************************************/
 bool GraspExecution::goHome(const string &hand)
 {
     bool done;
+    int context_tmp;
 
     if (hand=="right")
     {
+        icart_right->storeContext(&context_tmp);
+        icart_right->setLimits(0,0.0,0.0);
+        icart_right->setLimits(1,0.0,0.0);
+        icart_right->setLimits(2,0.0,0.0);
+
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString();
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
         if (done)
         {
-            Vector x_reached(3,0.0);
-            Vector o_reached(4,0.0);
-            icart_right->getPose(x_reached, o_reached);
+             Vector x_reached(3,0.0);
+             Vector o_reached(4,0.0);
+             icart_right->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_right.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_right.subVector(3,6)-o_reached);
         }
+
+        icart_right->restoreContext(context_tmp);
     }
     if (hand=="left")
     {
+        icart_left->storeContext(&context_tmp);
+        icart_left->setLimits(0,0.0,0.0);
+        icart_left->setLimits(1,0.0,0.0);
+        icart_left->setLimits(2,0.0,0.0);
+
+        yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString();
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
         if (done)
         {
-            Vector x_reached(3,0.0);
-            Vector o_reached(4,0.0);
-            icart_left->getPose(x_reached, o_reached);
-            yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
+             Vector x_reached(3,0.0);
+             Vector o_reached(4,0.0);
+             icart_left->getPose(x_reached, o_reached);
+             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
         }
+
+        icart_left->restoreContext(context_tmp);
     }
 
     return done;
@@ -491,6 +684,55 @@ bool GraspExecution::goHome(const string &hand)
 bool GraspExecution::stop()
 {
     reached=true;
+}
+
+/*******************************************************************************/
+void GraspExecution::liftObject(deque<Vector> &traj, int index)
+{
+    Vector waypoint_lift(6,0.0);
+    waypoint_lift=trajectory[index-1];
+    waypoint_lift[2]+=lift_z;
+
+    traj.push_back(waypoint_lift);
+    traj.push_back(trajectory[index-1]);
+}
+
+/*******************************************************************************/
+bool GraspExecution::graspObject(const string &hand)
+{
+    yDebug()<<"[GraspExecution]: Grasping object (Temporary approach)..";
+    bool f;
+    if (hand=="right")
+    {
+        action->pushAction("close_hand");
+        action->checkActionsDone(f,true);
+    }
+    else
+    {
+        action2->pushAction("close_hand");
+        action2->checkActionsDone(f,true);
+    }
+
+    return f;
+}
+
+/*******************************************************************************/
+bool GraspExecution::releaseObject(const string &hand)
+{
+    yDebug()<<"[GraspExecution]: Releasing object (Temporary approach)..";
+    bool f;
+    if (hand=="right")
+    {
+        action->pushAction("open_hand");
+        action->checkActionsDone(f,true);
+    }
+    else
+    {
+        action2->pushAction("open_hand");
+        action2->checkActionsDone(f,true);
+    }
+
+    return f;
 }
 
 

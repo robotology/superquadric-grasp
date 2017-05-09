@@ -76,7 +76,7 @@ service superquadricGrasp_IDL
     * parameters the user want to change.
     * @param field is a string specifying which
     * can of parameter we are going to change.
-    * Field can be: "pose", "trajectory" or "optimization".
+    * Field can be: "pose", "trajectory", "optimization" or "execution".
     * You can set the  parameters typing, for instance: 
     * command:  set_options ((n_pointshand <points-value>)
     * (hand_displacement_x <displacement-value>)) pose.
@@ -89,7 +89,7 @@ service superquadricGrasp_IDL
     * Get the  parameters of the module. The user must
     * pay attention in changing them.
     * @param field can be "pose", "trajectory",
-    * "optimization" or "statistics".
+    * "optimization", "statistics" or "execution".
     * depending on which parameters we are interested in.
     * @return the Property including all the  parameter values.
     */

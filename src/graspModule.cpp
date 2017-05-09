@@ -190,6 +190,8 @@ Property GraspingModule::get_options(const string &field)
         advOptions=graspComp->getTrajectoryPar();
     else if (field=="optimization")
         advOptions=graspComp->getIpoptPar();
+    else if (field=="execution")
+        advOptions=graspExec->getPosePar();
     else if (field=="statistics")
     {
         advOptions.put("average_computation_time", t_grasp);
@@ -245,6 +247,13 @@ bool GraspingModule::go_home(const string &entry)
 
         return true;
     }
+    else if (entry=="both")
+    {
+        graspExec->stop();
+        graspExec->goHome("right");
+        graspExec->goHome("left");
+        return true;
+    }
 
     return false;
 }
@@ -270,6 +279,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     mode_online=(rf.check("mode_online", Value("on")).asString()=="on");
     save_poses=(rf.check("save_poses", Value("on")).asString()=="on");
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
+    grasp=(rf.check("grasp", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -281,10 +291,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 {
     traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
     traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
-
-    shift.resize(3,0.0);
-    home_right.resize(7,0.0);
-    home_left.resize(7,0.0);
+    lift_z=rf.check("lift_z", Value(0.15)).asDouble();
 
     readSuperq("shift",shift,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
@@ -294,27 +301,57 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("hand",left_or_right);
     movement_par.put("traj_time",traj_time);
     movement_par.put("traj_tol",traj_tol);
+    movement_par.put("lift_z", lift_z);
+
     Bottle planed;
     Bottle &pd=planed.addList();
     pd.addDouble(shift[0]); pd.addDouble(shift[1]);
     pd.addDouble(shift[2]);
-    pose_par.put("shift",planed.get(0));
+    movement_par.put("shift",planed.get(0));
     Bottle planeb;
     Bottle &p2=planeb.addList();
     p2.addDouble(home_right[0]); p2.addDouble(home_right[1]);
     p2.addDouble(home_right[2]); p2.addDouble(home_right[3]);
     p2.addDouble(home_right[4]); p2.addDouble(home_right[5]);p2.addDouble(home_right[6]);
-    pose_par.put("home_right", planeb.get(0));
+    movement_par.put("home_right", planeb.get(0));
 
     Bottle planebl;
     Bottle &p2l=planebl.addList();
     p2l.addDouble(home_left[0]); p2l.addDouble(home_left[1]);
     p2l.addDouble(home_left[2]); p2l.addDouble(home_left[3]);
-    p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2.addDouble(home_left[6]);
-    pose_par.put("home_left", planeb.get(0));
+    p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2l.addDouble(home_left[6]);
+    movement_par.put("home_left", planebl.get(0));
+
+    cout<<"MOVEMENT  "<<movement_par.toString()<<endl;
 
     executed=true;
     hand_to_move="right";
+
+    return true;
+}
+
+/****************************************************************/
+bool GraspingModule::configGrasp(ResourceFinder &rf)
+{
+    Property config;
+    config.fromConfigFile(rf.findFile("from").c_str());
+    //Bottle &bGeneral=config.findGroup("general");
+
+    grasp_par.put("robot",robot);
+    grasp_par.put("local","superquadric-grasp");
+    if (left_or_right!="both")
+    {
+        grasp_par.put("part",left_or_right+"_arm");
+        grasp_par.put("grasp_model_file",rf.findFile("grasp_model_file_"+left_or_right).c_str());
+    }
+    else
+    {
+        modelFileRight=rf.findFile("grasp_model_file_right").c_str();
+        modelFileLeft=rf.findFile("grasp_model_file_left").c_str();
+    }
+
+    grasp_par.put("grasp_model_type",rf.find("grasp_model_type").asString().c_str());
+    grasp_par.put("hand_sequences_file",rf.findFile("hand_sequences_file").c_str());
 
     return true;
 }
@@ -552,9 +589,14 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configMovements(rf);
 
-    graspExec= new GraspExecution(movement_par, complete_sol);
+    configGrasp(rf);
 
-    graspExec->configure();
+    graspExec= new GraspExecution(movement_par, grasp_par, complete_sol, grasp, modelFileRight, modelFileLeft);
+
+    config=graspExec->configure();
+
+    if (config==false)
+        return false;
 
     return true;
 }
