@@ -46,6 +46,7 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
 
+    int context_gaze;
     int rate_vis;
     double t,t0, t_grasp, t_vis;
     std::deque<double> times_vis;

@@ -370,6 +370,8 @@ bool GraspingModule::close()
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
+    igaze->restoreContext(context_gaze);
+
     GazeCtrl.close();
 
     return true;
@@ -441,6 +443,13 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     }
     else
         return false;
+
+    igaze->storeContext(&context_gaze);
+
+    igaze->setTrackingMode(false);
+    //igaze->setNeckTrajTime(0.85);
+    //igaze->setEyesTrajTime(0.85);
+    igaze->setSaccadesMode(false);
 
     Bottle info;
     igaze->getInfo(info);

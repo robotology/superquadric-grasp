@@ -67,6 +67,7 @@ bool GraspExecution::configure()
 bool GraspExecution::configCartesian(const string &which_hand)
 {
     bool done;
+    int context_tmp;
 
     if (which_hand=="right")
     {
@@ -98,9 +99,16 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         icart_right->setInTargetTol(traj_tol);
 
+        icart_right->storeContext(&context_tmp);
+        icart_right->setLimits(0,0.0,0.0);
+        icart_right->setLimits(1,0.0,0.0);
+        icart_right->setLimits(2,0.0,0.0);
+
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
+
+        icart_right->restoreContext(context_tmp);
     }
     else if (which_hand=="left")
     {
@@ -124,9 +132,16 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         icart_left->setInTargetTol(traj_tol);
 
+        icart_left->storeContext(&context_tmp);
+        icart_left->setLimits(0,0.0,0.0);
+        icart_left->setLimits(1,0.0,0.0);
+        icart_left->setLimits(2,0.0,0.0);
+
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
+
+        icart_left->restoreContext(context_tmp);
     }
 
     return done;
