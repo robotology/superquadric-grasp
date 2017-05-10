@@ -28,84 +28,100 @@ GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_
 }
 
 /***********************************************************************/
-void GraspComputation::setIpoptPar(const Property &newOptions)
+void GraspComputation::setIpoptPar(const Property &newOptions, bool first_time)
 {
     LockGuard lg(mutex);
 
     double maxCpuTime=newOptions.find("max_cpu_time").asDouble();
-    if (newOptions.find("max_cpu_time").isNull())
+    if (newOptions.find("max_cpu_time").isNull() && (first_time==true))
     {
         max_cpu_time=5.0;
     }
-    else
+    else if (!newOptions.find("max_cpu_time").isNull())
     {
         if ((maxCpuTime>=0.01) && (maxCpuTime<=10.0))
         {
             max_cpu_time=maxCpuTime;
         }
-        else
+        else if (maxCpuTime<0.01)
         {
-            max_cpu_time=5.0;
+            max_cpu_time=0.01;
+        }
+        else if (maxCpuTime>10.0)
+        {
+            max_cpu_time=10.0;
         }
     }
 
     double tolValue=newOptions.find("tol").asDouble();
-    if (newOptions.find("tol").isNull())
+    if (newOptions.find("tol").isNull() && (first_time==true))
     {
         tol=1e-5;
     }
-    else
+    else if (!newOptions.find("tol").isNull())
     {
         if ((tolValue>1e-8) && (tolValue<=0.01))
         {
             tol=tolValue;
         }
-        else
+        else if (tolValue<1e-8)
         {
-            tol=1e-5;
+            tol=1e-8;
+        }
+        else if (tolValue>0.01)
+        {
+            tol=0.01;
         }
     }
 
     double constrTolValue=newOptions.find("constr_viol_tol").asDouble();
-    if (newOptions.find("constr_viol_tol").isNull())
+    if (newOptions.find("constr_viol_tol").isNull() && (first_time==true))
     {
         constr_viol_tol=1e-5;
     }
-    else
+    else if (!newOptions.find("constr_viol_tol").isNull())
     {
         if ((constrTolValue>1e-8) && (constrTolValue<=0.01))
         {
             constr_viol_tol=constrTolValue;
         }
-        else
+        else if (constrTolValue<1e-8)
         {
-            constr_viol_tol=1e-5;
+            constr_viol_tol=1e-8;
+        }
+        else if (constrTolValue>0.01)
+        {
+            constr_viol_tol=0.01;
         }
     }
 
     int accIter=newOptions.find("acceptable_iter").asInt();
-    if (newOptions.find("acceptable_iter").isNull())
+    if (newOptions.find("acceptable_iter").isNull() && (first_time==true))
     {
         acceptable_iter=0;
     }
-    else
+    else if (!newOptions.find("acceptable_iter").isNull())
     {
-        if ((accIter>=0 )&& (accIter<=100))
+        if ((accIter>=0 )&& (accIter<=10))
         {
              acceptable_iter=accIter;
         }
-        else
+        else if (accIter<0 )
         {
             acceptable_iter=0;
+        }
+        else if (accIter>10)
+        {
+            acceptable_iter=10;
         }
     }
 
     int maxIter=newOptions.find("max_iter").asInt();
-    if (newOptions.find("max_iter").isNull())
+    if (newOptions.find("max_iter").isNull() && (first_time==true))
     {
         max_iter=100;
     }
-    else
+    else if (!newOptions.find("max_iter").isNull())
     {
         if ((maxIter>1))
         {
@@ -118,11 +134,11 @@ void GraspComputation::setIpoptPar(const Property &newOptions)
     }
 
     string mu_str=newOptions.find("mu_strategy").asString();
-    if (newOptions.find("mu_strategy").isNull())
+    if (newOptions.find("mu_strategy").isNull() && (first_time==true))
     {
         mu_strategy="monotone";
     }
-    else
+    else if (!newOptions.find("mu_strategy").isNull())
     {
         if ((mu_str=="adaptive") || (mu_str=="monotone"))
         {
@@ -135,11 +151,11 @@ void GraspComputation::setIpoptPar(const Property &newOptions)
     }
 
     string nlp=newOptions.find("nlp_scaling_method").asString();
-    if (newOptions.find("nlp_scaling_method").isNull())
+    if (newOptions.find("nlp_scaling_method").isNull() && (first_time==true))
     {
         nlp_scaling_method="gradient-based";
     }
-    else
+    else if (!newOptions.find("nlp_scaling_method").isNull())
     {
         if ((nlp=="none") || (nlp=="gradient-based"))
         {
@@ -168,38 +184,45 @@ Property GraspComputation::getIpoptPar()
 }
 
 /***********************************************************************/
-void GraspComputation::setPosePar(const Property &newOptions)
+void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
 {
     LockGuard lg(mutex);
-    displacement.resize(3,0.0);
-    plane.resize(4,0.0);
+    if (first_time)
+    {
+        displacement.resize(3,0.0);
+        plane.resize(4,0.0);
+    }
 
     int points=newOptions.find("n_pointshand").asInt();
 
-    if (newOptions.find("n_pointshand").isNull())
+    if (newOptions.find("n_pointshand").isNull() && (first_time==true))
     {
         n_pointshand=46;
     }
-    else
+    else if (!newOptions.find("n_pointshand").isNull())
     {
-        if ((points>=1) && (points<=100))
+        if ((points>=4) && (points<=100))
         {
             n_pointshand=points;
         }
-        else
+        else if (points<4)
         {
-            n_pointshand=46;
+            n_pointshand=4;
+        }
+        else if (points>100)
+        {
+            n_pointshand=100;
         }
     }
 
     Bottle *disp=newOptions.find("hand_displacement").asList();
-    if (newOptions.find("plane").isNull())
+    if (newOptions.find("hand_displacement").isNull() && (first_time==true))
     {
         displacement[0]=0.05;
         displacement[1]=0.0;
         displacement[2]=0.0;
     }
-    else
+    else if (!newOptions.find("hand_displacement").isNull())
     {
         Vector tmp(3,0.0);
         tmp[0]=disp->get(0).asDouble();
@@ -219,11 +242,11 @@ void GraspComputation::setPosePar(const Property &newOptions)
     }
 
     Bottle *pl=newOptions.find("plane").asList();
-    if (newOptions.find("plane").isNull())
+    if (newOptions.find("plane").isNull() && (first_time==true))
     {
         plane[0]=0.0; plane[1]=0.0; plane[2]=0.0; plane[3]=0.11;
     }
-    else
+    else if (!newOptions.find("plane").isNull())
     {
         Vector tmp(4,0.0);
         tmp[0]=pl->get(0).asDouble();
@@ -264,53 +287,61 @@ Property GraspComputation::getPosePar()
 }
 
 /***********************************************************************/
-void GraspComputation::setTrajectoryPar(const Property &newOptions)
+void GraspComputation::setTrajectoryPar(const Property &newOptions, bool first_time)
 {
     LockGuard lg(mutex);
 
     double dist=newOptions.find("distance_on_x").asDouble();
 
 
-    if (newOptions.find("distance_on_x").isNull())
+    if (newOptions.find("distance_on_x").isNull() && (first_time==true))
     {
         distance=0.13;
     }
-    else
+    else if (!newOptions.find("distance_on_x").isNull())
     {
         if ((dist>=0.0) && (dist<=0.3))
         {
             distance=dist;
         }
-        else
+        else if (dist<0.0)
         {
-            distance=0.13;
+            distance=0.0;
+        }
+        else if (dist>0.3)
+        {
+            distance=0.3;
         }
     }
 
     dist=newOptions.find("distance_on_z").asDouble();
 
-    if (newOptions.find("distance_on_z").isNull())
+    if (newOptions.find("distance_on_z").isNull() && (first_time==true))
     {
         distance1=0.05;
     }
-    else
+    else if (!newOptions.find("distance_on_z").isNull())
     {
         if ((dist>=0.0) && (dist<=0.3))
         {
             distance1=dist;
         }
-        else
+        else if (dist<0.0)
         {
-            distance1=0.05;
+            distance1=0.0;
+        }
+        else if (dist>0.3)
+        {
+            distance1=0.3;
         }
     }
 
     string direct=newOptions.find("approaching_direction").asString();
-    if (newOptions.find("approaching_direction").isNull())
+    if (newOptions.find("approaching_direction").isNull() && (first_time==true))
     {
         dir=direct;
     }
-    else
+    else if (!newOptions.find("approaching_direction").isNull())
     {
         if (direct=="z")
         {
@@ -341,9 +372,9 @@ bool GraspComputation::init()
 {
     yInfo()<<"[GraspComputation]: Thread initing ... ";
 
-    setIpoptPar(ipopt_par);
-    setPosePar(pose_par);
-    setTrajectoryPar(trajectory_par);
+    setIpoptPar(ipopt_par,true);
+    setPosePar(pose_par, true);
+    setTrajectoryPar(trajectory_par, true);
 
     solR.resize(11,0.0);
     solL.resize(11,0.0);

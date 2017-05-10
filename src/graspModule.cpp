@@ -170,11 +170,11 @@ bool GraspingModule::set_hand(const string &e)
 bool GraspingModule::set_options(const Property &newOptions, const string &field)
 {
     if (field=="pose")
-        graspComp->setPosePar(newOptions);
+        graspComp->setPosePar(newOptions, false);
     else if (field=="trajectory")
-        graspComp->setTrajectoryPar(newOptions);
+        graspComp->setTrajectoryPar(newOptions, false);
     else if (field=="optimization")
-        graspComp->setIpoptPar(newOptions);
+        graspComp->setIpoptPar(newOptions, false);
     else if (field=="execution")
         graspExec->setPosePar(newOptions);
     else if (field=="visualization")
@@ -336,8 +336,6 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2l.addDouble(home_left[6]);
     movement_par.put("home_left", planebl.get(0));
 
-    cout<<"MOVEMENT  "<<movement_par.toString()<<endl;
-
     executed=true;
     hand_to_move="right";
 
@@ -349,7 +347,6 @@ bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
     Property config;
     config.fromConfigFile(rf.findFile("from").c_str());
-    //Bottle &bGeneral=config.findGroup("general");
 
     grasp_par.put("robot",robot);
     grasp_par.put("local","superquadric-grasp");

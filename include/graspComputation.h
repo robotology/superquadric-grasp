@@ -69,19 +69,19 @@ public:
                      yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
 
     /***********************************************************************/
-    void setIpoptPar(const yarp::os::Property &newOptions);
+    void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);
 
     /***********************************************************************/
     yarp::os::Property getIpoptPar();
 
     /***********************************************************************/
-    void setPosePar(const yarp::os::Property &newOptions);
+    void setPosePar(const yarp::os::Property &newOptions, bool first_time);
 
     /***********************************************************************/
     yarp::os::Property getPosePar();
 
     /***********************************************************************/
-    void setTrajectoryPar(const yarp::os::Property &newOptions);
+    void setTrajectoryPar(const yarp::os::Property &newOptions, bool first_time);
 
     /***********************************************************************/
     yarp::os::Property getTrajectoryPar();

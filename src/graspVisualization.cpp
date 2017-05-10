@@ -324,10 +324,7 @@ void GraspVisualization::run()
     double t0=Time::now();
     getPoses(complete_sol);
 
-    //if (trajectory_right.size()>0 || trajectory_left.size()>0)
-    //{
-        showTrajectory(left_or_right);
-    //}
+    showTrajectory(left_or_right);
 
     if ((norm(object)>0.0) && (look_object==true))
         igaze->lookAtFixationPoint(object.subVector(5,7));
