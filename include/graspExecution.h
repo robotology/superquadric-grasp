@@ -55,8 +55,7 @@ protected:
     int context_left;
 
     int i;
-    bool grasp;
-    bool reached;
+    bool grasp;    
     double lift_z;
     double traj_time,traj_tol;
 
@@ -67,6 +66,9 @@ protected:
     //
 
 public:
+
+    bool reached;
+    bool reached_tot;
 
     const yarp::os::Property &complete_sol;
     yarp::os::Property movement_par;

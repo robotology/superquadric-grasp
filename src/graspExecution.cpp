@@ -477,7 +477,6 @@ void GraspExecution::getPoses(const Property &poses)
 /*******************************************************************************/
 bool GraspExecution::executeTrajectory(string &hand)
 {
-    bool reached_tot;
     trajectory.clear();
 
     if (hand=="right")

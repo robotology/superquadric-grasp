@@ -48,6 +48,7 @@ bool GraspingModule::clear_poses()
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     object.resize(11,0.0);
+    complete_sol.clear();
 
     return true;
 }
@@ -101,6 +102,8 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
     t_grasp=graspComp->getTime();
+
+    graspVis->left_or_right=hand;
 
     return complete_sol;
 }
@@ -174,6 +177,8 @@ bool GraspingModule::set_options(const Property &newOptions, const string &field
         graspComp->setIpoptPar(newOptions);
     else if (field=="execution")
         graspExec->setPosePar(newOptions);
+    else if (field=="visualization")
+        graspVis->setPar(newOptions);
     else
         return false;
 
@@ -192,6 +197,8 @@ Property GraspingModule::get_options(const string &field)
         advOptions=graspComp->getIpoptPar();
     else if (field=="execution")
         advOptions=graspExec->getPosePar();
+    else if (field=="visualization")
+        advOptions=graspVis->getPar();
     else if (field=="statistics")
     {
         advOptions.put("average_computation_time", t_grasp);
@@ -242,6 +249,9 @@ bool GraspingModule::go_home(const string &entry)
 {
     if ((entry=="right") || (entry=="left"))
     {
+        executed=true;
+        graspExec->reached=true;
+        graspExec->reached_tot=true;
         graspExec->stop();
         graspExec->goHome(entry);
 
@@ -249,9 +259,13 @@ bool GraspingModule::go_home(const string &entry)
     }
     else if (entry=="both")
     {
+        executed=true;
+        graspExec->reached=true;
+        graspExec->reached_tot=true;
         graspExec->stop();
         graspExec->goHome("right");
         graspExec->goHome("left");
+
         return true;
     }
 
@@ -428,6 +442,8 @@ double GraspingModule::getPeriod()
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
     eye=rf.check("eye", Value("left")).asString();
+    show_hand=(rf.check("show_hand", Value("on")).asString()=="on");
+    look_object=(rf.check("show_hand", Value("on")).asString()=="on");
 
     Property optionG;
     optionG.put("device","gazecontrollerclient");
@@ -470,6 +486,14 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     K(1,2)=intr_par->get(6).asDouble();
     K(2,2)=1;
 
+
+    vis_par.put("look_object",look_object);
+    vis_par.put("look_object",look_object);
+
+
+    vis_par.put("show_hand", show_hand);
+    vis_par.put("show_hand", show_hand);
+
     return true;
 }
 
@@ -479,8 +503,8 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     this->rf=&rf;
 
     n_pointshand=rf.check("pointshand", Value(48)).asInt();
-    distance=rf.check("distance", Value(0.13)).asDouble();
-    distance1=rf.check("distance1", Value(0.05)).asDouble();
+    distance=rf.check("distance_on_x", Value(0.13)).asDouble();
+    distance1=rf.check("distance_on_z", Value(0.05)).asDouble();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
     object.resize(11,0.0);
@@ -579,7 +603,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object, hand, hand1, vis_par);
 
     if (visualization)
     {

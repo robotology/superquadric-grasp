@@ -33,7 +33,6 @@ class GraspVisualization : public yarp::os::RateThread
 {
 protected:
     std::string eye;
-    std::string left_or_right;
     yarp::dev::PolyDriver GazeCtrl;
     yarp::dev::IGazeControl *igaze;
     yarp::sig::Matrix K,H;
@@ -49,10 +48,14 @@ protected:
 public:
 
     double t_vis;
+    bool show_hand;
+    bool look_object;
+    std::string left_or_right;
     yarp::os::Mutex mutex;
     const yarp::sig::Vector &object;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
+    yarp::os::Property vis_par;
     const yarp::os::Property &complete_sol;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
@@ -60,7 +63,8 @@ public:
 
     /***********************************************************************/
     GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
-                       const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol, const yarp::sig::Vector &_object);
+                       const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
+                       const yarp::sig::Vector &_object,  yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par );
 
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);
@@ -85,6 +89,12 @@ public:
 
     /***********************************************************************/
     void getPoses(const yarp::os::Property &poses);
+
+    /***********************************************************************/
+    void setPar(const yarp::os::Property &newOptions);
+
+    /***********************************************************************/
+    yarp::os::Property getPar();
 };
 
 #endif

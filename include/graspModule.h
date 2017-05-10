@@ -77,6 +77,8 @@ protected:
     bool go_on;
     bool grasp;
     bool executed;
+    bool show_hand;
+    bool look_object;
     bool visualization;
     bool mode_online;    
     bool save_poses;
@@ -101,6 +103,7 @@ protected:
     GraspExecution *graspExec;
 
 
+    yarp::os::Property vis_par;
     yarp::os::Property pose_par;
     yarp::os::Property traj_par;
     yarp::os::Property grasp_par;
