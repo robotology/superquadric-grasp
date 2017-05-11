@@ -176,9 +176,9 @@ bool GraspingModule::set_options(const Property &newOptions, const string &field
     else if (field=="optimization")
         graspComp->setIpoptPar(newOptions, false);
     else if (field=="execution")
-        graspExec->setPosePar(newOptions);
+        graspExec->setPosePar(newOptions, false);
     else if (field=="visualization")
-        graspVis->setPar(newOptions);
+        graspVis->setPar(newOptions,false);
     else
         return false;
 
@@ -418,7 +418,6 @@ bool GraspingModule::updateModule()
 
     if (executed==false)
     {
-        yDebug()<<"[GraspModule] waiting for moving";
         graspExec->getPoses(complete_sol);
         executed=graspExec->executeTrajectory(hand_to_move);
     }
@@ -439,8 +438,8 @@ double GraspingModule::getPeriod()
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
     eye=rf.check("eye", Value("left")).asString();
-    show_hand=(rf.check("show_hand", Value("on")).asString()=="on");
-    look_object=(rf.check("show_hand", Value("on")).asString()=="on");
+    show_hand=rf.check("show_hand", Value("on")).asString();
+    look_object=rf.check("look_object", Value("on")).asString();
 
     Property optionG;
     optionG.put("device","gazecontrollerclient");
@@ -485,10 +484,6 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
 
 
     vis_par.put("look_object",look_object);
-    vis_par.put("look_object",look_object);
-
-
-    vis_par.put("show_hand", show_hand);
     vis_par.put("show_hand", show_hand);
 
     return true;

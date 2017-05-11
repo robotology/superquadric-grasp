@@ -98,7 +98,7 @@ public:
     bool configGrasp();
 
     /*******************************************************************************/
-    void setPosePar(const yarp::os::Property &newOptions);
+    void setPosePar(const yarp::os::Property &newOptions, bool first_time);
 
     /*******************************************************************************/
     yarp::os::Property getPosePar();

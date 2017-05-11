@@ -77,8 +77,8 @@ protected:
     bool go_on;
     bool grasp;
     bool executed;
-    bool show_hand;
-    bool look_object;
+    std::string show_hand;
+    std::string look_object;
     bool visualization;
     bool mode_online;    
     bool save_poses;

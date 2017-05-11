@@ -301,6 +301,8 @@ bool GraspVisualization::threadInit()
 
     trajectory.clear();
 
+    setPar(vis_par, true);
+
     return true;
 }
 
@@ -412,13 +414,17 @@ double GraspVisualization::getTime()
 }
 
 /***********************************************************************/
-void GraspVisualization::setPar(const Property &newOptions)
+void GraspVisualization::setPar(const Property &newOptions, bool first_time)
 {
     LockGuard lg(mutex);
 
     string show_h=newOptions.find("show_hand").asString();
 
-    if (!newOptions.find("show_hand").isNull())
+    if (newOptions.find("show_hand").isNull() && (first_time==true))
+    {
+        show_hand=false;
+    }
+    else if (!newOptions.find("show_hand").isNull())
     {
         if ((show_h=="on") || (show_h=="off"))
         {
@@ -432,7 +438,11 @@ void GraspVisualization::setPar(const Property &newOptions)
 
     string l_o=newOptions.find("look_object").asString();
 
-    if (!newOptions.find("look_object").isNull())
+    if (newOptions.find("look_object").isNull() && (first_time==true))
+    {
+        look_object=false;
+    }
+    else if (!newOptions.find("look_object").isNull())
     {
         if ((l_o=="on") || (l_o=="off"))
         {

@@ -39,7 +39,7 @@ bool GraspExecution::configure()
 
     i=-1;
 
-    setPosePar(movement_par);
+    setPosePar(movement_par, true);
 
     if (left_or_right!="both")
     {
@@ -217,17 +217,17 @@ bool GraspExecution::configGrasp()
 }
 
 /*******************************************************************************/
-void GraspExecution::setPosePar(const Property &newOptions)
+void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
 {
     LockGuard lg(mutex);
 
     string rob=newOptions.find("robot").asString();
 
-    if (newOptions.find("robot").isNull())
+    if (newOptions.find("robot").isNull() && (first_time==true))
     {
         robot="icubSim";
     }
-    else
+    else if (!newOptions.find("robot").isNull())
     {
         if ((rob=="icub") || (rob=="icubSim"))
         {
@@ -241,11 +241,11 @@ void GraspExecution::setPosePar(const Property &newOptions)
 
     string han=newOptions.find("hand").asString();
 
-    if (newOptions.find("hand").isNull())
+    if (newOptions.find("hand").isNull() && (first_time==true))
     {
         left_or_right="both";
     }
-    else
+    else if (!newOptions.find("hand").isNull())
     {
         if ((han=="right") || (han=="left") || han=="both")
         {
@@ -259,67 +259,78 @@ void GraspExecution::setPosePar(const Property &newOptions)
 
     double ttime=newOptions.find("traj_time").asDouble();
 
-    if (newOptions.find("traj_time").isNull())
+    if (newOptions.find("traj_time").isNull() && (first_time==true))
     {
         traj_time=2.0;
     }
-    else
+    else if (!newOptions.find("traj_time").isNull())
     {
         if ((ttime>=0.5) && (ttime<=5.0))
         {
             traj_time=ttime;
         }
-        else
+        else if (ttime<0.5)
         {
-            traj_time=2.0;
+            traj_time=0.5;
+        }
+        else if (ttime>5.0)
+        {
+            traj_time=5.0;
         }
     }
 
     double ttol=newOptions.find("traj_tol").asDouble();
 
-    if (newOptions.find("traj_tol").isNull())
+    if (newOptions.find("traj_tol").isNull() && (first_time==true))
     {
         traj_tol=0.005;
     }
-    else
+    else if (!newOptions.find("traj_tol").isNull())
     {
-        if ((ttol>=0.5) && (ttol<=5.0))
+        if ((ttol>=0.001) && (ttol<=0.05))
         {
             traj_tol=ttol;
         }
-        else
+        else if (ttol<0.001)
         {
-            traj_tol=0.005;
-
+            traj_tol=0.001;
+        }
+        else if (ttol>0.05)
+        {
+            traj_tol=0.05;
         }
     }
 
     double lz=newOptions.find("lift_z").asDouble();
 
-    if (newOptions.find("lift_z").isNull())
+    if (newOptions.find("lift_z").isNull() && (first_time==true))
     {
         lift_z=0.15;
     }
-    else
+    else if (!newOptions.find("lift_z").isNull())
     {
         if ((lz>=0.05) && (lz<=0.3))
         {
             lift_z=lz;
         }
-        else
+        else if (lz<0.05)
         {
-            lift_z=0.15;
+            lift_z=0.05;
+        }       
+        else if (lz>0.3)
+        {
+            lift_z=0.3;
         }
     }
 
     Bottle *sh=newOptions.find("shift").asList();
-    if (newOptions.find("shift").isNull())
+    if (newOptions.find("shift").isNull() && (first_time==true))
     {
         shift[0]=0.0;
         shift[1]=0.0;
         shift[2]=0.0;
     }
-    else
+    else if (!newOptions.find("shift").isNull())
     {
         Vector tmp(3,0.0);
         tmp[0]=sh->get(0).asDouble();
@@ -339,12 +350,12 @@ void GraspExecution::setPosePar(const Property &newOptions)
     }
 
     Bottle *pl=newOptions.find("home_right").asList();
-    if (newOptions.find("home_right").isNull())
+    if (newOptions.find("home_right").isNull() && (first_time==true))
     {
         home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
         home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
     }
-    else
+    else if (!newOptions.find("home_right").isNull())
     {
         Vector tmp(7,0.0);
         tmp[0]=pl->get(0).asDouble();
@@ -367,12 +378,12 @@ void GraspExecution::setPosePar(const Property &newOptions)
     }
 
     Bottle *pll=newOptions.find("home_left").asList();
-    if (newOptions.find("home_left").isNull())
+    if (newOptions.find("home_left").isNull() && (first_time==true))
     {
         home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
         home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
     }
-    else
+    else if (!newOptions.find("home_left").isNull())
     {
         Vector tmp(7,0.0);
         tmp[0]=pll->get(0).asDouble();
@@ -478,74 +489,82 @@ void GraspExecution::getPoses(const Property &poses)
 bool GraspExecution::executeTrajectory(string &hand)
 {
     trajectory.clear();
-
-    if (hand=="right")
+    if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
-        for (size_t i=0; i<trajectory_right.size(); i++)
-            trajectory.push_back(trajectory_right[i]);
 
-            liftObject(trajectory, trajectory_right.size());
+        if (hand=="right")
+        {
+            for (size_t i=0; i<trajectory_right.size(); i++)
+                trajectory.push_back(trajectory_right[i]);
 
-        for (size_t i=1; i<trajectory_right.size(); i++)
-            trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
+                liftObject(trajectory, trajectory_right.size());
 
-        trajectory.push_back(home_right);
+            for (size_t i=1; i<trajectory_right.size(); i++)
+                trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
+
+            trajectory.push_back(home_right);
+        }
+        else
+        {
+            for (size_t i=0; i<trajectory_left.size(); i++)
+                trajectory.push_back(trajectory_left[i]);
+
+                liftObject(trajectory, trajectory_left.size());
+
+            for (size_t i=1; i<trajectory_left.size(); i++)
+                trajectory.push_back(trajectory_left[trajectory_right.size()-1-i]);
+
+            trajectory.push_back(home_left);
+        }
+
+        yDebug()<<"[GraspExecution]: Complete trajectory ";
+        for (size_t k=0; k<trajectory.size(); k++)
+        {
+            yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString();
+        }
+
+        if (i==-1)
+        {
+            reached=false;
+            reached_tot=false;
+            i++;
+        }
+
+        if ((reached==false) && (i<=trajectory.size()) && (i>=0))
+        {
+            yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString();
+            reached=reachWaypoint(i, hand);
+
+            if (grasp==true && reached==true)
+            {
+                if (((i==trajectory_right.size()-1) && (hand=="right")) || ((i==trajectory_left.size()-1) && (hand=="left")))
+                    reached=graspObject(hand);
+
+                if (((i==trajectory_right.size()+1) && (hand=="right")) || ((i==trajectory_left.size()+1) && (hand=="left")))
+                    reached=releaseObject(hand);
+            }
+        }
+
+        if (reached==true)
+        {
+            i++;
+        }
+
+        if ((i==trajectory.size()) && (reached==true))
+            reached_tot=true;
+
+        if (reached_tot==true)
+            i=-1;
+
+        reached=false;
+
+        return reached_tot;
     }
     else
     {
-        for (size_t i=0; i<trajectory_left.size(); i++)
-            trajectory.push_back(trajectory_left[i]);
-
-            liftObject(trajectory, trajectory_left.size());
-
-        for (size_t i=1; i<trajectory_left.size(); i++)
-            trajectory.push_back(trajectory_left[trajectory_right.size()-1-i]);
-
-        trajectory.push_back(home_left);
+        yError()<<"[GraspExecution]: No trajectory available!";
+        return true;
     }
-
-    yDebug()<<"[GraspExecution]: Complete trajectory ";
-    for (size_t k=0; k<trajectory.size(); k++)
-    {
-        yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString();
-    }
-
-    if (i==-1)
-    {
-        reached=false;
-        reached_tot=false;
-        i++;
-    }
-
-    if ((reached==false) && (i<=trajectory.size()) && (i>=0))
-    {
-        yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString();
-        reached=reachWaypoint(i, hand);
-
-        if (grasp==true && reached==true)
-        {
-            if (((i==trajectory_right.size()-1) && (hand=="right")) || ((i==trajectory_left.size()-1) && (hand=="left")))
-                reached=graspObject(hand);
-
-            if (((i==trajectory_right.size()+1) && (hand=="right")) || ((i==trajectory_left.size()+1) && (hand=="left")))
-                reached=releaseObject(hand);
-        }
-    }
-
-    if (reached==true)
-    {
-        i++;
-    }
-
-    if ((i==trajectory.size()) && (reached==true))
-        reached_tot=true;
-
-    if (reached_tot==true)
-        i=-1;
-
-    reached=false;
-
-    return reached_tot;
 }
 
 /*******************************************************************************/

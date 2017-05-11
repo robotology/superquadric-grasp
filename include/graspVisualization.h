@@ -91,7 +91,7 @@ public:
     void getPoses(const yarp::os::Property &poses);
 
     /***********************************************************************/
-    void setPar(const yarp::os::Property &newOptions);
+    void setPar(const yarp::os::Property &newOptions, bool first_time);
 
     /***********************************************************************/
     yarp::os::Property getPar();
