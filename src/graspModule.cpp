@@ -279,7 +279,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 
     robot=rf.find("robot").asString().c_str();
     if(rf.find("robot").isNull())
-        robot="iCubsim";
+        robot="icubSim";
 
     left_or_right=rf.find("which_hand").asString().c_str();
     if(rf.find("which_hand").isNull())

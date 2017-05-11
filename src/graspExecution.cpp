@@ -126,6 +126,14 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         robotDevice_left.view(icart_left);
 
+        Vector curDof;
+        icart_left->getDOF(curDof);
+        Vector newDof(3);
+        newDof[0]=1;
+        newDof[1]=1;
+        newDof[2]=1;
+        icart_left->setDOF(newDof,curDof);
+
         icart_left->storeContext(&context_left);
 
         icart_left->setTrajTime(traj_time);
