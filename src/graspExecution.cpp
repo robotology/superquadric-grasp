@@ -58,6 +58,23 @@ bool GraspExecution::configure()
         yDebug()<<"Grasped configured: "<<config;
     }
 
+    //Temporary
+
+    Vector curDof;
+    icart_right->getDOF(curDof);
+    Vector newDof(3);
+    newDof[0]=1;
+    newDof[1]=1;
+    newDof[2]=1;
+    icart_right->setDOF(newDof,curDof);
+
+    icart_left->getDOF(curDof);
+    newDof[0]=1;
+    newDof[1]=1;
+    newDof[2]=1;
+    icart_left->setDOF(newDof,curDof);
+    //
+
     reached=false;
 
     return config;
@@ -93,22 +110,25 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[2]=1;
         icart_right->setDOF(newDof,curDof);
 
+        icart_right->getDOF(curDof);
+        yDebug()<<"Torso DOFS "<<curDof.toString();
+
         icart_right->storeContext(&context_right);
 
         icart_right->setTrajTime(traj_time);
 
         icart_right->setInTargetTol(traj_tol);
 
-        icart_right->storeContext(&context_tmp);
-        icart_right->setLimits(0,0.0,0.0);
-        icart_right->setLimits(1,0.0,0.0);
-        icart_right->setLimits(2,0.0,0.0);
+//        icart_right->storeContext(&context_tmp);
+//        icart_right->setLimits(0,0.0,0.0);
+//        icart_right->setLimits(1,0.0,0.0);
+//        icart_right->setLimits(2,0.0,0.0);
 
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
 
-        icart_right->restoreContext(context_tmp);
+//        icart_right->restoreContext(context_tmp);
     }
     else if (which_hand=="left")
     {
@@ -134,22 +154,26 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[2]=1;
         icart_left->setDOF(newDof,curDof);
 
+
+        icart_left->getDOF(curDof);
+        yDebug()<<"Torso DOFS "<<curDof.toString();
+
         icart_left->storeContext(&context_left);
 
         icart_left->setTrajTime(traj_time);
 
         icart_left->setInTargetTol(traj_tol);
 
-        icart_left->storeContext(&context_tmp);
-        icart_left->setLimits(0,0.0,0.0);
-        icart_left->setLimits(1,0.0,0.0);
-        icart_left->setLimits(2,0.0,0.0);
+//        icart_left->storeContext(&context_tmp);
+//        icart_left->setLimits(0,0.0,0.0);
+//        icart_left->setLimits(1,0.0,0.0);
+//        icart_left->setLimits(2,0.0,0.0);
 
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
 
-        icart_left->restoreContext(context_tmp);
+//        icart_left->restoreContext(context_tmp);
     }
 
     return done;
@@ -157,7 +181,7 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
 /*******************************************************************************/
 bool GraspExecution::configGrasp()
-{
+{    
     if (left_or_right!="both")
         action= new AFFACTIONPRIMITIVESLAYER(grasp_par);
     else
@@ -168,6 +192,10 @@ bool GraspExecution::configGrasp()
 
         grasp_par.put("grasp_model_file",modelFileRight);
         grasp_par2.put("grasp_model_file",modelFileLeft);
+
+        yDebug()<<"grasp par 1"<<grasp_par.toString();
+        yDebug()<<"grasp par 2"<<grasp_par2.toString();
+
 
         action= new AFFACTIONPRIMITIVESLAYER(grasp_par);
         action2= new AFFACTIONPRIMITIVESLAYER(grasp_par2);
@@ -205,8 +233,8 @@ bool GraspExecution::configGrasp()
             prop.put("finger","all");
             model->calibrate(prop);
         }
-        else
-            return false;
+        //else
+        //    return false;
     }
 
     if ((left_or_right=="both") && (model2!=NULL))
@@ -217,8 +245,8 @@ bool GraspExecution::configGrasp()
             prop.put("finger","all");
             model2->calibrate(prop);
         }
-        else
-            return false;
+        //else
+        //    return false;
     }
 
     return true;
@@ -285,6 +313,14 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         {
             traj_time=5.0;
         }
+
+        if (first_time==false)
+        {
+            if ((left_or_right=="right") || (left_or_right=="both"))
+                icart_right->setTrajTime(traj_time);
+            else if ((left_or_right=="left") || (left_or_right=="both"))
+                icart_left->setTrajTime(traj_time);
+        }
     }
 
     double ttol=newOptions.find("traj_tol").asDouble();
@@ -306,6 +342,14 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         else if (ttol>0.05)
         {
             traj_tol=0.05;
+        }
+
+        if (first_time==false)
+        {
+            if ((left_or_right=="right") || (left_or_right=="both"))
+                icart_right->setInTargetTol(traj_tol);
+            else if ((left_or_right=="left") || (left_or_right=="both"))
+                icart_left->setInTargetTol(traj_tol);
         }
     }
 
@@ -594,10 +638,10 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     {
         if(i==trajectory.size()-1)
         {
-            icart_right->storeContext(&context_tmp);
-            icart_right->setLimits(0,0.0,0.0);
-            icart_right->setLimits(1,0.0,0.0);
-            icart_right->setLimits(2,0.0,0.0);
+//            icart_right->storeContext(&context_tmp);
+//            icart_right->setLimits(0,0.0,0.0);
+//            icart_right->setLimits(1,0.0,0.0);
+//            icart_right->setLimits(2,0.0,0.0);
         }
 
         icart_right->goToPoseSync(x,o);
@@ -612,17 +656,17 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
 
-        if(i==trajectory.size()-1)
-            icart_right->restoreContext(context_tmp);
+        //if(i==trajectory.size()-1)
+        //    icart_right->restoreContext(context_tmp);
     }
     if (hand=="left")
     {
         if(i==trajectory.size()-1)
         {
-            icart_left->storeContext(&context_tmp);
-            icart_left->setLimits(0,0.0,0.0);
-            icart_left->setLimits(1,0.0,0.0);
-            icart_left->setLimits(2,0.0,0.0);
+//           icart_left->storeContext(&context_tmp);
+//            icart_left->setLimits(0,0.0,0.0);
+//            icart_left->setLimits(1,0.0,0.0);
+//            icart_left->setLimits(2,0.0,0.0);
         }
 
         icart_left->goToPoseSync(x,o);
@@ -636,9 +680,13 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
 
-        if(i==trajectory.size()-1)
-            icart_left->restoreContext(context_tmp);
+        //if(i==trajectory.size()-1)
+        //    icart_left->restoreContext(context_tmp);
     }
+
+    Vector Dof;
+    icart_right->getDOF(Dof);
+    yDebug()<<"Dof used "<<Dof.toString();
 
     return done;
 }
@@ -677,10 +725,10 @@ bool GraspExecution::goHome(const string &hand)
 
     if (hand=="right")
     {
-        icart_right->storeContext(&context_tmp);
-        icart_right->setLimits(0,0.0,0.0);
-        icart_right->setLimits(1,0.0,0.0);
-        icart_right->setLimits(2,0.0,0.0);
+//        icart_right->storeContext(&context_tmp);
+//        icart_right->setLimits(0,0.0,0.0);
+//        icart_right->setLimits(1,0.0,0.0);
+//        icart_right->setLimits(2,0.0,0.0);
 
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString();
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
@@ -694,14 +742,14 @@ bool GraspExecution::goHome(const string &hand)
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_right.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_right.subVector(3,6)-o_reached);
         }
 
-        icart_right->restoreContext(context_tmp);
+//        icart_right->restoreContext(context_tmp);
     }
     if (hand=="left")
     {
-        icart_left->storeContext(&context_tmp);
-        icart_left->setLimits(0,0.0,0.0);
-        icart_left->setLimits(1,0.0,0.0);
-        icart_left->setLimits(2,0.0,0.0);
+//        icart_left->storeContext(&context_tmp);
+//        icart_left->setLimits(0,0.0,0.0);
+//        icart_left->setLimits(1,0.0,0.0);
+//        icart_left->setLimits(2,0.0,0.0);
 
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString();
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
@@ -715,7 +763,7 @@ bool GraspExecution::goHome(const string &hand)
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
         }
 
-        icart_left->restoreContext(context_tmp);
+//        icart_left->restoreContext(context_tmp);
     }
 
     return done;

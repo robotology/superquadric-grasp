@@ -63,6 +63,7 @@ protected:
     AFFACTIONPRIMITIVESLAYER *action;
     AFFACTIONPRIMITIVESLAYER *action2;
     std::string modelFileRight, modelFileLeft;
+
     //
 
 public:

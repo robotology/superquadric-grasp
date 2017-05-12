@@ -80,7 +80,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 addSuperq(hand_in_poseR,imgOut,0);
 
             for (size_t i=0; i<trajectory_right.size(); i++)
-                trajectory.push_back(trajectory_right[i]);
+                trajectory.push_back(trajectory_right[trajectory_right.size()-1]);
+               // trajectory.push_back(trajectory_right[i]);
         }
         else if (hand_str=="left")
         {

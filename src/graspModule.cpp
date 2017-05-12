@@ -348,6 +348,11 @@ bool GraspingModule::configGrasp(ResourceFinder &rf)
     Property config;
     config.fromConfigFile(rf.findFile("from").c_str());
 
+    Bottle &bGeneral=config.findGroup("general");
+
+    Property option(bGeneral.toString().c_str());
+
+    grasp_par=option;
     grasp_par.put("robot",robot);
     grasp_par.put("local","superquadric-grasp");
     if (left_or_right!="both")
