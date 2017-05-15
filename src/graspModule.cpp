@@ -45,6 +45,8 @@ bool GraspingModule::attach(RpcServer &source)
 /************************************************************************/
 bool GraspingModule::clear_poses()
 {
+    LockGuard lg(mutex);
+
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     object.resize(11,0.0);
@@ -224,6 +226,8 @@ string GraspingModule::get_save_poses()
 /**********************************************************************/
 bool GraspingModule::set_save_poses(const string &entry)
 {
+    LockGuard lg(mutex);
+
     if ((entry=="on") || (entry=="off"))
     {
         save_poses=(entry=="on");
@@ -233,6 +237,8 @@ bool GraspingModule::set_save_poses(const string &entry)
 /**********************************************************************/
 bool GraspingModule::move(const string &entry)
 {
+    LockGuard lg(mutex);
+
     if ((entry=="right") || (entry=="left"))
     {
         hand_to_move=entry;
@@ -247,6 +253,8 @@ bool GraspingModule::move(const string &entry)
 /**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
+    LockGuard lg(mutex);
+
     if ((entry=="right") || (entry=="left"))
     {
         executed=true;

@@ -390,7 +390,7 @@ bool GraspComputation::init()
 void GraspComputation::run()
 {
     t0=Time::now();
-    LockGuard lg(mutex);
+    //LockGuard lg(mutex);
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
     {
