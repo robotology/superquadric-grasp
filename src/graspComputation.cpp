@@ -448,15 +448,14 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             solR=grasp_nlp->get_result();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
-            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString().c_str();
-            yInfo()<<"[GraspComputation]: Hand "<<l_o_r<<" stretched: "<<which_hand.toString().c_str();
+            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
         }
         else
         {
             solL=grasp_nlp->get_result();
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
-            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString().c_str();
+            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
         }
         return true;
     }

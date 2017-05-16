@@ -111,7 +111,7 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_right->setDOF(newDof,curDof);
 
         icart_right->getDOF(curDof);
-        yDebug()<<"Torso DOFS "<<curDof.toString();
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         icart_right->storeContext(&context_right);
 
@@ -156,7 +156,7 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
 
         icart_left->getDOF(curDof);
-        yDebug()<<"Torso DOFS "<<curDof.toString();
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         icart_left->storeContext(&context_left);
 
@@ -564,7 +564,7 @@ bool GraspExecution::executeTrajectory(string &hand)
         yDebug()<<"[GraspExecution]: Complete trajectory ";
         for (size_t k=0; k<trajectory.size(); k++)
         {
-            yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString();
+            yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString(3,3);
         }
 
         if (i==-1)
@@ -576,7 +576,7 @@ bool GraspExecution::executeTrajectory(string &hand)
 
         if ((reached==false) && (i<=trajectory.size()) && (i>=0))
         {
-            yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString();
+            yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
             reached=reachWaypoint(i, hand);
 
             if (grasp==true && reached==true)
@@ -678,7 +678,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
     Vector Dof;
     icart_right->getDOF(Dof);
-    yDebug()<<"Dof used "<<Dof.toString();
+    yDebug()<<"Dof used "<<Dof.toString(3,3);
 
     return done;
 }
@@ -722,7 +722,7 @@ bool GraspExecution::goHome(const string &hand)
 //        icart_right->setLimits(1,0.0,0.0);
 //        icart_right->setLimits(2,0.0,0.0);
 
-        yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString();
+        yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
@@ -743,7 +743,7 @@ bool GraspExecution::goHome(const string &hand)
 //        icart_left->setLimits(1,0.0,0.0);
 //        icart_left->setLimits(2,0.0,0.0);
 
-        yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString();
+        yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
