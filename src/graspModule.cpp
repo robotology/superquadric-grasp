@@ -472,8 +472,6 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     igaze->storeContext(&context_gaze);
 
     igaze->setTrackingMode(false);
-    //igaze->setNeckTrajTime(0.85);
-    //igaze->setEyesTrajTime(0.85);
     igaze->setSaccadesMode(false);
 
     Bottle info;

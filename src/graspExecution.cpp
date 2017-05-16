@@ -193,10 +193,6 @@ bool GraspExecution::configGrasp()
         grasp_par.put("grasp_model_file",modelFileRight);
         grasp_par2.put("grasp_model_file",modelFileLeft);
 
-        yDebug()<<"grasp par 1"<<grasp_par.toString();
-        yDebug()<<"grasp par 2"<<grasp_par2.toString();
-
-
         action= new AFFACTIONPRIMITIVESLAYER(grasp_par);
         action2= new AFFACTIONPRIMITIVESLAYER(grasp_par2);
     }
@@ -233,8 +229,6 @@ bool GraspExecution::configGrasp()
             prop.put("finger","all");
             model->calibrate(prop);
         }
-        //else
-        //    return false;
     }
 
     if ((left_or_right=="both") && (model2!=NULL))
@@ -245,8 +239,6 @@ bool GraspExecution::configGrasp()
             prop.put("finger","all");
             model2->calibrate(prop);
         }
-        //else
-        //    return false;
     }
 
     return true;
