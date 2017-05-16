@@ -79,19 +79,34 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             if (show_hand)
                 addSuperq(hand_in_poseR,imgOut,0);
 
-            for (size_t i=0; i<trajectory_right.size(); i++)
-                trajectory.push_back(trajectory_right[trajectory_right.size()-1]);
-               // trajectory.push_back(trajectory_right[i]);
+            if (show_only_pose)
+            {
+                for (size_t i=0; i<trajectory_right.size(); i++)
+                    trajectory.push_back(trajectory_right[trajectory_right.size()-1]);
+            }
+            else
+            {
+                for (size_t i=0; i<trajectory_right.size(); i++)
+                    trajectory.push_back(trajectory_right[i]);
+            }
         }
         else if (hand_str=="left")
         {
             hand_in_poseL.setSubvector(0,hand1);
             hand_in_poseL.setSubvector(5,solL);
-            if (show_hand)
+            if (show_hand)               
                 addSuperq(hand_in_poseL,imgOut,0);
 
-            for (size_t i=0; i<trajectory_left.size(); i++)
-                trajectory.push_back(trajectory_left[i]);
+            if (show_only_pose)
+            {
+                for (size_t i=0; i<trajectory_left.size(); i++)
+                    trajectory.push_back(trajectory_left[trajectory_left.size()-1]);
+            }
+            else
+            {
+                for (size_t i=0; i<trajectory_left.size(); i++)
+                    trajectory.push_back(trajectory_left[i]);
+            }
         }
         else
         {
@@ -100,16 +115,32 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             if (show_hand)
                 addSuperq(hand_in_poseR,imgOut,0);
 
-            for (size_t i=0; i<trajectory_right.size(); i++)
-                trajectory.push_back(trajectory_right[i]);
+            if (show_only_pose)
+            {
+                for (size_t i=0; i<trajectory_right.size(); i++)
+                    trajectory.push_back(trajectory_right[trajectory_right.size()-1]);
+            }
+            else
+            {
+                for (size_t i=0; i<trajectory_right.size(); i++)
+                    trajectory.push_back(trajectory_right[i]);
+            }
 
             hand_in_poseL.setSubvector(0,hand1);
             hand_in_poseL.setSubvector(5,solL);
             if (show_hand)
                 addSuperq(hand_in_poseL,imgOut,0);
 
-            for (size_t i=0; i<trajectory_left.size(); i++)
-                trajectory.push_back(trajectory_left[i]);
+            if (show_only_pose)
+            {
+                for (size_t i=0; i<trajectory_left.size(); i++)
+                    trajectory.push_back(trajectory_left[trajectory_left.size()-1]);
+            }
+            else
+            {
+                for (size_t i=0; i<trajectory_left.size(); i++)
+                    trajectory.push_back(trajectory_left[i]);
+            }
         }
 
         for (size_t i=0; i<trajectory.size(); i++)
@@ -178,9 +209,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
         }
     }
-
-    //if (count>0)
-    //    yError()<<"[GraspVisualization]: Some pixels are not visible!!";
 
     portImgOut.write();
 }
@@ -261,9 +289,6 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
                     imgOut.pixel(target_point.x, target_point.y)=color;
              }
          }
-
-        //if (count>0)
-         //   yError()<<"[GraspVisualization]: Some pixels are not visible!!";
     }
 }
 
@@ -454,6 +479,24 @@ void GraspVisualization::setPar(const Property &newOptions, bool first_time)
             look_object=false;
         }
     }
+
+    string show_pose=newOptions.find("show_only_pose").asString();
+
+    if (newOptions.find("show_only_pose").isNull() && (first_time==true))
+    {
+        show_only_pose=false;
+    }
+    else if (!newOptions.find("show_only_pose").isNull())
+    {
+        if ((show_pose=="on") || (show_pose=="off"))
+        {
+            show_only_pose=(show_pose=="on");
+        }
+        else
+        {
+            show_only_pose=false;
+        }
+    }
 }
 
 /***********************************************************************/
@@ -470,6 +513,10 @@ Property GraspVisualization::getPar()
         advOptions.put("look_object","on");
     else
         advOptions.put("look_object","off");
+    if (show_only_pose)
+        advOptions.put("show_only_pose","on");
+    else
+        advOptions.put("show_only_pose","off");
 
     return advOptions;
 }

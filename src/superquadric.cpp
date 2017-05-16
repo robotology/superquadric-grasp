@@ -780,6 +780,12 @@ Vector grasping_NLP::get_result() const
    return solution;
 }
 
+/****************************************************************/
+Vector grasping_NLP::get_hand() const
+{
+   return hand;
+}
+
 
 
 

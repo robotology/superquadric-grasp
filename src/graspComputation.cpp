@@ -18,7 +18,7 @@ using namespace yarp::math;
 /***********************************************************************/
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
-                                   const Vector &_hand, const Vector &_hand1, ResourceFinder *_rf,
+                                    Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
                                    Property &_complete_sol, const Vector &_object):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_or_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), complete_sol(_complete_sol), object(_object)
@@ -240,11 +240,11 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
             displacement[2]=0.0;
         }
     }
-
     Bottle *pl=newOptions.find("plane").asList();
+
     if (newOptions.find("plane").isNull() && (first_time==true))
     {
-        plane[0]=0.0; plane[1]=0.0; plane[2]=0.0; plane[3]=0.11;
+        plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.11;
     }
     else if (!newOptions.find("plane").isNull())
     {
@@ -259,7 +259,7 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            plane[0]=0.0; plane[1]=0.0; plane[2]=0.0; plane[3]=0.11;
+            plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.11;
         }
     }
 }
@@ -447,12 +447,15 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         {
             solR=grasp_nlp->get_result();
             poseR=grasp_nlp->robot_pose;
+            which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString().c_str();
+            yInfo()<<"[GraspComputation]: Hand "<<l_o_r<<" stretched: "<<which_hand.toString().c_str();
         }
         else
         {
             solL=grasp_nlp->get_result();
             poseL=grasp_nlp->robot_pose;
+            which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString().c_str();
         }
         return true;

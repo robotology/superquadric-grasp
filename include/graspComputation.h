@@ -39,7 +39,6 @@ protected:
     std::string mu_strategy,nlp_scaling_method;
     double max_cpu_time;
 
-    yarp::sig::Vector hand, hand1;
     int n_pointshand;
     double distance, distance1;
     std::string dir;
@@ -59,13 +58,14 @@ protected:
 
 public:
     
+    yarp::sig::Vector &hand, &hand1;
     yarp::os::Property &complete_sol;
     const yarp::sig::Vector &object;
 
     /*******************************************************************************/
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
-                     const yarp::sig::Vector &_hand, const yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
+                     yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
                      yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
 
     /***********************************************************************/

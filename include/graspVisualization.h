@@ -38,7 +38,7 @@ protected:
     yarp::sig::Matrix K,H;
 
     yarp::sig::Vector poseR, poseL, solR, solL;
-    yarp::sig::Vector hand_in_poseL, hand_in_poseR, hand, hand1;
+    yarp::sig::Vector hand_in_poseL, hand_in_poseR;
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
     yarp::sig::Vector point2D, point, point1, superq;
@@ -50,12 +50,14 @@ public:
     double t_vis;
     bool show_hand;
     bool look_object;
+    bool show_only_pose;
     std::string left_or_right;
     yarp::os::Mutex mutex;
     const yarp::sig::Vector &object;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
     yarp::os::Property vis_par;
+    yarp::sig::Vector &hand, &hand1;
     const yarp::os::Property &complete_sol;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;

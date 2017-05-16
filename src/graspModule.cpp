@@ -453,6 +453,7 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     eye=rf.check("eye", Value("left")).asString();
     show_hand=rf.check("show_hand", Value("on")).asString();
     look_object=rf.check("look_object", Value("on")).asString();
+    show_only_pose=rf.check("show_only_pose", Value("on")).asString();
 
     Property optionG;
     optionG.put("device","gazecontrollerclient");
