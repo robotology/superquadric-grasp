@@ -122,6 +122,8 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
 
     if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
         hand[1]=findMax(object.subVector(0,2));
+    else if (findMax(object.subVector(0,2))<findMax(hand.subVector(0,2)))
+        hand[1]=findMax(object.subVector(0,2));
 
     if (str_hand=="right")
     {

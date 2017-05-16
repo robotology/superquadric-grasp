@@ -449,6 +449,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
+            yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
         }
         else
         {
