@@ -36,7 +36,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/include ${YARP_INCLUDE_DIRS} ${ICUB_I
 add_definitions(${YARP_DEFINES} ${IPOPT_DEFINITIONS} -D_USE_MATH_DEFINES) 
 
 add_executable(${PROJECT_NAME} ${sources} ${headers} src/idl.thrift  ${IDL_GEN_FILES})
-target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib perceptiveModels actionPrimitives TactileControl::TactileControl)
+target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib TactileControl::TactileControl)
 set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${IPOPT_LINK_FLAGS}")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
