@@ -353,29 +353,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
-    Property config;
-    config.fromConfigFile(rf.findFile("from").c_str());
-
-    Bottle &bGeneral=config.findGroup("general");
-
-    Property option(bGeneral.toString().c_str());
-
-    grasp_par=option;
-    grasp_par.put("robot",robot);
-    grasp_par.put("local","superquadric-grasp");
-    if (left_or_right!="both")
-    {
-        grasp_par.put("part",left_or_right+"_arm");
-        grasp_par.put("grasp_model_file",rf.findFile("grasp_model_file_"+left_or_right).c_str());
-    }
-    else
-    {
-        modelFileRight=rf.findFile("grasp_model_file_right").c_str();
-        modelFileLeft=rf.findFile("grasp_model_file_left").c_str();
-    }
-
-    grasp_par.put("grasp_model_type",rf.find("grasp_model_type").asString().c_str());
-    grasp_par.put("hand_sequences_file",rf.findFile("hand_sequences_file").c_str());
+    lib_context=rf.check("lib_context", Value("superquadric-grasp")).asString();
+    lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
 
     return true;
 }
@@ -628,7 +607,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configGrasp(rf);
 
-    graspExec= new GraspExecution(movement_par, grasp_par, complete_sol, grasp, modelFileRight, modelFileLeft);
+    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
 
     config=graspExec->configure();
 

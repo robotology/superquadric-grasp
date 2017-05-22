@@ -22,9 +22,7 @@
 #include <yarp/sig/all.h>
 #include <yarp/dev/all.h>
 
-//Temporary
-#include <iCub/action/actionPrimitives.h>
-#define AFFACTIONPRIMITIVESLAYER iCub::action::ActionPrimitivesLayer1
+#include "TactileControl/HandController.h"
 
 /*******************************************************************************/
 class GraspExecution
@@ -59,26 +57,24 @@ protected:
     double lift_z;
     double traj_time,traj_tol;
 
-    //Temporary
-    AFFACTIONPRIMITIVESLAYER *action;
-    AFFACTIONPRIMITIVESLAYER *action2;
-    std::string modelFileRight, modelFileLeft;
-
-    //
-
 public:
 
     bool reached;
     bool reached_tot;
 
+    std::string lib_context;
+    std::string lib_filename;
+
     const yarp::os::Property &complete_sol;
     yarp::os::Property movement_par;
-    yarp::os::Property grasp_par;
-    yarp::os::Property grasp_par2;
+
+    tactileControl:: HandController handContr_right;
+    tactileControl:: HandController handContr_left;
+
 
     /*******************************************************************************/
-    GraspExecution(yarp::os::Property &movement_par,yarp::os::Property &grasp_par, const yarp::os::Property &complete_sol,
-                   bool _grasp, std::string _modelFileRight, std::string _modelFileLeft);
+    GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol,
+                   bool _grasp, std::string _lib_context, std::string _lib_filename);
 
     /*******************************************************************************/
     bool configure();

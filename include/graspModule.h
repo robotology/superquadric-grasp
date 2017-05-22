@@ -94,8 +94,7 @@ protected:
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
 
-    //Temporary
-    std::string modelFileRight, modelFileLeft;
+    std::string lib_context, lib_filename;
 
     yarp::os::Mutex mutex;
 
