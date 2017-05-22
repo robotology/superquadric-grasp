@@ -594,7 +594,6 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
     if (hand=="right")
     {
-
         if(i==trajectory.size()-1)
         {
             for (size_t i=0; i<limit_min.size(); i++)
