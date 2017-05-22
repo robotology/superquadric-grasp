@@ -87,9 +87,9 @@ bool GraspExecution::configCartesian(const string &which_hand)
         Vector curDof;
         icart_right->getDOF(curDof);
         Vector newDof(3);
-        newDof[0]=1;
-        newDof[1]=1;
-        newDof[2]=1;
+        newDof[0]=0;
+        newDof[1]=0;
+        newDof[2]=0;
         icart_right->setDOF(newDof,curDof);
 
         icart_right->getDOF(curDof);
@@ -105,6 +105,13 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
+
+        newDof[0]=1;
+        newDof[1]=0;
+        newDof[2]=1;
+        icart_right->setDOF(newDof,curDof);
+
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
     else if (which_hand=="left")
     {
@@ -125,11 +132,10 @@ bool GraspExecution::configCartesian(const string &which_hand)
         Vector curDof;
         icart_left->getDOF(curDof);
         Vector newDof(3);
-        newDof[0]=1;
-        newDof[1]=1;
-        newDof[2]=1;
+        newDof[0]=0;
+        newDof[1]=0;
+        newDof[2]=0;
         icart_left->setDOF(newDof,curDof);
-
 
         icart_left->getDOF(curDof);
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
@@ -143,6 +149,13 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
+
+        newDof[0]=1;
+        newDof[1]=0;
+        newDof[2]=1;
+        icart_right->setDOF(newDof,curDof);
+
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
 
     return done;
@@ -175,13 +188,13 @@ bool GraspExecution::configGrasp()
 
     if (!handContr_right.open())
     {
-        yError()<<"[GraspExecution: Problems in initializing the tactile control for right arm]";
+        yError()<<"[GraspExecution]: Problems in initializing the tactile control for right arm";
         return false;
     }
 
     if (!handContr_left.open())
     {
-        yError()<<"[GraspExecution: Problems in initializing the tactile control for left arm]";
+        yError()<<"[GraspExecution]: Problems in initializing the tactile control for left arm";
         return false;
     }
 
@@ -561,11 +574,17 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     bool done;
     int context_tmp;
 
+    double min, max;
+
     Vector x(3,0.0);
     Vector o(4,0.0);
 
     Vector newDof, curDof;
     newDof.resize(3,1);
+    newDof[1]=0;
+
+    Vector limit_min(10,0.0);
+    Vector limit_max(10,0.0);
 
     x=trajectory[i].subVector(0,2);
     if (trajectory[i].size()==6)
@@ -575,6 +594,21 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
     if (hand=="right")
     {
+
+        if(i==trajectory.size()-1)
+        {
+            for (size_t i=0; i<limit_min.size(); i++)
+            {
+                icart_right->getLimits(i, &min, &max);
+                limit_min[i]=min;
+                limit_max[i]=max;
+            }
+
+            icart_right->setLimits(0,0.0, 0.0);
+            icart_right->setLimits(1,0.0, 0.0);
+            icart_right->setLimits(2,0.0, 0.0);    
+        }
+        
         icart_right->getDOF(curDof);
         icart_right->setDOF(newDof,curDof);
 
@@ -590,21 +624,50 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
 
+        if(i==trajectory.size()-1)
+        {
+            icart_right->setLimits(0,limit_min[0], limit_max[0]);
+            icart_right->setLimits(1,limit_min[1], limit_max[1]);
+            icart_right->setLimits(2,limit_min[2], limit_max[2]);    
+        }
+
     }
     if (hand=="left")
     {
+        if(i==trajectory.size()-1)
+        {
+            for (size_t i=0; i<limit_min.size(); i++)
+            {
+                icart_left->getLimits(i, &min, &max);
+                limit_min[i]=min;
+                limit_max[i]=max;
+            }
+
+            icart_left->setLimits(0,0.0, 0.0);
+            icart_left->setLimits(1,0.0, 0.0);
+            icart_left->setLimits(2,0.0, 0.0);  
+        }
+ 
         icart_left->getDOF(curDof);
         icart_left->setDOF(newDof,curDof);
 
         icart_left->goToPoseSync(x,o);
         icart_left->waitMotionDone();
         icart_left->checkMotionDone(&done);
+
         if (done)
         {
             Vector x_reached(3,0.0);
             Vector o_reached(4,0.0);
             icart_left->getPose(x_reached, o_reached);
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
+        }
+
+        if(i==trajectory.size()-1)
+        {
+            icart_left->setLimits(0,limit_min[0], limit_max[0]);
+            icart_left->setLimits(1,limit_min[1], limit_max[1]);
+            icart_left->setLimits(2,limit_min[2], limit_max[2]);    
         }
     }
 
@@ -632,11 +695,10 @@ bool GraspExecution::release()
         robotDevice_left.close();
 
     if (grasp==true)
-    {
-        if (handContr_right.open())
-            handContr_right.close();
-        if (handContr_left.open())
-            handContr_left.close();
+    {   
+        handContr_right.close();
+
+        handContr_left.close();
     }
 
     return true;
@@ -704,11 +766,13 @@ bool GraspExecution::graspObject(const string &hand)
     bool f;
     if (hand=="right")
     {
+        handContr_right.openHand(false,true);
         handContr_right.closeHand(true);
         f=handContr_right.isHandClose();
     }
     else
     {
+        handContr_left.openHand(false,true);
         handContr_left.closeHand(true);
         f=handContr_left.isHandClose();
     }
@@ -730,7 +794,7 @@ bool GraspExecution::releaseObject(const string &hand)
         handContr_left.openHand(true, true);
     }
 
-    return f;
+    return true;
 }
 
 
