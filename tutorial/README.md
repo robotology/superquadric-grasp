@@ -69,3 +69,17 @@ cmd.addString(hand_to_move);
 
 graspRpc.write(cmd, reply);
 ```
+## How to run the `superquadric-grasp` + `tutorial`
+This tutorial is designed to be tested on the `simulator`, since a fake superquadric is used (the tutorial upload an example of superquadric from a configuration file).
+In order to run the tutorial:
+1. Launch a yarpserver on your computer:
+```
+yarpserver --write
+```
+2. Launch the [`iCub_SIM`](http://wiki.icub.org/wiki/Simulator_README).
+3. Launch the basic modules  for the simulator (`yarprobotinterface`, `iKinGazeCtrl`, `iKinCartsianSolver`- for both right and left arm-).
+4. Launch the `superquadric-grasp` and a `yarpviewer`, using [this xml]().
+5. Launch the tutorial with [this xml](https://github.com/robotology/superquadric-grasp/blob/master/tutorial/app/script/testing-graspmodule.xml.template).
+6. Connect everything.
+
+Enjoy! :smiley:
