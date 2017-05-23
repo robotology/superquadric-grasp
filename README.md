@@ -60,9 +60,11 @@ The superquadric-grasp module requires the reconstructed superquadric of the obj
 ## Some results
 Here is an example of grasping poses computed with our method:
 
+<p align="center">
+<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/results.png">
+</p>
 
-
-The execution time for pose computation is nealy 2.0 s.
+The execution time for pose computation is nealy 2.0 s. [Here](https://www.youtube.com/watch?v=eGZO8peAVao) you can find a video showing the computed poses used for real grasping tasks.
 
 ## Documentation
 Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
