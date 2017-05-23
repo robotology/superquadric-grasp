@@ -8,13 +8,15 @@ The superquadric modeling the object can be obtained with the [superquadric-mode
 
 The grasping pose for the object of interested is computed by **overlapping the hand ellipsoid to the superquadric modeling the object**. From a mathematical viewpoint, the pose is computed by solving a novel optimization problem:
 
-<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/optimization-problem-general.png" width=500>
-
+<p align="center">
+<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/optimization-problem-general.png" width=400>
+</p>
 
 The cost function imposes the minimization of the distance between the ellipsoid and the object superquadric. The formulation is general enough to deal also with **obstacle avoidance** with the definition of suitable constraints. For instance,  the table on which the object is located can be modeled as an object in order to prevent the robot hand from hitting the table:
 
-
+<p align="center">
 <img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/optimization-problem-specific.png" width=400>
+</p>
 
 More details will be available soon in the following paper:
 
