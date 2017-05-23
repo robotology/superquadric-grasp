@@ -2,51 +2,45 @@
 <?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
 
 <module>
-  <name>superquadric-grasping</name>
+  <name>superquadric-grasp</name>
   <doxygen-group></doxygen-group>
   <description>Framework for grasping pose computation</description>
   <copypolicy> Released under the terms of the GNU GPL v2.0 .</copypolicy>
   <version> 1.0</version>
 
   <description-long>
-   The module computes a <b> pose reachable</b> by the robot hand and  make it <b>grasp and lift the object</b>.
-The complete pipeline is the following:
+  This module provides an grasping pose computation tool based on superquadric functions.
+A tutorial on how to use the module is provided in the dedicated repository <a href="https://github.com/robotology/superquadric-grasp/tree/master/tutorial"><b>tutorial</b></a>.
 
-1. Given the <b>object model</b>, as a _superquadric_, and the <b> selected hand</b>, whose **graspable volume** is represented by an _ellipsoid_, a reachable pose  is computed. 
-    - The  **object model** can be provided from a _configuration file_ or by quering the [superquadric-model](https://github.com/robotology/superquadric-model), that computes _online_ a superquadric fitting the object of interest point cloud. 
-    - The user can select not only one hand, but also **both**. In this case, two poses will be computed, one for the left and one for the right hand.
-    
-2. The computed pose/<b>poses</b> is/are <b>shown</b> together with the superquadric representing the volume graspable by the hand, overlapped to the superquadric modelling the object.
-3. Then the user can  **ask the robot to grasp and lift the object**. If the poses for both of the arms are computed, the user can choose the best one.
-4. The <b>trajectory</b> is shown and the robot <b>reaches</b> the desired pose.
-5. The robot <b>grasps</b> and <b>lifts</b> the object.
-6. Finally the hand goes back to the initial pose.
+This page illustrates the main parameters of the module (Section <b>Parameters</b>), the available ports and services.
+The modules parameters are labeled as standard and advanced. Note: change the advanced parameters only if you are familiar with the implemented techniques.
   </description-long>
 
   <arguments>
-    <param default="icubSim" desc="Robot used in the test">robot</param>
-    <param default="right" desc="Hand used">left_or_right</param>
- <param default="true" desc="Used calibrate points from vision or not">calib_cam</param> 
- <param default="true" desc="Lift the object after grasping or not">lift</param>
- <param default="z" desc="Appraching direction in hand frame">dir</param>
- <param default="left" desc="Eyes used to get image">eye</param>
- <param default="false" desc="Work online or not">online</param>
- <param default="48" desc="Number of points sampled on the hand ellipsoid">calib_cam</param>
- <param default="0.13" desc="Distance used for approach">distance</param>
- <param default="0.05" desc="Distance used for grasping">distance1</param>
- <param default="Sponge" desc="Name of the object for asking the superquadric to superquadric-model ">distance</param>
- <param default="test_right" desc="Name of output file for right">nameFileOut_right</param>
- <param default="test_left" desc="Name of output file for left">nameFileOut_left</param>
- <param default="solution_right" desc="Name of solution file for right">nameFileSolution_right</param>
- <param default="solution_left" desc="Name of solution file for left">nameFileSolution_left</param>
- <param default="test-trajectory-right" desc="Name of trajectory file for selected hand">nameFileTrajectory</param>
- <param default="1e-3" desc="Tolerance for Ipopt solver">tol</param>
- <param default="1e-2" desc="Tolerance of constraints in Ipopt solver">constr_viol_tol</param>
- <param default="0" desc="Acceptable iter in Ipopt solver">acceptable_iter</param>
- <param default="1e8" desc="Maximum number of iterations in Ipopt solver">max_iter</param>
- <param default="monotone" desc="Mu strategy in Ipopt solver">mu_strategy</param>
- <param default="none" desc="NLP scaling method in Ipopt solver">nlp_scaling_method</param>
-
+    <param default="icubSim" desc="Robot used in the test (standard parameter).">robot</param>
+    <param default="right" desc="Hand used (standard parameter).">left_or_right</param>
+ <param default="z" desc="Appraching direction in hand frame.Possible values: z or xz (standard parameter).">dir</param>
+ <param default="left" desc="Eyes used to get image (standard parameter).">eye</param>
+ <param default="true" desc="Acquire an external point cloud or not online or not (standard parameter).">mode_online</param>
+ <param default="0.05" desc="Distance used for approach on x axis (standard parameter).">distance</param>
+ <param default="0.05" desc="Distance used for approach on z axis (standard parameter).">distance1</param>
+ <param default="false" desc="Save or not the results (standard parameter).">save_poses</param>
+ <param default="true" desc="Visualize or not the computed pose (standard parameter).">visualization</param>
+ <param default="false" desc="Grasp or not the object once the final pose is reached (standard parameter).">grasp</param>
+ <param default="true" desc="Show the hand ellipsoid or not (standard parameter).">show_hand</param>
+ <param default="true" desc="Look the object or not (standard parameter).">look_object</param>
+ <param default="true" desc="If on, only the pose is shown, without the trajectory (standard parameter).">show_only_pose</param>
+ <param default="1.0" desc="Trajectory time (standard parameter).">traj_time</param>
+ <param default="0.001" desc="Trajectory tolerance (standard parameter).">traj_tol</param>
+<param default="0.15" desc="Quantity on z axis for object lifting (standard parameter).">lift_z</param>
+ <param default="(0.0 0.0 1.0 0.18)" desc="Plane representing the table (advanced parameter).">plane</param>
+ <param default="(0.05 0.0 0.0)" desc="Ellipsoid displacement with respect to hand reference frame (advanced parameter).">displacement</param>
+ <param default="1e-3" desc="Tolerance for Ipopt solver (advanced parameter).">tol</param>
+ <param default="1e-2" desc="Tolerance of constraints in Ipopt solver (advanced parameter).">constr_viol_tol</param>
+ <param default="0" desc="Acceptable iter in Ipopt solver (advanced parameter).">acceptable_iter</param>
+ <param default="1e8" desc="Maximum number of iterations in Ipopt solver (advanced parameter).">max_iter</param>
+ <param default="monotone" desc="Mu strategy in Ipopt solver (advanced parameter).">mu_strategy</param>
+ <param default="none" desc="NLP scaling method in Ipopt solver (advanced parameter).">nlp_scaling_method</param>
   </arguments>
 
   <authors>
@@ -56,39 +50,33 @@ The complete pipeline is the following:
   <data>
       <input>
           <type>yarp::sig::ImageOfPixelRgb</type>
-          <port carrier="tcp">/superquadric-grasping/img:i</port>
+          <port carrier="tcp">/superquadric-grasp/img:i</port>
           <description>
             sends the image from the left camera 
           </description>
       </input>
       <output>
           <type>yarp::sig::ImageOfPixelRgb</type>
-          <port carrier="tcp">/superquadric-grasping/img:o</port>
+          <port carrier="tcp">/superquadric-grasp/img:o</port>
           <description>
             shows the image from the left camera with the computed pose
           </description>
       </output>
       <input>
           <type>yarp::sig::Bottle</type>
-          <port carrier="rpc">/superquadric-grasping/superq:rpc</port>
+          <port carrier="rpc">/superquadric-grasp/superq:rpc</port>
           <description>
             asks superquadric object model 
           </description>
       </input>
- <input>
-          <type>yarp::sig::Bottle</type>
-          <port carrier="rpc">/superquadric-grasping/camcalib:rpc</port>
-          <description>
-            asks calibrated points from vision
-          </description>
-      </input>
+
   </data>
 
   <services>
     <server>
-      <type>superquadricGrasping_IDL</type>
+      <type>superquadricGrasp_IDL</type>
       <idl>idl.thrift</idl>
-      <port>/superquadric-grasping/rpc</port>
+      <port>/superquadric-grasp/rpc</port>
       <description>service port</description>
     </server>
   </services>
