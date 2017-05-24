@@ -51,8 +51,9 @@ The superquadric-grasp module consists of:
 - `GraspComputation` class, computing the grasping pose, once the object model is received.
 - `GraspVisualization` thread, showing the computed pose and the used object model overlapped to the robot camera.
 - `GraspExecution` thread, implementing the robot movements for grasping the object.
+
 The superquadric-grasp module also provides some `thirft services` through a `rpc port`. The user can communicate with the module through these services in order to ask the state of the threads and to modify some parameters on the fly.
-In addition, the thrift services allow the user to ask directly the computation of the grasping pose and the execution of the grasping task. The module also receive the camera image and, if the `GraspVisualization` is enabled, the output is shown on a yarpview. 
+In addition, the thrift services allow the user to ask directly the computation of the grasping pose and the execution of the grasping task. The module also receives the camera image as input and, if the `GraspVisualization` is enabled, the output is shown on a yarpview. 
 
 ## Use case
 The superquadric-grasp module requires the reconstructed superquadric of the object. An example code for retriving this information, together with a tutorial is provided in the folder [tutorial](https://github.com/robotology/superquadric-grasp/tree/master/tutorial) in this repository.
