@@ -82,4 +82,8 @@ yarpserver --write
 5. Launch the tutorial with [this xml](https://github.com/robotology/superquadric-grasp/blob/master/tutorial/app/script/testing-graspmodule.xml.template).
 6. Connect everything.
 
+The simulator will perform a fake grasping pose computation and execution.
+
+If, instead, the user is interested in running the [`superquadric-model`](https://github.com/robotology/superquadric-model/tree/master) and the `superquadric-grasp` in a real scenario, an example code is provided by [`experiment-1`](https://github.com/robotology-playground/experiment-new-grasp/tree/master/experiment-1) folder.
+
 Enjoy! :smiley:
