@@ -69,6 +69,8 @@ cmd.addString(hand_to_move);
 
 graspRpc.write(cmd, reply);
 ```
+where `hand_to_move` can be `left` or `right`.
+
 ## How to run the `superquadric-grasp` + `tutorial`
 This tutorial is designed to be tested on the `simulator`, since a fake superquadric is used (the tutorial upload an example of superquadric from a configuration file).
 In order to run the tutorial:
