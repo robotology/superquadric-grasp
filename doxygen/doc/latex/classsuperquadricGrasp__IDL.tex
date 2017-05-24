@@ -1,0 +1,414 @@
+\section{superquadric\+Grasp\+\_\+\+I\+DL Class Reference}
+\label{classsuperquadricGrasp__IDL}\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+
+
+\hyperlink{classsuperquadricGrasp__IDL}{superquadric\+Grasp\+\_\+\+I\+DL} I\+DL Interface to superquadric-\/grasp services.  
+
+
+
+
+{\ttfamily \#include $<$superquadric\+Grasp\+\_\+\+I\+D\+L.\+h$>$}
+
+Inheritance diagram for superquadric\+Grasp\+\_\+\+I\+DL\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classsuperquadricGrasp__IDL}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_a6d1e4533ad8b34510ba9792f7cd72113}{clear\+\_\+poses} ()
+\begin{DoxyCompactList}\small\item\em Remove computed poses. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_a6215b75f080a5837599b25826c142921}{set\+\_\+hand} (const std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Choose the hand to use to grasp the object. \end{DoxyCompactList}\item 
+virtual std\+::string \hyperlink{classsuperquadricGrasp__IDL_ad1e5b402e403bc6765d7bf7e8fff0e91}{get\+\_\+hand} ()
+\begin{DoxyCompactList}\small\item\em Get the chosen hand. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_ac01ec2012d2b12098a86f7f053068464}{set\+\_\+save\+\_\+poses} (const std\+::string \&entry)
+\begin{DoxyCompactList}\small\item\em Set if to save or not the computed poses and trajectory. \end{DoxyCompactList}\item 
+virtual std\+::string \hyperlink{classsuperquadricGrasp__IDL_aab45b0423b4e2d440b8a1256c1d6bdfc}{get\+\_\+save\+\_\+poses} ()
+\begin{DoxyCompactList}\small\item\em Get if the saving process is on or off. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_a5320ef56cf3da687e7cf678b2a9397f5}{set\+\_\+options} (const yarp\+::os\+::\+Property \&options, const std\+::string \&field)
+\begin{DoxyCompactList}\small\item\em Set the parameters of the module. \end{DoxyCompactList}\item 
+virtual yarp\+::os\+::\+Property \hyperlink{classsuperquadricGrasp__IDL_a4799064cf16a52762787c0b245318d54}{get\+\_\+options} (const std\+::string \&field)
+\begin{DoxyCompactList}\small\item\em Get the parameters of the module. \end{DoxyCompactList}\item 
+virtual yarp\+::os\+::\+Property \hyperlink{classsuperquadricGrasp__IDL_a595e98ed2a8fca7ac707b71f97d626d1}{get\+\_\+grasping\+\_\+pose} (const yarp\+::os\+::\+Property \&estimated\+\_\+superq, const std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Return the estimated grasping poses given an estimated superquadric. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_a91d43de48ad97e35205010c7510e503c}{set\+\_\+visualization} (const std\+::string \&e)
+\begin{DoxyCompactList}\small\item\em Set if the visualization has to be enabled. \end{DoxyCompactList}\item 
+virtual std\+::string \hyperlink{classsuperquadricGrasp__IDL_ad108d67db8f389b630fa2b0caed87ca5}{get\+\_\+visualization} ()
+\begin{DoxyCompactList}\small\item\em Get if visualization is enabled. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_aa996e476a845b484542c7a596cc1f02a}{move} (const std\+::string \&e)
+\begin{DoxyCompactList}\small\item\em Move the right or the left arm (according to the string e). \end{DoxyCompactList}\item 
+virtual bool {\bfseries look\+\_\+center} ()\label{classsuperquadricGrasp__IDL_a2f9efa6904f4e7240456a4968f3f6c07}
+
+\item 
+virtual bool {\bfseries look\+\_\+obj} ()\label{classsuperquadricGrasp__IDL_ad583966fde84372bad2b65214dcbe2bc}
+
+\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_a67b63b85635a02ab15f9447ad2b1b0dd}{go\+\_\+home} (const std\+::string \&e)
+\begin{DoxyCompactList}\small\item\em Move the right or the left arm back to home position (according to the string e). \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_abafbd89252eed10caf876ff1965491d0}{go\+\_\+to\+\_\+basket} (const std\+::string \&e)
+\begin{DoxyCompactList}\small\item\em Move the right or the left arm to the basket (according to the string e). \end{DoxyCompactList}\item 
+virtual std\+::string \hyperlink{classsuperquadricGrasp__IDL_afca9a01bade8e22262e5e70a96d671ae}{get\+\_\+best\+\_\+hand} ()
+\begin{DoxyCompactList}\small\item\em Get the name of the best hand for grasping the object. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_afd0cc265ba84c844aee5654f1a713fbd}{check\+\_\+motion} ()
+\begin{DoxyCompactList}\small\item\em Check if the motion has been completed. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_a9e11fd04a40c86987500c42f898508ea}{check\+\_\+home} ()
+\begin{DoxyCompactList}\small\item\em Check if the motion back to home has been completed. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_ac40ef7c0dd4f0e3600db9aea5cc5c298}{calibrate} ()
+\begin{DoxyCompactList}\small\item\em Calibrate plane height via superquadric computation. \end{DoxyCompactList}\item 
+virtual bool {\bfseries read} (yarp\+::os\+::\+Connection\+Reader \&connection) Y\+A\+R\+P\+\_\+\+O\+V\+E\+R\+R\+I\+DE\label{classsuperquadricGrasp__IDL_a710271cfee0c9b1a31707d84f194b69b}
+
+\item 
+virtual std\+::vector$<$ std\+::string $>$ {\bfseries help} (const std\+::string \&function\+Name=\char`\"{}-\/-\/all\char`\"{})\label{classsuperquadricGrasp__IDL_a226f766d3a3a0ba87e7c1fa0aceb2cb8}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classsuperquadricGrasp__IDL}{superquadric\+Grasp\+\_\+\+I\+DL} I\+DL Interface to superquadric-\/grasp services. 
+
+Definition at line 18 of file superquadric\+Grasp\+\_\+\+I\+D\+L.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!calibrate@{calibrate}}
+\index{calibrate@{calibrate}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{calibrate()}{calibrate()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::calibrate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_ac40ef7c0dd4f0e3600db9aea5cc5c298}
+
+
+Calibrate plane height via superquadric computation. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!check\+\_\+home@{check\+\_\+home}}
+\index{check\+\_\+home@{check\+\_\+home}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{check\+\_\+home()}{check_home()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::check\+\_\+home (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a9e11fd04a40c86987500c42f898508ea}
+
+
+Check if the motion back to home has been completed. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a650c026153e3a7b0044f508cf9d4bf00}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!check\+\_\+motion@{check\+\_\+motion}}
+\index{check\+\_\+motion@{check\+\_\+motion}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{check\+\_\+motion()}{check_motion()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::check\+\_\+motion (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_afd0cc265ba84c844aee5654f1a713fbd}
+
+
+Check if the motion has been completed. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a91eac72e632f224442f34b907e479fa3}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!clear\+\_\+poses@{clear\+\_\+poses}}
+\index{clear\+\_\+poses@{clear\+\_\+poses}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{clear\+\_\+poses()}{clear_poses()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::clear\+\_\+poses (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a6d1e4533ad8b34510ba9792f7cd72113}
+
+
+Remove computed poses. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a834e972a2a1b7b92bf8dc1e83319b028}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!get\+\_\+best\+\_\+hand@{get\+\_\+best\+\_\+hand}}
+\index{get\+\_\+best\+\_\+hand@{get\+\_\+best\+\_\+hand}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{get\+\_\+best\+\_\+hand()}{get_best_hand()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\+::string superquadric\+Grasp\+\_\+\+I\+D\+L\+::get\+\_\+best\+\_\+hand (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_afca9a01bade8e22262e5e70a96d671ae}
+
+
+Get the name of the best hand for grasping the object. 
+
+\begin{DoxyReturn}{Returns}
+right or left 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a5103f8bd6671a11a9bd1c7e29d290009}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!get\+\_\+grasping\+\_\+pose@{get\+\_\+grasping\+\_\+pose}}
+\index{get\+\_\+grasping\+\_\+pose@{get\+\_\+grasping\+\_\+pose}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{get\+\_\+grasping\+\_\+pose(const yarp\+::os\+::\+Property \&estimated\+\_\+superq, const std\+::string \&hand)}{get_grasping_pose(const yarp::os::Property &estimated_superq, const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual yarp\+::os\+::\+Property superquadric\+Grasp\+\_\+\+I\+D\+L\+::get\+\_\+grasping\+\_\+pose (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{estimated\+\_\+superq, }
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a595e98ed2a8fca7ac707b71f97d626d1}
+
+
+Return the estimated grasping poses given an estimated superquadric. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em estimated\+\_\+superq} & is a Property containing the superquadric. \\
+\hline
+{\em hand} & is the hand for which we want to solve the grasping problem (right, left or both). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a property containing the solution. Note\+: the estimated superquadric must be provide in the following format\+: (dimensions (x0 x1 x2)) (exponents (x3 x4)) (center (x5 x6 x7)) (orientation (x8 x9 x10 x11)) where x0, x1,x2 are the semi axes of the superquadric, x3, x4 are the responsible for the shape, x5 x6 x7 are the coordinates of the superquadric center and x8 x9 x10 x11 are the axis-\/angle representation of the superquadric orientation. The solution is given in the form\+: (pose\+\_\+right (h0 h1 h2 h3 h4 h5 h6)) (trajectory\+\_\+right (t0 t1 t2 t3 t4 t5) ... ) for the right hand, and the same for the left hand (according to the value of the string hand are input parameter. The quantity \char`\"{}pose\+\_\+right\char`\"{} is the pose computed for the robot hand (x0,x1,x2, are the 3D coordinates of the end-\/effector and x3,x4,x5 are the Euler angles representing the end-\/effector orientation) The quantity \char`\"{}trajectory\+\_\+right\char`\"{} includes all the waypoint of the computed trajectory, in the form center of the end-\/effector (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5). 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_af1e057f767ab83be185cf486d3f5c46b}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!get\+\_\+hand@{get\+\_\+hand}}
+\index{get\+\_\+hand@{get\+\_\+hand}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{get\+\_\+hand()}{get_hand()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\+::string superquadric\+Grasp\+\_\+\+I\+D\+L\+::get\+\_\+hand (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_ad1e5b402e403bc6765d7bf7e8fff0e91}
+
+
+Get the chosen hand. 
+
+\begin{DoxyReturn}{Returns}
+left or right. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a557a87131c7396dd62c02eced7f4a937}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!get\+\_\+options@{get\+\_\+options}}
+\index{get\+\_\+options@{get\+\_\+options}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{get\+\_\+options(const std\+::string \&field)}{get_options(const std::string &field)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual yarp\+::os\+::\+Property superquadric\+Grasp\+\_\+\+I\+D\+L\+::get\+\_\+options (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{field}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a4799064cf16a52762787c0b245318d54}
+
+
+Get the parameters of the module. 
+
+The user must pay attention in changing them. 
+\begin{DoxyParams}{Parameters}
+{\em field} & can be \char`\"{}pose\char`\"{}, \char`\"{}trajectory\char`\"{}, \char`\"{}optimization\char`\"{}, \char`\"{}statistics\char`\"{}, \char`\"{}visualization\char`\"{} or \char`\"{}execution\char`\"{}. depending on which parameters we are interested in. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the Property including all the parameter values. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a375475691c644d8aa882db8d65ceda50}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!get\+\_\+save\+\_\+poses@{get\+\_\+save\+\_\+poses}}
+\index{get\+\_\+save\+\_\+poses@{get\+\_\+save\+\_\+poses}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{get\+\_\+save\+\_\+poses()}{get_save_poses()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\+::string superquadric\+Grasp\+\_\+\+I\+D\+L\+::get\+\_\+save\+\_\+poses (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_aab45b0423b4e2d440b8a1256c1d6bdfc}
+
+
+Get if the saving process is on or off. 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{}. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a949e4297bdf26f564669ffc91068c4f3}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!get\+\_\+visualization@{get\+\_\+visualization}}
+\index{get\+\_\+visualization@{get\+\_\+visualization}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{get\+\_\+visualization()}{get_visualization()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\+::string superquadric\+Grasp\+\_\+\+I\+D\+L\+::get\+\_\+visualization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_ad108d67db8f389b630fa2b0caed87ca5}
+
+
+Get if visualization is enabled. 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{}. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_aabedec650875263d27ecf20fa9dd8b39}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!go\+\_\+home@{go\+\_\+home}}
+\index{go\+\_\+home@{go\+\_\+home}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{go\+\_\+home(const std\+::string \&e)}{go_home(const std::string &e)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::go\+\_\+home (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a67b63b85635a02ab15f9447ad2b1b0dd}
+
+
+Move the right or the left arm back to home position (according to the string e). 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} if e is right or left. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a1455fc4c6a1ae5690fa691cc324fec4e}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!go\+\_\+to\+\_\+basket@{go\+\_\+to\+\_\+basket}}
+\index{go\+\_\+to\+\_\+basket@{go\+\_\+to\+\_\+basket}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{go\+\_\+to\+\_\+basket(const std\+::string \&e)}{go_to_basket(const std::string &e)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::go\+\_\+to\+\_\+basket (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_abafbd89252eed10caf876ff1965491d0}
+
+
+Move the right or the left arm to the basket (according to the string e). 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} if e is right or left. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a75482819f7f289b3f456571628952122}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!move@{move}}
+\index{move@{move}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{move(const std\+::string \&e)}{move(const std::string &e)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::move (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_aa996e476a845b484542c7a596cc1f02a}
+
+
+Move the right or the left arm (according to the string e). 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} if e is right or left. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a08bd9cdbb1d16da8616c9769510e2bf1}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!set\+\_\+hand@{set\+\_\+hand}}
+\index{set\+\_\+hand@{set\+\_\+hand}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{set\+\_\+hand(const std\+::string \&hand)}{set_hand(const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::set\+\_\+hand (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a6215b75f080a5837599b25826c142921}
+
+
+Choose the hand to use to grasp the object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & name (left or right). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a9d34cb0521f86dd16648255e640eec90}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!set\+\_\+options@{set\+\_\+options}}
+\index{set\+\_\+options@{set\+\_\+options}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{set\+\_\+options(const yarp\+::os\+::\+Property \&options, const std\+::string \&field)}{set_options(const yarp::os::Property &options, const std::string &field)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::set\+\_\+options (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{options, }
+\item[{const std\+::string \&}]{field}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a5320ef56cf3da687e7cf678b2a9397f5}
+
+
+Set the parameters of the module. 
+
+The user must pay attention in changing them. 
+\begin{DoxyParams}{Parameters}
+{\em options} & is a Property containing the parameters the user want to change. \\
+\hline
+{\em field} & is a string specifying which can of parameter we are going to change. Field can be\+: \char`\"{}pose\char`\"{}, \char`\"{}trajectory\char`\"{}, \char`\"{}optimization\char`\"{}, \char`\"{}visualization\char`\"{} or \char`\"{}execution\char`\"{}. You can set the parameters typing, for instance\+: command\+: set\+\_\+options ((n\+\_\+pointshand $<$points-\/value$>$) (hand\+\_\+displacement\+\_\+x $<$displacement-\/value$>$)) pose. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a849c459ef9700c93b45ef6cff394f675}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!set\+\_\+save\+\_\+poses@{set\+\_\+save\+\_\+poses}}
+\index{set\+\_\+save\+\_\+poses@{set\+\_\+save\+\_\+poses}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{set\+\_\+save\+\_\+poses(const std\+::string \&entry)}{set_save_poses(const std::string &entry)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::set\+\_\+save\+\_\+poses (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{entry}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_ac01ec2012d2b12098a86f7f053068464}
+
+
+Set if to save or not the computed poses and trajectory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & can be \char`\"{}on\char`\"{} or \char`\"{}off\char`\"{}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a618785dec349358760a05e6e4b097866}{Grasping\+Module}.
+
+\index{superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}!set\+\_\+visualization@{set\+\_\+visualization}}
+\index{set\+\_\+visualization@{set\+\_\+visualization}!superquadric\+Grasp\+\_\+\+I\+DL@{superquadric\+Grasp\+\_\+\+I\+DL}}
+\subsubsection[{\texorpdfstring{set\+\_\+visualization(const std\+::string \&e)}{set_visualization(const std::string &e)}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::set\+\_\+visualization (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classsuperquadricGrasp__IDL_a91d43de48ad97e35205010c7510e503c}
+
+
+Set if the visualization has to be enabled. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classGraspingModule_a801de4b63aba360a4b85e322c5947a4a}{Grasping\+Module}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/idl\+\_\+dox/superquadric\+Grasp\+\_\+\+I\+D\+L.\+h\end{DoxyCompactItemize}

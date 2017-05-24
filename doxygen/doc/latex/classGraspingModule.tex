@@ -1,0 +1,2012 @@
+\section{Grasping\+Module Class Reference}
+\label{classGraspingModule}\index{Grasping\+Module@{Grasping\+Module}}
+
+
+This class handles the grasping pose computation and visualization, together with the interaction with the user.  
+
+
+
+
+{\ttfamily \#include $<$grasp\+Module.\+h$>$}
+
+Inheritance diagram for Grasping\+Module\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classGraspingModule}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool {\bfseries attach} (yarp\+::os\+::\+Rpc\+Server \&source)\label{classGraspingModule_ac3e7a265105f99952742a6aca17d67c3}
+
+\item 
+std\+::string \hyperlink{classGraspingModule_aabedec650875263d27ecf20fa9dd8b39}{get\+\_\+visualization} ()
+\begin{DoxyCompactList}\small\item\em Return if visualization is on or off. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a801de4b63aba360a4b85e322c5947a4a}{set\+\_\+visualization} (const std\+::string \&e)
+\begin{DoxyCompactList}\small\item\em Set visualization option on or off. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a5103f8bd6671a11a9bd1c7e29d290009}{get\+\_\+best\+\_\+hand} ()
+\begin{DoxyCompactList}\small\item\em Return the computed grasping poses. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_af1e057f767ab83be185cf486d3f5c46b}{get\+\_\+grasping\+\_\+pose} (const yarp\+::os\+::\+Property \&superquadric, const std\+::string \&\hyperlink{classGraspingModule_af8308a8938957b4bb50c260dc42d7b27}{hand})
+\begin{DoxyCompactList}\small\item\em Return the estimated grasping poses given an estimated superquadric. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_a375475691c644d8aa882db8d65ceda50}{get\+\_\+options} (const std\+::string \&field)
+\begin{DoxyCompactList}\small\item\em Get options of the field of interest. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a849c459ef9700c93b45ef6cff394f675}{set\+\_\+options} (const yarp\+::os\+::\+Property \&new\+Options, const std\+::string \&field)
+\begin{DoxyCompactList}\small\item\em Set options of the field of interest. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a557a87131c7396dd62c02eced7f4a937}{get\+\_\+hand} ()
+\begin{DoxyCompactList}\small\item\em Return which hand has been enabled. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a9d34cb0521f86dd16648255e640eec90}{set\+\_\+hand} (const std\+::string \&e)
+\begin{DoxyCompactList}\small\item\em Set hand enabled. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a618785dec349358760a05e6e4b097866}{set\+\_\+save\+\_\+poses} (const std\+::string \&entry)
+\begin{DoxyCompactList}\small\item\em Return if poses are saved or not. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a949e4297bdf26f564669ffc91068c4f3}{get\+\_\+save\+\_\+poses} ()
+\begin{DoxyCompactList}\small\item\em Set if poses are saved or not. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_a059da011f804acd1adc4549eaa3d2141}{fill\+Property} (const yarp\+::sig\+::\+Vector \&sol)
+\begin{DoxyCompactList}\small\item\em Fill property with the grasping solutions. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a834e972a2a1b7b92bf8dc1e83319b028}{clear\+\_\+poses} ()
+\begin{DoxyCompactList}\small\item\em Delete computed poses. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a08bd9cdbb1d16da8616c9769510e2bf1}{move} (const std\+::string \&entry)
+\begin{DoxyCompactList}\small\item\em Move the selected arm. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a518ee4ec1b27d32c600f340c0f3bf552}{config\+Basics} (yarp\+::os\+::\+Resource\+Finder \&rf)
+\begin{DoxyCompactList}\small\item\em Configure basics options. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a151b46117f2d1fdd8c321554012d63f3}{close} ()
+\begin{DoxyCompactList}\small\item\em Close function of the RF module. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_aca7dc9ec5e0a98b1333ed4c63650cdba}{interrupt\+Module} ()
+\begin{DoxyCompactList}\small\item\em Interrupt function of the RF module. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_af2cd7fa157b5d78080ffd7952655046d}{update\+Module} ()
+\begin{DoxyCompactList}\small\item\em Update function of the RF module. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_abfc60b8437d750f2b2a48b8a617e53c1}{get\+Period} ()
+\begin{DoxyCompactList}\small\item\em Get period function of the RF module. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a1086203a4db1e465ef8aba5e28f60025}{config\+Viewer} (yarp\+::os\+::\+Resource\+Finder \&rf)
+\begin{DoxyCompactList}\small\item\em Configure options for visualization. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_ab6d6d4c684340a0e4988a338ff72e3d0}{config\+Pose} (yarp\+::os\+::\+Resource\+Finder \&rf)
+\begin{DoxyCompactList}\small\item\em Configure options for pose computation. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_af83c4dc5cdc8ed18a03ce2637abda2e9}{config\+Movements} (yarp\+::os\+::\+Resource\+Finder \&rf)
+\begin{DoxyCompactList}\small\item\em Configure options for arm movements. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a31c82e1ba3c80d1238e95449780f62c6}{config\+Grasp} (yarp\+::os\+::\+Resource\+Finder \&rf)
+\begin{DoxyCompactList}\small\item\em Configure options for grasping. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_ab4c0ea3cabb2cc6de63da53ba1771e27}{configure} (yarp\+::os\+::\+Resource\+Finder \&rf)\label{classGraspingModule_ab4c0ea3cabb2cc6de63da53ba1771e27}
+
+\begin{DoxyCompactList}\small\item\em Configure function of RF module. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_aa1c32186a8b7133db63e115898949b28}{read\+Superq} (const std\+::string \&name\+\_\+obj, yarp\+::sig\+::\+Vector \&x, const int \&dimension, yarp\+::os\+::\+Resource\+Finder $\ast$rf)
+\begin{DoxyCompactList}\small\item\em Read object model from text file for simulation tests. \end{DoxyCompactList}\item 
+void \hyperlink{classGraspingModule_a43a89c97919dd68a4ab28a6c9fe16a95}{save\+Sol} (const yarp\+::os\+::\+Property \&sol)
+\begin{DoxyCompactList}\small\item\em Save solutions. \end{DoxyCompactList}\item 
+bool {\bfseries look\+\_\+center} ()\label{classGraspingModule_af640219e03fdfe6e6145a5ff6f01d23a}
+
+\item 
+bool {\bfseries look\+\_\+obj} ()\label{classGraspingModule_a741cac4968db05d8dde9cd1856776c50}
+
+\item 
+bool \hyperlink{classGraspingModule_a1455fc4c6a1ae5690fa691cc324fec4e}{go\+\_\+home} (const std\+::string \&entry)
+\begin{DoxyCompactList}\small\item\em Go back to home position. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a75482819f7f289b3f456571628952122}{go\+\_\+to\+\_\+basket} (const std\+::string \&entry)
+\begin{DoxyCompactList}\small\item\em Go back to the basket on the robot side. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a91eac72e632f224442f34b907e479fa3}{check\+\_\+motion} ()
+\begin{DoxyCompactList}\small\item\em Check if the motion has been completed. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a650c026153e3a7b0044f508cf9d4bf00}{check\+\_\+home} ()
+\begin{DoxyCompactList}\small\item\em Check if the motion back to home has been completed. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a19ee1967a83d1412f9125ec482ce80bd}{check\+\_\+basket} ()
+\begin{DoxyCompactList}\small\item\em Check if the motion to the basket has been completed. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classsuperquadricGrasp__IDL_ac40ef7c0dd4f0e3600db9aea5cc5c298}{calibrate} ()
+\begin{DoxyCompactList}\small\item\em Calibrate plane height via superquadric computation. \end{DoxyCompactList}\item 
+virtual bool {\bfseries read} (yarp\+::os\+::\+Connection\+Reader \&connection) Y\+A\+R\+P\+\_\+\+O\+V\+E\+R\+R\+I\+DE\label{classsuperquadricGrasp__IDL_a710271cfee0c9b1a31707d84f194b69b}
+
+\item 
+virtual std\+::vector$<$ std\+::string $>$ {\bfseries help} (const std\+::string \&function\+Name=\char`\"{}-\/-\/all\char`\"{})\label{classsuperquadricGrasp__IDL_a226f766d3a3a0ba87e7c1fa0aceb2cb8}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+yarp\+::os\+::\+Resource\+Finder $\ast$ {\bfseries rf}\label{classGraspingModule_aed592146c8031a537a8d1f71a7e054c5}
+
+\item 
+std\+::string \hyperlink{classGraspingModule_a508cc33e7003b294f00316f362f82eaa}{robot}\label{classGraspingModule_a508cc33e7003b294f00316f362f82eaa}
+
+\begin{DoxyCompactList}\small\item\em Robot name\+: icub or icub\+Sim. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_ab9603885e438ebe5a7f673c04bc37ed8}{left\+\_\+or\+\_\+right}\label{classGraspingModule_ab9603885e438ebe5a7f673c04bc37ed8}
+
+\begin{DoxyCompactList}\small\item\em Hand to be enabled with the code. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a0aa116f84336b88479b6f3ac6a97e76b}{home\+Context\+Path}\label{classGraspingModule_a0aa116f84336b88479b6f3ac6a97e76b}
+
+\begin{DoxyCompactList}\small\item\em Path where the context is imported. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_ae819bea3ec49cbec2703737a7a786007}{poseL}\label{classGraspingModule_ae819bea3ec49cbec2703737a7a786007}
+
+\begin{DoxyCompactList}\small\item\em Robot hand pose computed by the solver for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a0a13dee5ac1b2db61a87f82ecdc44ea6}{solL}\label{classGraspingModule_a0a13dee5ac1b2db61a87f82ecdc44ea6}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid pose computed by the solver for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a148c46809e3dba05972df158c81c48f8}{poseR}\label{classGraspingModule_a148c46809e3dba05972df158c81c48f8}
+
+\begin{DoxyCompactList}\small\item\em Robot hand pose computed by the solver for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a1215352771f0e7f26e033ad95731a81e}{solR}\label{classGraspingModule_a1215352771f0e7f26e033ad95731a81e}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid pose computed by the solver for the right hand. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspingModule_ac7c1f1dc2e81ed15f87218feaa038988}{trajectory\+\_\+right}\label{classGraspingModule_ac7c1f1dc2e81ed15f87218feaa038988}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) for the right hand. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspingModule_afcfe41fdc6ce4446e89594a3d40d2a7d}{trajectory\+\_\+left}\label{classGraspingModule_afcfe41fdc6ce4446e89594a3d40d2a7d}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) for the left hand. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspingModule_ab87532f4790da036cdf51654a649cece}{context\+\_\+gaze}\label{classGraspingModule_ab87532f4790da036cdf51654a649cece}
+
+\begin{DoxyCompactList}\small\item\em Variable for saving gaze context. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspingModule_a26e3aee1196f9b3783426f5be6a387b5}{rate\+\_\+vis}\label{classGraspingModule_a26e3aee1196f9b3783426f5be6a387b5}
+
+\begin{DoxyCompactList}\small\item\em Rate of the visualization thread. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspingModule_a244cb8f6f2b2294d2be164ee1518cc36}{print\+\_\+level}\label{classGraspingModule_a244cb8f6f2b2294d2be164ee1518cc36}
+
+\begin{DoxyCompactList}\small\item\em Print level for the Ipopt optimization problem. \end{DoxyCompactList}\item 
+double {\bfseries t}\label{classGraspingModule_a4f36c3ca4e343f62ec908768af45a3da}
+
+\item 
+double {\bfseries t0}\label{classGraspingModule_a70a4e9c60616c7e7c63b11594e73a6ac}
+
+\item 
+double {\bfseries t\+\_\+grasp}\label{classGraspingModule_aaf674331d6bbf84ea008566948c6dee2}
+
+\item 
+double {\bfseries t\+\_\+vis}\label{classGraspingModule_ae0cddf0f4c4e7d00197a1c45ff98f0e5}
+
+\item 
+std\+::deque$<$ double $>$ {\bfseries times\+\_\+vis}\label{classGraspingModule_a9a0dedfb6b400af32cd04a9eafd43dba}
+
+\item 
+double \hyperlink{classGraspingModule_a521b7c66535fb4dac516a9ff58241f05}{tol}\label{classGraspingModule_a521b7c66535fb4dac516a9ff58241f05}
+
+\begin{DoxyCompactList}\small\item\em Tolerance of the Ipopt optimization problem. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspingModule_a3f17b0601f067499b5f574fb8c6f937e}{max\+\_\+iter}\label{classGraspingModule_a3f17b0601f067499b5f574fb8c6f937e}
+
+\begin{DoxyCompactList}\small\item\em Maximum iteration allowed for the Ipopt optimization problem. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspingModule_aa4dff98eeb8125bc88613b15159cd26c}{n\+\_\+pointshand}\label{classGraspingModule_aa4dff98eeb8125bc88613b15159cd26c}
+
+\begin{DoxyCompactList}\small\item\em Number of points sampled on the hand ellipsoid for the Ipopt optimization problem. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspingModule_ab3821aa16b5021be595ac8b7db4d6cfb}{acceptable\+\_\+iter}\label{classGraspingModule_ab3821aa16b5021be595ac8b7db4d6cfb}
+
+\begin{DoxyCompactList}\small\item\em Acceptable iter of the Ipopt optimization problem. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a5529bf668b7ea95582ea238d5f50e3c2}{constr\+\_\+viol\+\_\+tol}\label{classGraspingModule_a5529bf668b7ea95582ea238d5f50e3c2}
+
+\begin{DoxyCompactList}\small\item\em Constraint tolerance of the Ipopt optimization problem. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a64763408867f3cb6dc508c91f8cf220a}{mu\+\_\+strategy}\label{classGraspingModule_a64763408867f3cb6dc508c91f8cf220a}
+
+\begin{DoxyCompactList}\small\item\em Mu strategy of the Ipopt optimization problem. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_aecc5738f9012849c9edaf35f479723b4}{nlp\+\_\+scaling\+\_\+method}\label{classGraspingModule_aecc5738f9012849c9edaf35f479723b4}
+
+\begin{DoxyCompactList}\small\item\em N\+LP scaling method of the Ipopt optimization problem. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a3dabf2eac967efb30b1b7bb9c91e41b3}{max\+\_\+cpu\+\_\+time}\label{classGraspingModule_a3dabf2eac967efb30b1b7bb9c91e41b3}
+
+\begin{DoxyCompactList}\small\item\em Max cpu time allowed for the Ipopt optimization problem. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a87c885eada6df4d622c92173d8a4ed2e}{dir}
+\begin{DoxyCompactList}\small\item\em Direction for generating the waypoint for the approach\+: it could be on x and z axes (\char`\"{}xz\char`\"{}) or only z axis (\char`\"{}z\char`\"{}) of the hand reference frame. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a4b3ada8a9325ed821e73b8e84375c4fa}{object}\label{classGraspingModule_a4b3ada8a9325ed821e73b8e84375c4fa}
+
+\begin{DoxyCompactList}\small\item\em Object superquadric. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_af8308a8938957b4bb50c260dc42d7b27}{hand}\label{classGraspingModule_af8308a8938957b4bb50c260dc42d7b27}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid for the first hand enabled. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a0b4986d666ef55b1c769d1b02b49c86f}{hand1}\label{classGraspingModule_a0b4986d666ef55b1c769d1b02b49c86f}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid for the second hand enabled. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_af1912ddc2800fb3101e98a99d3b04b5b}{distance}\label{classGraspingModule_af1912ddc2800fb3101e98a99d3b04b5b}
+
+\begin{DoxyCompactList}\small\item\em Distance for shifting the waypoint along x axis of the hand reference frame. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_aacb0581ba76204e825aee632cf9679e4}{distance1}\label{classGraspingModule_aacb0581ba76204e825aee632cf9679e4}
+
+\begin{DoxyCompactList}\small\item\em Distance for shifting the waypoint along z axis of the hand reference frame. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a52131b73f3688ab8524f37b8e1945717}{displacement}\label{classGraspingModule_a52131b73f3688ab8524f37b8e1945717}
+
+\begin{DoxyCompactList}\small\item\em Distance of the robot pose with respect to the hand ellipsoid along x axis of the hand reference frame. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a234e3ab635ba9b581e6877519dc633b6}{plane}\label{classGraspingModule_a234e3ab635ba9b581e6877519dc633b6}
+
+\begin{DoxyCompactList}\small\item\em Parameters of the implicit function describing the plane on which the object is located in the root reference frame. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Rpc\+Server \hyperlink{classGraspingModule_a164dc4c91253669941ad45e2702bb746}{port\+Rpc}\label{classGraspingModule_a164dc4c91253669941ad45e2702bb746}
+
+\begin{DoxyCompactList}\small\item\em Rpc port for services. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a2d764f516aecffb52ba22f1dcdd2a730}{eye}\label{classGraspingModule_a2d764f516aecffb52ba22f1dcdd2a730}
+
+\begin{DoxyCompactList}\small\item\em Eye camera selected for visualization. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a9562cc675af9a861201956fe23a267bc}{block\+\_\+eye}\label{classGraspingModule_a9562cc675af9a861201956fe23a267bc}
+
+\begin{DoxyCompactList}\small\item\em Vergence value for blocking the eyes. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_aa92c21ad6a4a5f70f73ebf3281676f62}{block\+\_\+neck}\label{classGraspingModule_aa92c21ad6a4a5f70f73ebf3281676f62}
+
+\begin{DoxyCompactList}\small\item\em Neck joint value for looking to the table. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Matrix {\bfseries K}\label{classGraspingModule_a161a8c4d8bc2db6e1cf7c00a69953831}
+
+\item 
+yarp\+::sig\+::\+Matrix {\bfseries H}\label{classGraspingModule_acb55c5d37d9a7225b44323d2be724bfe}
+
+\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries Gaze\+Ctrl}\label{classGraspingModule_adfed9afcb5290a5ee2e99768352fd4fb}
+
+\item 
+yarp\+::dev\+::\+I\+Gaze\+Control $\ast$ {\bfseries igaze}\label{classGraspingModule_a70a410aead666d7198eb183ba05472a5}
+
+\item 
+std\+::string {\bfseries fing}\label{classGraspingModule_ad33afeaa6a6b67f3f49ccb4ee771e6cb}
+
+\item 
+bool \hyperlink{classGraspingModule_ae7f23202919c7dbd742230a2cc005043}{lift\+\_\+object}\label{classGraspingModule_ae7f23202919c7dbd742230a2cc005043}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable to lift or not the object. \end{DoxyCompactList}\item 
+std\+::string {\bfseries lobj}\label{classGraspingModule_af871b2ab1e5110408893eef5ac711984}
+
+\item 
+bool \hyperlink{classGraspingModule_aa1da1c0d76de383f74360bc9c9125e77}{go\+\_\+on}\label{classGraspingModule_aa1da1c0d76de383f74360bc9c9125e77}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable used for going to the next step of the state machine. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_ae56f0d9a9eed5d68051da744dac15a41}{grasp}\label{classGraspingModule_ae56f0d9a9eed5d68051da744dac15a41}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable to grasp or not the object. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a499af38a89686312a34117c0218fc6cb}{executed}\label{classGraspingModule_a499af38a89686312a34117c0218fc6cb}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable taking into account if the movement has been executed. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_abdcf071d6ce460a83c56ef1ba90f8b1f}{executed\+\_\+var}\label{classGraspingModule_abdcf071d6ce460a83c56ef1ba90f8b1f}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable taking into account if the movement has been executed (for different checks) \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_af46e9f6a4a79bb39db0f975803d739b3}{reached\+\_\+home}\label{classGraspingModule_af46e9f6a4a79bb39db0f975803d739b3}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable taking into account if the home pose has been reached. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a295ffc6e5c40dea6d6e222f3f487ec67}{reached\+\_\+basket}\label{classGraspingModule_a295ffc6e5c40dea6d6e222f3f487ec67}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable taking into account if the basket pose has been reached. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_af05d3fc99e87d5ab513bb9fe91f0bcea}{show\+\_\+hand}\label{classGraspingModule_af05d3fc99e87d5ab513bb9fe91f0bcea}
+
+\begin{DoxyCompactList}\small\item\em String variable for showing (on) or not (off) the hand ellipsoid on the viewer. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_ae9a9a1e59ba2298fac3c4f34996ec25e}{show\+\_\+only\+\_\+pose}\label{classGraspingModule_ae9a9a1e59ba2298fac3c4f34996ec25e}
+
+\begin{DoxyCompactList}\small\item\em String variable for showing only the final pose(on) or also the trajectory (off) on the viewer. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_ac74a028982f21c24a3405deb41e70f9f}{look\+\_\+object}\label{classGraspingModule_ac74a028982f21c24a3405deb41e70f9f}
+
+\begin{DoxyCompactList}\small\item\em String variable for fixating at the object (on) or not (off) during movements. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_afb42ea3b2951d1e8abe7f391675d8f73}{visualization}\label{classGraspingModule_afb42ea3b2951d1e8abe7f391675d8f73}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for enabling visualization. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_afa54033aed276e29223d9a88a6f7f145}{mode\+\_\+online}\label{classGraspingModule_afa54033aed276e29223d9a88a6f7f145}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for switching between online and offline mode. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspingModule_a8193f9e7fc2e65f52bf80580735113bc}{save\+\_\+poses}\label{classGraspingModule_a8193f9e7fc2e65f52bf80580735113bc}
+
+\begin{DoxyCompactList}\small\item\em String variable for saving the solutions. \end{DoxyCompactList}\item 
+bool {\bfseries also\+\_\+traj}\label{classGraspingModule_ada586ca7d90ea75cf6be9847ddb274c7}
+
+\item 
+double \hyperlink{classGraspingModule_abd2e8eaca9dd18e74a40fd3831922c16}{force\+\_\+threshold}
+\begin{DoxyCompactList}\small\item\em Threshold of the maximum allowed force measured at the endeffector. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_ad74775f47ff255bde51b0bab79a31728}{compliant}\label{classGraspingModule_ad74775f47ff255bde51b0bab79a31728}
+
+\begin{DoxyCompactList}\small\item\em String variable for enabling the compliant mode. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a79082a891f887dbb9edfed4653451e35}{visual\+\_\+servoing}\label{classGraspingModule_a79082a891f887dbb9edfed4653451e35}
+
+\begin{DoxyCompactList}\small\item\em String variable for the visual servoing controller during the final pose reaching. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a832c738961170cb80a024805b22464b8}{use\+\_\+direct\+\_\+kin}\label{classGraspingModule_a832c738961170cb80a024805b22464b8}
+
+\begin{DoxyCompactList}\small\item\em String variable for using visual servoing with direct kinematics, instead of hand pose estimate. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_aa84058eee1411f35aa489b9cad9f9371}{pixel\+\_\+tol}\label{classGraspingModule_aa84058eee1411f35aa489b9cad9f9371}
+
+\begin{DoxyCompactList}\small\item\em Pixel tolerance for visual servoing. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a676c7aa895de03ba5362a309cd669905}{lift\+\_\+z}\label{classGraspingModule_a676c7aa895de03ba5362a309cd669905}
+
+\begin{DoxyCompactList}\small\item\em How much the robot should lift the object. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_af1feeb0f4397d83491831327e05c8b44}{torso\+\_\+pitch\+\_\+max}\label{classGraspingModule_af1feeb0f4397d83491831327e05c8b44}
+
+\begin{DoxyCompactList}\small\item\em Maximum pitch value for avoiding movements to close to the table while reaching some particular poses. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a02accb5392fe0877a2a98febbcf20ea6}{traj\+\_\+time}\label{classGraspingModule_a02accb5392fe0877a2a98febbcf20ea6}
+
+\begin{DoxyCompactList}\small\item\em Time for reaching each waypoint of the trajectory. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a2b59e1c09ae51bb1829cb4b73799a9d2}{traj\+\_\+tol}\label{classGraspingModule_a2b59e1c09ae51bb1829cb4b73799a9d2}
+
+\begin{DoxyCompactList}\small\item\em Reaching tolerance for the cartesian. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a589b2e394e0d255fcd23734b911392ef}{shift\+\_\+right}\label{classGraspingModule_a589b2e394e0d255fcd23734b911392ef}
+
+\begin{DoxyCompactList}\small\item\em 3D shift for the final right pose along x, y, and z axes of the right hand reference frame for compensating with eye-\/kinematics offsets \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a96feca3ff9d44e599351ddb1c4497fcf}{shift\+\_\+left}\label{classGraspingModule_a96feca3ff9d44e599351ddb1c4497fcf}
+
+\begin{DoxyCompactList}\small\item\em 3D shift for the final left pose along x, y, and z axes of the left hand reference frame for compensating with eye-\/kinematics offsets \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_ac43f827abab558d8aea39a6cbcd150a2}{home\+\_\+right}\label{classGraspingModule_ac43f827abab558d8aea39a6cbcd150a2}
+
+\begin{DoxyCompactList}\small\item\em Home pose (7D) for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a75a4689473261072a85c67c76ac6567f}{home\+\_\+left}\label{classGraspingModule_a75a4689473261072a85c67c76ac6567f}
+
+\begin{DoxyCompactList}\small\item\em Home pose (7D) for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a514ee9d4045d3e551a089ffd1f296c49}{basket\+\_\+right}\label{classGraspingModule_a514ee9d4045d3e551a089ffd1f296c49}
+
+\begin{DoxyCompactList}\small\item\em Basket pose (7D) for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a4c2cf37b608df9bdce4ff5a2882111ef}{basket\+\_\+left}\label{classGraspingModule_a4c2cf37b608df9bdce4ff5a2882111ef}
+
+\begin{DoxyCompactList}\small\item\em Basket pose (7D) for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_af25aefd74e3a455cd3288896dc7f545e}{stiff\+\_\+right}\label{classGraspingModule_af25aefd74e3a455cd3288896dc7f545e}
+
+\begin{DoxyCompactList}\small\item\em Stiff values for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_a39f2ad508bb3f5baeac30684cd57bf44}{stiff\+\_\+left}\label{classGraspingModule_a39f2ad508bb3f5baeac30684cd57bf44}
+
+\begin{DoxyCompactList}\small\item\em Stiff values for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_af7690eeb0850a02dc05e20e4c4326dd4}{damp\+\_\+right}\label{classGraspingModule_af7690eeb0850a02dc05e20e4c4326dd4}
+
+\begin{DoxyCompactList}\small\item\em Damp values for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspingModule_ad4dda6219b8a0bf9636c7bf58effc14b}{damp\+\_\+left}\label{classGraspingModule_ad4dda6219b8a0bf9636c7bf58effc14b}
+
+\begin{DoxyCompactList}\small\item\em Damp values for the left hand. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_af119be2a7acbb0568d1c08f4f6069928}{hand\+\_\+to\+\_\+move}\label{classGraspingModule_af119be2a7acbb0568d1c08f4f6069928}
+
+\begin{DoxyCompactList}\small\item\em Hand selected for grasping the object. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a627ae74edcebd1e63427d1923bf07004}{name\+File\+Out\+\_\+right}\label{classGraspingModule_a627ae74edcebd1e63427d1923bf07004}
+
+\begin{DoxyCompactList}\small\item\em File name of Ipopt output for right hand. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a2d67456b32002aeca338be1844e5fe79}{name\+File\+Trajectory\+\_\+right}\label{classGraspingModule_a2d67456b32002aeca338be1844e5fe79}
+
+\begin{DoxyCompactList}\small\item\em File name containing trajectory for right hand. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a3d16b71a4e021206b2b60dca65b6bf88}{name\+File\+Out\+\_\+left}\label{classGraspingModule_a3d16b71a4e021206b2b60dca65b6bf88}
+
+\begin{DoxyCompactList}\small\item\em File name of Ipopt output for left hand. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a1f3841076509b5140edbdb7d01aa3f4b}{name\+File\+Trajectory\+\_\+left}\label{classGraspingModule_a1f3841076509b5140edbdb7d01aa3f4b}
+
+\begin{DoxyCompactList}\small\item\em File name containing trajectory for left hand. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a7d96e2271d553a340888ffa1a422d608}{lib\+\_\+context}\label{classGraspingModule_a7d96e2271d553a340888ffa1a422d608}
+
+\begin{DoxyCompactList}\small\item\em Context name for the module for closing the fingers. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspingModule_a437d621f1b6e1ce0d5cc1d8958b53fee}{lib\+\_\+filename}\label{classGraspingModule_a437d621f1b6e1ce0d5cc1d8958b53fee}
+
+\begin{DoxyCompactList}\small\item\em File name of the module used for closing the fingers. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Mutex {\bfseries mutex}\label{classGraspingModule_ae27bf275f6a5f99728586ae235477683}
+
+\item 
+\hyperlink{classGraspComputation}{Grasp\+Computation} $\ast$ \hyperlink{classGraspingModule_a2a88d576e1cc46c209d6ff40657f1ddb}{grasp\+Comp}\label{classGraspingModule_a2a88d576e1cc46c209d6ff40657f1ddb}
+
+\begin{DoxyCompactList}\small\item\em Class computing the grasping pose. \end{DoxyCompactList}\item 
+\hyperlink{classGraspVisualization}{Grasp\+Visualization} $\ast$ \hyperlink{classGraspingModule_a98acb57493a68c3ce14f6e89b721aa23}{grasp\+Vis}\label{classGraspingModule_a98acb57493a68c3ce14f6e89b721aa23}
+
+\begin{DoxyCompactList}\small\item\em Class showing the grasping pose on the viewer. \end{DoxyCompactList}\item 
+\hyperlink{classGraspExecution}{Grasp\+Execution} $\ast$ \hyperlink{classGraspingModule_a1c5e0b94e7b086d14ac1bf45db3007f1}{grasp\+Exec}\label{classGraspingModule_a1c5e0b94e7b086d14ac1bf45db3007f1}
+
+\begin{DoxyCompactList}\small\item\em Class executing the trajectory. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_a2d8f2bb7d5263b2df89d7431fe830525}{vis\+\_\+par}\label{classGraspingModule_a2d8f2bb7d5263b2df89d7431fe830525}
+
+\begin{DoxyCompactList}\small\item\em Parameters of the visualization class. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_ac5132578e072a0cd851a888487d4e144}{pose\+\_\+par}\label{classGraspingModule_ac5132578e072a0cd851a888487d4e144}
+
+\begin{DoxyCompactList}\small\item\em Parameters for pose computation. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_a4fde085a2948717e65736a75a2786a0d}{traj\+\_\+par}\label{classGraspingModule_a4fde085a2948717e65736a75a2786a0d}
+
+\begin{DoxyCompactList}\small\item\em Parameters for trajectory computation. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_a8665afdacf9d155c465fb7497d202fba}{grasp\+\_\+par}\label{classGraspingModule_a8665afdacf9d155c465fb7497d202fba}
+
+\begin{DoxyCompactList}\small\item\em Parameters for grasping the object. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_af17896b5afa9de9dbd63caf2bf4e2deb}{ipopt\+\_\+par}\label{classGraspingModule_af17896b5afa9de9dbd63caf2bf4e2deb}
+
+\begin{DoxyCompactList}\small\item\em Parameters for the Ipopt optimization problem. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_a7da5cb35f5a34a18b68023c3d1d3f276}{movement\+\_\+par}\label{classGraspingModule_a7da5cb35f5a34a18b68023c3d1d3f276}
+
+\begin{DoxyCompactList}\small\item\em Parameters for executing the movement. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspingModule_af0bdebfd4648ff04bcaf790879897743}{complete\+\_\+sol}\label{classGraspingModule_af0bdebfd4648ff04bcaf790879897743}
+
+\begin{DoxyCompactList}\small\item\em Complete solution computed. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_aca01f7f0ec39c36623700330b632109f}{quality\+\_\+right}\label{classGraspingModule_aca01f7f0ec39c36623700330b632109f}
+
+\begin{DoxyCompactList}\small\item\em Quality of pose right. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspingModule_a6f5ca6d1a1e4efceb05d32fb9c0e10ad}{quality\+\_\+left}\label{classGraspingModule_a6f5ca6d1a1e4efceb05d32fb9c0e10ad}
+
+\begin{DoxyCompactList}\small\item\em Quality of pose left. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class handles the grasping pose computation and visualization, together with the interaction with the user. 
+
+In particular, it launches the visualization thread and implements a state machine for handling the grasping pose computation and excution. 
+
+Definition at line 39 of file grasp\+Module.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\index{Grasping\+Module@{Grasping\+Module}!calibrate@{calibrate}}
+\index{calibrate@{calibrate}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{calibrate()}{calibrate()}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool superquadric\+Grasp\+\_\+\+I\+D\+L\+::calibrate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [inherited]}}\label{classsuperquadricGrasp__IDL_ac40ef7c0dd4f0e3600db9aea5cc5c298}
+
+
+Calibrate plane height via superquadric computation. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure. 
+\end{DoxyReturn}
+\index{Grasping\+Module@{Grasping\+Module}!check\+\_\+basket@{check\+\_\+basket}}
+\index{check\+\_\+basket@{check\+\_\+basket}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{check\+\_\+basket()}{check_basket()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::check\+\_\+basket (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a19ee1967a83d1412f9125ec482ce80bd}
+
+
+Check if the motion to the basket has been completed. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 287 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+288 \{
+289     \textcolor{keywordflow}{return} reached_basket;
+290 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!check\+\_\+home@{check\+\_\+home}}
+\index{check\+\_\+home@{check\+\_\+home}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{check\+\_\+home()}{check_home()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::check\+\_\+home (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a650c026153e3a7b0044f508cf9d4bf00}
+
+
+Check if the motion back to home has been completed. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a9e11fd04a40c86987500c42f898508ea}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 281 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+282 \{
+283     \textcolor{keywordflow}{return} reached_home;
+284 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!check\+\_\+motion@{check\+\_\+motion}}
+\index{check\+\_\+motion@{check\+\_\+motion}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{check\+\_\+motion()}{check_motion()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::check\+\_\+motion (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a91eac72e632f224442f34b907e479fa3}
+
+
+Check if the motion has been completed. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_afd0cc265ba84c844aee5654f1a713fbd}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 275 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+276 \{
+277     \textcolor{keywordflow}{return} executed_var;
+278 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!clear\+\_\+poses@{clear\+\_\+poses}}
+\index{clear\+\_\+poses@{clear\+\_\+poses}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{clear\+\_\+poses()}{clear_poses()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::clear\+\_\+poses (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a834e972a2a1b7b92bf8dc1e83319b028}
+
+
+Delete computed poses. 
+
+\begin{DoxyReturn}{Returns}
+true/false 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a6d1e4533ad8b34510ba9792f7cd72113}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 46 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+47 \{
+48     LockGuard lg(mutex);
+49 
+50     poseR.resize(6,0.0);
+51     poseL.resize(6,0.0);
+52     \textcolor{keywordtype}{object}.resize(11,0.0);
+53     complete_sol.clear();
+54 
+55     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+56 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!close@{close}}
+\index{close@{close}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{close()}{close()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::close (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a151b46117f2d1fdd8c321554012d63f3}
+
+
+Close function of the RF module. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 545 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+546 \{
+547     \textcolor{keyword}{delete} graspComp;
+548 
+549     graspExec->release();
+550     \textcolor{keyword}{delete} graspExec;
+551 
+552     \textcolor{keywordflow}{if} (visualization)
+553         graspVis->stop();
+554 
+555     \textcolor{keyword}{delete} graspVis;
+556 
+557     \textcolor{keywordflow}{if} (portRpc.asPort().isOpen())
+558         portRpc.close();
+559 
+560     igaze->stopControl();
+561 
+562     igaze->restoreContext(context_gaze);
+563 
+564     GazeCtrl.close();
+565 
+566     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+567 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!config\+Basics@{config\+Basics}}
+\index{config\+Basics@{config\+Basics}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{config\+Basics(yarp\+::os\+::\+Resource\+Finder \&rf)}{configBasics(yarp::os::ResourceFinder &rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::config\+Basics (
+\begin{DoxyParamCaption}
+\item[{yarp\+::os\+::\+Resource\+Finder \&}]{rf}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a518ee4ec1b27d32c600f340c0f3bf552}
+
+
+Configure basics options. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rf} & is the resource finder with all the options from config files \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 375 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+376 \{
+377     homeContextPath=rf.getHomeContextPath().c\_str();
+378 
+379     robot=rf.find(\textcolor{stringliteral}{"robot"}).asString().c\_str();
+380     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"robot"}).isNull())
+381         robot=\textcolor{stringliteral}{"icubSim"};
+382 
+383     left_or_right=rf.find(\textcolor{stringliteral}{"which\_hand"}).asString().c\_str();
+384 
+385     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"which\_hand"}).isNull())
+386         left_or_right=\textcolor{stringliteral}{"right"};
+387 
+388     portRpc.open(\textcolor{stringliteral}{"/superquadric-grasp/rpc"});
+389     attach(portRpc);
+390 
+391     dir=rf.check(\textcolor{stringliteral}{"approaching\_direction"}, Value(\textcolor{stringliteral}{"z"})).asString();
+392     rate_vis=rf.check(\textcolor{stringliteral}{"rate\_vis"}, Value(100)).asInt();
+393     mode_online=(rf.check(\textcolor{stringliteral}{"mode\_online"}, Value(\textcolor{stringliteral}{"on"})).asString()==\textcolor{stringliteral}{"on"});
+394     save_poses=(rf.check(\textcolor{stringliteral}{"save\_poses"}, Value(\textcolor{stringliteral}{"on"})).asString()==\textcolor{stringliteral}{"on"});
+395     also\_traj=(rf.check(\textcolor{stringliteral}{"also\_traj"}, Value(\textcolor{stringliteral}{"off"})).asString()==\textcolor{stringliteral}{"on"});
+396     visualization=(rf.check(\textcolor{stringliteral}{"visualization"}, Value(\textcolor{stringliteral}{"off"})).asString()==\textcolor{stringliteral}{"on"});
+397     grasp=(rf.check(\textcolor{stringliteral}{"grasp"}, Value(\textcolor{stringliteral}{"off"})).asString()==\textcolor{stringliteral}{"on"});
+398     visual_servoing=rf.check(\textcolor{stringliteral}{"visual\_servoing"}, Value(\textcolor{stringliteral}{"off"})).asString();   
+399     compliant=rf.check(\textcolor{stringliteral}{"compliant"}, Value(\textcolor{stringliteral}{"off"})).asString();
+400     use_direct_kin=rf.check(\textcolor{stringliteral}{"use\_direct\_kin"}, Value(\textcolor{stringliteral}{"off"})).asString();
+401     print_level=rf.check(\textcolor{stringliteral}{"print\_level"}, Value(0)).asInt();
+402 
+403     go_on=\textcolor{keyword}{false};
+404 
+405     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+406 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!config\+Grasp@{config\+Grasp}}
+\index{config\+Grasp@{config\+Grasp}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{config\+Grasp(yarp\+::os\+::\+Resource\+Finder \&rf)}{configGrasp(yarp::os::ResourceFinder &rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::config\+Grasp (
+\begin{DoxyParamCaption}
+\item[{yarp\+::os\+::\+Resource\+Finder \&}]{rf}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a31c82e1ba3c80d1238e95449780f62c6}
+
+
+Configure options for grasping. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rf} & is the resource finder with all the optins \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 536 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+537 \{
+538     lib_context=rf.check(\textcolor{stringliteral}{"lib\_context"}, Value(\textcolor{stringliteral}{"superquadric-grasp"})).asString();
+539     lib_filename=rf.check(\textcolor{stringliteral}{"lib\_filename"}, Value(\textcolor{stringliteral}{"confTactileControlLib"})).asString();
+540 
+541     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+542 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!config\+Movements@{config\+Movements}}
+\index{config\+Movements@{config\+Movements}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{config\+Movements(yarp\+::os\+::\+Resource\+Finder \&rf)}{configMovements(yarp::os::ResourceFinder &rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::config\+Movements (
+\begin{DoxyParamCaption}
+\item[{yarp\+::os\+::\+Resource\+Finder \&}]{rf}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_af83c4dc5cdc8ed18a03ce2637abda2e9}
+
+
+Configure options for arm movements. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rf} & is the resource finder with all the optins \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 409 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+410 \{
+411     traj_time=rf.check(\textcolor{stringliteral}{"trajectory\_time"}, Value(1.0)).asDouble();
+412     traj_tol=rf.check(\textcolor{stringliteral}{"trajectory\_tol"}, Value(0.01)).asDouble();
+413     pixel_tol=rf.check(\textcolor{stringliteral}{"pixel\_tol"}, Value(15)).asDouble();
+414     force_threshold=rf.check(\textcolor{stringliteral}{"force\_threshold"}, Value(6.0)).asDouble();
+415     lift_z=rf.check(\textcolor{stringliteral}{"lift\_z"}, Value(0.15)).asDouble();
+416     torso_pitch_max=rf.check(\textcolor{stringliteral}{"torso\_pitch\_max"}, Value(15.0)).asDouble();
+417     fing=rf.check(\textcolor{stringliteral}{"five\_fingers"}, Value(\textcolor{stringliteral}{"off"})).asString();
+418     lobj=rf.check(\textcolor{stringliteral}{"lift\_object"}, Value(\textcolor{stringliteral}{"off"})).asString();
+419 
+420     readSuperq(\textcolor{stringliteral}{"shift\_right"},shift_right,3,this->rf);
+421     readSuperq(\textcolor{stringliteral}{"shift\_left"},shift_left,3,this->rf);
+422     readSuperq(\textcolor{stringliteral}{"home\_right"},home_right,7,this->rf);
+423     readSuperq(\textcolor{stringliteral}{"home\_left"},home_left,7,this->rf);
+424     readSuperq(\textcolor{stringliteral}{"basket\_right"},basket_right,7,this->rf);
+425     readSuperq(\textcolor{stringliteral}{"basket\_left"},basket_left,7,this->rf);
+426     readSuperq(\textcolor{stringliteral}{"stiff\_right"},stiff_right,5,this->rf);
+427     readSuperq(\textcolor{stringliteral}{"stiff\_left"},stiff_left,5,this->rf);
+428     readSuperq(\textcolor{stringliteral}{"damp\_right"},damp_right,5,this->rf);
+429     readSuperq(\textcolor{stringliteral}{"damp\_left"},damp_left,5,this->rf);
+430 
+431 
+432     movement_par.put(\textcolor{stringliteral}{"robot"},robot);
+433     movement_par.put(\textcolor{stringliteral}{"hand"},left_or_right);
+434     movement_par.put(\textcolor{stringliteral}{"five\_fingers"},fing);
+435     movement_par.put(\textcolor{stringliteral}{"five\_fingers"},fing);
+436     movement_par.put(\textcolor{stringliteral}{"lift\_object"},lobj);
+437 
+438     movement_par.put(\textcolor{stringliteral}{"traj\_time"},traj_time);
+439     movement_par.put(\textcolor{stringliteral}{"force\_threshold"},force_threshold);
+440     movement_par.put(\textcolor{stringliteral}{"traj\_tol"},traj_tol);
+441     movement_par.put(\textcolor{stringliteral}{"lift\_z"}, lift_z);
+442     movement_par.put(\textcolor{stringliteral}{"torso\_pitch\_max"}, torso_pitch_max);
+443     movement_par.put(\textcolor{stringliteral}{"visual\_servoing"}, visual_servoing);
+444     movement_par.put(\textcolor{stringliteral}{"compliant"}, compliant);
+445     movement_par.put(\textcolor{stringliteral}{"use\_direct\_kin"}, use_direct_kin);
+446     movement_par.put(\textcolor{stringliteral}{"pixel\_tol"}, pixel_tol);
+447 
+448     Bottle shift\_r;
+449     Bottle &bottle\_shift\_r=shift\_r.addList();
+450     bottle\_shift\_r.addDouble(shift_right[0]); bottle\_shift\_r.addDouble(
+      shift_right[1]);
+451     bottle\_shift\_r.addDouble(shift_right[2]);
+452     movement_par.put(\textcolor{stringliteral}{"shift\_right"},shift\_r.get(0));
+453 
+454     Bottle shift\_l;
+455     Bottle &bottle\_shift\_l=shift\_l.addList();
+456     bottle\_shift\_l.addDouble(shift_left[0]); bottle\_shift\_l.addDouble(shift_left[1]);
+457     bottle\_shift\_l.addDouble(shift_left[2]);
+458     movement_par.put(\textcolor{stringliteral}{"shift\_left"},shift\_l.get(0));
+459 
+460     Bottle home\_r;
+461     Bottle &bottle\_home\_r=home\_r.addList();
+462     bottle\_home\_r.addDouble(home_right[0]); bottle\_home\_r.addDouble(home_right[1]);
+463     bottle\_home\_r.addDouble(home_right[2]); bottle\_home\_r.addDouble(home_right[3]);
+464     bottle\_home\_r.addDouble(home_right[4]); bottle\_home\_r.addDouble(home_right[5]);bottle\_home\_r.addDouble(
+      home_right[6]);
+465     movement_par.put(\textcolor{stringliteral}{"home\_right"}, home\_r.get(0));
+466 
+467     Bottle home\_l;
+468     Bottle &bottle\_home\_l=home\_l.addList();
+469     bottle\_home\_l.addDouble(home_left[0]); bottle\_home\_l.addDouble(home_left[1]);
+470     bottle\_home\_l.addDouble(home_left[2]); bottle\_home\_l.addDouble(home_left[3]);
+471     bottle\_home\_l.addDouble(home_left[4]); bottle\_home\_l.addDouble(home_left[5]);bottle\_home\_l.addDouble(
+      home_left[6]);
+472     movement_par.put(\textcolor{stringliteral}{"home\_left"}, home\_l.get(0));
+473 
+474     Bottle bask\_r;
+475     Bottle &bottle\_bask\_r=bask\_r.addList();
+476     bottle\_bask\_r.addDouble(basket_right[0]); bottle\_bask\_r.addDouble(
+      basket_right[1]);
+477     bottle\_bask\_r.addDouble(basket_right[2]); bottle\_bask\_r.addDouble(
+      basket_right[3]);
+478     bottle\_bask\_r.addDouble(basket_right[4]); bottle\_bask\_r.addDouble(
+      basket_right[5]);bottle\_bask\_r.addDouble(basket_right[6]);
+479     movement_par.put(\textcolor{stringliteral}{"basket\_right"}, bask\_r.get(0));
+480 
+481     Bottle bask\_l;
+482     Bottle &bottle\_bask\_l=bask\_l.addList();
+483     bottle\_bask\_l.addDouble(basket_left[0]); bottle\_bask\_l.addDouble(basket_left[1]);
+484     bottle\_bask\_l.addDouble(basket_left[2]); bottle\_bask\_l.addDouble(basket_left[3]);
+485     bottle\_bask\_l.addDouble(basket_left[4]); bottle\_bask\_l.addDouble(basket_left[5]);bottle\_bask\_l.
+      addDouble(basket_left[6]);
+486     movement_par.put(\textcolor{stringliteral}{"basket\_left"}, bask\_l.get(0));
+487 
+488     Bottle stiff\_r;
+489     Bottle &bottle\_stiff\_r=stiff\_r.addList();
+490     bottle\_stiff\_r.addDouble(stiff_right[0]); bottle\_stiff\_r.addDouble(
+      stiff_right[1]);
+491     bottle\_stiff\_r.addDouble(stiff_right[2]); bottle\_stiff\_r.addDouble(
+      stiff_right[3]);
+492     bottle\_stiff\_r.addDouble(stiff_right[4]);
+493     movement_par.put(\textcolor{stringliteral}{"stiff\_right"}, stiff\_r.get(0));
+494 
+495     Bottle stiff\_l;
+496     Bottle &bottle\_stiff\_l=stiff\_l.addList();
+497     bottle\_stiff\_l.addDouble(stiff_left[0]); bottle\_stiff\_l.addDouble(stiff_left[1]);
+498     bottle\_stiff\_l.addDouble(stiff_left[2]); bottle\_stiff\_l.addDouble(stiff_left[3]);
+499     bottle\_stiff\_l.addDouble(stiff_left[4]);
+500     movement_par.put(\textcolor{stringliteral}{"stiff\_left"}, stiff\_l.get(0));
+501 
+502     Bottle damp\_r;
+503     Bottle &bottle\_damp\_r=damp\_r.addList();
+504     bottle\_damp\_r.addDouble(damp_right[0]); bottle\_damp\_r.addDouble(damp_right[1]);
+505     bottle\_damp\_r.addDouble(damp_right[2]); bottle\_damp\_r.addDouble(damp_right[3]);
+506     bottle\_damp\_r.addDouble(damp_right[4]);
+507     movement_par.put(\textcolor{stringliteral}{"damp\_right"}, damp\_r.get(0));
+508 
+509     Bottle damp\_l;
+510     Bottle &bottle\_damp\_l=damp\_l.addList();
+511     bottle\_damp\_l.addDouble(damp_left[0]); bottle\_damp\_l.addDouble(damp_left[1]);
+512     bottle\_damp\_l.addDouble(damp_left[2]); bottle\_damp\_l.addDouble(damp_left[3]);
+513     bottle\_damp\_l.addDouble(damp_left[4]);
+514     movement_par.put(\textcolor{stringliteral}{"damp\_left"}, damp\_l.get(0));
+515 
+516     executed=\textcolor{keyword}{true};
+517     hand_to_move=\textcolor{stringliteral}{"right"};
+518 
+519     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] lift\_z:        "}<<lift_z;
+520     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] force\_threshold: "}<<force_threshold;
+521     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] shift\_right:   "}<<shift_right.toString(3,3);
+522     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] shift\_left:    "}<<shift_left.toString(3,3);
+523     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] home\_right:    "}<<home_right.toString(3,3);
+524     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] home\_left:     "}<<home_left.toString(3,3);
+525     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] basket\_right:  "}<<basket_right.toString(3,3);
+526     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] basket\_left:   "}<<basket_left.toString(3,3);
+527     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] stiff\_right:   "}<<stiff_right.toString(3,3);
+528     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] stiff\_left:    "}<<stiff_left.toString(3,3);
+529     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] damp\_right:    "}<<damp_right.toString(3,3);
+530     yInfo()<<\textcolor{stringliteral}{"[GraspingModule] damp\_left:     "}<<damp_left.toString(3,3);
+531 
+532     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+533 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!config\+Pose@{config\+Pose}}
+\index{config\+Pose@{config\+Pose}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{config\+Pose(yarp\+::os\+::\+Resource\+Finder \&rf)}{configPose(yarp::os::ResourceFinder &rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::config\+Pose (
+\begin{DoxyParamCaption}
+\item[{yarp\+::os\+::\+Resource\+Finder \&}]{rf}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_ab6d6d4c684340a0e4988a338ff72e3d0}
+
+
+Configure options for pose computation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rf} & is the resource finder with all the optins \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 679 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+680 \{
+681     this->rf=&rf;
+682 
+683     n_pointshand=rf.check(\textcolor{stringliteral}{"pointshand"}, Value(48)).asInt();
+684     distance=rf.check(\textcolor{stringliteral}{"distance\_on\_x"}, Value(0.13)).asDouble();
+685     distance1=rf.check(\textcolor{stringliteral}{"distance\_on\_z"}, Value(0.05)).asDouble();
+686     max_cpu_time=rf.check(\textcolor{stringliteral}{"max\_cpu\_time"}, Value(5.0)).asDouble();
+687 
+688     \textcolor{keywordtype}{object}.resize(11,0.0);
+689 
+690     readSuperq(\textcolor{stringliteral}{"hand"},hand,11,this->rf);
+691 
+692     \textcolor{keywordflow}{if} (left_or_right==\textcolor{stringliteral}{"both"})
+693     \{
+694         readSuperq(\textcolor{stringliteral}{"hand1"},hand1,11,this->rf);
+695     \}
+696 
+697     readSuperq(\textcolor{stringliteral}{"displacement"},displacement,3,this->rf);
+698     readSuperq(\textcolor{stringliteral}{"plane"},plane,4,this->rf);
+699 
+700     \textcolor{keywordflow}{if} (plane.size()==0 && displacement.size()==0)
+701     \{
+702         yError()<<\textcolor{stringliteral}{"[GraspingModule]: No plane and displacement provided!"};
+703         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+704     \}
+705 
+706     nameFileOut_right=rf.find(\textcolor{stringliteral}{"nameFileOut\_right"}).asString().c\_str();
+707     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"nameFileOut\_right"}).isNull())
+708        nameFileOut_right=\textcolor{stringliteral}{"test\_right"};
+709 
+710     nameFileTrajectory_right=rf.find(\textcolor{stringliteral}{"nameFileTrajectory\_right"}).asString().c\_str();
+711     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"nameFileTrajectory\_right"}).isNull())
+712        nameFileTrajectory_right=\textcolor{stringliteral}{"test-trajectory\_right.txt"};
+713 
+714     nameFileOut_left=rf.find(\textcolor{stringliteral}{"nameFileOut\_left"}).asString().c\_str();
+715     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"nameFileOut\_left"}).isNull())
+716        nameFileOut_left=\textcolor{stringliteral}{"test\_left"};
+717 
+718     nameFileTrajectory_left=rf.find(\textcolor{stringliteral}{"nameFileTrajectory\_left"}).asString().c\_str();
+719     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"nameFileTrajectory\_left"}).isNull())
+720        nameFileTrajectory_left=\textcolor{stringliteral}{"test-trajectory\_left.txt"};
+721 
+722     tol=rf.check(\textcolor{stringliteral}{"tol"}, Value(1e-3)).asDouble();
+723     constr_viol_tol=rf.check(\textcolor{stringliteral}{"constr\_tol"}, Value(1e-2)).asDouble();
+724     acceptable_iter=rf.check(\textcolor{stringliteral}{"acceptable\_iter"}, Value(0)).asInt();
+725     max_iter=rf.check(\textcolor{stringliteral}{"max\_iter"}, Value(1e8)).asInt();
+726 
+727     mu_strategy=rf.find(\textcolor{stringliteral}{"mu\_strategy"}).asString().c\_str();
+728     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"mu\_strategy"}).isNull())
+729        mu_strategy=\textcolor{stringliteral}{"monotone"};
+730 
+731     nlp_scaling_method=rf.find(\textcolor{stringliteral}{"nlp\_scaling\_method"}).asString().c\_str();
+732     \textcolor{keywordflow}{if}(rf.find(\textcolor{stringliteral}{"nlp\_scaling\_method"}).isNull())
+733        nlp_scaling_method=\textcolor{stringliteral}{"none"};
+734 
+735     ipopt_par.put(\textcolor{stringliteral}{"max\_cpu\_time"},max_cpu_time);
+736     ipopt_par.put(\textcolor{stringliteral}{"tol"},tol);
+737     ipopt_par.put(\textcolor{stringliteral}{"constr\_viol\_tol"},constr_viol_tol);
+738     ipopt_par.put(\textcolor{stringliteral}{"max\_iter"},max_iter);
+739     ipopt_par.put(\textcolor{stringliteral}{"acceptable\_iter"},acceptable_iter);
+740     ipopt_par.put(\textcolor{stringliteral}{"IPOPT\_mu\_strategy"},mu_strategy);
+741     ipopt_par.put(\textcolor{stringliteral}{"IPOPT\_nlp\_scaling\_method"},nlp_scaling_method);
+742     ipopt_par.put(\textcolor{stringliteral}{"print\_level"},print_level);
+743 
+744     pose_par.put(\textcolor{stringliteral}{"n\_pointshand"},n_pointshand);
+745     Bottle planed;
+746     Bottle &pd=planed.addList();
+747     pd.addDouble(displacement[0]); pd.addDouble(displacement[1]);
+748     pd.addDouble(displacement[2]);
+749     pose_par.put(\textcolor{stringliteral}{"hand\_displacement"},planed.get(0));
+750     Bottle planeb;
+751     Bottle &p2=planeb.addList();
+752     p2.addDouble(plane[0]); p2.addDouble(plane[1]);
+753     p2.addDouble(plane[2]); p2.addDouble(plane[3]);
+754     pose_par.put(\textcolor{stringliteral}{"plane"}, planeb.get(0));
+755 
+756     traj_par.put(\textcolor{stringliteral}{"distance\_on\_x"},distance);
+757     traj_par.put(\textcolor{stringliteral}{"distance\_on\_z"},distance1);
+758     traj_par.put(\textcolor{stringliteral}{"approaching\_direction"},dir);
+759 
+760     poseR.resize(6,0.0);
+761     poseL.resize(6,0.0);
+762 
+763     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+764 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!config\+Viewer@{config\+Viewer}}
+\index{config\+Viewer@{config\+Viewer}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{config\+Viewer(yarp\+::os\+::\+Resource\+Finder \&rf)}{configViewer(yarp::os::ResourceFinder &rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::config\+Viewer (
+\begin{DoxyParamCaption}
+\item[{yarp\+::os\+::\+Resource\+Finder \&}]{rf}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a1086203a4db1e465ef8aba5e28f60025}
+
+
+Configure options for visualization. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rf} & is the resource finder with all the optins \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 616 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+617 \{
+618     block_eye=rf.check(\textcolor{stringliteral}{"block\_eye"}, Value(5.0)).asDouble();
+619     block_neck=rf.check(\textcolor{stringliteral}{"block\_neck"}, Value(0.0)).asDouble();
+620     eye=rf.check(\textcolor{stringliteral}{"eye"}, Value(\textcolor{stringliteral}{"left"})).asString();
+621     show_hand=rf.check(\textcolor{stringliteral}{"show\_hand"}, Value(\textcolor{stringliteral}{"on"})).asString();
+622     look_object=rf.check(\textcolor{stringliteral}{"look\_object"}, Value(\textcolor{stringliteral}{"on"})).asString();
+623     show_only_pose=rf.check(\textcolor{stringliteral}{"show\_only\_pose"}, Value(\textcolor{stringliteral}{"on"})).asString();
+624 
+625     Property optionG;
+626     optionG.put(\textcolor{stringliteral}{"device"},\textcolor{stringliteral}{"gazecontrollerclient"});
+627     optionG.put(\textcolor{stringliteral}{"remote"},\textcolor{stringliteral}{"/iKinGazeCtrl"});
+628     optionG.put(\textcolor{stringliteral}{"local"},\textcolor{stringliteral}{"/superquadric-grasp/gaze"});
+629 
+630     GazeCtrl.open(optionG);
+631     igaze=NULL;
+632 
+633     \textcolor{keywordflow}{if} (GazeCtrl.isValid())
+634     \{
+635         GazeCtrl.view(igaze);
+636     \}
+637     \textcolor{keywordflow}{else}
+638         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+639 
+640     igaze->storeContext(&context_gaze);
+641 
+642     igaze->setSaccadesMode(\textcolor{keyword}{false});
+643 
+644     yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Blocking eyes..."}<<block_eye;
+645     igaze->blockEyes(block_eye);
+646     yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Done: "}<<igaze->waitMotionDone(2.0);
+647 
+648     yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Blocking roll..."}<<block_neck;
+649     igaze->blockNeckRoll(block_neck);
+650     yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Done: "}<<igaze->waitMotionDone(2.0);
+651 
+652     Bottle info;
+653     igaze->getInfo(info);
+654     K.resize(3,4);
+655     K.zero();
+656 
+657     Bottle *intr\_par;
+658 
+659     \textcolor{keywordflow}{if} (eye==\textcolor{stringliteral}{"left"})
+660         intr\_par=info.find(\textcolor{stringliteral}{"camera\_intrinsics\_left"}).asList();
+661     \textcolor{keywordflow}{else}
+662         intr\_par=info.find(\textcolor{stringliteral}{"camera\_intrinsics\_right"}).asList();
+663 
+664     K(0,0)=intr\_par->get(0).asDouble();
+665     K(0,1)=intr\_par->get(1).asDouble();
+666     K(0,2)=intr\_par->get(2).asDouble();
+667     K(1,1)=intr\_par->get(5).asDouble();
+668     K(1,2)=intr\_par->get(6).asDouble();
+669     K(2,2)=1;
+670 
+671 
+672     vis_par.put(\textcolor{stringliteral}{"look\_object"},look_object);
+673     vis_par.put(\textcolor{stringliteral}{"show\_hand"}, show_hand);
+674 
+675     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+676 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!fill\+Property@{fill\+Property}}
+\index{fill\+Property@{fill\+Property}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{fill\+Property(const yarp\+::sig\+::\+Vector \&sol)}{fillProperty(const yarp::sig::Vector &sol)}}]{\setlength{\rightskip}{0pt plus 5cm}yarp\+::os\+::\+Property Grasping\+Module\+::fill\+Property (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::sig\+::\+Vector \&}]{sol}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a059da011f804acd1adc4549eaa3d2141}
+
+
+Fill property with the grasping solutions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sol} & is the solution to be saved in a property \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the Property with the solution in the proper form 
+\end{DoxyReturn}
+\index{Grasping\+Module@{Grasping\+Module}!get\+\_\+best\+\_\+hand@{get\+\_\+best\+\_\+hand}}
+\index{get\+\_\+best\+\_\+hand@{get\+\_\+best\+\_\+hand}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+\_\+best\+\_\+hand()}{get_best_hand()}}]{\setlength{\rightskip}{0pt plus 5cm}string Grasping\+Module\+::get\+\_\+best\+\_\+hand (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a5103f8bd6671a11a9bd1c7e29d290009}
+
+
+Return the computed grasping poses. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em superquadric} & is a property with the object superquadric \\
+\hline
+{\em hand} & is the name of the hand for which we want to compute the grasping pose \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a property with the grasping pose solution 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_afca9a01bade8e22262e5e70a96d671ae}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 135 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+136 \{
+137     \textcolor{keywordflow}{return} graspComp->best_hand;
+138 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!get\+\_\+grasping\+\_\+pose@{get\+\_\+grasping\+\_\+pose}}
+\index{get\+\_\+grasping\+\_\+pose@{get\+\_\+grasping\+\_\+pose}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+\_\+grasping\+\_\+pose(const yarp\+::os\+::\+Property \&superquadric, const std\+::string \&hand)}{get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}Property Grasping\+Module\+::get\+\_\+grasping\+\_\+pose (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{estimated\+\_\+superq, }
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_af1e057f767ab83be185cf486d3f5c46b}
+
+
+Return the estimated grasping poses given an estimated superquadric. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em estimated\+\_\+superq} & is a Property containing the superquadric. \\
+\hline
+{\em hand} & is the hand for which we want to solve the grasping problem (right, left or both). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a property containing the solution. Note\+: the estimated superquadric must be provide in the following format\+: (dimensions (x0 x1 x2)) (exponents (x3 x4)) (center (x5 x6 x7)) (orientation (x8 x9 x10 x11)) where x0, x1,x2 are the semi axes of the superquadric, x3, x4 are the responsible for the shape, x5 x6 x7 are the coordinates of the superquadric center and x8 x9 x10 x11 are the axis-\/angle representation of the superquadric orientation. The solution is given in the form\+: (pose\+\_\+right (h0 h1 h2 h3 h4 h5 h6)) (trajectory\+\_\+right (t0 t1 t2 t3 t4 t5) ... ) for the right hand, and the same for the left hand (according to the value of the string hand are input parameter. The quantity \char`\"{}pose\+\_\+right\char`\"{} is the pose computed for the robot hand (x0,x1,x2, are the 3D coordinates of the end-\/effector and x3,x4,x5 are the Euler angles representing the end-\/effector orientation) The quantity \char`\"{}trajectory\+\_\+right\char`\"{} includes all the waypoint of the computed trajectory, in the form center of the end-\/effector (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5). 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a595e98ed2a8fca7ac707b71f97d626d1}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 59 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+60 \{
+61     Bottle *dim=estimated\_superq.find(\textcolor{stringliteral}{"dimensions"}).asList();
+62 
+63     \textcolor{keywordflow}{if} (!estimated\_superq.find(\textcolor{stringliteral}{"dimensions"}).isNull())
+64     \{
+65         \textcolor{keywordtype}{object}[0]=dim->get(0).asDouble(); \textcolor{keywordtype}{object}[1]=dim->get(1).asDouble(); \textcolor{keywordtype}{object}[2]=dim->get(2).asDouble(
+      );
+66     \}
+67 
+68     Bottle *shape=estimated\_superq.find(\textcolor{stringliteral}{"exponents"}).asList();
+69 
+70     \textcolor{keywordflow}{if} (!estimated\_superq.find(\textcolor{stringliteral}{"exponents"}).isNull())
+71     \{
+72         \textcolor{keywordtype}{object}[3]=shape->get(0).asDouble(); \textcolor{keywordtype}{object}[4]=shape->get(1).asDouble();
+73     \}
+74 
+75     Bottle *exp=estimated\_superq.find(\textcolor{stringliteral}{"exponents"}).asList();
+76 
+77     \textcolor{keywordflow}{if} (!estimated\_superq.find(\textcolor{stringliteral}{"exponents"}).isNull())
+78     \{
+79         \textcolor{keywordtype}{object}[3]=exp->get(0).asDouble(); \textcolor{keywordtype}{object}[4]=exp->get(1).asDouble();
+80     \}
+81 
+82     Bottle *center=estimated\_superq.find(\textcolor{stringliteral}{"center"}).asList();
+83 
+84     \textcolor{keywordflow}{if} (!estimated\_superq.find(\textcolor{stringliteral}{"center"}).isNull())
+85     \{
+86         \textcolor{keywordtype}{object}[5]=center->get(0).asDouble(); \textcolor{keywordtype}{object}[6]=center->get(1).asDouble(); \textcolor{keywordtype}{object}[7]=center->get(2).
+      asDouble();
+87     \}
+88 
+89     Bottle *orientation=estimated\_superq.find(\textcolor{stringliteral}{"orientation"}).asList();
+90 
+91     \textcolor{keywordflow}{if} (!estimated\_superq.find(\textcolor{stringliteral}{"orientation"}).isNull())
+92     \{
+93         Vector axis(4,0.0);
+94         axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation
+      ->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
+95         \textcolor{keywordtype}{object}.setSubvector(8,dcm2euler(axis2dcm(axis)));
+96     \}
+97 
+98     readSuperq(\textcolor{stringliteral}{"hand"},hand,11,this->rf);
+99 
+100     \textcolor{keywordflow}{if} (left_or_right==\textcolor{stringliteral}{"both"})
+101     \{
+102         readSuperq(\textcolor{stringliteral}{"hand1"},hand1,11,this->rf);
+103     \}
+104 
+105     graspComp->setPar(\textcolor{stringliteral}{"left\_or\_right"}, hand\_str);
+106     graspComp->run();
+107     graspComp->getSolution(hand\_str);
+108 
+109     yInfo()<<\textcolor{stringliteral}{" [GraspingModule]: Complete solution "}<<complete_sol.toString();
+110 
+111     t\_grasp=graspComp->getTime();
+112 
+113     graspVis->left_or_right=hand\_str;
+114 
+115     readSuperq(\textcolor{stringliteral}{"hand"},graspVis->hand,11,this->rf);
+116 
+117     executed_var=\textcolor{keyword}{false};
+118 
+119     \textcolor{keywordflow}{if} (look_object==\textcolor{stringliteral}{"on"})
+120         graspVis->look_object=\textcolor{keyword}{true};
+121 
+122     \textcolor{keywordflow}{return} complete_sol;
+123 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!get\+\_\+hand@{get\+\_\+hand}}
+\index{get\+\_\+hand@{get\+\_\+hand}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+\_\+hand()}{get_hand()}}]{\setlength{\rightskip}{0pt plus 5cm}string Grasping\+Module\+::get\+\_\+hand (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a557a87131c7396dd62c02eced7f4a937}
+
+
+Return which hand has been enabled. 
+
+\begin{DoxyReturn}{Returns}
+the name of the hand enabled 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_ad1e5b402e403bc6765d7bf7e8fff0e91}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 168 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+169 \{
+170     \textcolor{keywordflow}{return} left_or_right;
+171 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!get\+\_\+options@{get\+\_\+options}}
+\index{get\+\_\+options@{get\+\_\+options}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+\_\+options(const std\+::string \&field)}{get_options(const std::string &field)}}]{\setlength{\rightskip}{0pt plus 5cm}Property Grasping\+Module\+::get\+\_\+options (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{field}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a375475691c644d8aa882db8d65ceda50}
+
+
+Get options of the field of interest. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em is} & a string with the field of options of interest \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a Property with all the options 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a4799064cf16a52762787c0b245318d54}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 209 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+210 \{
+211     Property advOptions;
+212     \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"pose"})
+213         advOptions=graspComp->getPosePar();
+214     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"trajectory"})
+215         advOptions=graspComp->getTrajectoryPar();
+216     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"optimization"})
+217         advOptions=graspComp->getIpoptPar();
+218     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"execution"})
+219         advOptions=graspExec->getPosePar();
+220     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"visualization"})
+221         advOptions=graspVis->getPar();
+222     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"statistics"})
+223     \{
+224         advOptions.put(\textcolor{stringliteral}{"average\_computation\_time"}, t\_grasp);
+225         advOptions.put(\textcolor{stringliteral}{"average\_visualization\_time"}, t\_vis);
+226     \}
+227 
+228     \textcolor{keywordflow}{return} advOptions;
+229 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!get\+\_\+save\+\_\+poses@{get\+\_\+save\+\_\+poses}}
+\index{get\+\_\+save\+\_\+poses@{get\+\_\+save\+\_\+poses}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+\_\+save\+\_\+poses()}{get_save_poses()}}]{\setlength{\rightskip}{0pt plus 5cm}string Grasping\+Module\+::get\+\_\+save\+\_\+poses (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a949e4297bdf26f564669ffc91068c4f3}
+
+
+Set if poses are saved or not. 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} is the poses are saved 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_aab45b0423b4e2d440b8a1256c1d6bdfc}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 232 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+233 \{
+234     \textcolor{keywordflow}{if} (save_poses)
+235     \{
+236         \textcolor{keywordflow}{return} \textcolor{stringliteral}{"on"};
+237     \}
+238     \textcolor{keywordflow}{else}
+239     \{
+240         \textcolor{keywordflow}{return} \textcolor{stringliteral}{"off"};
+241     \}
+242 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!get\+\_\+visualization@{get\+\_\+visualization}}
+\index{get\+\_\+visualization@{get\+\_\+visualization}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+\_\+visualization()}{get_visualization()}}]{\setlength{\rightskip}{0pt plus 5cm}string Grasping\+Module\+::get\+\_\+visualization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_aabedec650875263d27ecf20fa9dd8b39}
+
+
+Return if visualization is on or off. 
+
+\begin{DoxyReturn}{Returns}
+\char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_ad108d67db8f389b630fa2b0caed87ca5}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 126 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+127 \{
+128     \textcolor{keywordflow}{if} (visualization)
+129         \textcolor{keywordflow}{return} \textcolor{stringliteral}{"on"};
+130     \textcolor{keywordflow}{else}
+131         \textcolor{keywordflow}{return} \textcolor{stringliteral}{"off"};
+132 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!get\+Period@{get\+Period}}
+\index{get\+Period@{get\+Period}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{get\+Period()}{getPeriod()}}]{\setlength{\rightskip}{0pt plus 5cm}double Grasping\+Module\+::get\+Period (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_abfc60b8437d750f2b2a48b8a617e53c1}
+
+
+Get period function of the RF module. 
+
+\begin{DoxyReturn}{Returns}
+the thread period 
+\end{DoxyReturn}
+
+
+Definition at line 610 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+611 \{
+612     \textcolor{keywordflow}{return} 0.1;
+613 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!go\+\_\+home@{go\+\_\+home}}
+\index{go\+\_\+home@{go\+\_\+home}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{go\+\_\+home(const std\+::string \&entry)}{go_home(const std::string &entry)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::go\+\_\+home (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{entry}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a1455fc4c6a1ae5690fa691cc324fec4e}
+
+
+Go back to home position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & is the name of the hand that is moving \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a67b63b85635a02ab15f9447ad2b1b0dd}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 312 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+313 \{
+314     LockGuard lg(mutex);
+315     reached_home=\textcolor{keyword}{false};
+316 
+317     \textcolor{keywordflow}{if} ((entry==\textcolor{stringliteral}{"right"}) || (entry==\textcolor{stringliteral}{"left"}))
+318     \{
+319         executed=\textcolor{keyword}{true};
+320         graspExec->reached=\textcolor{keyword}{true};
+321         graspExec->reached_tot=\textcolor{keyword}{true};
+322         graspExec->stop();
+323         reached_home=graspExec->goHome(entry);
+324 
+325         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+326     \}
+327     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (entry==\textcolor{stringliteral}{"both"})
+328     \{
+329         executed=\textcolor{keyword}{true};
+330         graspExec->reached=\textcolor{keyword}{true};
+331         graspExec->reached_tot=\textcolor{keyword}{true};
+332         graspExec->stop();
+333         graspExec->goHome(\textcolor{stringliteral}{"right"});
+334         reached_home=graspExec->goHome(\textcolor{stringliteral}{"left"});
+335 
+336         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+337     \}
+338 
+339     \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+340 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!go\+\_\+to\+\_\+basket@{go\+\_\+to\+\_\+basket}}
+\index{go\+\_\+to\+\_\+basket@{go\+\_\+to\+\_\+basket}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{go\+\_\+to\+\_\+basket(const std\+::string \&entry)}{go_to_basket(const std::string &entry)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::go\+\_\+to\+\_\+basket (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{entry}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a75482819f7f289b3f456571628952122}
+
+
+Go back to the basket on the robot side. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & is the name of the hand that is moving \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_abafbd89252eed10caf876ff1965491d0}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 343 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+344 \{
+345     LockGuard lg(mutex);
+346     reached_basket=\textcolor{keyword}{false};
+347 
+348     \textcolor{keywordflow}{if} ((entry==\textcolor{stringliteral}{"right"}) || (entry==\textcolor{stringliteral}{"left"}))
+349     \{
+350         executed=\textcolor{keyword}{true};
+351         graspExec->reached=\textcolor{keyword}{true};
+352         graspExec->reached_tot=\textcolor{keyword}{true};
+353         graspExec->stop();
+354         reached_basket=graspExec->goToBasket(entry);
+355 
+356         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+357     \}
+358     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (entry==\textcolor{stringliteral}{"both"})
+359     \{
+360         executed=\textcolor{keyword}{true};
+361         graspExec->reached=\textcolor{keyword}{true};
+362         graspExec->reached_tot=\textcolor{keyword}{true};
+363         graspExec->stop();
+364         graspExec->goToBasket(\textcolor{stringliteral}{"right"});
+365         reached_basket=graspExec->goToBasket(\textcolor{stringliteral}{"left"});
+366 
+367         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+368     \}
+369 
+370     \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+371 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!interrupt\+Module@{interrupt\+Module}}
+\index{interrupt\+Module@{interrupt\+Module}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{interrupt\+Module()}{interruptModule()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::interrupt\+Module (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_aca7dc9ec5e0a98b1333ed4c63650cdba}
+
+
+Interrupt function of the RF module. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 570 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+571 \{
+572     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+573 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!move@{move}}
+\index{move@{move}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{move(const std\+::string \&entry)}{move(const std::string &entry)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::move (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{entry}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a08bd9cdbb1d16da8616c9769510e2bf1}
+
+
+Move the selected arm. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & is the name of the hand to be moved \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_aa996e476a845b484542c7a596cc1f02a}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 256 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+257 \{
+258     LockGuard lg(mutex);
+259 
+260     yDebug()<<\textcolor{stringliteral}{"command received"};
+261 
+262     \textcolor{keywordflow}{if} ((entry==\textcolor{stringliteral}{"right"}) || (entry==\textcolor{stringliteral}{"left"}))
+263     \{
+264         hand_to_move=entry;
+265         executed=\textcolor{keyword}{false};
+266         executed_var=\textcolor{keyword}{false};
+267 
+268         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+269     \}
+270 
+271     \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+272 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!read\+Superq@{read\+Superq}}
+\index{read\+Superq@{read\+Superq}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{read\+Superq(const std\+::string \&name\+\_\+obj, yarp\+::sig\+::\+Vector \&x, const int \&dimension, yarp\+::os\+::\+Resource\+Finder $\ast$rf)}{readSuperq(const std::string &name_obj, yarp::sig::Vector &x, const int &dimension, yarp::os::ResourceFinder *rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::read\+Superq (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{name\+\_\+obj, }
+\item[{yarp\+::sig\+::\+Vector \&}]{x, }
+\item[{const int \&}]{dimension, }
+\item[{yarp\+::os\+::\+Resource\+Finder $\ast$}]{rf}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_aa1c32186a8b7133db63e115898949b28}
+
+
+Read object model from text file for simulation tests. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name\+\_\+obj} & is the name of the object \\
+\hline
+{\em x} & is the superquadric lot be read \\
+\hline
+{\em dimensions} & is the dimension of the superquadric (11) \\
+\hline
+{\em rf} & is the resource finder \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 820 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+821 \{
+822     x.clear();
+823     \textcolor{keywordflow}{if} (Bottle *b=rf->find(name\_obj.c\_str()).asList())
+824     \{
+825         \textcolor{keywordflow}{if} (b->size()>=dimension)
+826         \{
+827             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0; i<b->size();i++)
+828                 x.push\_back(b->get(i).asDouble());
+829         \}
+830         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+831     \}
+832 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!save\+Sol@{save\+Sol}}
+\index{save\+Sol@{save\+Sol}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{save\+Sol(const yarp\+::os\+::\+Property \&sol)}{saveSol(const yarp::os::Property &sol)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasping\+Module\+::save\+Sol (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{sol}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_a43a89c97919dd68a4ab28a6c9fe16a95}
+
+
+Save solutions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sol} & is a property with the solution to be saved \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 835 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+836 \{
+837     stringstream ss;
+838     ss << graspComp->count\_file;
+839     \textcolor{keywordtype}{string} count\_file=ss.str();
+840 
+841     Bottle &pose=poses.findGroup(\textcolor{stringliteral}{"pose\_right"});
+842     \textcolor{keywordflow}{if} (!pose.isNull())
+843     \{
+844         Bottle *p=pose.get(1).asList();
+845 
+846         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<p->size(); i++)
+847             poseR[i]=p->get(i).asDouble();
+848     \}
+849     \textcolor{keywordflow}{else}
+850         yError()<<\textcolor{stringliteral}{"[GraspingModule]: No pose right found!"};
+851 
+852     Bottle &pose1=poses.findGroup(\textcolor{stringliteral}{"pose\_left"});
+853     \textcolor{keywordflow}{if} (!pose1.isNull())
+854     \{
+855         Bottle *p=pose1.get(1).asList();
+856 
+857         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<p->size(); i++)
+858             poseL[i]=p->get(i).asDouble();
+859     \}
+860     \textcolor{keywordflow}{else}
+861         yError()<<\textcolor{stringliteral}{"[GraspingModule]: No pose left found!"};
+862 
+863     \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"right"} || left_or_right==\textcolor{stringliteral}{"both"}) && (norm(poseR)!=0.0))
+864     \{
+865         ofstream fout((homeContextPath+\textcolor{stringliteral}{"/"}+nameFileOut_right+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str());
+866 
+867         yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Saving solution for right hand in "}<<(
+      homeContextPath+\textcolor{stringliteral}{"/"}+nameFileOut_right+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str();
+868 
+869         \textcolor{keywordflow}{if}(fout.is\_open())
+870         \{
+871             fout<<\textcolor{stringliteral}{"Initial right hand volume pose: "}<<endl<<\textcolor{stringliteral}{"["}<<hand.toString(3,3).c\_str()<<\textcolor{stringliteral}{"]"}<<endl<<
+      endl;
+872 
+873             fout<<\textcolor{stringliteral}{"Final right hand pose: "}<<endl<<\textcolor{stringliteral}{"["}<<poseR.toString(3,3)<<\textcolor{stringliteral}{"]"}<<endl<<endl;
+874 
+875             fout<<\textcolor{stringliteral}{"Average time for computation: "}<<endl<<t\_grasp<<endl<<endl;
+876 
+877             fout<<\textcolor{stringliteral}{"object: "}<<endl<<\textcolor{stringliteral}{"["}<<\textcolor{keywordtype}{object}.toString(3,3)<<\textcolor{stringliteral}{"]"}<<endl<<endl;
+878         \}  
+879     \}
+880 
+881     \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"left"} || left_or_right==\textcolor{stringliteral}{"both"}) && (norm(poseL)!=0.0))
+882     \{
+883         ofstream fout((homeContextPath+\textcolor{stringliteral}{"/"}+nameFileOut_left+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str());
+884 
+885         yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Saving solution for left hand in "}<<(
+      homeContextPath+\textcolor{stringliteral}{"/"}+nameFileOut_left+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str();
+886 
+887         \textcolor{keywordflow}{if}(fout.is\_open())
+888         \{
+889             \textcolor{keywordflow}{if} (left_or_right==\textcolor{stringliteral}{"left"})
+890                 fout<<\textcolor{stringliteral}{"Initial left hand volume pose: "}<<endl<<\textcolor{stringliteral}{"["}<<hand.toString(3,3).c\_str()<<\textcolor{stringliteral}{"]"}<<endl<<
+      endl;
+891             \textcolor{keywordflow}{else}
+892                 fout<<\textcolor{stringliteral}{"Initial left hand volume pose: "}<<endl<<\textcolor{stringliteral}{"["}<<hand1.toString(3,3).c\_str()<<\textcolor{stringliteral}{"]"}<<endl<
+      <endl;
+893 
+894             fout<<\textcolor{stringliteral}{"Final left hand pose: "}<<endl<<\textcolor{stringliteral}{"["}<<poseL.toString(3,3)<<\textcolor{stringliteral}{"]"}<<endl<<endl;
+895 
+896             fout<<\textcolor{stringliteral}{"Average time for computation: "}<<endl<<t\_grasp<<endl<<endl;
+897 
+898             fout<<\textcolor{stringliteral}{"object: "}<<endl<<\textcolor{stringliteral}{"["}<<\textcolor{keywordtype}{object}.toString(3,3)<<\textcolor{stringliteral}{"]"}<<endl<<endl;
+899         \}
+900     \}
+901 
+902     Vector tmp(6,0.0);
+903     Bottle &pose2=poses.findGroup(\textcolor{stringliteral}{"trajectory\_right"});
+904 
+905     \textcolor{keywordflow}{if} (!pose2.isNull())
+906     \{
+907         Bottle *p=pose2.get(1).asList();
+908         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<p->size(); i++)
+909         \{
+910             Bottle *p1=p->get(i).asList();
+911 
+912 
+913             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j=0; j<p1->size(); j++)
+914             \{
+915                 tmp[i]=p1->get(j).asDouble();
+916             \}
+917             trajectory_right.push\_back(tmp);
+918         \}
+919     \}
+920     \textcolor{keywordflow}{else}
+921         yError()<<\textcolor{stringliteral}{"[GraspingModule]: No trajectory right found!"};
+922 
+923     Bottle &pose3=poses.findGroup(\textcolor{stringliteral}{"trajectory\_left"});
+924 
+925     \textcolor{keywordflow}{if} (!pose3.isNull())
+926     \{
+927         Bottle *p=pose3.get(1).asList();
+928         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<p->size(); i++)
+929         \{
+930             Bottle *p1=p->get(i).asList();
+931 
+932 
+933             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j=0; j<p1->size(); j++)
+934             \{
+935                 tmp[i]=p1->get(j).asDouble();
+936             \}
+937             trajectory_left.push\_back(tmp);
+938         \}
+939     \}
+940     \textcolor{keywordflow}{else}
+941         yError()<<\textcolor{stringliteral}{"[GraspingModule]: No trajectory left found!"};
+942 
+943     \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"right"} || left_or_right==\textcolor{stringliteral}{"both"}) && (norm(poseR)!=0.0) && (also\_traj==\textcolor{keyword}{true}))
+944     \{
+945         ofstream fout((homeContextPath+\textcolor{stringliteral}{"/"}+nameFileTrajectory_right+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str());
+946 
+947         yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Saving trajectory for right hand in "}<<(
+      homeContextPath+nameFileOut_left+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str();
+948 
+949         \textcolor{keywordflow}{if}(fout.is\_open())
+950         \{
+951             fout<<\textcolor{stringliteral}{"Trajectory for right hand: "}<<endl;
+952             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_right.size(); i++)
+953             \{
+954                 fout<<\textcolor{stringliteral}{"["}<<trajectory_right[i].toString(3,3).c\_str()<<\textcolor{stringliteral}{"]"}<<endl<<endl;
+955             \}
+956         \}
+957     \}
+958 
+959     \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"left"} || left_or_right==\textcolor{stringliteral}{"both"}) && (norm(poseL)!=0.0) && (also\_traj==\textcolor{keyword}{true}))
+960     \{
+961         ofstream fout((homeContextPath+\textcolor{stringliteral}{"/"}+nameFileTrajectory_left+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str());
+962 
+963         yDebug()<<\textcolor{stringliteral}{"[GraspingModule]: Saving trajectory for left hand in "}<<(
+      homeContextPath+nameFileOut_left+ \textcolor{stringliteral}{"\_"}+count\_file+\textcolor{stringliteral}{".txt"}).c\_str();
+964 
+965         \textcolor{keywordflow}{if}(fout.is\_open())
+966         \{
+967             fout<<\textcolor{stringliteral}{"Trajectory for left hand: "}<<endl;
+968             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_left.size(); i++)
+969             \{
+970                 fout<<\textcolor{stringliteral}{"["}<<trajectory_left[i].toString(3,3).c\_str()<<\textcolor{stringliteral}{"]"}<<endl<<endl;
+971             \}
+972         \}
+973     \}
+974 
+975     graspComp->count\_file\_old++;
+976 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!set\+\_\+hand@{set\+\_\+hand}}
+\index{set\+\_\+hand@{set\+\_\+hand}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{set\+\_\+hand(const std\+::string \&e)}{set_hand(const std::string &e)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::set\+\_\+hand (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a9d34cb0521f86dd16648255e640eec90}
+
+
+Set hand enabled. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & is the name of the selected hand \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a6215b75f080a5837599b25826c142921}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 174 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+175 \{
+176     \textcolor{keywordflow}{if} ((e==\textcolor{stringliteral}{"right"}) || (e==\textcolor{stringliteral}{"left"}) || (e==\textcolor{stringliteral}{"both"}))
+177     \{
+178         LockGuard lg(mutex);
+179 
+180         left_or_right=e;
+181         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+182     \}
+183     \textcolor{keywordflow}{else}
+184     \{
+185         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+186     \}
+187 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!set\+\_\+options@{set\+\_\+options}}
+\index{set\+\_\+options@{set\+\_\+options}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{set\+\_\+options(const yarp\+::os\+::\+Property \&new\+Options, const std\+::string \&field)}{set_options(const yarp::os::Property &newOptions, const std::string &field)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::set\+\_\+options (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{new\+Options, }
+\item[{const std\+::string \&}]{field}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a849c459ef9700c93b45ef6cff394f675}
+
+
+Set options of the field of interest. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Options} & is a proeprty with the new options to be set \\
+\hline
+{\em field} & is the field of the options to be set \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a5320ef56cf3da687e7cf678b2a9397f5}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 190 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+191 \{
+192     \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"pose"})
+193         graspComp->setPosePar(newOptions, \textcolor{keyword}{false});
+194     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"trajectory"})
+195         graspComp->setTrajectoryPar(newOptions, \textcolor{keyword}{false});
+196     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"optimization"})
+197         graspComp->setIpoptPar(newOptions, \textcolor{keyword}{false});
+198     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"execution"})
+199         graspExec->setPosePar(newOptions, \textcolor{keyword}{false});
+200     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field==\textcolor{stringliteral}{"visualization"})
+201         graspVis->setPar(newOptions,\textcolor{keyword}{false});
+202     \textcolor{keywordflow}{else}
+203         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+204 
+205     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+206 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!set\+\_\+save\+\_\+poses@{set\+\_\+save\+\_\+poses}}
+\index{set\+\_\+save\+\_\+poses@{set\+\_\+save\+\_\+poses}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{set\+\_\+save\+\_\+poses(const std\+::string \&entry)}{set_save_poses(const std::string &entry)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::set\+\_\+save\+\_\+poses (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{entry}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a618785dec349358760a05e6e4b097866}
+
+
+Return if poses are saved or not. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & can be \char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true of false 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_ac01ec2012d2b12098a86f7f053068464}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 245 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+246 \{
+247     LockGuard lg(mutex);
+248 
+249     \textcolor{keywordflow}{if} ((entry==\textcolor{stringliteral}{"on"}) || (entry==\textcolor{stringliteral}{"off"}))
+250     \{
+251         save_poses=(entry==\textcolor{stringliteral}{"on"});
+252     \}
+253 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!set\+\_\+visualization@{set\+\_\+visualization}}
+\index{set\+\_\+visualization@{set\+\_\+visualization}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{set\+\_\+visualization(const std\+::string \&e)}{set_visualization(const std::string &e)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::set\+\_\+visualization (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classGraspingModule_a801de4b63aba360a4b85e322c5947a4a}
+
+
+Set visualization option on or off. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & can be \char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} for setting the visualization on or off \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classsuperquadricGrasp__IDL_a91d43de48ad97e35205010c7510e503c}{superquadric\+Grasp\+\_\+\+I\+DL}.
+
+
+
+Definition at line 141 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+142 \{
+143     \textcolor{keywordflow}{if} ((e==\textcolor{stringliteral}{"on"}) || (e==\textcolor{stringliteral}{"off"}))
+144     \{
+145         LockGuard lg(mutex);
+146 
+147         \textcolor{keywordflow}{if} ((visualization==\textcolor{keyword}{false}) && (e==\textcolor{stringliteral}{"on"}))
+148         \{
+149             graspVis->resume();
+150 
+151             visualization=\textcolor{keyword}{true};
+152 
+153         \}
+154         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} ((visualization==\textcolor{keyword}{true}) && (e==\textcolor{stringliteral}{"off"}))
+155         \{
+156             graspVis->suspend();
+157             visualization=\textcolor{keyword}{false};
+158         \}
+159         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+160     \}
+161     \textcolor{keywordflow}{else}
+162     \{
+163         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+164     \}
+165 \}
+\end{DoxyCode}
+\index{Grasping\+Module@{Grasping\+Module}!update\+Module@{update\+Module}}
+\index{update\+Module@{update\+Module}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{update\+Module()}{updateModule()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasping\+Module\+::update\+Module (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspingModule_af2cd7fa157b5d78080ffd7952655046d}
+
+
+Update function of the RF module. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 576 of file grasp\+Module.\+cpp.
+
+
+\begin{DoxyCode}
+577 \{
+578     \textcolor{keywordflow}{if} (visualization)
+579     \{
+580         \textcolor{keywordflow}{if} (times\_vis.size()<10)
+581             times\_vis.push\_back(graspVis->getTime());
+582         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (times\_vis.size()==10)
+583         \{
+584             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<times\_vis.size(); i++)
+585             \{
+586                 t\_vis+=times\_vis[i];
+587             \}
+588             t\_vis=t\_vis/times\_vis.size();
+589             times\_vis.push\_back(0.0);
+590         \}
+591         \textcolor{keywordflow}{else}
+592             times\_vis.clear();
+593     \}
+594 
+595     \textcolor{keywordflow}{if} (executed==\textcolor{keyword}{false})
+596     \{
+597         graspExec->getPoses(complete_sol);
+598         executed_var=executed=graspExec->executeTrajectory(hand_to_move);
+599 
+600         yDebug()<<\textcolor{stringliteral}{"[GraspingModule] Movement executed :"}<<executed_var;
+601     \}
+602 
+603     \textcolor{keywordflow}{if} (save_poses && (graspComp->count\_file == graspComp->count\_file\_old))
+604         saveSol(complete_sol);
+605 
+606    \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+607 \}
+\end{DoxyCode}
+
+
+\subsection{Field Documentation}
+\index{Grasping\+Module@{Grasping\+Module}!dir@{dir}}
+\index{dir@{dir}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{dir}{dir}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string Grasping\+Module\+::dir\hspace{0.3cm}{\ttfamily [protected]}}\label{classGraspingModule_a87c885eada6df4d622c92173d8a4ed2e}
+
+
+Direction for generating the waypoint for the approach\+: it could be on x and z axes (\char`\"{}xz\char`\"{}) or only z axis (\char`\"{}z\char`\"{}) of the hand reference frame. 
+
+
+
+Definition at line 97 of file grasp\+Module.\+h.
+
+\index{Grasping\+Module@{Grasping\+Module}!force\+\_\+threshold@{force\+\_\+threshold}}
+\index{force\+\_\+threshold@{force\+\_\+threshold}!Grasping\+Module@{Grasping\+Module}}
+\subsubsection[{\texorpdfstring{force\+\_\+threshold}{force_threshold}}]{\setlength{\rightskip}{0pt plus 5cm}double Grasping\+Module\+::force\+\_\+threshold\hspace{0.3cm}{\ttfamily [protected]}}\label{classGraspingModule_abd2e8eaca9dd18e74a40fd3831922c16}
+
+
+Threshold of the maximum allowed force measured at the endeffector. 
+
+If the measured value is larger, the movement stops. 
+
+Definition at line 158 of file grasp\+Module.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/include/grasp\+Module.\+h\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/src/grasp\+Module.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,1319 @@
+\section{grasping\+\_\+\+N\+LP Class Reference}
+\label{classgrasping__NLP}\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+
+
+This class computes the grasping pose for a given hand and a superquadric modeling an objct by solving an optimization problem with the Ipopt software package.  
+
+
+
+
+{\ttfamily \#include $<$superquadric.\+h$>$}
+
+
+
+Inherits T\+N\+LP.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classgrasping__NLP_abcf09fd329994523df9cebab0c607006}{init} (const yarp\+::sig\+::\+Vector \&objectext, yarp\+::sig\+::\+Vector \&handext, int \&n\+\_\+handpoints, const std\+::string \&str\+\_\+hand)
+\begin{DoxyCompactList}\small\item\em Initialization function. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_afbe118dd339bb975cd5e340fa0801cec}{compute\+Points\+Hand} (yarp\+::sig\+::\+Vector \&\hyperlink{classgrasping__NLP_abdf5321a362b6b73b54271d81e8cdd17}{hand}, int j, int l, const std\+::string \&str\+\_\+hand, double \&theta)
+\begin{DoxyCompactList}\small\item\em Samples points on the hand ellipsoid. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_a49d0b788d4d17f32efca951ed6556ca0}{get\+\_\+nlp\+\_\+info} (Ipopt\+::\+Index \&n, Ipopt\+::\+Index \&m, Ipopt\+::\+Index \&nnz\+\_\+jac\+\_\+g, Ipopt\+::\+Index \&nnz\+\_\+h\+\_\+lag, Ipopt\+::\+T\+N\+L\+P\+::\+Index\+Style\+Enum \&index\+\_\+style)
+\begin{DoxyCompactList}\small\item\em Get info for the nonlinear problem to be solved with ipopt. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_a1be828e10f1182f3befccbafdb90b577}{get\+\_\+bounds\+\_\+info} (Ipopt\+::\+Index n, Ipopt\+::\+Number $\ast$x\+\_\+l, Ipopt\+::\+Number $\ast$x\+\_\+u, Ipopt\+::\+Index m, Ipopt\+::\+Number $\ast$g\+\_\+l, Ipopt\+::\+Number $\ast$g\+\_\+u)
+\begin{DoxyCompactList}\small\item\em Get variable bounds for the nonlinear problem to be solved with ipopt. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_aad767e5f7e77a811e11817ff1d3d179e}{get\+\_\+starting\+\_\+point} (Ipopt\+::\+Index n, bool init\+\_\+x, Ipopt\+::\+Number $\ast$x, bool init\+\_\+z, Ipopt\+::\+Number $\ast$z\+\_\+L, Ipopt\+::\+Number $\ast$z\+\_\+U, Ipopt\+::\+Index m, bool init\+\_\+lambda, Ipopt\+::\+Number $\ast$lambda)
+\begin{DoxyCompactList}\small\item\em Get the starting point for the nonlinear problem to be solved with ipopt. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_aaceeaa1991c241e731f12434f3acb44c}{eval\+\_\+f} (Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Number \&obj\+\_\+value)
+\begin{DoxyCompactList}\small\item\em Cost function of the nonlinear problem to be solved with ipopt. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_a1ed524c1fd216594e82a6b066c59ff9c}{F} (const Ipopt\+::\+Number $\ast$x, std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&points\+\_\+on, bool new\+\_\+x)
+\begin{DoxyCompactList}\small\item\em Auxiliary function for computing cost function of the nonlinear problem to be solved with ipopt. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_a88efaceff4a2274a91e13dcc95ad46d1}{f} (yarp\+::sig\+::\+Vector \&obj, const Ipopt\+::\+Number $\ast$x, yarp\+::sig\+::\+Vector \&point)
+\begin{DoxyCompactList}\small\item\em Auxiliary function for computing cost function of the nonlinear problem to be solved with ipopt. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_aa9ba169c71508e72c011cc43e94b1fed}{F\+\_\+v} (yarp\+::sig\+::\+Vector \&x, std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&points\+\_\+on)
+\begin{DoxyCompactList}\small\item\em Auxiliary function for computing the gradient of cost function of the nonlinear problem. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_ab67b259991b21ef9c7d1a81a3cb31228}{f\+\_\+v} (yarp\+::sig\+::\+Vector \&obj, yarp\+::sig\+::\+Vector \&x, yarp\+::sig\+::\+Vector \&point)
+\begin{DoxyCompactList}\small\item\em Auxiliary function for computing the gradient cost function of the nonlinear problem. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_a2cc9996f039f3049666a39bbf0e5a5f5}{f\+\_\+v2} (yarp\+::sig\+::\+Vector \&obj, yarp\+::sig\+::\+Vector \&x, yarp\+::sig\+::\+Vector \&point\+\_\+tr)
+\begin{DoxyCompactList}\small\item\em Auxiliary function for computing the gradient cost function of the nonlinear problem. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_a91be45219cf7e32daa8934dd59295ba0}{eval\+\_\+grad\+\_\+f} (Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Number $\ast$grad\+\_\+f)
+\begin{DoxyCompactList}\small\item\em Gradient of the cost function of the nonlinear problem. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_a5d2066df7d89a47af9d5b79940fe10ff}{eval\+\_\+g} (Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Index m, Ipopt\+::\+Number $\ast$g)
+\begin{DoxyCompactList}\small\item\em Constraints of the nonlinear problem. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_acc0ace418469386b16adb2c70a98c14d}{G\+\_\+v} (yarp\+::sig\+::\+Vector \&x, int i)
+\begin{DoxyCompactList}\small\item\em Auxiliary function for computing the constraints of the nonlinear problem. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_ab0e4e5721c5f018331ffe840022fb504}{eval\+\_\+jac\+\_\+g} (Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Index m, Ipopt\+::\+Index nele\+\_\+jac, Ipopt\+::\+Index $\ast$i\+Row, Ipopt\+::\+Index $\ast$j\+Col, Ipopt\+::\+Number $\ast$values)
+\begin{DoxyCompactList}\small\item\em Jacobian of the constraints of the nonlinear problem. \end{DoxyCompactList}\item 
+void \hyperlink{classgrasping__NLP_ab776f3ee1299d3927aa62b50f1bb3d3e}{configure} (yarp\+::os\+::\+Resource\+Finder $\ast$rf, const std\+::string \&left\+\_\+or\+\_\+right, const yarp\+::sig\+::\+Vector \&disp, const yarp\+::sig\+::\+Vector \&pl)
+\begin{DoxyCompactList}\small\item\em Configure function. \end{DoxyCompactList}\item 
+bool \hyperlink{classgrasping__NLP_a8104499f39d0f3705760a50745510c14}{read\+Matrix} (const std\+::string \&tag, yarp\+::sig\+::\+Matrix \&matrix, const int \&dimension, yarp\+::os\+::\+Resource\+Finder $\ast$rf)
+\begin{DoxyCompactList}\small\item\em Function for reading matrices from config files. \end{DoxyCompactList}\item 
+void \hyperlink{classgrasping__NLP_a99ab31792445766535d8117299b57da8}{finalize\+\_\+solution} (Ipopt\+::\+Solver\+Return status, Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, const Ipopt\+::\+Number $\ast$z\+\_\+L, const Ipopt\+::\+Number $\ast$z\+\_\+U, Ipopt\+::\+Index m, const Ipopt\+::\+Number $\ast$g, const Ipopt\+::\+Number $\ast$lambda, Ipopt\+::\+Number obj\+\_\+value, const Ipopt\+::\+Ipopt\+Data $\ast$ip\+\_\+data, Ipopt\+::\+Ipopt\+Calculated\+Quantities $\ast$ip\+\_\+cq)
+\begin{DoxyCompactList}\small\item\em Finalize the solution. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_a15ce27b41ee64c471a66ea3f9db49381}{get\+\_\+result} () const 
+\begin{DoxyCompactList}\small\item\em Extract the solution. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_a1c012d56ae1dc44263eac74861b59008}{get\+\_\+hand} () const 
+\begin{DoxyCompactList}\small\item\em Get the hand ellipsoid pose. \end{DoxyCompactList}\item 
+double {\bfseries get\+\_\+final\+\_\+F} () const \label{classgrasping__NLP_ad6facc271a6368426df5ffa995abe8f5}
+
+\end{DoxyCompactItemize}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_abdf5321a362b6b73b54271d81e8cdd17}{hand}\label{classgrasping__NLP_abdf5321a362b6b73b54271d81e8cdd17}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_aa9ee2758debcf6e9d06cf904394fb2df}{object}\label{classgrasping__NLP_aa9ee2758debcf6e9d06cf904394fb2df}
+
+\begin{DoxyCompactList}\small\item\em Object superquadric. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Matrix \hyperlink{classgrasping__NLP_a64e8645d3e469a6d3d532fdccd082fcc}{plane}\label{classgrasping__NLP_a64e8645d3e469a6d3d532fdccd082fcc}
+
+\begin{DoxyCompactList}\small\item\em Plane representing the table. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_a331e541566751ac8cb85016d6878cc73}{solution}\label{classgrasping__NLP_a331e541566751ac8cb85016d6878cc73}
+
+\begin{DoxyCompactList}\small\item\em Vector with the pose computed with the hand ellipsoid. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classgrasping__NLP_afe0fc80111d346ef60e17fc4c52439c9}{robot\+\_\+pose}\label{classgrasping__NLP_afe0fc80111d346ef60e17fc4c52439c9}
+
+\begin{DoxyCompactList}\small\item\em Final robot pose. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classgrasping__NLP_a7528c5c50e79a6992d7a8af1221d0e7d}{l\+\_\+o\+\_\+r}\label{classgrasping__NLP_a7528c5c50e79a6992d7a8af1221d0e7d}
+
+\begin{DoxyCompactList}\small\item\em Variable for setting hand of interest. \end{DoxyCompactList}\item 
+double \hyperlink{classgrasping__NLP_a0c0b13d1de5c4cb6850a4e7522bd8745}{final\+\_\+\+F\+\_\+value}\label{classgrasping__NLP_a0c0b13d1de5c4cb6850a4e7522bd8745}
+
+\begin{DoxyCompactList}\small\item\em Final cost function value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class computes the grasping pose for a given hand and a superquadric modeling an objct by solving an optimization problem with the Ipopt software package. 
+
+Definition at line 37 of file superquadric.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!compute\+Points\+Hand@{compute\+Points\+Hand}}
+\index{compute\+Points\+Hand@{compute\+Points\+Hand}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{compute\+Points\+Hand(yarp\+::sig\+::\+Vector \&hand, int j, int l, const std\+::string \&str\+\_\+hand, double \&theta)}{computePointsHand(yarp::sig::Vector &hand, int j, int l, const std::string &str_hand, double &theta)}}]{\setlength{\rightskip}{0pt plus 5cm}Vector grasping\+\_\+\+N\+L\+P\+::compute\+Points\+Hand (
+\begin{DoxyParamCaption}
+\item[{yarp\+::sig\+::\+Vector \&}]{hand, }
+\item[{int}]{j, }
+\item[{int}]{l, }
+\item[{const std\+::string \&}]{str\+\_\+hand, }
+\item[{double \&}]{theta}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_afbe118dd339bb975cd5e340fa0801cec}
+
+
+Samples points on the hand ellipsoid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & is the hand ellipsoid \\
+\hline
+{\em j} & is an index \\
+\hline
+{\em i} & is an index \\
+\hline
+{\em str\+\_\+hand} & is the name of the hand \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector with the points sampled on the hand ellipsoid 
+\end{DoxyReturn}
+
+
+Definition at line 85 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+86 \{
+87     Vector point(3,0.0);
+88     \textcolor{keywordtype}{double} omega;
+89     \textcolor{keywordtype}{double} ce,se,co,so;
+90 
+91     \textcolor{keywordflow}{if} (findMax(\textcolor{keywordtype}{object}.subVector(0,2))> findMax(hand.subVector(0,2)))
+92         hand[1]=findMax(\textcolor{keywordtype}{object}.subVector(0,2));
+93 
+94     \textcolor{keywordflow}{if} (str\_hand==\textcolor{stringliteral}{"right"})
+95     \{
+96         omega=j*2*M\_PI/(l);
+97 
+98         ce=cos(theta);
+99         se=sin(theta);
+100         co=cos(omega);
+101         so=sin(omega);
+102 
+103         point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),
+      hand[4]));
+104         point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),
+      hand[4]));
+105         point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+106     \}
+107     \textcolor{keywordflow}{else}
+108     \{
+109         omega=j*2*M\_PI/(l);
+110 
+111         ce=cos(theta+M\_PI/2);
+112         se=sin(theta+M\_PI/2);
+113         co=cos(omega);
+114         so=sin(omega);
+115 
+116         point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),
+      hand[4]));
+117         point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),
+      hand[4]));
+118         point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+119     \}
+120 
+121     Vector point\_tr(4,0.0);
+122 
+123     euler[0]=hand[8];
+124     euler[1]=hand[9];
+125     euler[2]=hand[10];
+126     H\_h2w=euler2dcm(euler);
+127     euler[0]=hand[5];
+128     euler[1]=hand[6];
+129     euler[2]=hand[7];
+130     H\_h2w.setSubcol(euler,0,3);
+131 
+132     Vector point\_tmp(4,1.0);
+133     point\_tmp.setSubvector(0,point);
+134     point\_tr=H\_h2w*point\_tmp;
+135     point=point\_tr.subVector(0,2);
+136 
+137     \textcolor{keywordflow}{return} point;
+138 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!configure@{configure}}
+\index{configure@{configure}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{configure(yarp\+::os\+::\+Resource\+Finder $\ast$rf, const std\+::string \&left\+\_\+or\+\_\+right, const yarp\+::sig\+::\+Vector \&disp, const yarp\+::sig\+::\+Vector \&pl)}{configure(yarp::os::ResourceFinder *rf, const std::string &left_or_right, const yarp::sig::Vector &disp, const yarp::sig::Vector &pl)}}]{\setlength{\rightskip}{0pt plus 5cm}void grasping\+\_\+\+N\+L\+P\+::configure (
+\begin{DoxyParamCaption}
+\item[{yarp\+::os\+::\+Resource\+Finder $\ast$}]{rf, }
+\item[{const std\+::string \&}]{left\+\_\+or\+\_\+right, }
+\item[{const yarp\+::sig\+::\+Vector \&}]{disp, }
+\item[{const yarp\+::sig\+::\+Vector \&}]{pl}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_ab776f3ee1299d3927aa62b50f1bb3d3e}
+
+
+Configure function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rf} & is the resource finder \\
+\hline
+{\em left\+\_\+or\+\_\+right} & can be right, left or both \\
+\hline
+{\em disp} & is the hand ellispoid displacement \\
+\hline
+{\em pl} & is the plane representing the table \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 488 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+489 \{
+490     Matrix x0\_tmp;
+491     x0\_tmp.resize(6,1);
+492     x0.resize(6,0.0);
+493     readMatrix(\textcolor{stringliteral}{"x0"}+left\_or\_right,x0\_tmp,1,rf);
+494     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0; i< 6; i++)
+495         x0[i]=x0\_tmp(i,0);
+496 
+497     bounds.resize(6,2);
+498     readMatrix(\textcolor{stringliteral}{"bounds\_"}+left\_or\_right,bounds, 6, rf);
+499     bounds\_constr.resize(6,2);
+500     readMatrix(\textcolor{stringliteral}{"bounds\_constr\_"}+left\_or\_right,bounds\_constr,6 , rf);
+501     plane.resize(4,1);
+502 
+503     l_o_r=left\_or\_right;
+504     displacement=disp;
+505     plane.setCol(0,pl);
+506 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!eval\+\_\+f@{eval\+\_\+f}}
+\index{eval\+\_\+f@{eval\+\_\+f}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{eval\+\_\+f(\+Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Number \&obj\+\_\+value)}{eval_f(Ipopt::Index n, const Ipopt::Number *x, bool new_x, Ipopt::Number &obj_value)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::eval\+\_\+f (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{bool}]{new\+\_\+x, }
+\item[{Ipopt\+::\+Number \&}]{obj\+\_\+value}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_aaceeaa1991c241e731f12434f3acb44c}
+
+
+Cost function of the nonlinear problem to be solved with ipopt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em new\+\_\+x} & takes into account is the variable has been updated or not \\
+\hline
+{\em obj\+\_\+value} & is the value of the cost function  true \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 189 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+191  \{
+192      F(x,points\_on,new\_x);
+193      obj\_value=aux\_objvalue;
+194 
+195      \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+196  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!eval\+\_\+g@{eval\+\_\+g}}
+\index{eval\+\_\+g@{eval\+\_\+g}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{eval\+\_\+g(\+Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Index m, Ipopt\+::\+Number $\ast$g)}{eval_g(Ipopt::Index n, const Ipopt::Number *x, bool new_x, Ipopt::Index m, Ipopt::Number *g)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::eval\+\_\+g (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{bool}]{new\+\_\+x, }
+\item[{Ipopt\+::\+Index}]{m, }
+\item[{Ipopt\+::\+Number $\ast$}]{g}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a5d2066df7d89a47af9d5b79940fe10ff}
+
+
+Constraints of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em m} & is the number of constraints \\
+\hline
+{\em new\+\_\+x} & takes into account is the variable has been updated or not \\
+\hline
+{\em g} & is the values of the constraints \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+\end{DoxyReturn}
+
+
+Definition at line 319 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+321  \{
+322      euler[0]=x[3];
+323      euler[1]=x[4];
+324      euler[2]=x[5];
+325      H\_x=euler2dcm(euler);
+326      euler[0]=x[0];
+327      euler[1]=x[1];
+328      euler[2]=x[2];
+329      H\_x.setSubcol(euler,0,3);
+330 
+331      Matrix H(4,4);
+332      H=H\_x*H\_h2w;
+333 
+334      g[0]=H(2,2);
+335      g[1]=H(0,0);
+336      g[2]=H(1,2);
+337      g[3]=H(1,0);
+338 
+339      Vector x\_min;
+340      \textcolor{keywordtype}{double} minz=10.0;
+341 
+342      \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<points\_on.size(); i++)
+343      \{
+344          Vector pnt(4,1.0);
+345          pnt.setSubvector(0,points\_on[i]);
+346          Vector point=H\_x*pnt;
+347 
+348          \textcolor{keywordflow}{if} (point[2]<minz)
+349          \{
+350              minz=point[2];
+351              x\_min=point;
+352          \}
+353      \}
+354 
+355      g[4]=plane(0,0)*x\_min[0]+plane(1,0)*x\_min[1]+plane(2,0)*x\_min[2]+plane(3,0);
+356 
+357      Vector robotPose(3,0.0);
+358      Vector x\_tmp(6,0.0);
+359      x\_tmp[0]=x[0];
+360      x\_tmp[1]=x[1];
+361      x\_tmp[2]=x[2];
+362      x\_tmp[3]=x[3];
+363      x\_tmp[4]=x[4];
+364      x\_tmp[5]=x[5];
+365 
+366      \textcolor{keywordflow}{if} (l_o_r==\textcolor{stringliteral}{"right"})
+367         robotPose=x\_tmp.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2));
+368      \textcolor{keywordflow}{else}
+369          robotPose=x\_tmp.subVector(0,2)+hand[0]*(H.getCol(2).subVector(0,2));
+370 
+371      g[5]=\textcolor{keywordtype}{object}[0]*\textcolor{keywordtype}{object}[1]*\textcolor{keywordtype}{object}[2]*(pow(f_v2(\textcolor{keywordtype}{object},x\_tmp, robotPose), \textcolor{keywordtype}{object}[3]) -1);
+372 
+373      \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+374  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!eval\+\_\+grad\+\_\+f@{eval\+\_\+grad\+\_\+f}}
+\index{eval\+\_\+grad\+\_\+f@{eval\+\_\+grad\+\_\+f}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{eval\+\_\+grad\+\_\+f(\+Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Number $\ast$grad\+\_\+f)}{eval_grad_f(Ipopt::Index n, const Ipopt::Number *x, bool new_x, Ipopt::Number *grad_f)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::eval\+\_\+grad\+\_\+f (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{bool}]{new\+\_\+x, }
+\item[{Ipopt\+::\+Number $\ast$}]{grad\+\_\+f}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a91be45219cf7e32daa8934dd59295ba0}
+
+
+Gradient of the cost function of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & is the variable \\
+\hline
+{\em n} & is the dimension of the variable \\
+\hline
+{\em new\+\_\+x} & takes into account is the variable has been updated or not \\
+\hline
+{\em grad\+\_\+f} & is the gradient of the cost function \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 292 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+294  \{
+295      Vector x\_tmp(6,0.0);
+296      \textcolor{keywordtype}{double} grad\_p, grad\_n;
+297      \textcolor{keywordtype}{double} eps=1e-6;
+298 
+299      \textcolor{keywordflow}{for}(Ipopt::Index i=0;i<n;i++)
+300         x\_tmp[i]=x[i];
+301 
+302      \textcolor{keywordflow}{for}(Ipopt::Index j=0;j<n;j++)
+303      \{
+304          x\_tmp[j]=x\_tmp[j]+eps;
+305 
+306          grad\_p=F_v(x\_tmp,points\_on);
+307 
+308          x\_tmp[j]=x\_tmp[j]-eps;
+309 
+310          grad\_n=F_v(x\_tmp,points\_on);
+311 
+312          grad\_f[j]=(grad\_p-grad\_n)/eps;
+313      \}
+314 
+315      \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+316  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!eval\+\_\+jac\+\_\+g@{eval\+\_\+jac\+\_\+g}}
+\index{eval\+\_\+jac\+\_\+g@{eval\+\_\+jac\+\_\+g}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{eval\+\_\+jac\+\_\+g(\+Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, bool new\+\_\+x, Ipopt\+::\+Index m, Ipopt\+::\+Index nele\+\_\+jac, Ipopt\+::\+Index $\ast$i\+Row, Ipopt\+::\+Index $\ast$j\+Col, Ipopt\+::\+Number $\ast$values)}{eval_jac_g(Ipopt::Index n, const Ipopt::Number *x, bool new_x, Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index *iRow, Ipopt::Index *jCol, Ipopt::Number *values)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::eval\+\_\+jac\+\_\+g (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{bool}]{new\+\_\+x, }
+\item[{Ipopt\+::\+Index}]{m, }
+\item[{Ipopt\+::\+Index}]{nele\+\_\+jac, }
+\item[{Ipopt\+::\+Index $\ast$}]{i\+Row, }
+\item[{Ipopt\+::\+Index $\ast$}]{j\+Col, }
+\item[{Ipopt\+::\+Number $\ast$}]{values}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_ab0e4e5721c5f018331ffe840022fb504}
+
+
+Jacobian of the constraints of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em m} & is the number of constraints \\
+\hline
+{\em new\+\_\+x} & takes into account is the variable has been updated or not \\
+\hline
+{\em i\+Row} & contains the jacobian raws \\
+\hline
+{\em i\+Col} & contains the jacobian columns \\
+\hline
+{\em values} & contains the jacobian values \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+\end{DoxyReturn}
+
+
+Definition at line 435 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+438  \{
+439      Vector x\_tmp(6,0.0);
+440      \textcolor{keywordtype}{double} grad\_p, grad\_n;
+441      \textcolor{keywordtype}{double} eps=1e-6;
+442 
+443      \textcolor{keywordflow}{if}(values!=NULL)
+444      \{
+445          \textcolor{keywordflow}{for}(Ipopt::Index i=0;i<n;i++)
+446             x\_tmp[i]=x[i];
+447 
+448          \textcolor{keywordtype}{int} count=0;
+449          \textcolor{keywordflow}{for}(Ipopt::Index i=0;i<m; i++)
+450          \{
+451              \textcolor{keywordflow}{for}(Ipopt::Index j=0;j<n;j++)
+452              \{
+453                  x\_tmp[j]=x\_tmp[j]+eps;
+454 
+455                  grad\_p=G_v(x\_tmp,i);
+456                  x\_tmp[j]=x\_tmp[j]-eps;
+457 
+458                  grad\_n=G_v(x\_tmp,i);
+459 
+460                  values[count]=(grad\_p-grad\_n)/(eps);
+461                  count++;
+462              \}
+463          \}
+464      \}
+465      \textcolor{keywordflow}{else}
+466     \{
+467         jCol[0]=0; jCol[1]=1; jCol[2]=2; jCol[3]=3; jCol[4]=4; jCol[5]=5;
+468         jCol[6]=0; jCol[7]=1; jCol[8]=2; jCol[9]=3; jCol[10]=4; jCol[11]=5;
+469         jCol[12]=0; jCol[13]=1; jCol[14]=2;jCol[15]=3; jCol[16]=4; jCol[17]=5;
+470         jCol[18]=0; jCol[19]=1; jCol[20]=2; jCol[21]=3; jCol[22]=4; jCol[23]=5;
+471         jCol[24]=0; jCol[25]=1; jCol[26]=2; jCol[27]=3;jCol[28]=4;jCol[29]=5;
+472         jCol[30]=0; jCol[31]=1; jCol[32]=2; jCol[33]=3;jCol[34]=4;jCol[35]=5;
+473 
+474         iRow[0]=iRow[1]=iRow[2]=iRow[3]=iRow[4]=iRow[5]=0;
+475         iRow[6]=iRow[7]=iRow[8]=iRow[9]=iRow[10]=iRow[11]=1;
+476         iRow[12]=iRow[13]=iRow[14]=iRow[15]=iRow[16]=iRow[17]=2;
+477 
+478         iRow[18]=iRow[19]=iRow[20]=iRow[21]=iRow[22]=iRow[23]=3;
+479         iRow[24]=iRow[25]=iRow[26]=iRow[27]=iRow[28]=iRow[29]=4;
+480         iRow[30]=iRow[31]=iRow[32]=iRow[33]=iRow[34]=iRow[35]=5;
+481      \}
+482 
+483  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+484 
+485  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!F@{F}}
+\index{F@{F}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{F(const Ipopt\+::\+Number $\ast$x, std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&points\+\_\+on, bool new\+\_\+x)}{F(const Ipopt::Number *x, std::deque< yarp::sig::Vector > &points_on, bool new_x)}}]{\setlength{\rightskip}{0pt plus 5cm}double grasping\+\_\+\+N\+L\+P\+::F (
+\begin{DoxyParamCaption}
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&}]{points\+\_\+on, }
+\item[{bool}]{new\+\_\+x}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a1ed524c1fd216594e82a6b066c59ff9c}
+
+
+Auxiliary function for computing cost function of the nonlinear problem to be solved with ipopt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & is the variable \\
+\hline
+{\em points\+\_\+on} & is object point cloud \\
+\hline
+{\em new\+\_\+x} & takes into account is the variable has been updated or not  the cost function value \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 199 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+200  \{
+201      \textcolor{keywordtype}{double} value=0.0;
+202 
+203      \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0;i<points\_on.size();i++)
+204          value+= pow( pow(f(\textcolor{keywordtype}{object},x,points\_on[i]),\textcolor{keywordtype}{object}[3])-1,2 );
+205 
+206      value*=\textcolor{keywordtype}{object}[0]*\textcolor{keywordtype}{object}[1]*\textcolor{keywordtype}{object}[2]/points\_on.size();
+207 
+208      aux\_objvalue=value;
+209  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!f@{f}}
+\index{f@{f}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{f(yarp\+::sig\+::\+Vector \&obj, const Ipopt\+::\+Number $\ast$x, yarp\+::sig\+::\+Vector \&point)}{f(yarp::sig::Vector &obj, const Ipopt::Number *x, yarp::sig::Vector &point)}}]{\setlength{\rightskip}{0pt plus 5cm}double grasping\+\_\+\+N\+L\+P\+::f (
+\begin{DoxyParamCaption}
+\item[{yarp\+::sig\+::\+Vector \&}]{obj, }
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{yarp\+::sig\+::\+Vector \&}]{point}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a88efaceff4a2274a91e13dcc95ad46d1}
+
+
+Auxiliary function for computing cost function of the nonlinear problem to be solved with ipopt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & is the Vector of the object \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em point} & is one point of the point cloud \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a part of the cost function value 
+\end{DoxyReturn}
+
+
+Definition at line 212 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+213  \{
+214      Matrix H(4,4);
+215 
+216      Vector point\_tr(4,0.0);
+217      Vector point\_tmp(4,1.0);
+218      point\_tmp.setSubvector(0,point);
+219 
+220      euler[0]=x[3];
+221      euler[1]=x[4];
+222      euler[2]=x[5];
+223      H\_x=euler2dcm(euler);
+224      euler[0]=x[0];
+225      euler[1]=x[1];
+226      euler[2]=x[2];
+227      H\_x.setSubcol(euler,0,3);
+228 
+229      point\_tr=H\_x*point\_tmp;
+230 
+231      \textcolor{keywordtype}{double} num1=H\_o2w(0,0)*point\_tr[0]+H\_o2w(0,1)*point\_tr[1]+H\_o2w(0,2)*point\_tr[2]-obj[5]*H\_o2w(0,0)-obj
+      [6]*H\_o2w(0,1)-obj[7]*H\_o2w(0,2);
+232      \textcolor{keywordtype}{double} num2=H\_o2w(1,0)*point\_tr[0]+H\_o2w(1,1)*point\_tr[1]+H\_o2w(1,2)*point\_tr[2]-obj[5]*H\_o2w(1,0)-obj
+      [6]*H\_o2w(1,1)-obj[7]*H\_o2w(1,2);
+233      \textcolor{keywordtype}{double} num3=H\_o2w(2,0)*point\_tr[0]+H\_o2w(2,1)*point\_tr[1]+H\_o2w(2,2)*point\_tr[2]-obj[5]*H\_o2w(2,0)-obj
+      [6]*H\_o2w(2,1)-obj[7]*H\_o2w(2,2);
+234 
+235      \textcolor{keywordtype}{double} tmp=pow(abs(num1/obj[0]),2.0/obj[4]) + pow(abs(num2/obj[1]),2.0/obj[4]);
+236 
+237      \textcolor{keywordflow}{return} pow( abs(tmp),obj[4]/obj[3]) + pow( abs(num3/obj[2]),(2.0/obj[3]));
+238  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!F\+\_\+v@{F\+\_\+v}}
+\index{F\+\_\+v@{F\+\_\+v}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{F\+\_\+v(yarp\+::sig\+::\+Vector \&x, std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&points\+\_\+on)}{F_v(yarp::sig::Vector &x, std::deque< yarp::sig::Vector > &points_on)}}]{\setlength{\rightskip}{0pt plus 5cm}double grasping\+\_\+\+N\+L\+P\+::\+F\+\_\+v (
+\begin{DoxyParamCaption}
+\item[{yarp\+::sig\+::\+Vector \&}]{x, }
+\item[{std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&}]{points\+\_\+on}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_aa9ba169c71508e72c011cc43e94b1fed}
+
+
+Auxiliary function for computing the gradient of cost function of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & is the variable \\
+\hline
+{\em points\+\_\+on} & is one point of object point cloud \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+cost function value 
+\end{DoxyReturn}
+
+
+Definition at line 241 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+242  \{
+243      \textcolor{keywordtype}{double} value=0.0;
+244 
+245      \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0;i<points\_on.size();i++)
+246         value+= pow( pow(f_v(\textcolor{keywordtype}{object},x,points\_on[i]),\textcolor{keywordtype}{object}[3])-1,2 );
+247 
+248      value*=\textcolor{keywordtype}{object}[0]*\textcolor{keywordtype}{object}[1]*\textcolor{keywordtype}{object}[2]/points\_on.size();
+249 
+250      \textcolor{keywordflow}{return} value;
+251  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!f\+\_\+v@{f\+\_\+v}}
+\index{f\+\_\+v@{f\+\_\+v}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{f\+\_\+v(yarp\+::sig\+::\+Vector \&obj, yarp\+::sig\+::\+Vector \&x, yarp\+::sig\+::\+Vector \&point)}{f_v(yarp::sig::Vector &obj, yarp::sig::Vector &x, yarp::sig::Vector &point)}}]{\setlength{\rightskip}{0pt plus 5cm}double grasping\+\_\+\+N\+L\+P\+::f\+\_\+v (
+\begin{DoxyParamCaption}
+\item[{yarp\+::sig\+::\+Vector \&}]{obj, }
+\item[{yarp\+::sig\+::\+Vector \&}]{x, }
+\item[{yarp\+::sig\+::\+Vector \&}]{point}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_ab67b259991b21ef9c7d1a81a3cb31228}
+
+
+Auxiliary function for computing the gradient cost function of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & is the Vector of the object \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em point} & is one point of the point cloud \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a part of the cost function value 
+\end{DoxyReturn}
+
+
+Definition at line 254 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+255  \{
+256      Vector point\_tr(4,0.0);
+257      Vector point\_tmp(4,1.0);
+258      point\_tmp.setSubvector(0,point);
+259      euler[0]=x[3];
+260      euler[1]=x[4];
+261      euler[2]=x[5];
+262      H\_x=euler2dcm(euler);
+263      euler[0]=x[0];
+264      euler[1]=x[1];
+265      euler[2]=x[2];
+266      H\_x.setSubcol(euler,0,3);
+267 
+268      point\_tr=H\_x*point\_tmp;
+269 
+270      \textcolor{keywordtype}{double} num1=H\_o2w(0,0)*point\_tr[0]+H\_o2w(0,1)*point\_tr[1]+H\_o2w(0,2)*point\_tr[2]-obj[5]*H\_o2w(0,0)-obj
+      [6]*H\_o2w(0,1)-obj[7]*H\_o2w(0,2);
+271      \textcolor{keywordtype}{double} num2=H\_o2w(1,0)*point\_tr[0]+H\_o2w(1,1)*point\_tr[1]+H\_o2w(1,2)*point\_tr[2]-obj[5]*H\_o2w(1,0)-obj
+      [6]*H\_o2w(1,1)-obj[7]*H\_o2w(1,2);
+272      \textcolor{keywordtype}{double} num3=H\_o2w(2,0)*point\_tr[0]+H\_o2w(2,1)*point\_tr[1]+H\_o2w(2,2)*point\_tr[2]-obj[5]*H\_o2w(2,0)-obj
+      [6]*H\_o2w(2,1)-obj[7]*H\_o2w(2,2);
+273 
+274      \textcolor{keywordtype}{double} tmp=pow(abs(num1/obj[0]),2.0/obj[4]) + pow(abs(num2/obj[1]),2.0/obj[4]);
+275 
+276      \textcolor{keywordflow}{return} pow( abs(tmp),obj[4]/obj[3]) + pow( abs(num3/obj[2]),(2.0/obj[3]));
+277  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!f\+\_\+v2@{f\+\_\+v2}}
+\index{f\+\_\+v2@{f\+\_\+v2}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{f\+\_\+v2(yarp\+::sig\+::\+Vector \&obj, yarp\+::sig\+::\+Vector \&x, yarp\+::sig\+::\+Vector \&point\+\_\+tr)}{f_v2(yarp::sig::Vector &obj, yarp::sig::Vector &x, yarp::sig::Vector &point_tr)}}]{\setlength{\rightskip}{0pt plus 5cm}double grasping\+\_\+\+N\+L\+P\+::f\+\_\+v2 (
+\begin{DoxyParamCaption}
+\item[{yarp\+::sig\+::\+Vector \&}]{obj, }
+\item[{yarp\+::sig\+::\+Vector \&}]{x, }
+\item[{yarp\+::sig\+::\+Vector \&}]{point\+\_\+tr}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a2cc9996f039f3049666a39bbf0e5a5f5}
+
+
+Auxiliary function for computing the gradient cost function of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & is the Vector of the object \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em point\+\_\+tr} & is one point of the point cloud \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a part of the cost function value 
+\end{DoxyReturn}
+
+
+Definition at line 280 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+281  \{
+282      \textcolor{keywordtype}{double} num1=H\_o2w(0,0)*point\_tr[0]+H\_o2w(0,1)*point\_tr[1]+H\_o2w(0,2)*point\_tr[2]-obj[5]*H\_o2w(0,0)-obj
+      [6]*H\_o2w(0,1)-obj[7]*H\_o2w(0,2);
+283      \textcolor{keywordtype}{double} num2=H\_o2w(1,0)*point\_tr[0]+H\_o2w(1,1)*point\_tr[1]+H\_o2w(1,2)*point\_tr[2]-obj[5]*H\_o2w(1,0)-obj
+      [6]*H\_o2w(1,1)-obj[7]*H\_o2w(1,2);
+284      \textcolor{keywordtype}{double} num3=H\_o2w(2,0)*point\_tr[0]+H\_o2w(2,1)*point\_tr[1]+H\_o2w(2,2)*point\_tr[2]-obj[5]*H\_o2w(2,0)-obj
+      [6]*H\_o2w(2,1)-obj[7]*H\_o2w(2,2);
+285 
+286      \textcolor{keywordtype}{double} tmp=pow(abs(num1/obj[0]),2.0/obj[4]) + pow(abs(num2/obj[1]),2.0/obj[4]);
+287 
+288      \textcolor{keywordflow}{return} pow( abs(tmp),obj[4]/obj[3]) + pow( abs(num3/obj[2]),(2.0/obj[3]));
+289  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!finalize\+\_\+solution@{finalize\+\_\+solution}}
+\index{finalize\+\_\+solution@{finalize\+\_\+solution}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{finalize\+\_\+solution(\+Ipopt\+::\+Solver\+Return status, Ipopt\+::\+Index n, const Ipopt\+::\+Number $\ast$x, const Ipopt\+::\+Number $\ast$z\+\_\+\+L, const Ipopt\+::\+Number $\ast$z\+\_\+\+U, Ipopt\+::\+Index m, const Ipopt\+::\+Number $\ast$g, const Ipopt\+::\+Number $\ast$lambda, Ipopt\+::\+Number obj\+\_\+value, const Ipopt\+::\+Ipopt\+Data $\ast$ip\+\_\+data, Ipopt\+::\+Ipopt\+Calculated\+Quantities $\ast$ip\+\_\+cq)}{finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number *x, const Ipopt::Number *z_L, const Ipopt::Number *z_U, Ipopt::Index m, const Ipopt::Number *g, const Ipopt::Number *lambda, Ipopt::Number obj_value, const Ipopt::IpoptData *ip_data, Ipopt::IpoptCalculatedQuantities *ip_cq)}}]{\setlength{\rightskip}{0pt plus 5cm}void grasping\+\_\+\+N\+L\+P\+::finalize\+\_\+solution (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Solver\+Return}]{status, }
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{const Ipopt\+::\+Number $\ast$}]{x, }
+\item[{const Ipopt\+::\+Number $\ast$}]{z\+\_\+L, }
+\item[{const Ipopt\+::\+Number $\ast$}]{z\+\_\+U, }
+\item[{Ipopt\+::\+Index}]{m, }
+\item[{const Ipopt\+::\+Number $\ast$}]{g, }
+\item[{const Ipopt\+::\+Number $\ast$}]{lambda, }
+\item[{Ipopt\+::\+Number}]{obj\+\_\+value, }
+\item[{const Ipopt\+::\+Ipopt\+Data $\ast$}]{ip\+\_\+data, }
+\item[{Ipopt\+::\+Ipopt\+Calculated\+Quantities $\ast$}]{ip\+\_\+cq}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a99ab31792445766535d8117299b57da8}
+
+
+Finalize the solution. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em m} & is the number of constraints \\
+\hline
+{\em init\+\_\+z} & is an ipopt variable \\
+\hline
+{\em z\+\_\+L} & is an ipopt variable \\
+\hline
+{\em z\+\_\+U} & is an ipopt variable \\
+\hline
+{\em status} & says if the problem has been solved or not \\
+\hline
+{\em obj\+\_\+value} & is the final cost function values \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 568 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+574 \{
+575    solution.resize(n);
+576 
+577    euler[0]=x[3];
+578    euler[1]=x[4];
+579    euler[2]=x[5];
+580    H\_x=euler2dcm(euler);
+581    euler[0]=x[0];
+582    euler[1]=x[1];
+583    euler[2]=x[2];
+584    H\_x.setSubcol(euler,0,3);
+585 
+586    Matrix H;
+587    H.resize(4,4);
+588    H=H\_x*H\_h2w;
+589 
+590    solution.setSubvector(3,dcm2euler(H.transposed()));
+591 
+592    \textcolor{keywordflow}{for} (Ipopt::Index i=0; i<3; i++)
+593        solution[i]=H(i,3);
+594 
+595     robot_pose.resize(6,0.0);
+596     robot_pose.setSubvector(3,dcm2euler(H));
+597 
+598     \textcolor{keywordflow}{if} (l_o_r==\textcolor{stringliteral}{"right"})
+599     \{
+600         robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(
+      0,2)));
+601         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
+602         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
+603     \}
+604     \textcolor{keywordflow}{else}
+605     \{
+606         robot_pose.setSubvector(0,solution.subVector(0,2)+(hand[0]+displacement[2])*(H.getCol(2).subVector(
+      0,2)));
+607         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H.getCol(0).subVector(0,2)));
+608         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
+609     \}
+610 
+611     final_F_value=0.0;
+612 
+613     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0;i<points\_on.size();i++)
+614     \{
+615         final_F_value+= pow( pow(f(\textcolor{keywordtype}{object},x,points\_on[i]),\textcolor{keywordtype}{object}[3])-1,2 );
+616     \}
+617 
+618     final_F_value/=points\_on.size();
+619 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!G\+\_\+v@{G\+\_\+v}}
+\index{G\+\_\+v@{G\+\_\+v}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{G\+\_\+v(yarp\+::sig\+::\+Vector \&x, int i)}{G_v(yarp::sig::Vector &x, int i)}}]{\setlength{\rightskip}{0pt plus 5cm}double grasping\+\_\+\+N\+L\+P\+::\+G\+\_\+v (
+\begin{DoxyParamCaption}
+\item[{yarp\+::sig\+::\+Vector \&}]{x, }
+\item[{int}]{i}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_acc0ace418469386b16adb2c70a98c14d}
+
+
+Auxiliary function for computing the constraints of the nonlinear problem. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & is the variable \\
+\hline
+{\em i} & is the number of the constraints \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the constraints value 
+\end{DoxyReturn}
+
+
+Definition at line 377 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+378  \{
+379      Vector g(3,0.0);
+380 
+381      Matrix H\_x,H;
+382      H\_x.resize(4,4);
+383      H.resize(4,4);
+384      euler[0]=x[3];
+385      euler[1]=x[4];
+386      euler[2]=x[5];
+387      H\_x=euler2dcm(euler);
+388      euler[0]=x[0];
+389      euler[1]=x[1];
+390      euler[2]=x[2];
+391      H\_x.setSubcol(euler,0,3);
+392 
+393      H=H\_x*H\_h2w;
+394 
+395      g[0]=H(2,2);
+396      g[1]=H(0,0);
+397      g[2]=H(1,2);
+398      g[3]=H(1,0);
+399 
+400      Vector x\_min;
+401      \textcolor{keywordtype}{double} minz=10.0;
+402 
+403      \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i1=0; i1<points\_on.size(); i1++)
+404      \{
+405          Vector pnt(4,1.0);
+406          pnt.setSubvector(0,points\_on[i1]);
+407          Vector point=H\_x*pnt;
+408 
+409          \textcolor{keywordflow}{if} (point[2]<minz)
+410          \{
+411              minz=point[2];
+412              x\_min=point;
+413          \}
+414      \}
+415 
+416      g[4]=plane(0,0)*x\_min[0]+plane(1,0)*x\_min[1]+plane(2,0)*x\_min[2]+plane(3,0);
+417 
+418      Vector robotPose(3,0.0);
+419      Vector x\_tmp(3,0.0);
+420      x\_tmp[0]=x[0];
+421      x\_tmp[1]=x[1];
+422      x\_tmp[2]=x[2];
+423 
+424      \textcolor{keywordflow}{if} (l_o_r==\textcolor{stringliteral}{"right"})
+425         robotPose=x\_tmp-hand[0]*(H.getCol(2).subVector(0,2));
+426      \textcolor{keywordflow}{else}
+427          robotPose=x\_tmp+hand[0]*(H.getCol(2).subVector(0,2));
+428 
+429      g[5]=\textcolor{keywordtype}{object}[0]*\textcolor{keywordtype}{object}[1]*\textcolor{keywordtype}{object}[2]*(pow(f_v2(\textcolor{keywordtype}{object},x\_tmp, robotPose), \textcolor{keywordtype}{object}[3]) -1);
+430 
+431      \textcolor{keywordflow}{return} g[i];
+432  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!get\+\_\+bounds\+\_\+info@{get\+\_\+bounds\+\_\+info}}
+\index{get\+\_\+bounds\+\_\+info@{get\+\_\+bounds\+\_\+info}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{get\+\_\+bounds\+\_\+info(\+Ipopt\+::\+Index n, Ipopt\+::\+Number $\ast$x\+\_\+l, Ipopt\+::\+Number $\ast$x\+\_\+u, Ipopt\+::\+Index m, Ipopt\+::\+Number $\ast$g\+\_\+l, Ipopt\+::\+Number $\ast$g\+\_\+u)}{get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Number *x_u, Ipopt::Index m, Ipopt::Number *g_l, Ipopt::Number *g_u)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::get\+\_\+bounds\+\_\+info (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{Ipopt\+::\+Number $\ast$}]{x\+\_\+l, }
+\item[{Ipopt\+::\+Number $\ast$}]{x\+\_\+u, }
+\item[{Ipopt\+::\+Index}]{m, }
+\item[{Ipopt\+::\+Number $\ast$}]{g\+\_\+l, }
+\item[{Ipopt\+::\+Number $\ast$}]{g\+\_\+u}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a1be828e10f1182f3befccbafdb90b577}
+
+
+Get variable bounds for the nonlinear problem to be solved with ipopt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em m} & is the number of constraints \\
+\hline
+{\em x\+\_\+l} & is the lower bound of the variable \\
+\hline
+{\em x\+\_\+u} & is the upper bound of the variable \\
+\hline
+{\em g\+\_\+l} & is the lower bound of the constraints \\
+\hline
+{\em g\+\_\+u} & is the upper bound of the constraints \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+\end{DoxyReturn}
+
+
+Definition at line 157 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+159 \{
+160     \textcolor{keywordflow}{for} (Ipopt::Index i=0; i<n; i++)
+161     \{
+162        x\_l[i]=bounds(i,0);
+163        x\_u[i]=bounds(i,1);
+164     \}
+165 
+166     \textcolor{keywordflow}{for} (Ipopt::Index i=0; i<m; i++)
+167     \{
+168        g\_l[i]=bounds\_constr(i,0);
+169        g\_u[i]=bounds\_constr(i,1);
+170     \}
+171 
+172     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+173 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!get\+\_\+hand@{get\+\_\+hand}}
+\index{get\+\_\+hand@{get\+\_\+hand}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{get\+\_\+hand() const }{get_hand() const }}]{\setlength{\rightskip}{0pt plus 5cm}Vector grasping\+\_\+\+N\+L\+P\+::get\+\_\+hand (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{classgrasping__NLP_a1c012d56ae1dc44263eac74861b59008}
+
+
+Get the hand ellipsoid pose. 
+
+\begin{DoxyReturn}{Returns}
+the hand ellipsoid in the final pose 
+\end{DoxyReturn}
+
+
+Definition at line 628 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+629 \{
+630    \textcolor{keywordflow}{return} hand;
+631 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!get\+\_\+nlp\+\_\+info@{get\+\_\+nlp\+\_\+info}}
+\index{get\+\_\+nlp\+\_\+info@{get\+\_\+nlp\+\_\+info}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{get\+\_\+nlp\+\_\+info(\+Ipopt\+::\+Index \&n, Ipopt\+::\+Index \&m, Ipopt\+::\+Index \&nnz\+\_\+jac\+\_\+g, Ipopt\+::\+Index \&nnz\+\_\+h\+\_\+lag, Ipopt\+::\+T\+N\+L\+P\+::\+Index\+Style\+Enum \&index\+\_\+style)}{get_nlp_info(Ipopt::Index &n, Ipopt::Index &m, Ipopt::Index &nnz_jac_g, Ipopt::Index &nnz_h_lag, Ipopt::TNLP::IndexStyleEnum &index_style)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::get\+\_\+nlp\+\_\+info (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index \&}]{n, }
+\item[{Ipopt\+::\+Index \&}]{m, }
+\item[{Ipopt\+::\+Index \&}]{nnz\+\_\+jac\+\_\+g, }
+\item[{Ipopt\+::\+Index \&}]{nnz\+\_\+h\+\_\+lag, }
+\item[{Ipopt\+::\+T\+N\+L\+P\+::\+Index\+Style\+Enum \&}]{index\+\_\+style}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a49d0b788d4d17f32efca951ed6556ca0}
+
+
+Get info for the nonlinear problem to be solved with ipopt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em m} & is the number of constraints \\
+\hline
+{\em nnz\+\_\+jac\+\_\+g} & is the dimensions of the jacobian \\
+\hline
+{\em nnz\+\_\+h\+\_\+lag} & is an ipopt variable \\
+\hline
+{\em index\+\_\+styl} & is an ipopt variable \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+\end{DoxyReturn}
+
+
+Definition at line 141 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+143 \{
+144     n=6;
+145     m=6;
+146     nnz\_jac\_g=36;
+147     nnz\_h\_lag=0;
+148     index\_style=TNLP::C\_STYLE;
+149     x\_v.resize(n,0.0);
+150     bounds.resize(n,2);
+151     bounds\_constr(m,2);
+152 
+153     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+154 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!get\+\_\+result@{get\+\_\+result}}
+\index{get\+\_\+result@{get\+\_\+result}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{get\+\_\+result() const }{get_result() const }}]{\setlength{\rightskip}{0pt plus 5cm}Vector grasping\+\_\+\+N\+L\+P\+::get\+\_\+result (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{classgrasping__NLP_a15ce27b41ee64c471a66ea3f9db49381}
+
+
+Extract the solution. 
+
+\begin{DoxyReturn}{Returns}
+the superquadric as a Vector 
+\end{DoxyReturn}
+
+
+Definition at line 622 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+623 \{
+624    \textcolor{keywordflow}{return} solution;
+625 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!get\+\_\+starting\+\_\+point@{get\+\_\+starting\+\_\+point}}
+\index{get\+\_\+starting\+\_\+point@{get\+\_\+starting\+\_\+point}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{get\+\_\+starting\+\_\+point(\+Ipopt\+::\+Index n, bool init\+\_\+x, Ipopt\+::\+Number $\ast$x, bool init\+\_\+z, Ipopt\+::\+Number $\ast$z\+\_\+\+L, Ipopt\+::\+Number $\ast$z\+\_\+\+U, Ipopt\+::\+Index m, bool init\+\_\+lambda, Ipopt\+::\+Number $\ast$lambda)}{get_starting_point(Ipopt::Index n, bool init_x, Ipopt::Number *x, bool init_z, Ipopt::Number *z_L, Ipopt::Number *z_U, Ipopt::Index m, bool init_lambda, Ipopt::Number *lambda)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::get\+\_\+starting\+\_\+point (
+\begin{DoxyParamCaption}
+\item[{Ipopt\+::\+Index}]{n, }
+\item[{bool}]{init\+\_\+x, }
+\item[{Ipopt\+::\+Number $\ast$}]{x, }
+\item[{bool}]{init\+\_\+z, }
+\item[{Ipopt\+::\+Number $\ast$}]{z\+\_\+L, }
+\item[{Ipopt\+::\+Number $\ast$}]{z\+\_\+U, }
+\item[{Ipopt\+::\+Index}]{m, }
+\item[{bool}]{init\+\_\+lambda, }
+\item[{Ipopt\+::\+Number $\ast$}]{lambda}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_aad767e5f7e77a811e11817ff1d3d179e}
+
+
+Get the starting point for the nonlinear problem to be solved with ipopt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & is the dimension of the variable \\
+\hline
+{\em init\+\_\+x} & is the starting point of the optimization problem \\
+\hline
+{\em x} & is the variable \\
+\hline
+{\em init\+\_\+z} & is an ipopt variable \\
+\hline
+{\em z\+\_\+L} & is an ipopt variable \\
+\hline
+{\em z\+\_\+U} & is an ipopt variable \\
+\hline
+{\em m} & is the number of constraints \\
+\hline
+{\em init\+\_\+lambda} & is an ipopt variable \\
+\hline
+{\em lambda} & is an ipopt variable \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+\end{DoxyReturn}
+
+
+Definition at line 176 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+179  \{
+180      \textcolor{keywordflow}{for}(Ipopt::Index i=0;i<n;i++)
+181      \{
+182          x[i]=hand[i+5];
+183      \}
+184 
+185      \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+186  \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!init@{init}}
+\index{init@{init}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{init(const yarp\+::sig\+::\+Vector \&objectext, yarp\+::sig\+::\+Vector \&handext, int \&n\+\_\+handpoints, const std\+::string \&str\+\_\+hand)}{init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext, int &n_handpoints, const std::string &str_hand)}}]{\setlength{\rightskip}{0pt plus 5cm}void grasping\+\_\+\+N\+L\+P\+::init (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::sig\+::\+Vector \&}]{objectext, }
+\item[{yarp\+::sig\+::\+Vector \&}]{handext, }
+\item[{int \&}]{n\+\_\+handpoints, }
+\item[{const std\+::string \&}]{str\+\_\+hand}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_abcf09fd329994523df9cebab0c607006}
+
+
+Initialization function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em objectext} & is the object superquadric \\
+\hline
+{\em handext} & is the hand ellipsoid \\
+\hline
+{\em n\+\_\+handpoints} & is the number of points to sample on the hand ellipsoid \\
+\hline
+{\em str\+\_\+hand} & is the name of the hand \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 45 of file superquadric.\+cpp.
+
+
+
+Referenced by Grasp\+Computation\+::compute\+Pose().
+
+
+\begin{DoxyCode}
+46 \{
+47     hand=handext;
+48     \textcolor{keywordtype}{object}=objectext;
+49 
+50     H\_o2w.resize(4,4);
+51     H\_h2w.resize(4,4);
+52     H\_x.resize(4,4);
+53     euler.resize(3,0.0);
+54 
+55     euler[0]=\textcolor{keywordtype}{object}[8];
+56     euler[1]=\textcolor{keywordtype}{object}[9];
+57     euler[2]=\textcolor{keywordtype}{object}[10];
+58     H\_o2w=euler2dcm(euler);
+59     euler[0]=\textcolor{keywordtype}{object}[5];
+60     euler[1]=\textcolor{keywordtype}{object}[6];
+61     euler[2]=\textcolor{keywordtype}{object}[7];
+62     H\_o2w.setSubcol(euler,0,3);
+63 
+64     euler[0]=hand[8];
+65     euler[1]=hand[9];
+66     euler[2]=hand[10];
+67     H\_h2w=euler2dcm(euler);
+68     euler[0]=hand[5];
+69     euler[1]=hand[6];
+70     euler[2]=hand[7];
+71     H\_h2w.setSubcol(euler,0,3);
+72 
+73     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<(int)sqrt(n\_handpoints); i++)
+74     \{
+75         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{double} theta=-M\_PI/2; theta<=0; theta+=M\_PI/((int)sqrt(n\_handpoints)))
+76         \{
+77             points\_on.push\_back(computePointsHand(hand,i, (\textcolor{keywordtype}{int})sqrt(n\_handpoints), str\_hand, theta));
+78         \}
+79     \}
+80 
+81     aux\_objvalue=0.0;
+82 \}
+\end{DoxyCode}
+\index{grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}!read\+Matrix@{read\+Matrix}}
+\index{read\+Matrix@{read\+Matrix}!grasping\+\_\+\+N\+LP@{grasping\+\_\+\+N\+LP}}
+\subsubsection[{\texorpdfstring{read\+Matrix(const std\+::string \&tag, yarp\+::sig\+::\+Matrix \&matrix, const int \&dimension, yarp\+::os\+::\+Resource\+Finder $\ast$rf)}{readMatrix(const std::string &tag, yarp::sig::Matrix &matrix, const int &dimension, yarp::os::ResourceFinder *rf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool grasping\+\_\+\+N\+L\+P\+::read\+Matrix (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{tag, }
+\item[{yarp\+::sig\+::\+Matrix \&}]{matrix, }
+\item[{const int \&}]{dimension, }
+\item[{yarp\+::os\+::\+Resource\+Finder $\ast$}]{rf}
+\end{DoxyParamCaption}
+)}\label{classgrasping__NLP_a8104499f39d0f3705760a50745510c14}
+
+
+Function for reading matrices from config files. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tag} & is the name of the quantity to be read from text \\
+\hline
+{\em matrix} & is the matrix to be filled \\
+\hline
+{\em dimensions} & is the matrix dimensions \\
+\hline
+{\em rf} & is the resource finder \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 509 of file superquadric.\+cpp.
+
+
+\begin{DoxyCode}
+510 \{
+511    \textcolor{keywordtype}{string} tag\_x=tag+\textcolor{stringliteral}{"\_x"};
+512    \textcolor{keywordtype}{string} tag\_y=tag+\textcolor{stringliteral}{"\_y"};
+513    \textcolor{keywordtype}{bool} check\_x;
+514 
+515    \textcolor{keywordflow}{if}(tag==\textcolor{stringliteral}{"x0"} || tag==\textcolor{stringliteral}{"plane"})
+516    \{
+517        \textcolor{keywordflow}{if} (Bottle *b=rf->find(tag.c\_str()).asList())
+518        \{
+519            Vector col;
+520            \textcolor{keywordflow}{if} (b->size()>=dimension)
+521            \{
+522                \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0; i<b->size();i++)
+523                    col.push\_back(b->get(i).asDouble());
+524 
+525                matrix.setCol(0, col);
+526            \}
+527            \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+528        \}
+529    \}
+530    \textcolor{keywordflow}{else}
+531    \{
+532        \textcolor{keywordflow}{if}(tag==\textcolor{stringliteral}{"bounds\_right"} || tag==\textcolor{stringliteral}{"bounds\_constr\_right"} || tag==\textcolor{stringliteral}{"bounds\_left"} || tag==\textcolor{stringliteral}{"
+      bounds\_constr\_left"})
+533        \{
+534            tag\_x=tag+\textcolor{stringliteral}{"\_l"};
+535            tag\_y=tag+\textcolor{stringliteral}{"\_u"};
+536        \}
+537 
+538        \textcolor{keywordflow}{if} (Bottle *b=rf->find(tag\_x.c\_str()).asList())
+539        \{
+540            Vector col;
+541            \textcolor{keywordflow}{if} (b->size()>=dimension)
+542            \{
+543                \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0; i<b->size();i++)
+544                    col.push\_back(b->get(i).asDouble());
+545 
+546                matrix.setCol(0, col);
+547            \}
+548            check\_x=\textcolor{keyword}{true};
+549 
+550        \}
+551        \textcolor{keywordflow}{if} (Bottle *b=rf->find(tag\_y.c\_str()).asList())
+552        \{
+553            Vector col;
+554            \textcolor{keywordflow}{if} (b->size()>=dimension)
+555            \{
+556                \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} i=0; i<b->size();i++)
+557                    col.push\_back(b->get(i).asDouble());
+558                matrix.setCol(1, col);
+559            \}
+560            \textcolor{keywordflow}{if}(check\_x==\textcolor{keyword}{true})
+561                \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+562        \}
+563    \}
+564 \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+565 \}
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/include/superquadric.\+h\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/src/superquadric.\+cpp\end{DoxyCompactItemize}

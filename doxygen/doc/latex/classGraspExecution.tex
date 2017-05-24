@@ -1,0 +1,2284 @@
+\section{Grasp\+Execution Class Reference}
+\label{classGraspExecution}\index{Grasp\+Execution@{Grasp\+Execution}}
+
+
+This class implements the arm movements for reaching the desired pose for grasping the object and for closing the fingers and stably grasping the object by using tactile feedback.  
+
+
+
+
+{\ttfamily \#include $<$grasp\+Execution.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Grasp\+Execution} (yarp\+::os\+::\+Property \&\hyperlink{classGraspExecution_a04447d31aa166b06a1cd4bb3f78f037d}{movement\+\_\+par}, const yarp\+::os\+::\+Property \&\hyperlink{classGraspExecution_a2f8d04ef2258f2dcc24ca3e68940e76d}{complete\+\_\+sol}, bool \+\_\+grasp, std\+::string \+\_\+lib\+\_\+context, std\+::string \+\_\+lib\+\_\+filename)\label{classGraspExecution_a536f737ceb327ce074ed9bdcd159be8d}
+
+\item 
+bool \hyperlink{classGraspExecution_a65dfa2f0a46e106bdc42e40e5282d46a}{configure} ()
+\begin{DoxyCompactList}\small\item\em Configure function. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a1c53f81a101ea05e6c4bf3ad49329705}{reach\+Waypoint} (int i, std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Reach a single waypoint of the trajectory. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a3e8874281c526a591d3e3b4301b6f013}{execute\+Trajectory} (std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Execute the entire trajectory @ hand is the selected hand for moving. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_af5b1eca953b18c03cddbaea699dd921d}{go\+Home} (const std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Ask the robot arm to go back to home position. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a28f36f843baee76b9ec350244fd33694}{go\+To\+Basket} (const std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Ask the robot arm to go to the basket on its side. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a992439076c5e187baa7f8fb88a8ee69c}{config\+Cartesian} (const std\+::string \&which\+\_\+hand)
+\begin{DoxyCompactList}\small\item\em Configure Cartesian controller for moving the selected arm. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a7196ae9f61b3914be283214ac8e482e9}{config\+Compliant} (const std\+::string \&which\+\_\+hand)
+\begin{DoxyCompactList}\small\item\em Configure compliant mode for safe interaction with the table. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a574cbbf59e8eb5a5c241a7f74fbfc416}{config\+Grasp} ()
+\begin{DoxyCompactList}\small\item\em Configure tactile control library for grasping the object. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a6baa49c059f0d6ecf5ee0f7fd70c53f2}{config\+Torso} ()
+\begin{DoxyCompactList}\small\item\em Configure torso for returnin it in correct home position. \end{DoxyCompactList}\item 
+void \hyperlink{classGraspExecution_a97ba4b07275190fbe6a6c1a72955e937}{set\+Pose\+Par} (const yarp\+::os\+::\+Property \&new\+Options, bool first\+\_\+time)
+\begin{DoxyCompactList}\small\item\em Set all pose parameters for grasp execution. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspExecution_a52376a3e84d6b4bd90ea25a8611c49da}{get\+Pose\+Par} ()
+\begin{DoxyCompactList}\small\item\em Get all pose parameters for grasp execution. \end{DoxyCompactList}\item 
+void \hyperlink{classGraspExecution_adfd05fa913582df6bfaaa80ec941f468}{get\+Poses} (const yarp\+::os\+::\+Property \&poses)
+\begin{DoxyCompactList}\small\item\em Acquire poses to be reached from the grasp\+Computation class. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a83b790d2e2522e333346044baec1573c}{release} ()\label{classGraspExecution_a83b790d2e2522e333346044baec1573c}
+
+\begin{DoxyCompactList}\small\item\em Release resources. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a4a81d173be82654388313b9a89c16457}{stop} ()\label{classGraspExecution_a4a81d173be82654388313b9a89c16457}
+
+\begin{DoxyCompactList}\small\item\em Stop movements. \end{DoxyCompactList}\item 
+void \hyperlink{classGraspExecution_aeb93a25964087a22a2580f251fed7e80}{lift\+Object} (std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&traj, int index)
+\begin{DoxyCompactList}\small\item\em Lift object for testing the stability of the pose. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_af02296b437dec003626a448d399bba33}{grasp\+Object} (const std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Grasp the object with the tactile control library. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_aa7cce148b98247a05f03c8ed31f1cb25}{release\+Object} (const std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Open the hand that kis grasping the object with the tactile control library. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_acc01cbdd4c863136429951f46ddb951b}{reach\+With\+Visual} (int i, std\+::string \&hand)
+\begin{DoxyCompactList}\small\item\em Reach a single waypoint of the trajectory with the visual-\/servoing controller. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a4f653b86f2bcc84b92ce592f54cdf73d}{config\+Visual\+Servoing} ()
+\begin{DoxyCompactList}\small\item\em Configure visual-\/servoing controller. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a5989db8e41aadd63d7ba60b551de04c8}{calibrate\+Whole\+Body} ()
+\begin{DoxyCompactList}\small\item\em Calibrate Whole\+Body\+Dynamics before executing trajectory. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classGraspExecution_a9d964d76db7d1edc7e7d6b195104ad8a}{reached}\label{classGraspExecution_a9d964d76db7d1edc7e7d6b195104ad8a}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for movements. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_ae751089ec9badcb4faacf4651da04e30}{reached\+\_\+tot}\label{classGraspExecution_ae751089ec9badcb4faacf4651da04e30}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for movements. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspExecution_ab1d7d4b77784b57f190d523d807264c0}{pixel\+\_\+tol}\label{classGraspExecution_ab1d7d4b77784b57f190d523d807264c0}
+
+\begin{DoxyCompactList}\small\item\em Pixel tolerance for visual servoing. \end{DoxyCompactList}\item 
+yarp\+::dev\+::\+Poly\+Driver \hyperlink{classGraspExecution_a38cd56b2b9071773fa6905c6eb94b723}{drv\+\_\+server\+\_\+vs}\label{classGraspExecution_a38cd56b2b9071773fa6905c6eb94b723}
+
+\begin{DoxyCompactList}\small\item\em Polydriver for visual servoing server. \end{DoxyCompactList}\item 
+yarp\+::dev\+::\+I\+Visual\+Servoing $\ast$ \hyperlink{classGraspExecution_a3365ea764608f44ce2d949cac7c0c732}{visual\+\_\+servoing\+\_\+right}\label{classGraspExecution_a3365ea764608f44ce2d949cac7c0c732}
+
+\begin{DoxyCompactList}\small\item\em Interface for visual servoing for right hand. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspExecution_a5bffe078460c0f2096d0ffbdc5fec147}{lib\+\_\+context}\label{classGraspExecution_a5bffe078460c0f2096d0ffbdc5fec147}
+
+\begin{DoxyCompactList}\small\item\em Context file name for grasping library. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspExecution_a87e0750990e15df008fcc51cd67d2538}{lib\+\_\+filename}\label{classGraspExecution_a87e0750990e15df008fcc51cd67d2538}
+
+\begin{DoxyCompactList}\small\item\em Context file name for grasping library. \end{DoxyCompactList}\item 
+const yarp\+::os\+::\+Property \& \hyperlink{classGraspExecution_a2f8d04ef2258f2dcc24ca3e68940e76d}{complete\+\_\+sol}\label{classGraspExecution_a2f8d04ef2258f2dcc24ca3e68940e76d}
+
+\begin{DoxyCompactList}\small\item\em Property with solution. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspExecution_a04447d31aa166b06a1cd4bb3f78f037d}{movement\+\_\+par}\label{classGraspExecution_a04447d31aa166b06a1cd4bb3f78f037d}
+
+\begin{DoxyCompactList}\small\item\em Property with options. \end{DoxyCompactList}\item 
+tactile\+Control\+::\+Hand\+Controller \hyperlink{classGraspExecution_a84c75bab538b1f14d23797262e75d20d}{hand\+Contr\+\_\+right}\label{classGraspExecution_a84c75bab538b1f14d23797262e75d20d}
+
+\begin{DoxyCompactList}\small\item\em Tactile control library for right/left hands. \end{DoxyCompactList}\item 
+tactile\+Control\+::\+Hand\+Controller {\bfseries hand\+Contr\+\_\+left}\label{classGraspExecution_a30e5c0cd3f888778671270d5a8ec7584}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{classGraspExecution_add1ccc7979dfd444774874ef45acfbef}{robot}\label{classGraspExecution_add1ccc7979dfd444774874ef45acfbef}
+
+\begin{DoxyCompactList}\small\item\em Robot name\+: icub or icub\+Sim. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspExecution_af8666e0e45d0a8f41d494bf7d5fab41d}{hand\+\_\+to\+\_\+move}\label{classGraspExecution_af8666e0e45d0a8f41d494bf7d5fab41d}
+
+\begin{DoxyCompactList}\small\item\em Hand to be moved for grasping the object. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspExecution_acfb5fa41f061241d0340c3127d445424}{left\+\_\+or\+\_\+right}\label{classGraspExecution_acfb5fa41f061241d0340c3127d445424}
+
+\begin{DoxyCompactList}\small\item\em Hand to be enabled with the code. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspExecution_abe1a87e13aeb08a0b0a76c5627221638}{trajectory\+\_\+right}\label{classGraspExecution_abe1a87e13aeb08a0b0a76c5627221638}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) for the right hand. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspExecution_ad322d77c2ef8fac21c352d1f3fe31038}{trajectory\+\_\+left}\label{classGraspExecution_ad322d77c2ef8fac21c352d1f3fe31038}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) for the left hand. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspExecution_a406d5c4ebc26f79b7a30af4854bbda48}{trajectory}\label{classGraspExecution_a406d5c4ebc26f79b7a30af4854bbda48}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory selected for the execution. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_a1baf57f3fabc9fd56eec77facb4bf478}{shift\+\_\+right}\label{classGraspExecution_a1baf57f3fabc9fd56eec77facb4bf478}
+
+\begin{DoxyCompactList}\small\item\em 3D shift for the final right pose along x, y, and z axes of the right hand reference frame for compensating with eye-\/kinematics offsets \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_af2e560a2d96db54461f13fdab0b47954}{shift\+\_\+left}\label{classGraspExecution_af2e560a2d96db54461f13fdab0b47954}
+
+\begin{DoxyCompactList}\small\item\em 3D shift for the final left pose along x, y, and z axes of the left hand reference frame for compensating with eye-\/kinematics offsets \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_af020ee42122eed4eae529f45d4cd5a3d}{home\+\_\+right}\label{classGraspExecution_af020ee42122eed4eae529f45d4cd5a3d}
+
+\begin{DoxyCompactList}\small\item\em Home pose (7D) for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_aeaab5ed9db8ee2bd6df59db48739976c}{home\+\_\+left}\label{classGraspExecution_aeaab5ed9db8ee2bd6df59db48739976c}
+
+\begin{DoxyCompactList}\small\item\em Home pose (7D) for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_a482fb65886a13e0a88a15764047fc65b}{basket\+\_\+right}\label{classGraspExecution_a482fb65886a13e0a88a15764047fc65b}
+
+\begin{DoxyCompactList}\small\item\em Basket pose (7D) for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_a1a28ab6787ec253f78675ffc7db46f5a}{basket\+\_\+left}\label{classGraspExecution_a1a28ab6787ec253f78675ffc7db46f5a}
+
+\begin{DoxyCompactList}\small\item\em Basket pose (7D) for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_a1181e7d2a8259d7bd7386e1efa004901}{stiff\+\_\+right}\label{classGraspExecution_a1181e7d2a8259d7bd7386e1efa004901}
+
+\begin{DoxyCompactList}\small\item\em Stiff values for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_aadb33fbb2a639113629e6d2b49c164f4}{stiff\+\_\+left}\label{classGraspExecution_aadb33fbb2a639113629e6d2b49c164f4}
+
+\begin{DoxyCompactList}\small\item\em Stiff values for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_a9a2586409693c80b141daa30ae0e1b5b}{damp\+\_\+right}\label{classGraspExecution_a9a2586409693c80b141daa30ae0e1b5b}
+
+\begin{DoxyCompactList}\small\item\em Damp values for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspExecution_a2a5d14ee157f71328424c9822d48b67a}{damp\+\_\+left}\label{classGraspExecution_a2a5d14ee157f71328424c9822d48b67a}
+
+\begin{DoxyCompactList}\small\item\em Damp values for the left hand. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Mutex {\bfseries mutex}\label{classGraspExecution_a7d77b561dd2573fa42a28b760c030a63}
+
+\item 
+yarp\+::dev\+::\+I\+Cartesian\+Control $\ast$ {\bfseries icart\+\_\+right}\label{classGraspExecution_a39489640372dcf1928e854c20742f35e}
+
+\item 
+yarp\+::dev\+::\+I\+Cartesian\+Control $\ast$ {\bfseries icart\+\_\+left}\label{classGraspExecution_ad017fcb8fa252d6e1181bafcf2a970e5}
+
+\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries robot\+Device\+\_\+right}\label{classGraspExecution_af1f98094e942e01dc5276ada61a8bf79}
+
+\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries robot\+Device\+\_\+left}\label{classGraspExecution_ae92b996c91a68f9d918e395f57d5f0ef}
+
+\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries driver\+Imped\+\_\+right}\label{classGraspExecution_aaaa42876d68ef3996cecf989dcc9e27c}
+
+\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries driver\+Imped\+\_\+left}\label{classGraspExecution_a6696b1f3457173b856494f6ad0843f2f}
+
+\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries driver\+Torso}\label{classGraspExecution_a0b1f4780bfcf0ef62e4063a36c43429f}
+
+\item 
+yarp\+::dev\+::\+I\+Control\+Mode2 $\ast$ {\bfseries imod\+Torso}\label{classGraspExecution_a009a185d69d7dbae7741091703c4beca}
+
+\item 
+yarp\+::dev\+::\+I\+Encoders $\ast$ {\bfseries ienc\+Torso}\label{classGraspExecution_a37f02113f5df20eaf639d3de5f50201a}
+
+\item 
+yarp\+::dev\+::\+I\+Position\+Control2 $\ast$ {\bfseries ipos\+Torso}\label{classGraspExecution_acd38eb6d7a7a592af60f056fc3558e8b}
+
+\item 
+yarp\+::dev\+::\+I\+Encoders $\ast$ {\bfseries enc}\label{classGraspExecution_a19645dbad457efb2f59659cd9d7716e1}
+
+\item 
+int \hyperlink{classGraspExecution_a0617f4bf93413fd67d7ea0d86dc9898c}{context\+\_\+right}\label{classGraspExecution_a0617f4bf93413fd67d7ea0d86dc9898c}
+
+\begin{DoxyCompactList}\small\item\em Backup context for right cartesian. \end{DoxyCompactList}\item 
+int \hyperlink{classGraspExecution_a5f50814446b2f0d15f7aa0b3cb036d3f}{context\+\_\+left}\label{classGraspExecution_a5f50814446b2f0d15f7aa0b3cb036d3f}
+
+\begin{DoxyCompactList}\small\item\em Backup context for left cartesian. \end{DoxyCompactList}\item 
+int {\bfseries i}\label{classGraspExecution_a344f407ea6a058eacfb4e2d90eb51735}
+
+\item 
+bool \hyperlink{classGraspExecution_a611a58c5c2d2d7c32650bea057b35b5b}{grasp}\label{classGraspExecution_a611a58c5c2d2d7c32650bea057b35b5b}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable to grasp or not the object. \end{DoxyCompactList}\item 
+std\+::string {\bfseries lobj}\label{classGraspExecution_a79b348f9568652db2921d279abcc1bcb}
+
+\item 
+double \hyperlink{classGraspExecution_a7c860cfc650285d57e86fd51ecbf30c1}{lift\+\_\+z}\label{classGraspExecution_a7c860cfc650285d57e86fd51ecbf30c1}
+
+\begin{DoxyCompactList}\small\item\em How much the robot should lift the object. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a4d42020c419b390a9a336d91c0a1c3ae}{lift\+\_\+object}\label{classGraspExecution_a4d42020c419b390a9a336d91c0a1c3ae}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable to lift or not the object. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a3e8755ff9c95ee15784a7d46f74489fd}{visual\+\_\+serv}\label{classGraspExecution_a3e8755ff9c95ee15784a7d46f74489fd}
+
+\begin{DoxyCompactList}\small\item\em String variable for the visual servoing controller during the final pose reaching. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_ad3dc733ddabb20c1d53a195fcad3af3a}{compliant}\label{classGraspExecution_ad3dc733ddabb20c1d53a195fcad3af3a}
+
+\begin{DoxyCompactList}\small\item\em String variable for enabling the compliant mode. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspExecution_a87216175d159e749932552f999ec7267}{use\+\_\+direct\+\_\+kin}\label{classGraspExecution_a87216175d159e749932552f999ec7267}
+
+\begin{DoxyCompactList}\small\item\em String variable for using visual servoing with direct kinematics, instead of hand pose estimate. \end{DoxyCompactList}\item 
+std\+::string {\bfseries five\+\_\+fingers}\label{classGraspExecution_a01cec6b4c21531dbc733488924d80ca8}
+
+\item 
+double \hyperlink{classGraspExecution_a90b6870ad31a75181598b069f16d128a}{torso\+\_\+pitch\+\_\+max}\label{classGraspExecution_a90b6870ad31a75181598b069f16d128a}
+
+\begin{DoxyCompactList}\small\item\em Maximum pitch value for avoiding movements to close to the table while reaching some particular poses. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspExecution_a0cff011c551bd26e5aef02acca1dff2f}{traj\+\_\+time}\label{classGraspExecution_a0cff011c551bd26e5aef02acca1dff2f}
+
+\begin{DoxyCompactList}\small\item\em Time for reaching each waypoint of the trajectory. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspExecution_af5b8332d5b7a9ba571ceab005cd8b849}{traj\+\_\+tol}\label{classGraspExecution_af5b8332d5b7a9ba571ceab005cd8b849}
+
+\begin{DoxyCompactList}\small\item\em Reaching tolerance for the cartesian. \end{DoxyCompactList}\item 
+double \hyperlink{classGraspExecution_a26278749ada92b79a85100ffc3b7588f}{force\+\_\+threshold}
+\begin{DoxyCompactList}\small\item\em Threshold of the maximum allowed force measured at the endeffector. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Rpc\+Client \hyperlink{classGraspExecution_a12be989706174d8a9b0370014b8251b9}{port\+Whole\+Body\+Rpc}\label{classGraspExecution_a12be989706174d8a9b0370014b8251b9}
+
+\begin{DoxyCompactList}\small\item\em Port connected to whole\+Body\+Dynamics module in order to receive force estimates. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Buffered\+Port$<$ yarp\+::os\+::\+Bottle $>$ \hyperlink{classGraspExecution_a581bd2704b06ad59c453ae7dde2492d7}{port\+Forces\+\_\+right}\label{classGraspExecution_a581bd2704b06ad59c453ae7dde2492d7}
+
+\begin{DoxyCompactList}\small\item\em Bottle containg force estimate for the right hand. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Buffered\+Port$<$ yarp\+::os\+::\+Bottle $>$ \hyperlink{classGraspExecution_a8ad173a328a680a9e77848d5263379cb}{port\+Forces\+\_\+left}\label{classGraspExecution_a8ad173a328a680a9e77848d5263379cb}
+
+\begin{DoxyCompactList}\small\item\em Bottle containg force estimate for the left hand. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class implements the arm movements for reaching the desired pose for grasping the object and for closing the fingers and stably grasping the object by using tactile feedback. 
+
+Definition at line 38 of file grasp\+Execution.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\index{Grasp\+Execution@{Grasp\+Execution}!calibrate\+Whole\+Body@{calibrate\+Whole\+Body}}
+\index{calibrate\+Whole\+Body@{calibrate\+Whole\+Body}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{calibrate\+Whole\+Body()}{calibrateWholeBody()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::calibrate\+Whole\+Body (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a5989db8e41aadd63d7ba60b551de04c8}
+
+
+Calibrate Whole\+Body\+Dynamics before executing trajectory. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 1109 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1110 \{
+1111     Bottle cmd, reply;
+1112     cmd.addString(\textcolor{stringliteral}{"calib"});
+1113     cmd.addString(\textcolor{stringliteral}{"all"});
+1114 
+1115     portWholeBodyRpc.write(cmd, reply);
+1116 
+1117     yDebug()<<reply.get(0).asString();
+1118 
+1119     \textcolor{keywordflow}{return} (reply.get(0).asString()==\textcolor{stringliteral}{"Recalibrated"});
+1120 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!config\+Cartesian@{config\+Cartesian}}
+\index{config\+Cartesian@{config\+Cartesian}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{config\+Cartesian(const std\+::string \&which\+\_\+hand)}{configCartesian(const std::string &which_hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::config\+Cartesian (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{which\+\_\+hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a992439076c5e187baa7f8fb88a8ee69c}
+
+
+Configure Cartesian controller for moving the selected arm. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em which\+\_\+hand} & is the hand for which we want to open the cartesian \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 92 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+93 \{
+94     \textcolor{keywordtype}{bool} done=\textcolor{keyword}{true};
+95     \textcolor{keywordtype}{int} context\_tmp;
+96 
+97     \textcolor{keywordflow}{if} (which\_hand==\textcolor{stringliteral}{"right"})
+98     \{
+99         Property option\_arm\_r(\textcolor{stringliteral}{"(device cartesiancontrollerclient)"});
+100         option\_arm\_r.put(\textcolor{stringliteral}{"remote"},\textcolor{stringliteral}{"/"}+robot+\textcolor{stringliteral}{"/cartesianController/"}+which\_hand+\textcolor{stringliteral}{"\_arm"});
+101         option\_arm\_r.put(\textcolor{stringliteral}{"local"},\textcolor{stringliteral}{"/superquadric-grasp/cartesian/"}+which\_hand+\textcolor{stringliteral}{"\_arm"});
+102 
+103         robotDevice\_right.open(option\_arm\_r);
+104 
+105         \textcolor{keywordflow}{if} (!robotDevice\_right.isValid())
+106         \{
+107             yError(\textcolor{stringliteral}{"Device index for right arm not available!"});
+108             \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+109         \}
+110 
+111         robotDevice\_right.view(icart\_right);
+112 
+113         icart\_right->storeContext(&context_right);
+114 
+115         Vector curDof;
+116         icart\_right->getDOF(curDof);
+117         Vector newDof(3);
+118         newDof[0]=0;
+119         newDof[1]=0;
+120         newDof[2]=0;
+121         icart\_right->setDOF(newDof,curDof);
+122         icart\_right->getDOF(curDof);
+123         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+124 
+125         icart\_right->setTrajTime(traj_time);
+126         icart\_right->setInTargetTol(traj_tol);
+127 
+128         \textcolor{comment}{//icart\_right->goToPoseSync(home\_right.subVector(0,2),home\_right.subVector(3,6));}
+129         \textcolor{comment}{//icart\_right->waitMotionDone();}
+130         \textcolor{comment}{//icart\_right->checkMotionDone(&done);}
+131 
+132         icart\_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
+133         \textcolor{keywordflow}{if} (compliant)
+134             icart\_right->waitMotionDone(0.1, 2.0);
+135         \textcolor{keywordflow}{else}
+136             icart\_right->waitMotionDone();
+137 
+138         newDof[0]=1;
+139         newDof[1]=0;
+140         newDof[2]=1;
+141         icart\_right->setDOF(newDof,curDof);
+142 
+143         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+144 
+145         \textcolor{keywordtype}{double} min, max;
+146 
+147         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+148 
+149         yDebug()<<\textcolor{stringliteral}{"Setting max torso pitch"};
+150         icart\_right->setLimits(0, 0.0, torso_pitch_max);     
+151         icart\_right->getLimits(0, &min, &max);
+152         yDebug()<<\textcolor{stringliteral}{"Get limit of pitch"}<<min<<max;
+153     \}
+154     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (which\_hand==\textcolor{stringliteral}{"left"})
+155     \{
+156         Property option\_arm\_l(\textcolor{stringliteral}{"(device cartesiancontrollerclient)"});
+157         option\_arm\_l.put(\textcolor{stringliteral}{"remote"},\textcolor{stringliteral}{"/"}+robot+\textcolor{stringliteral}{"/cartesianController/"}+which\_hand+\textcolor{stringliteral}{"\_arm"});
+158         option\_arm\_l.put(\textcolor{stringliteral}{"local"},\textcolor{stringliteral}{"/superquadric-grasp/cartesian/"}+which\_hand+\textcolor{stringliteral}{"\_arm"});
+159 
+160         robotDevice\_left.open(option\_arm\_l);
+161 
+162         \textcolor{keywordflow}{if} (!robotDevice\_left.isValid())
+163         \{
+164             yError(\textcolor{stringliteral}{"Device index for left arm not available!"});
+165             \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+166         \}
+167 
+168         robotDevice\_left.view(icart\_left);
+169 
+170         icart\_left->storeContext(&context_left);
+171 
+172         Vector curDof;
+173         icart\_left->getDOF(curDof);
+174         Vector newDof(3);
+175         newDof[0]=0;
+176         newDof[1]=0;
+177         newDof[2]=0;
+178         icart\_left->setDOF(newDof,curDof);
+179 
+180         icart\_left->getDOF(curDof);
+181         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+182 
+183         icart\_left->setTrajTime(traj_time);
+184         icart\_left->setInTargetTol(traj_tol);
+185 
+186         \textcolor{comment}{//icart\_left->goToPoseSync(home\_left.subVector(0,2),home\_left.subVector(3,6));}
+187         \textcolor{comment}{//icart\_left->waitMotionDone();}
+188         \textcolor{comment}{//icart\_left->checkMotionDone(&done);}
+189 
+190         icart\_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
+191         \textcolor{keywordflow}{if} (compliant)
+192             icart\_left->waitMotionDone(0.1, 2.0);
+193         \textcolor{keywordflow}{else}
+194             icart\_left->waitMotionDone();
+195 
+196 
+197         newDof[0]=1;
+198         newDof[1]=0;
+199         newDof[2]=1;
+200         icart\_left->setDOF(newDof,curDof);
+201 
+202         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+203 
+204         \textcolor{keywordtype}{double} min, max;
+205         yDebug()<<\textcolor{stringliteral}{"Setting max torso pitch"};
+206         icart\_left->setLimits(0, 0.0, torso_pitch_max);
+207         icart\_left->getLimits(0, &min, &max);
+208         yDebug()<<\textcolor{stringliteral}{"Get limit of pitch"}<<min<<max;     
+209     \}
+210 
+211     \textcolor{keywordflow}{return} done;
+212 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!config\+Compliant@{config\+Compliant}}
+\index{config\+Compliant@{config\+Compliant}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{config\+Compliant(const std\+::string \&which\+\_\+hand)}{configCompliant(const std::string &which_hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::config\+Compliant (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{which\+\_\+hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a7196ae9f61b3914be283214ac8e482e9}
+
+
+Configure compliant mode for safe interaction with the table. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em which\+\_\+hand} & is the hand for which we want to set the compliant mode \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 215 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+216 \{
+217     \textcolor{keywordflow}{if} (which\_hand==\textcolor{stringliteral}{"right"})
+218     \{
+219         Property opt\_rightArm(\textcolor{stringliteral}{"(device remote\_controlboard)"});
+220         opt\_rightArm.put(\textcolor{stringliteral}{"remote"},(\textcolor{stringliteral}{"/"}+robot+\textcolor{stringliteral}{"/right\_arm"}).c\_str());
+221         opt\_rightArm.put(\textcolor{stringliteral}{"local"},(\textcolor{stringliteral}{"/compliantControl/right\_arm"}));
+222 
+223         \textcolor{keywordflow}{if} (!driverImped\_right.open(opt\_rightArm))
+224         \{
+225             yError()<<\textcolor{stringliteral}{"Problem in opening driver for impedance right"};
+226             \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+227         \}
+228 
+229         IInteractionMode  *imode\_right;
+230         IImpedanceControl *iimp\_right;
+231 
+232         driverImped\_right.view(imode\_right);
+233         driverImped\_right.view(iimp\_right);
+234 
+235         yDebug()<<\textcolor{stringliteral}{"stiff r"}<<stiff_right.toString();
+236         yDebug()<<\textcolor{stringliteral}{"damp r"}<<damp_right.toString();
+237 
+238         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j=0; j<5; j++)
+239         \{
+240             iimp\_right->setImpedance(j,stiff_right[j],damp_right[j]);
+241             imode\_right->setInteractionMode(j,VOCAB\_IM\_COMPLIANT);
+242         \}
+243     \}
+244     \textcolor{keywordflow}{else}
+245     \{
+246         Property opt\_leftArm(\textcolor{stringliteral}{"(device remote\_controlboard)"});
+247         opt\_leftArm.put(\textcolor{stringliteral}{"remote"},(\textcolor{stringliteral}{"/"}+robot+\textcolor{stringliteral}{"/left\_arm"}).c\_str());
+248         opt\_leftArm.put(\textcolor{stringliteral}{"local"},(\textcolor{stringliteral}{"/compliantControl/left\_arm"}));
+249     
+250         
+251         \textcolor{keywordflow}{if} (!driverImped\_left.open(opt\_leftArm))
+252         \{
+253             yError()<<\textcolor{stringliteral}{"Problem in opening driver for impedance left"};
+254             \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+255         \}
+256 
+257         IInteractionMode  *imode\_left;
+258         IImpedanceControl *iimp\_left;
+259 
+260         driverImped\_left.view(imode\_left);
+261         driverImped\_left.view(iimp\_left);
+262 
+263         yDebug()<<\textcolor{stringliteral}{"stiff l"}<<stiff_left.toString();
+264         yDebug()<<\textcolor{stringliteral}{"damp l"}<<damp_left.toString();
+265 
+266         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j=0; j<5; j++)
+267         \{
+268             iimp\_left->setImpedance(j,stiff_left[j],damp_left[j]);
+269             imode\_left->setInteractionMode(j,VOCAB\_IM\_COMPLIANT);
+270         \}
+271     \}
+272 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!config\+Grasp@{config\+Grasp}}
+\index{config\+Grasp@{config\+Grasp}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{config\+Grasp()}{configGrasp()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::config\+Grasp (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a574cbbf59e8eb5a5c241a7f74fbfc416}
+
+
+Configure tactile control library for grasping the object. 
+
+\begin{DoxyReturn}{Returns}
+treu/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 303 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+304 \{
+305     \textcolor{keywordflow}{if} (left_or_right==\textcolor{stringliteral}{"right"})
+306     \{
+307         handContr_right.set(lib_context, lib_filename);
+308         handContr_right.set(\textcolor{stringliteral}{"hand"}, Value(\textcolor{stringliteral}{"right"}));
+309         handContr_right.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+310         handContr_right.set(\textcolor{stringliteral}{"useRingLittleFingers"}, Value(five\_fingers));
+311     \}
+312     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (left_or_right==\textcolor{stringliteral}{"left"})
+313     \{
+314         handContr\_left.set(lib_context, lib_filename);
+315         handContr\_left.set(\textcolor{stringliteral}{"hand"}, Value(\textcolor{stringliteral}{"left"}));
+316         handContr\_left.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+317         handContr\_left.set(\textcolor{stringliteral}{"useRingLittleFingers"}, Value(five\_fingers));
+318     \}
+319     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (left_or_right==\textcolor{stringliteral}{"both"})
+320     \{
+321         handContr_right.set(lib_context, lib_filename);
+322         handContr\_left.set(lib_context, lib_filename);
+323 
+324         handContr_right.set(\textcolor{stringliteral}{"hand"}, Value(\textcolor{stringliteral}{"right"}));
+325         handContr_right.set(\textcolor{stringliteral}{"useRingLittleFingers"}, Value(five\_fingers));
+326 
+327         handContr\_left.set(\textcolor{stringliteral}{"hand"}, Value(\textcolor{stringliteral}{"left"}));
+328         handContr\_left.set(\textcolor{stringliteral}{"useRingLittleFingers"}, Value(five\_fingers));
+329 
+330         handContr_right.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+331         handContr\_left.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+332     \}
+333 
+334     \textcolor{keywordflow}{if} ((left_or_right !=\textcolor{stringliteral}{"left"}) && (!handContr_right.open()))
+335     \{
+336         yError()<<\textcolor{stringliteral}{"[GraspExecution]: Problems in initializing the tactile control for right arm"};
+337         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+338     \}
+339 
+340     \textcolor{keywordflow}{if} ((left_or_right!=\textcolor{stringliteral}{"right"}) && (!handContr\_left.open()))
+341     \{
+342         yError()<<\textcolor{stringliteral}{"[GraspExecution]: Problems in initializing the tactile control for left arm"};
+343         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+344     \}
+345 
+346     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+347 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!config\+Torso@{config\+Torso}}
+\index{config\+Torso@{config\+Torso}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{config\+Torso()}{configTorso()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::config\+Torso (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a6baa49c059f0d6ecf5ee0f7fd70c53f2}
+
+
+Configure torso for returnin it in correct home position. 
+
+\begin{DoxyReturn}{Returns}
+treu/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 350 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+351 \{
+352     Property option;
+353     option.put(\textcolor{stringliteral}{"device"},\textcolor{stringliteral}{"remote\_controlboard"});
+354     option.put(\textcolor{stringliteral}{"remote"},\textcolor{stringliteral}{"/"}+robot+\textcolor{stringliteral}{"/torso"});
+355     option.put(\textcolor{stringliteral}{"local"},\textcolor{stringliteral}{"/controllerTorso"});
+356 
+357     \textcolor{comment}{// open the driver}
+358     \textcolor{keywordflow}{if} (!driverTorso.open(option))
+359     \{
+360         yError()<<\textcolor{stringliteral}{"Unable to open the device driver"};
+361         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+362     \}
+363 
+364     \textcolor{comment}{// open the views}
+365     driverTorso.view(imodTorso);
+366     driverTorso.view(iencTorso);
+367     driverTorso.view(iposTorso);
+368 
+369     \textcolor{comment}{// tell the device we aim to control}
+370     \textcolor{comment}{// in position mode all the joints}
+371     \textcolor{keywordtype}{int} nAxes;
+372     iencTorso->getAxes(&nAxes);
+373     vector<int> modes(nAxes,VOCAB\_CM\_POSITION);
+374     imodTorso->setControlModes(modes.data());
+375 
+376     \textcolor{comment}{//Putting torso in home position}
+377     iposTorso->positionMove(0, 0.0);
+378     iposTorso->positionMove(1, 0.0);
+379     iposTorso->positionMove(2, 1.0);
+380 
+381     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+382 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!configure@{configure}}
+\index{configure@{configure}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{configure()}{configure()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::configure (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a65dfa2f0a46e106bdc42e40e5282d46a}
+
+
+Configure function. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 30 of file grasp\+Execution.\+cpp.
+
+
+
+References Grasp\+Computation\+::set\+Pose\+Par().
+
+
+\begin{DoxyCode}
+31 \{
+32     \textcolor{keywordtype}{bool} config;
+33 
+34     home_right.resize(7,0.0);
+35     home_left.resize(7,0.0);
+36     shift_right.resize(3,0.0);
+37     shift_left.resize(3,0.0);
+38     basket_right.resize(7,0.0);
+39     basket_left.resize(7,0.0);
+40     stiff_right.resize(5,0.0);
+41     stiff_left.resize(5,0.0);
+42     damp_right.resize(5,0.0);
+43     damp_left.resize(5,0.0);
+44 
+45     portForces_right.open(\textcolor{stringliteral}{"/superquadric-grasp/forces\_right:i"});
+46     portForces_left.open(\textcolor{stringliteral}{"/superquadric-grasp/forces\_left:i"});
+47 
+48     portWholeBodyRpc.open(\textcolor{stringliteral}{"/superquadric-grasp/wb:rpc"});
+49 
+50     i=-1;
+51 
+52     setPosePar(movement_par, \textcolor{keyword}{true});
+53     config=configTorso();
+54 
+55     \textcolor{keywordflow}{if} ((left_or_right!=\textcolor{stringliteral}{"both"}) && (compliant==\textcolor{keyword}{true}))
+56     \{
+57         config=config && configCompliant(left_or_right);
+58     \}
+59     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (compliant==\textcolor{keyword}{true})
+60     \{
+61         config=configCompliant(\textcolor{stringliteral}{"right"});
+62         config=config && configCompliant(\textcolor{stringliteral}{"left"});
+63     \}
+64 
+65 
+66     \textcolor{keywordflow}{if} (left_or_right!=\textcolor{stringliteral}{"both"})
+67     \{
+68         config=config && configCartesian(left_or_right);
+69     \}
+70     \textcolor{keywordflow}{else}
+71     \{
+72         config=configCartesian(\textcolor{stringliteral}{"right"});
+73         config=config && configCartesian(\textcolor{stringliteral}{"left"});
+74     \}
+75 
+76     \textcolor{keywordflow}{if} (visual_serv)
+77         config=config && configVisualServoing();
+78 
+79     \textcolor{keywordflow}{if} (grasp)
+80     \{
+81         config=config && configGrasp();
+82 
+83         yDebug()<<\textcolor{stringliteral}{"Grasped configured: "}<<config;
+84     \}
+85 
+86     reached=\textcolor{keyword}{false};
+87 
+88     \textcolor{keywordflow}{return} config;
+89 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!config\+Visual\+Servoing@{config\+Visual\+Servoing}}
+\index{config\+Visual\+Servoing@{config\+Visual\+Servoing}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{config\+Visual\+Servoing()}{configVisualServoing()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::config\+Visual\+Servoing (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a4f653b86f2bcc84b92ce592f54cdf73d}
+
+
+Configure visual-\/servoing controller. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 275 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+276 \{
+277     Property prop\_server\_vs;
+278     prop\_server\_vs.put(\textcolor{stringliteral}{"device"},\textcolor{stringliteral}{"visualservoingclient"});
+279     prop\_server\_vs.put(\textcolor{stringliteral}{"verbosity"},\textcolor{keyword}{true});
+280     prop\_server\_vs.put(\textcolor{stringliteral}{"local"},\textcolor{stringliteral}{"/VisualServoingClientTest"});
+281     prop\_server\_vs.put(\textcolor{stringliteral}{"remote"}, \textcolor{stringliteral}{"/visualservoing"});
+282 
+283     drv_server_vs.open(prop\_server\_vs);
+284     \textcolor{keywordflow}{if} (!drv_server_vs.isValid())
+285     \{
+286        yError(\textcolor{stringliteral}{"Could not run VisualServoingClient!"});
+287        \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+288     \}
+289 
+290     drv_server_vs.view(visual_servoing_right);
+291     \textcolor{keywordflow}{if} (visual_servoing_right == NULL)
+292     \{
+293        yError(\textcolor{stringliteral}{"Could not get interfacate to VisualServoingClient!"});
+294        \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+295     \}
+296 
+297     visual_servoing_right->setGoToGoalTolerance(pixel_tol);
+298 
+299     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+300 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!execute\+Trajectory@{execute\+Trajectory}}
+\index{execute\+Trajectory@{execute\+Trajectory}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{execute\+Trajectory(std\+::string \&hand)}{executeTrajectory(std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::execute\+Trajectory (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a3e8874281c526a591d3e3b4301b6f013}
+
+
+Execute the entire trajectory @ hand is the selected hand for moving. 
+
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 1123 of file grasp\+Execution.\+cpp.
+
+
+
+References Grasp\+Computation\+::trajectory\+\_\+left, and Grasp\+Computation\+::trajectory\+\_\+right.
+
+
+\begin{DoxyCode}
+1124 \{
+1125     trajectory.clear();
+1126     \textcolor{keywordflow}{if} (trajectory_right.size()>0 || trajectory_left.size()>0)
+1127     \{
+1128         \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"right"})
+1129         \{
+1130             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_right.size(); i++)
+1131             \{               
+1132                 trajectory.push\_back(trajectory_right[i]);
+1133             \}
+1134 
+1135             \textcolor{keywordflow}{if} (lift_object==\textcolor{keyword}{true})
+1136                 liftObject(trajectory, trajectory_right.size());
+1137         \}
+1138         \textcolor{keywordflow}{else}
+1139         \{
+1140             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_left.size(); i++)
+1141             \{
+1142                 trajectory.push\_back(trajectory_left[i]);
+1143             \}
+1144 
+1145             \textcolor{keywordflow}{if} (lift_object==\textcolor{keyword}{true})
+1146                 liftObject(trajectory, trajectory_left.size());
+1147         \}
+1148 
+1149         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Complete trajectory "};
+1150         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} k=0; k<trajectory.size(); k++)
+1151         \{
+1152             yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Waypoint "}<<k<<trajectory[k].toString(3,3);
+1153         \}
+1154 
+1155         \textcolor{keywordflow}{if} (i==-1)
+1156         \{
+1157             reached=\textcolor{keyword}{false};
+1158             reached_tot=\textcolor{keyword}{false};
+1159             i++;
+1160         \}
+1161 
+1162         \textcolor{keywordflow}{if} ((reached==\textcolor{keyword}{false}) && (i<=trajectory.size()) && (i>=0))
+1163         \{
+1164             yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Waypoint: "}<<i<<\textcolor{stringliteral}{" : "}<<trajectory[i].toString(3,3);
+1165 
+1166             \textcolor{keywordflow}{if} ((visual_serv==\textcolor{keyword}{false}) || (hand==\textcolor{stringliteral}{"left"}) || (i != trajectory_right.size()-1))
+1167                 reached=reachWaypoint(i, hand);
+1168             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} ((visual_serv==\textcolor{keyword}{true}) && (hand==\textcolor{stringliteral}{"right"}) && (i == 
+      trajectory_right.size()-1))
+1169                 reached=reachWithVisual(i,hand);
+1170 
+1171             \textcolor{keywordflow}{if} (grasp==\textcolor{keyword}{true} && reached==\textcolor{keyword}{true})
+1172             \{
+1173                 \textcolor{keywordflow}{if} (((i==trajectory_right.size()-1) && (hand==\textcolor{stringliteral}{"right"})) || ((i==
+      trajectory_left.size()-1) && (hand==\textcolor{stringliteral}{"left"})))
+1174                     reached=graspObject(hand);
+1175 
+1176                 \textcolor{keywordflow}{if} (((i==trajectory_right.size()+1) && (hand==\textcolor{stringliteral}{"right"})) || ((i==
+      trajectory_left.size()+1) && (hand==\textcolor{stringliteral}{"left"})))
+1177                     reached=releaseObject(hand);
+1178             \}
+1179         \}
+1180 
+1181         \textcolor{keywordflow}{if} (reached==\textcolor{keyword}{true})
+1182         \{
+1183             i++;
+1184         \}
+1185 
+1186         \textcolor{keywordflow}{if} ((i==trajectory.size()) && (reached==\textcolor{keyword}{true}))
+1187             reached_tot=\textcolor{keyword}{true};
+1188 
+1189         \textcolor{keywordflow}{if} (reached_tot==\textcolor{keyword}{true})
+1190             i=-1;
+1191 
+1192         reached=\textcolor{keyword}{false};
+1193 
+1194         \textcolor{keywordflow}{return} reached_tot;
+1195     \}
+1196     \textcolor{keywordflow}{else}
+1197     \{
+1198         yError()<<\textcolor{stringliteral}{"[GraspExecution]: No trajectory available!"};
+1199         \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+1200     \}
+1201 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!get\+Pose\+Par@{get\+Pose\+Par}}
+\index{get\+Pose\+Par@{get\+Pose\+Par}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{get\+Pose\+Par()}{getPosePar()}}]{\setlength{\rightskip}{0pt plus 5cm}Property Grasp\+Execution\+::get\+Pose\+Par (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a52376a3e84d6b4bd90ea25a8611c49da}
+
+
+Get all pose parameters for grasp execution. 
+
+\begin{DoxyReturn}{Returns}
+a Property with all the grasp execution options 
+\end{DoxyReturn}
+
+
+Definition at line 942 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+943 \{
+944     LockGuard lg(mutex);
+945 
+946     Property advOptions;
+947     advOptions.put(\textcolor{stringliteral}{"robot"},robot);
+948     advOptions.put(\textcolor{stringliteral}{"hand"},left_or_right);
+949     advOptions.put(\textcolor{stringliteral}{"five\_fingers"},five\_fingers);
+950     \textcolor{keywordflow}{if} (lift_object)
+951         advOptions.put(\textcolor{stringliteral}{"lift\_object"},\textcolor{stringliteral}{"on"});
+952     \textcolor{keywordflow}{else}
+953         advOptions.put(\textcolor{stringliteral}{"lift\_object"},\textcolor{stringliteral}{"off"});
+954 
+955     \textcolor{keywordflow}{if} (visual_serv)
+956         advOptions.put(\textcolor{stringliteral}{"visual\_servoing"},\textcolor{stringliteral}{"on"});
+957     \textcolor{keywordflow}{else}
+958         advOptions.put(\textcolor{stringliteral}{"visual\_servoing"},\textcolor{stringliteral}{"off"});
+959     \textcolor{keywordflow}{if} (use_direct_kin)
+960         advOptions.put(\textcolor{stringliteral}{"use\_direct\_kin"},\textcolor{stringliteral}{"on"});
+961     \textcolor{keywordflow}{else}
+962         advOptions.put(\textcolor{stringliteral}{"use\_direct\_kin"},\textcolor{stringliteral}{"off"});
+963     \textcolor{keywordflow}{if} (compliant)
+964         advOptions.put(\textcolor{stringliteral}{"compliant"},\textcolor{stringliteral}{"on"});
+965     \textcolor{keywordflow}{else}
+966         advOptions.put(\textcolor{stringliteral}{"compliant"},\textcolor{stringliteral}{"off"});
+967     advOptions.put(\textcolor{stringliteral}{"traj\_time"},traj_time);
+968     advOptions.put(\textcolor{stringliteral}{"pixel\_tol"},pixel_tol);
+969     advOptions.put(\textcolor{stringliteral}{"traj\_tol"},traj_tol);
+970     advOptions.put(\textcolor{stringliteral}{"lift\_z"},lift_z);
+971     Bottle s;
+972     Bottle &pd=s.addList();
+973     pd.addDouble(shift_right[0]); pd.addDouble(shift_right[1]);
+974     pd.addDouble(shift_right[2]);
+975     advOptions.put(\textcolor{stringliteral}{"shift\_right"},s.get(0));
+976     Bottle &pd2=s.addList();
+977     pd2.addDouble(shift_left[0]); pd2.addDouble(shift_left[1]);
+978     pd2.addDouble(shift_left[2]);
+979     advOptions.put(\textcolor{stringliteral}{"shift\_left"},s.get(0));
+980 
+981     Bottle planeb;
+982     Bottle &p2=planeb.addList();
+983     p2.addDouble(home_right[0]); p2.addDouble(home_right[1]);
+984     p2.addDouble(home_right[2]); p2.addDouble(home_right[3]);
+985     p2.addDouble(home_right[4]); p2.addDouble(home_right[5]); p2.addDouble(
+      home_right[6]);
+986     advOptions.put(\textcolor{stringliteral}{"home\_right"}, planeb.get(0));
+987 
+988     Bottle planel;
+989     Bottle &p2l=planel.addList();
+990     p2l.addDouble(home_left[0]); p2l.addDouble(home_left[1]);
+991     p2l.addDouble(home_left[2]); p2l.addDouble(home_left[3]);
+992     p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]); p2l.addDouble(
+      home_left[6]);
+993     advOptions.put(\textcolor{stringliteral}{"home\_left"}, planel.get(0));
+994 
+995     Bottle planebask\_r;
+996     Bottle &pk\_r=planebask\_r.addList();
+997     pk\_r.addDouble(basket_right[0]); pk\_r.addDouble(basket_right[1]);
+998     pk\_r.addDouble(basket_right[2]); pk\_r.addDouble(basket_right[3]);
+999     pk\_r.addDouble(basket_right[4]); pk\_r.addDouble(basket_right[5]);pk\_r.addDouble(
+      basket_right[6]);
+1000     movement_par.put(\textcolor{stringliteral}{"basket\_right"}, planebask\_r.get(0));
+1001 
+1002     Bottle planebask\_l;
+1003     Bottle &pk2\_l=planebask\_l.addList();
+1004     pk2\_l.addDouble(basket_left[0]); pk2\_l.addDouble(basket_left[1]);
+1005     pk2\_l.addDouble(basket_left[2]); pk2\_l.addDouble(basket_left[3]);
+1006     pk2\_l.addDouble(basket_left[4]); pk2\_l.addDouble(basket_left[5]);pk2\_l.addDouble(
+      basket_left[6]);
+1007     movement_par.put(\textcolor{stringliteral}{"basket\_left"}, planebask\_l.get(0));
+1008 
+1009     Bottle planestiff\_r;
+1010     Bottle &pkr=planestiff\_r.addList();
+1011     pkr.addDouble(stiff_right[0]); pkr.addDouble(stiff_right[1]);
+1012     pkr.addDouble(stiff_right[2]); pkr.addDouble(stiff_right[3]);
+1013     pkr.addDouble(stiff_right[4]);
+1014     movement_par.put(\textcolor{stringliteral}{"stiff\_right"}, planestiff\_r.get(0));
+1015 
+1016     Bottle planestiff\_l;
+1017     Bottle &pk2l=planestiff\_l.addList();
+1018     pk2l.addDouble(stiff_left[0]); pk2l.addDouble(stiff_left[1]);
+1019     pk2l.addDouble(stiff_left[2]); pk2l.addDouble(stiff_left[3]);
+1020     pk2l.addDouble(stiff_left[4]);
+1021     movement_par.put(\textcolor{stringliteral}{"stiff\_left"}, planestiff\_l.get(0));
+1022 
+1023     Bottle planedamp\_r;
+1024     Bottle &pkl=planedamp\_r.addList();
+1025     pkl.addDouble(damp_right[0]); pkl.addDouble(damp_right[1]);
+1026     pkl.addDouble(damp_right[2]); pkl.addDouble(damp_right[3]);
+1027     pkl.addDouble(damp_right[4]);
+1028     movement_par.put(\textcolor{stringliteral}{"damp\_right"}, planedamp\_r.get(0));
+1029 
+1030     Bottle planedamp\_l;
+1031     Bottle &pk2=planedamp\_l.addList();
+1032     pk2.addDouble(damp_left[0]); pk2.addDouble(damp_left[1]);
+1033     pk2.addDouble(damp_left[2]); pk2.addDouble(damp_left[3]);
+1034     pk2.addDouble(damp_left[4]);
+1035     movement_par.put(\textcolor{stringliteral}{"damp\_left"}, planedamp\_l.get(0));
+1036 
+1037     \textcolor{keywordflow}{return} advOptions;
+1038 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!get\+Poses@{get\+Poses}}
+\index{get\+Poses@{get\+Poses}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{get\+Poses(const yarp\+::os\+::\+Property \&poses)}{getPoses(const yarp::os::Property &poses)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasp\+Execution\+::get\+Poses (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{poses}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_adfd05fa913582df6bfaaa80ec941f468}
+
+
+Acquire poses to be reached from the grasp\+Computation class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em poses} & are the poses computed from grasp\+Computation class \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 1041 of file grasp\+Execution.\+cpp.
+
+
+
+References Grasp\+Computation\+::trajectory\+\_\+left, and Grasp\+Computation\+::trajectory\+\_\+right.
+
+
+\begin{DoxyCode}
+1042 \{
+1043     LockGuard lg(mutex);
+1044     Vector tmp(6,0.0);
+1045     trajectory_right.clear();
+1046     trajectory_left.clear();
+1047 
+1048     Bottle &pose2=poses.findGroup(\textcolor{stringliteral}{"trajectory\_right"});
+1049 
+1050     \textcolor{keywordflow}{if} (!pose2.isNull())
+1051     \{
+1052         Bottle *p=pose2.get(1).asList();
+1053         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<p->size(); i++)
+1054         \{
+1055             Bottle *p1=p->get(i).asList();
+1056 
+1057 
+1058             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j=0; j<p1->size(); j++)
+1059             \{
+1060                 tmp[j]=p1->get(j).asDouble();
+1061             \}
+1062 
+1063             trajectory_right.push\_back(tmp);
+1064         \}
+1065 
+1066         \textcolor{keywordflow}{if} (norm(shift_right)>0.0)
+1067         \{
+1068             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} k=0; k<trajectory_right.size(); k++)
+1069             \{
+1070                 yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Waypoint right"}<<k<<
+      trajectory_right[k].toString(3,3);
+1071                 
+1072                 trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +
+      shift_right);
+1073                 yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Shifted waypoint right"}<<k<<
+      trajectory_right[k].toString(3,3);
+1074             \}
+1075         \}
+1076     \}
+1077 
+1078     Bottle &pose3=poses.findGroup(\textcolor{stringliteral}{"trajectory\_left"});
+1079 
+1080     \textcolor{keywordflow}{if} (!pose3.isNull())
+1081     \{
+1082         Bottle *p=pose3.get(1).asList();
+1083         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<p->size(); i++)
+1084         \{
+1085             Bottle *p1=p->get(i).asList();
+1086 
+1087 
+1088             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j=0; j<p1->size(); j++)
+1089             \{
+1090                 tmp[j]=p1->get(j).asDouble();
+1091             \}
+1092             trajectory_left.push\_back(tmp);
+1093         \}
+1094 
+1095         \textcolor{keywordflow}{if} (norm(shift_left)>0.0)
+1096         \{
+1097             yDebug()<<\textcolor{stringliteral}{"shift left "}<<shift_left.toString(3,3);
+1098             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} k=0; k<trajectory_left.size(); k++)
+1099             \{
+1100                 yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Waypoint left"}<<k<<trajectory_left[k].toString(3,3);
+1101                 trajectory_left[k].setSubvector(0,trajectory_left[k].subVector(0,2) +
+      shift_left);
+1102                 yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Shifted waypoint left"}<<k<<
+      trajectory_left[k].toString(3,3);
+1103             \}
+1104         \}
+1105     \}
+1106 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!go\+Home@{go\+Home}}
+\index{go\+Home@{go\+Home}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{go\+Home(const std\+::string \&hand)}{goHome(const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::go\+Home (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_af5b1eca953b18c03cddbaea699dd921d}
+
+
+Ask the robot arm to go back to home position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & is the name of the selected hand \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 1492 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1493 \{
+1494     \textcolor{keywordtype}{bool} done;
+1495     \textcolor{keywordtype}{int} context\_tmp;
+1496 
+1497 
+1498     \textcolor{keywordflow}{if} (visual_serv)
+1499         visual_servoing_right->stopFacilities();
+1500 
+1501     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"right"})
+1502     \{
+1503         icart\_right->storeContext(&context\_tmp);
+1504         \textcolor{keywordtype}{double} min, max;
+1505         yDebug()<<\textcolor{stringliteral}{"Setting torso to 0"};
+1506         icart\_right->setLimits(0, 0.0, 0.0);
+1507         icart\_right->setLimits(1, 0.0, 0.0);
+1508         icart\_right->setLimits(2, 0.0, 0.0);
+1509 
+1510         icart\_right->getLimits(0, &min, &max);
+1511         yDebug()<<\textcolor{stringliteral}{"Get limit of pitch"}<<min<<max;
+1512 
+1513         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: opening hand ... "};
+1514         handContr_right.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1515         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: going back home: "}<<home_right.toString(3,3);
+1516         icart\_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
+1517         \textcolor{keywordflow}{if} (compliant)
+1518         \{
+1519             icart\_right->waitMotionDone(0.1, 2.0);
+1520             done=\textcolor{keyword}{true};
+1521         \}
+1522         \textcolor{keywordflow}{else}
+1523         \{
+1524             icart\_right->waitMotionDone();
+1525             icart\_right->checkMotionDone(&done);
+1526         \}
+1527 
+1528         \textcolor{keywordflow}{if} (done)
+1529         \{
+1530              Vector x\_reached(3,0.0);
+1531              Vector o\_reached(4,0.0);
+1532              icart\_right->getPose(x\_reached, o\_reached);
+1533              yDebug()<<\textcolor{stringliteral}{"[Grasp Execution]: Waypoint "}<<i<< \textcolor{stringliteral}{" reached with error in position: "}<<norm(
+      home_right.subVector(0,2)-x\_reached)<<\textcolor{stringliteral}{" and in orientation: "}<<norm(home_right.subVector(3,6)-o\_reached);
+1534              icart\_right->restoreContext(context\_tmp);
+1535 
+1536              icart\_right->getLimits(0, &min, &max);
+1537              yDebug()<<\textcolor{stringliteral}{"Get limits os pitch restored"}<<min<<max;
+1538         \}
+1539     \}
+1540     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"left"})
+1541     \{
+1542         icart\_left->storeContext(&context\_tmp);
+1543         \textcolor{keywordtype}{double} min, max;
+1544         yDebug()<<\textcolor{stringliteral}{"Setting torso to 0"};
+1545         icart\_left->setLimits(0, 0.0, 0.0);
+1546         icart\_left->setLimits(1, 0.0, 0.0);
+1547         icart\_left->setLimits(2, 0.0, 0.0);
+1548 
+1549         icart\_left->getLimits(0, &min, &max);
+1550         yDebug()<<\textcolor{stringliteral}{"Get limit of pitch"}<<min<<max;
+1551         
+1552 
+1553         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: opening hand ... "};
+1554         handContr\_left.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1555         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: going back home: "}<<home_left.toString(3,3);
+1556         icart\_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
+1557         \textcolor{keywordflow}{if} (compliant)
+1558         \{
+1559             icart\_left->waitMotionDone(0.1, 2.0);
+1560             done=\textcolor{keyword}{true};
+1561         \}
+1562         \textcolor{keywordflow}{else}
+1563         \{
+1564             icart\_left->waitMotionDone();
+1565             icart\_left->checkMotionDone(&done);
+1566         \}
+1567 
+1568         \textcolor{keywordflow}{if} (done)
+1569         \{
+1570              Vector x\_reached(3,0.0);
+1571              Vector o\_reached(4,0.0);
+1572              icart\_left->getPose(x\_reached, o\_reached);
+1573              yDebug()<<\textcolor{stringliteral}{"[Grasp Execution]: Waypoint "}<<i<< \textcolor{stringliteral}{" reached with error in position: "}<<norm(
+      home_left.subVector(0,2)-x\_reached)<<\textcolor{stringliteral}{" and in orientation: "}<<norm(home_left.subVector(3,6)-o\_reached);
+1574              icart\_left->restoreContext(context\_tmp);        
+1575         \}
+1576     \}
+1577 
+1578     \textcolor{keywordflow}{return} done;
+1579 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!go\+To\+Basket@{go\+To\+Basket}}
+\index{go\+To\+Basket@{go\+To\+Basket}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{go\+To\+Basket(const std\+::string \&hand)}{goToBasket(const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::go\+To\+Basket (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a28f36f843baee76b9ec350244fd33694}
+
+
+Ask the robot arm to go to the basket on its side. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & is the name of the selected hand \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 1582 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1583 \{
+1584     \textcolor{keywordtype}{bool} done;
+1585     \textcolor{keywordtype}{int} context\_tmp;
+1586 
+1587     \textcolor{keywordflow}{if} (visual_serv)
+1588         visual_servoing_right->stopFacilities();
+1589 
+1590     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"right"})
+1591     \{
+1592         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: going to the basket: "}<<basket_right.toString(3,3);
+1593         icart\_right->goToPoseSync(basket_right.subVector(0,2),basket_right.subVector(3,6));
+1594         \textcolor{keywordflow}{if} (compliant)
+1595         \{
+1596             icart\_right->waitMotionDone(0.1, 2.0);
+1597             done=\textcolor{keyword}{true};
+1598         \}
+1599         \textcolor{keywordflow}{else}
+1600         \{
+1601             icart\_right->waitMotionDone();
+1602             icart\_right->checkMotionDone(&done);
+1603         \}
+1604 
+1605         \textcolor{keywordflow}{if} (done)
+1606         \{
+1607              Vector x\_reached(3,0.0);
+1608              Vector o\_reached(4,0.0);
+1609              icart\_right->getPose(x\_reached, o\_reached);
+1610              yDebug()<<\textcolor{stringliteral}{"[Grasp Execution]: Waypoint "}<<i<< \textcolor{stringliteral}{" reached with error in position: "}<<norm(
+      basket_right.subVector(0,2)-x\_reached)<<\textcolor{stringliteral}{" and in orientation: "}<<norm(
+      basket_right.subVector(3,6)-o\_reached);
+1611         \}
+1612         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: opening hand ... "};
+1613         handContr_right.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1614 
+1615     \}
+1616     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"left"})
+1617     \{
+1618         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: going to the basket: "}<<basket_left.toString(3,3);
+1619         icart\_left->goToPoseSync(basket_left.subVector(0,2),basket_left.subVector(3,6));
+1620         \textcolor{keywordflow}{if} (compliant)
+1621         \{
+1622             icart\_left->waitMotionDone(0.1, 2.0);
+1623             done=\textcolor{keyword}{true};
+1624         \}
+1625         \textcolor{keywordflow}{else}
+1626         \{
+1627             icart\_left->waitMotionDone();
+1628             icart\_left->checkMotionDone(&done);
+1629         \}
+1630 
+1631         \textcolor{keywordflow}{if} (done)
+1632         \{
+1633              Vector x\_reached(3,0.0);
+1634              Vector o\_reached(4,0.0);
+1635              icart\_left->getPose(x\_reached, o\_reached);
+1636              yDebug()<<\textcolor{stringliteral}{"[Grasp Execution]: Waypoint "}<<i<< \textcolor{stringliteral}{" reached with error in position: "}<<norm(
+      basket_left.subVector(0,2)-x\_reached)<<\textcolor{stringliteral}{" and in orientation: "}<<norm(basket_left.subVector(3,6)-o\_reached);
+1637         \}
+1638         yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: opening hand ... "};
+1639         handContr\_left.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1640     \}
+1641 
+1642     \textcolor{keywordflow}{return} done;
+1643 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!grasp\+Object@{grasp\+Object}}
+\index{grasp\+Object@{grasp\+Object}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{grasp\+Object(const std\+::string \&hand)}{graspObject(const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::grasp\+Object (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_af02296b437dec003626a448d399bba33}
+
+
+Grasp the object with the tactile control library. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & is the hand selected for moving and grasping \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the grasp is completed 
+\end{DoxyReturn}
+
+
+Definition at line 1663 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1664 \{
+1665     yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Grasping object .."};
+1666     \textcolor{keywordtype}{bool} f;
+1667     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"right"})
+1668     \{
+1669         handContr_right.openHand(\textcolor{keyword}{false},\textcolor{keyword}{true});
+1670         handContr_right.closeHand(\textcolor{keyword}{true});
+1671         f=handContr_right.isHandClose();
+1672     \}
+1673     \textcolor{keywordflow}{else}
+1674     \{
+1675         handContr\_left.openHand(\textcolor{keyword}{false},\textcolor{keyword}{true});
+1676         handContr\_left.closeHand(\textcolor{keyword}{true});
+1677         f=handContr\_left.isHandClose();
+1678     \}
+1679 
+1680     \textcolor{keywordflow}{return} f;
+1681 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!lift\+Object@{lift\+Object}}
+\index{lift\+Object@{lift\+Object}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{lift\+Object(std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&traj, int index)}{liftObject(std::deque< yarp::sig::Vector > &traj, int index)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasp\+Execution\+::lift\+Object (
+\begin{DoxyParamCaption}
+\item[{std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \&}]{traj, }
+\item[{int}]{index}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_aeb93a25964087a22a2580f251fed7e80}
+
+
+Lift object for testing the stability of the pose. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em traj} & is a deque of Vectors including the trajectory waypoint \\
+\hline
+{\em index} & is index of the waypoint including the lifting movement \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 1652 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1653 \{
+1654     Vector waypoint\_lift(6,0.0);
+1655     waypoint\_lift=trajectory[index-1];
+1656     waypoint\_lift[2]+=lift_z;
+1657 
+1658     traj.push\_back(waypoint\_lift);
+1659     \textcolor{comment}{//traj.push\_back(trajectory[index-1]);}
+1660 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!reach\+Waypoint@{reach\+Waypoint}}
+\index{reach\+Waypoint@{reach\+Waypoint}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{reach\+Waypoint(int i, std\+::string \&hand)}{reachWaypoint(int i, std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::reach\+Waypoint (
+\begin{DoxyParamCaption}
+\item[{int}]{i, }
+\item[{std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a1c53f81a101ea05e6c4bf3ad49329705}
+
+
+Reach a single waypoint of the trajectory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & is the index of the waypoint \\
+\hline
+{\em hand} & is the name of the selected hand for moving \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 1204 of file grasp\+Execution.\+cpp.
+
+
+
+References Grasp\+Computation\+::trajectory\+\_\+right.
+
+
+\begin{DoxyCode}
+1205 \{
+1206     \textcolor{keywordtype}{bool} done=\textcolor{keyword}{false};
+1207     \textcolor{keywordtype}{int} context\_tmp;
+1208     Bottle *force;
+1209     Vector forceThre(3,0.0);
+1210 
+1211     \textcolor{comment}{//done\_force=false;}
+1212 
+1213     \textcolor{keywordtype}{double} min, max;
+1214 
+1215     Vector x(3,0.0);
+1216     Vector o(4,0.0);
+1217 
+1218     Vector newDof, curDof;
+1219     newDof.resize(3,1);
+1220     newDof[1]=0;
+1221 
+1222     Vector limit\_min(10,0.0);
+1223     Vector limit\_max(10,0.0);
+1224 
+1225     x=trajectory[i].subVector(0,2);
+1226     \textcolor{keywordflow}{if} (trajectory[i].size()==6)
+1227         o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
+1228     \textcolor{keywordflow}{else}
+1229         o=trajectory[i].subVector(3,6);
+1230 
+1231     \textcolor{keywordflow}{if} (i == 0)
+1232             yInfo()<<\textcolor{stringliteral}{"Whole body calibration completed "}<<calibrateWholeBody();
+1233 
+1234     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"right"})
+1235     \{        
+1236         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+1237 
+1238         \textcolor{keywordflow}{if} (i==0)
+1239         \{
+1240             yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: opening hand ... "};
+1241             handContr_right.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1242         \}
+1243 
+1244         icart\_right->goToPoseSync(x,o);
+1245 
+1246         \textcolor{keywordflow}{if} ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
+1247         \{  
+1248             force=portForces_right.read(\textcolor{keyword}{false});    
+1249 
+1250             yDebug()<<\textcolor{stringliteral}{"1"};     
+1251             \textcolor{keywordflow}{while} (!done)
+1252             \{
+1253                  yDebug()<<\textcolor{stringliteral}{"2"};    
+1254                 force=portForces_right.read(\textcolor{keyword}{false});
+1255                 \textcolor{keywordflow}{if} (force!=NULL)
+1256                 \{
+1257                     yInfo()<<\textcolor{stringliteral}{"Forces of right arm detected while moving     "}<<force->toString();
+1258                     forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  
+      forceThre[2]=force->get(2).asDouble();       
+1259                     yDebug()<<\textcolor{stringliteral}{"forces 3 "}<<forceThre.toString();  
+1260                     yDebug()<<\textcolor{stringliteral}{"Norm forces "}<<norm(forceThre);  
+1261 
+1262                     \textcolor{keywordflow}{if} (norm(forceThre)>=force_threshold)
+1263                     \{
+1264                          \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+1265                     \}
+1266                     
+1267                 \}
+1268                 \textcolor{keywordflow}{else}
+1269                     yDebug()<<\textcolor{stringliteral}{"No forces received"};
+1270 
+1271                 Time::delay(0.01);
+1272 
+1273                 icart\_right->checkMotionDone(&done);
+1274                 
+1275             \}
+1276         \}
+1277         \textcolor{keywordflow}{else}
+1278         \{
+1279 
+1280             \textcolor{keywordflow}{if} (compliant)
+1281             \{
+1282                 icart\_right->waitMotionDone(0.1, 2.0);
+1283                 done=\textcolor{keyword}{true};
+1284             \}
+1285             \textcolor{keywordflow}{else}
+1286             \{
+1287                 icart\_right->waitMotionDone();
+1288                 icart\_right->checkMotionDone(&done);
+1289             \}
+1290         \}
+1291 
+1292         \textcolor{keywordflow}{if} (done)
+1293         \{
+1294              Vector x\_reached(3,0.0);
+1295              Vector o\_reached(4,0.0);
+1296              icart\_right->getPose(x\_reached, o\_reached);
+1297              yDebug()<<\textcolor{stringliteral}{"[Grasp Execution]: Waypoint "}<<i<< \textcolor{stringliteral}{" reached with error in position: "}<<norm(x-
+      x\_reached)<<\textcolor{stringliteral}{" and in orientation: "}<<norm(o-o\_reached);
+1298         \}
+1299     \}
+1300     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"left"})
+1301     \{
+1302         yDebug()<<\textcolor{stringliteral}{"Torso DOFS "}<<curDof.toString(3,3);
+1303 
+1304         \textcolor{keywordflow}{if} (i==0)
+1305         \{
+1306             yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: opening hand ... "};
+1307             handContr\_left.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1308         \}
+1309 
+1310         icart\_left->goToPoseSync(x,o);
+1311 
+1312         \textcolor{keywordflow}{if} ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
+1313         \{
+1314             force=portForces_left.read(\textcolor{keyword}{false});
+1315             \textcolor{keywordflow}{while} (!done)
+1316             \{
+1317                 force=portForces_left.read(\textcolor{keyword}{false});
+1318                 \textcolor{keywordflow}{if} (force!=NULL)
+1319                 \{ 
+1320                     yInfo()<<\textcolor{stringliteral}{"Forces of right arm detected while moving     "}<<force->toString();
+1321                     forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  
+      forceThre[2]=force->get(2).asDouble();       
+1322                     yDebug()<<\textcolor{stringliteral}{"forces 3 "}<<forceThre.toString();  
+1323                     yDebug()<<\textcolor{stringliteral}{"Norm forces "}<<norm(forceThre);  
+1324 
+1325                     \textcolor{keywordflow}{if} (norm(forceThre)>=force_threshold)
+1326                     \{
+1327                          \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+1328                     \}
+1329                     
+1330                 \}
+1331                 \textcolor{keywordflow}{else}
+1332                     yDebug()<<\textcolor{stringliteral}{"No forces received"};
+1333 
+1334                 Time::delay(0.01);
+1335 
+1336                 icart\_left->checkMotionDone(&done);
+1337                 
+1338             \}
+1339         \}
+1340         \textcolor{keywordflow}{else}
+1341         \{
+1342 
+1343             \textcolor{keywordflow}{if} (compliant)
+1344             \{
+1345                 icart\_left->waitMotionDone(0.1, 2.0);
+1346                 done=\textcolor{keyword}{true};
+1347             \}
+1348             \textcolor{keywordflow}{else}
+1349             \{
+1350                 icart\_left->waitMotionDone();
+1351                 icart\_left->checkMotionDone(&done);
+1352             \}
+1353         \}
+1354 
+1355         \textcolor{keywordflow}{if} (done)
+1356         \{
+1357             Vector x\_reached(3,0.0);
+1358             Vector o\_reached(4,0.0);
+1359             icart\_left->getPose(x\_reached, o\_reached);
+1360             yDebug()<<\textcolor{stringliteral}{"[Grasp Execution]: Waypoint "}<<i<< \textcolor{stringliteral}{" reached with error in position: "}<<norm(x-
+      x\_reached)<<\textcolor{stringliteral}{" and in orientation: "}<<norm(o-o\_reached);
+1361         \}
+1362     \}
+1363 
+1364     \textcolor{keywordflow}{return} done;
+1365 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!reach\+With\+Visual@{reach\+With\+Visual}}
+\index{reach\+With\+Visual@{reach\+With\+Visual}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{reach\+With\+Visual(int i, std\+::string \&hand)}{reachWithVisual(int i, std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::reach\+With\+Visual (
+\begin{DoxyParamCaption}
+\item[{int}]{i, }
+\item[{std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_acc01cbdd4c863136429951f46ddb951b}
+
+
+Reach a single waypoint of the trajectory with the visual-\/servoing controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & is the index of the waypoint \\
+\hline
+{\em hand} & is the name of the selected hand for moving \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true/false on success/failure 
+\end{DoxyReturn}
+
+
+Definition at line 1368 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1369 \{
+1370     Vector x(3,0.0);
+1371     Vector o(4,0.0);
+1372     \textcolor{keywordtype}{bool} done=\textcolor{keyword}{false};
+1373     Bottle *force;
+1374     Vector forceThre(3,0.0);
+1375 
+1376     x=trajectory[i].subVector(0,2);
+1377     \textcolor{keywordflow}{if} (trajectory[i].size()==6)
+1378         o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
+1379     \textcolor{keywordflow}{else}
+1380         o=trajectory[i].subVector(3,6);
+1381 
+1382     visual_servoing_right->initFacilities(use_direct_kin);
+1383 
+1384     visual_servoing_right->goToGoal(x,o);
+1385     
+1386     \textcolor{keywordflow}{while} (!done)
+1387     \{
+1388         done=!visual_servoing_right->checkVisualServoingController();
+1389 
+1390         force=portForces_right.read(\textcolor{keyword}{false});
+1391         \textcolor{keywordflow}{if} (force!=NULL)
+1392         \{
+1393             yInfo()<<\textcolor{stringliteral}{"Forces of right arm detected while moving     "}<<force->toString();
+1394             forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=
+      force->get(2).asDouble();       
+1395             yDebug()<<\textcolor{stringliteral}{"forces 3 "}<<forceThre.toString();  
+1396             yDebug()<<\textcolor{stringliteral}{"Norm forces "}<<norm(forceThre);  
+1397 
+1398             \textcolor{keywordflow}{if} (norm(forceThre)>=force_threshold)
+1399             \{
+1400                  visual_servoing_right->stopController();
+1401                  done=\textcolor{keyword}{true};
+1402                  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+1403             \}
+1404             
+1405         \}
+1406         \textcolor{keywordflow}{else}
+1407             yDebug()<<\textcolor{stringliteral}{"No forces received"};
+1408 
+1409         Time::delay(0.01);
+1410     \}
+1411 
+1412     visual_servoing_right->stopFacilities();
+1413 
+1414     \textcolor{keywordflow}{return} done;
+1415 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!release\+Object@{release\+Object}}
+\index{release\+Object@{release\+Object}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{release\+Object(const std\+::string \&hand)}{releaseObject(const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Execution\+::release\+Object (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_aa7cce148b98247a05f03c8ed31f1cb25}
+
+
+Open the hand that kis grasping the object with the tactile control library. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & is the hand selected for moving and grasping \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the hand is open 
+\end{DoxyReturn}
+
+
+Definition at line 1684 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+1685 \{
+1686     yDebug()<<\textcolor{stringliteral}{"[GraspExecution]: Releasing object .."};
+1687     \textcolor{keywordtype}{bool} f;
+1688     \textcolor{keywordflow}{if} (hand==\textcolor{stringliteral}{"right"})
+1689     \{
+1690         handContr_right.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1691     \}
+1692     \textcolor{keywordflow}{else}
+1693     \{
+1694         handContr\_left.openHand(\textcolor{keyword}{true}, \textcolor{keyword}{true});
+1695     \}
+1696 
+1697     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+1698 \}
+\end{DoxyCode}
+\index{Grasp\+Execution@{Grasp\+Execution}!set\+Pose\+Par@{set\+Pose\+Par}}
+\index{set\+Pose\+Par@{set\+Pose\+Par}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{set\+Pose\+Par(const yarp\+::os\+::\+Property \&new\+Options, bool first\+\_\+time)}{setPosePar(const yarp::os::Property &newOptions, bool first_time)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasp\+Execution\+::set\+Pose\+Par (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{new\+Options, }
+\item[{bool}]{first\+\_\+time}
+\end{DoxyParamCaption}
+)}\label{classGraspExecution_a97ba4b07275190fbe6a6c1a72955e937}
+
+
+Set all pose parameters for grasp execution. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Options} & is the property with the new options to be set \\
+\hline
+{\em first\+\_\+time} & take into account if the options have been set once or not \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 385 of file grasp\+Execution.\+cpp.
+
+
+\begin{DoxyCode}
+386 \{
+387     LockGuard lg(mutex);
+388 
+389     \textcolor{keywordtype}{string} rob=newOptions.find(\textcolor{stringliteral}{"robot"}).asString();
+390 
+391     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"robot"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+392     \{
+393         robot=\textcolor{stringliteral}{"icubSim"};
+394     \}
+395     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"robot"}).isNull())
+396     \{
+397         \textcolor{keywordflow}{if} ((rob==\textcolor{stringliteral}{"icub"}) || (rob==\textcolor{stringliteral}{"icubSim"}))
+398         \{
+399             robot=rob;
+400         \}
+401         \textcolor{keywordflow}{else}
+402         \{
+403             robot=\textcolor{stringliteral}{"icubSim"};
+404         \}
+405     \}
+406 
+407     \textcolor{keywordtype}{string} han=newOptions.find(\textcolor{stringliteral}{"hand"}).asString();
+408 
+409     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"hand"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+410     \{
+411         left_or_right=\textcolor{stringliteral}{"both"};
+412     \}
+413     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"hand"}).isNull())
+414     \{
+415         \textcolor{keywordflow}{if} ((han==\textcolor{stringliteral}{"right"}) || (han==\textcolor{stringliteral}{"left"}) || han==\textcolor{stringliteral}{"both"})
+416         \{
+417             left_or_right=han;
+418         \}
+419         \textcolor{keywordflow}{else}
+420         \{
+421             left_or_right=\textcolor{stringliteral}{"both"};
+422         \}
+423     \}
+424 
+425     \textcolor{keywordtype}{string} lobj=newOptions.find(\textcolor{stringliteral}{"lift\_object"}).asString();
+426 
+427     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"lift\_object"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+428     \{
+429         lift_object=\textcolor{keyword}{false};
+430     \}
+431     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"lift\_object"}).isNull())
+432     \{
+433         \textcolor{keywordflow}{if} (lobj==\textcolor{stringliteral}{"on"})
+434             lift_object=\textcolor{keyword}{true};
+435         \textcolor{keywordflow}{else}
+436             lift_object=\textcolor{keyword}{false};
+437     \}
+438 
+439     \textcolor{keywordtype}{string} fivef=newOptions.find(\textcolor{stringliteral}{"five\_fingers"}).asString();
+440 
+441     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"five\_fingers"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+442     \{
+443         five\_fingers=\textcolor{stringliteral}{"false"};
+444     \}
+445     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"five\_fingers"}).isNull())
+446     \{
+447         \textcolor{keywordflow}{if} (fivef==\textcolor{stringliteral}{"on"})
+448             five\_fingers=\textcolor{stringliteral}{"true"};
+449         \textcolor{keywordflow}{else} 
+450             five\_fingers=\textcolor{stringliteral}{"false"};
+451 
+452         \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"right"}) || (left_or_right==\textcolor{stringliteral}{"both"}))
+453         \{
+454             handContr_right.set(\textcolor{stringliteral}{"useRingLittleFingers"}, Value(five\_fingers));
+455         \}
+456         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"left"}) || (\textcolor{stringliteral}{"left\_or\_right"}==\textcolor{stringliteral}{"both"}))
+457         \{
+458             handContr\_left.set(\textcolor{stringliteral}{"useRingLittleFingers"}, Value(five\_fingers));
+459         \}
+460     \}
+461 
+462     \textcolor{keywordtype}{string} vs=newOptions.find(\textcolor{stringliteral}{"visual\_servoing"}).asString();
+463 
+464     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"visual\_servoing"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+465     \{
+466         visual_serv=\textcolor{keyword}{false};
+467     \}
+468     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"visual\_servoing"}).isNull())
+469     \{
+470         \textcolor{keywordflow}{if} (vs==\textcolor{stringliteral}{"on"})
+471             visual_serv=\textcolor{keyword}{true};
+472         \textcolor{keywordflow}{else}
+473             visual_serv=\textcolor{keyword}{false};
+474     \}
+475 
+476     \textcolor{keywordtype}{string} cm=newOptions.find(\textcolor{stringliteral}{"compliant"}).asString();
+477 
+478     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"compliant"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+479     \{
+480         compliant=\textcolor{keyword}{false};
+481     \}
+482     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"compliant"}).isNull())
+483     \{
+484         \textcolor{keywordflow}{if} (cm==\textcolor{stringliteral}{"on"})
+485             compliant=\textcolor{keyword}{true};
+486         \textcolor{keywordflow}{else}
+487             compliant=\textcolor{keyword}{false};
+488     \}
+489 
+490     \textcolor{keywordtype}{string} direct\_kin=newOptions.find(\textcolor{stringliteral}{"use\_direct\_kin"}).asString();
+491 
+492     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"use\_direct\_kin"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+493     \{
+494         use_direct_kin=\textcolor{keyword}{false};
+495     \}
+496     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"use\_direct\_kin"}).isNull())
+497     \{
+498         \textcolor{keywordflow}{if} (direct\_kin==\textcolor{stringliteral}{"on"})
+499             use_direct_kin=\textcolor{keyword}{true};
+500         \textcolor{keywordflow}{else}
+501             use_direct_kin=\textcolor{keyword}{false};
+502     \}
+503 
+504     \textcolor{keywordtype}{double} ttime=newOptions.find(\textcolor{stringliteral}{"traj\_time"}).asDouble();
+505 
+506     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"traj\_time"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+507     \{
+508         traj_time=2.0;
+509     \}
+510     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"traj\_time"}).isNull())
+511     \{
+512         \textcolor{keywordflow}{if} ((ttime>=0.5) && (ttime<=5.0))
+513         \{
+514             traj_time=ttime;
+515         \}
+516         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (ttime<0.5)
+517         \{
+518             traj_time=0.5;
+519         \}
+520         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (ttime>5.0)
+521         \{
+522             traj_time=5.0;
+523         \}
+524 
+525         \textcolor{keywordflow}{if} (first\_time==\textcolor{keyword}{false})
+526         \{
+527             \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"right"}) || (left_or_right==\textcolor{stringliteral}{"both"}))
+528                 icart\_right->setTrajTime(traj_time);
+529             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"left"}) || (left_or_right==\textcolor{stringliteral}{"both"}))
+530                 icart\_left->setTrajTime(traj_time);
+531         \}
+532     \}
+533 
+534     \textcolor{keywordtype}{double} ttol=newOptions.find(\textcolor{stringliteral}{"traj\_tol"}).asDouble();
+535 
+536     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"traj\_tol"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+537     \{
+538         traj_tol=0.005;
+539     \}
+540     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"traj\_tol"}).isNull())
+541     \{
+542         \textcolor{keywordflow}{if} ((ttol>=0.001) && (ttol<=0.05))
+543         \{
+544             traj_tol=ttol;
+545         \}
+546         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (ttol<0.001)
+547         \{
+548             traj_tol=0.001;
+549         \}
+550         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (ttol>0.05)
+551         \{
+552             traj_tol=0.05;
+553         \}
+554 
+555         \textcolor{keywordflow}{if} (first\_time==\textcolor{keyword}{false})
+556         \{
+557             \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"right"}) || (left_or_right==\textcolor{stringliteral}{"both"}))
+558                 icart\_right->setInTargetTol(traj_tol);
+559             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} ((left_or_right==\textcolor{stringliteral}{"left"}) || (left_or_right==\textcolor{stringliteral}{"both"}))
+560                 icart\_left->setInTargetTol(traj_tol);
+561         \}
+562     \}
+563 
+564     \textcolor{keywordtype}{double} ptol=newOptions.find(\textcolor{stringliteral}{"pixel\_tol"}).asDouble();
+565 
+566     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"pixel\_tol"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+567     \{
+568         pixel_tol=15.0;
+569     \}
+570     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"pixel\_tol"}).isNull())
+571     \{
+572         \textcolor{keywordflow}{if} ((ptol>=1.0) && (ptol<=20.0))
+573         \{
+574             pixel_tol=ptol;
+575         \}
+576         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (ptol<1.0)
+577         \{
+578             pixel_tol=1.0;
+579         \}
+580         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (ptol>20.0)
+581         \{
+582             pixel_tol=20.0;
+583         \}
+584 
+585         \textcolor{keywordflow}{if} (first\_time==\textcolor{keyword}{false})
+586         \{
+587             visual_servoing_right->setGoToGoalTolerance(pixel_tol);
+588         \}
+589     \}
+590 
+591     \textcolor{keywordtype}{double} lz=newOptions.find(\textcolor{stringliteral}{"lift\_z"}).asDouble();
+592 
+593     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"lift\_z"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+594     \{
+595         lift_z=0.15;
+596     \}
+597     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"lift\_z"}).isNull())
+598     \{
+599         \textcolor{keywordflow}{if} ((lz>=0.05) && (lz<=0.3))
+600         \{
+601             lift_z=lz;
+602         \}
+603         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (lz<0.05)
+604         \{
+605             lift_z=0.05;
+606         \}       
+607         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (lz>0.3)
+608         \{
+609             lift_z=0.3;
+610         \}
+611     \}
+612 
+613     \textcolor{keywordtype}{double} fthres=newOptions.find(\textcolor{stringliteral}{"force\_threshold"}).asDouble();
+614 
+615     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"force\_threshold"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+616     \{
+617         force_threshold=6.0;
+618     \}
+619     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"force\_threshold"}).isNull())
+620     \{
+621         \textcolor{keywordflow}{if} ((fthres>=1.5) && (fthres<=10.0))
+622         \{
+623             force_threshold=fthres;
+624         \}
+625         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (fthres<1.5)
+626         \{
+627             force_threshold=1.5;
+628         \}
+629         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (fthres>10.0)
+630         \{
+631             force_threshold=10.0;
+632         \}
+633 
+634     \}
+635 
+636     Bottle *sh=newOptions.find(\textcolor{stringliteral}{"shift\_right"}).asList();
+637     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"shift\_right"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+638     \{
+639         shift_right[0]=0.0;
+640         shift_right[1]=0.0;
+641         shift_right[2]=0.0;
+642     \}
+643     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"shift\_right"}).isNull())
+644     \{
+645         Vector tmp(3,0.0);
+646         tmp[0]=sh->get(0).asDouble();
+647         tmp[1]=sh->get(1).asDouble();
+648         tmp[2]=sh->get(2).asDouble();
+649 
+650         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+651         \{
+652             shift_right=tmp;
+653         \}
+654         \textcolor{keywordflow}{else}
+655         \{
+656             shift_right[0]=0.0;
+657             shift_right[1]=0.0;
+658             shift_right[2]=0.0;
+659         \}
+660     \}
+661 
+662     Bottle *sh2=newOptions.find(\textcolor{stringliteral}{"shift\_left"}).asList();
+663     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"shift\_left"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+664     \{
+665         shift_left[0]=0.0;
+666         shift_left[1]=0.0;
+667         shift_left[2]=0.0;
+668     \}
+669     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"shift\_left"}).isNull())
+670     \{
+671         Vector tmp(3,0.0);
+672         tmp[0]=sh2->get(0).asDouble();
+673         tmp[1]=sh2->get(1).asDouble();
+674         tmp[2]=sh2->get(2).asDouble();
+675 
+676         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+677         \{
+678             shift_left=tmp;
+679         \}
+680         \textcolor{keywordflow}{else}
+681         \{
+682             shift_left[0]=0.0;
+683             shift_left[1]=0.0;
+684             shift_left[2]=0.0;
+685         \}
+686 \}
+687 
+688     Bottle *pl=newOptions.find(\textcolor{stringliteral}{"home\_right"}).asList();
+689     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"home\_right"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+690     \{
+691         home_right[0]=-0.30; home_right[1]=0.21; home_right[2]=0.15;
+692         home_right[3]=0.113261; home_right[4]=-0.954747; home_right[5]=0.275008; 
+      home_right[6]=2.868312;
+693     \}
+694     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"home\_right"}).isNull())
+695     \{
+696         Vector tmp(7,0.0);
+697         tmp[0]=pl->get(0).asDouble();
+698         tmp[1]=pl->get(1).asDouble();
+699         tmp[2]=pl->get(2).asDouble();
+700         tmp[3]=pl->get(3).asDouble();
+701         tmp[4]=pl->get(4).asDouble();
+702         tmp[5]=pl->get(5).asDouble();
+703         tmp[6]=pl->get(6).asDouble();
+704 
+705         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+706         \{
+707             home_right=tmp;
+708         \}
+709         \textcolor{keywordflow}{else}
+710         \{
+711             home_right[0]=-0.30; home_right[1]=0.21; home_right[2]=0.15;
+712             home_right[3]=0.113261; home_right[4]=-0.954747; home_right[5]=0.275008; 
+      home_right[6]=2.868312;
+713         \}
+714     \}
+715 
+716     Bottle *pll=newOptions.find(\textcolor{stringliteral}{"home\_left"}).asList();
+717     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"home\_left"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+718     \{
+719         home_left[0]=-0.30; home_left[1]=-0.21; home_left[2]=0.15;
+720         home_left[3]=0.13631; home_left[4]=-0.30149; home_left[5]=0.943675; 
+      home_left[6]=2.865295;
+721     \}
+722     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"home\_left"}).isNull())
+723     \{
+724         Vector tmp(7,0.0);
+725         tmp[0]=pll->get(0).asDouble();
+726         tmp[1]=pll->get(1).asDouble();
+727         tmp[2]=pll->get(2).asDouble();
+728         tmp[3]=pll->get(3).asDouble();
+729         tmp[4]=pll->get(4).asDouble();
+730         tmp[5]=pll->get(5).asDouble();
+731         tmp[6]=pll->get(6).asDouble();
+732         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+733         \{
+734             home_left=tmp;
+735         \}
+736         \textcolor{keywordflow}{else}
+737         \{
+738             home_left[0]=-0.30; home_left[1]=-0.21; home_left[2]=0.15;
+739             home_left[3]=0.13631; home_left[4]=-0.30149; home_left[5]=0.943675; 
+      home_left[6]=2.865295;
+740         \}
+741     \}
+742 
+743     Bottle *bask\_r=newOptions.find(\textcolor{stringliteral}{"basket\_right"}).asList();
+744     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"basket\_right"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+745     \{
+746         basket_right[0]=-0.30; basket_right[1]=0.21; basket_right[2]=0.15;
+747         basket_right[3]=0.113261; basket_right[4]=-0.954747; basket_right[5]=0.275008; 
+      basket_right[6]=2.868312;
+748     \}
+749     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"basket\_right"}).isNull())
+750     \{
+751         Vector tmp(7,0.0);
+752         tmp[0]=bask\_r->get(0).asDouble();
+753         tmp[1]=bask\_r->get(1).asDouble();
+754         tmp[2]=bask\_r->get(2).asDouble();
+755         tmp[3]=bask\_r->get(3).asDouble();
+756         tmp[4]=bask\_r->get(4).asDouble();
+757         tmp[5]=bask\_r->get(5).asDouble();
+758         tmp[6]=bask\_r->get(6).asDouble();
+759 
+760         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+761         \{
+762             basket_right=tmp;
+763         \}
+764         \textcolor{keywordflow}{else}
+765         \{
+766             basket_right[0]=-0.30; basket_right[1]=0.21; basket_right[2]=0.15;
+767             basket_right[3]=0.113261; basket_right[4]=-0.954747; basket_right[5]=0.275008; 
+      basket_right[6]=2.868312;
+768         \}
+769     \}
+770 
+771     Bottle *bask\_l=newOptions.find(\textcolor{stringliteral}{"basket\_left"}).asList();
+772     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"basket\_left"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+773     \{
+774         basket_left[0]=-0.30; basket_left[1]=0.21; basket_left[2]=0.15;
+775         basket_left[3]=0.113261; basket_left[4]=-0.954747; basket_left[5]=0.275008; 
+      basket_left[6]=2.868312;
+776     \}
+777     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"basket\_left"}).isNull())
+778     \{
+779         Vector tmp(7,0.0);
+780         tmp[0]=bask\_l->get(0).asDouble();
+781         tmp[1]=bask\_l->get(1).asDouble();
+782         tmp[2]=bask\_l->get(2).asDouble();
+783         tmp[3]=bask\_l->get(3).asDouble();
+784         tmp[4]=bask\_l->get(4).asDouble();
+785         tmp[5]=bask\_l->get(5).asDouble();
+786         tmp[6]=bask\_l->get(6).asDouble();
+787 
+788         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+789         \{
+790             basket_left=tmp;
+791         \}
+792         \textcolor{keywordflow}{else}
+793         \{
+794             basket_left[0]=-0.30; basket_left[1]=0.21; basket_left[2]=0.15;
+795             basket_left[3]=0.113261; basket_left[4]=-0.954747; basket_left[5]=0.275008; 
+      basket_left[6]=2.868312;
+796         \}
+797     \}
+798 
+799     Bottle *stiff\_r=newOptions.find(\textcolor{stringliteral}{"stiff\_right"}).asList();
+800     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"stiff\_right"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+801     \{
+802         stiff_right[0]=0.4; stiff_right[1]=0.4; stiff_right[2]=0.4;
+803         stiff_right[3]=0.2; stiff_right[4]=0.2;
+804     \}
+805     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"stiff\_right"}).isNull())
+806     \{
+807         Vector tmp(5,0.0);
+808         tmp[0]=stiff\_r->get(0).asDouble();
+809         tmp[1]=stiff\_r->get(1).asDouble();
+810         tmp[2]=stiff\_r->get(2).asDouble();
+811         tmp[3]=stiff\_r->get(3).asDouble();
+812         tmp[4]=stiff\_r->get(4).asDouble();
+813 
+814         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+815         \{
+816             stiff_right=tmp;
+817         \}
+818         \textcolor{keywordflow}{else}
+819         \{
+820             stiff_right[0]=0.4; stiff_right[1]=0.4; stiff_right[2]=0.4;
+821             stiff_right[3]=0.2; stiff_right[4]=0.2;
+822         \}
+823     \}
+824 
+825     Bottle *stiff\_l=newOptions.find(\textcolor{stringliteral}{"stiff\_left"}).asList();
+826     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"stiff\_left"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+827     \{
+828         stiff_left[0]=0.4; stiff_left[1]=0.4; stiff_left[2]=0.4;
+829         stiff_left[3]=0.2; stiff_left[4]=0.2;
+830     \}
+831     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"stiff\_left"}).isNull())
+832     \{
+833         Vector tmp(5,0.0);
+834         tmp[0]=stiff\_l->get(0).asDouble();
+835         tmp[1]=stiff\_l->get(1).asDouble();
+836         tmp[2]=stiff\_l->get(2).asDouble();
+837         tmp[3]=stiff\_l->get(3).asDouble();
+838         tmp[4]=stiff\_l->get(4).asDouble();
+839 
+840         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+841         \{
+842             stiff_left=tmp;
+843         \}
+844         \textcolor{keywordflow}{else}
+845         \{
+846             stiff_left[0]=0.4; stiff_left[1]=0.4; stiff_left[2]=0.4;
+847             stiff_left[3]=0.2; stiff_left[4]=0.2;
+848         \}
+849     \}
+850 
+851     Bottle *damp\_r=newOptions.find(\textcolor{stringliteral}{"damp\_right"}).asList();
+852     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"damp\_right"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+853     \{
+854         damp_right[0]=0.002; damp_right[1]=0.002; damp_right[2]=0.002;
+855         damp_right[3]=0.002; damp_right[4]=0.0;
+856     \}
+857     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"damp\_right"}).isNull())
+858     \{
+859         Vector tmp(5,0.0);
+860         tmp[0]=damp\_r->get(0).asDouble();
+861         tmp[1]=damp\_r->get(1).asDouble();
+862         tmp[2]=damp\_r->get(2).asDouble();
+863         tmp[3]=damp\_r->get(3).asDouble();
+864         tmp[4]=damp\_r->get(4).asDouble();
+865 
+866         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+867         \{
+868             damp_right=tmp;
+869         \}
+870         \textcolor{keywordflow}{else}
+871         \{
+872             damp_right[0]=0.002; damp_right[1]=0.002; damp_right[2]=0.002;
+873             damp_right[3]=0.002; damp_right[4]=0.0;
+874         \}
+875     \}
+876 
+877     Bottle *damp\_l=newOptions.find(\textcolor{stringliteral}{"damp\_left"}).asList();
+878     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"damp\_left"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+879     \{
+880         damp_left[0]=0.002; damp_left[1]=0.002; damp_left[2]=0.002;
+881         damp_left[3]=0.002; damp_left[4]=0.0;
+882     \}
+883     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"damp\_left"}).isNull())
+884     \{
+885         Vector tmp(5,0.0);
+886         tmp[0]=damp\_l->get(0).asDouble();
+887         tmp[1]=damp\_l->get(1).asDouble();
+888         tmp[2]=damp\_l->get(2).asDouble();
+889         tmp[3]=damp\_l->get(3).asDouble();
+890         tmp[4]=damp\_l->get(4).asDouble();
+891 
+892         \textcolor{keywordflow}{if} (norm(tmp)>0.0)
+893         \{
+894             damp_left=tmp;
+895         \}
+896         \textcolor{keywordflow}{else}
+897         \{
+898             damp_left[0]=0.002; damp_left[1]=0.002; damp_left[2]=0.002;
+899             damp_left[3]=0.002; damp_left[4]=0.0; 
+900         \}
+901     \}
+902 
+903 
+904     \textcolor{keywordtype}{double} pitch\_max=newOptions.find(\textcolor{stringliteral}{"torso\_pitch\_max"}).asDouble();
+905 
+906     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"torso\_pitch\_max"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+907     \{
+908         torso_pitch_max=15.0;
+909     \}
+910     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"torso\_pitch\_max"}).isNull())
+911     \{
+912         \textcolor{keywordflow}{if} ((pitch\_max>=0.0) && (pitch\_max<=40.0))
+913         \{
+914             torso_pitch_max=pitch\_max;
+915         \}
+916         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (pitch\_max<0.0)
+917         \{
+918             torso_pitch_max=0.0;
+919         \}
+920         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (pitch\_max>40.0)
+921         \{
+922             torso_pitch_max=15.0;
+923         \}
+924     \}
+925 
+926     yDebug()<<\textcolor{stringliteral}{"In execution module ...."};
+927     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] lift\_z:          "}<<lift_z;
+928     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] force\_threshold: "}<<force_threshold;
+929     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] shift\_right:     "}<<shift_right.toString(3,3);
+930     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] shift\_left:      "}<<shift_left.toString(3,3);
+931     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] home\_right:      "}<<home_right.toString(3,3);
+932     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] home\_left:       "}<<home_left.toString(3,3);
+933     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] basket\_right:    "}<<basket_right.toString(3,3);
+934     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] basket\_left:     "}<<basket_left.toString(3,3);
+935     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] stiff\_right:     "}<<stiff_right.toString(3,3);
+936     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] stiff\_left:      "}<<stiff_left.toString(3,3);
+937     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] damp\_right:      "}<<damp_right.toString(3,3);
+938     yInfo()<<\textcolor{stringliteral}{"[GraspExecution] damp\_left:       "}<<damp_left.toString(3,3);
+939 \}
+\end{DoxyCode}
+
+
+\subsection{Field Documentation}
+\index{Grasp\+Execution@{Grasp\+Execution}!force\+\_\+threshold@{force\+\_\+threshold}}
+\index{force\+\_\+threshold@{force\+\_\+threshold}!Grasp\+Execution@{Grasp\+Execution}}
+\subsubsection[{\texorpdfstring{force\+\_\+threshold}{force_threshold}}]{\setlength{\rightskip}{0pt plus 5cm}double Grasp\+Execution\+::force\+\_\+threshold\hspace{0.3cm}{\ttfamily [protected]}}\label{classGraspExecution_a26278749ada92b79a85100ffc3b7588f}
+
+
+Threshold of the maximum allowed force measured at the endeffector. 
+
+If the measured value is larger, the movement stops. 
+
+Definition at line 128 of file grasp\+Execution.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/include/grasp\+Execution.\+h\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/src/grasp\+Execution.\+cpp\end{DoxyCompactItemize}

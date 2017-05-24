@@ -1,0 +1,811 @@
+\section{Grasp\+Visualization Class Reference}
+\label{classGraspVisualization}\index{Grasp\+Visualization@{Grasp\+Visualization}}
+
+
+This class shows the computed grasping pose and trajectory overlapped to the camera images.  
+
+
+
+
+{\ttfamily \#include $<$grasp\+Visualization.\+h$>$}
+
+
+
+Inherits Rate\+Thread.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Grasp\+Visualization} (int rate, const std\+::string \&\+\_\+eye, yarp\+::dev\+::\+I\+Gaze\+Control $\ast$\+\_\+igaze, bool \&\hyperlink{classGraspVisualization_ac1c748f2c0bbb38c4ea19216cb4dbfc8}{executed}, const yarp\+::sig\+::\+Matrix \+\_\+K, std\+::string \hyperlink{classGraspVisualization_ac960abe59ca5c92521d9cb9f01dc6370}{left\+\_\+or\+\_\+right}, const yarp\+::os\+::\+Property \&\hyperlink{classGraspVisualization_a542f3bc536b354d12256f2c95fcadab1}{complete\+\_\+sol}, const yarp\+::sig\+::\+Vector \&\+\_\+object, yarp\+::sig\+::\+Vector \&\hyperlink{classGraspVisualization_af6ecf326ddb626e2dd7f83e8d75d12eb}{hand}, yarp\+::sig\+::\+Vector \&\hyperlink{classGraspVisualization_a23c0f2f9e30b20ff6ec38e0fe119ab39}{hand1}, yarp\+::os\+::\+Property \&\hyperlink{classGraspVisualization_a0efcb3e2545e09b7480da109ceaa4533}{vis\+\_\+par}, double \&\hyperlink{classGraspVisualization_aa82104f77a9903438727132275401f96}{quality\+\_\+right}, double \&\hyperlink{classGraspVisualization_a773050ce006cffa999ffc3aeea671752}{quality\+\_\+left})\label{classGraspVisualization_a33db96015b6d831cbd12d3c2279ec161}
+
+\item 
+void \hyperlink{classGraspVisualization_a0069fc0b6752a254d09d5f5f7f72dba8}{add\+Superq} (const yarp\+::sig\+::\+Vector \&x, yarp\+::sig\+::\+Image\+Of$<$ yarp\+::sig\+::\+Pixel\+Rgb $>$ \&img\+Out, const int \&col)
+\begin{DoxyCompactList}\small\item\em Overlap superquadric on the camera image. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_a7217275a38ec798541bd68a84618bda6}{from3\+Dto2D} (const yarp\+::sig\+::\+Vector \&point3D)
+\begin{DoxyCompactList}\small\item\em Convert 3D point to 3D point. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspVisualization_a3ada3605a942fb51696e9747fed52a72}{show\+Trajectory} (const std\+::string \&\hyperlink{classGraspVisualization_af6ecf326ddb626e2dd7f83e8d75d12eb}{hand})
+\begin{DoxyCompactList}\small\item\em Show the computed trajectory. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{classGraspVisualization_a277232b1b99ecc061242abee8175ff16}{thread\+Init} ()\label{classGraspVisualization_a277232b1b99ecc061242abee8175ff16}
+
+\begin{DoxyCompactList}\small\item\em Init function of the thread. \end{DoxyCompactList}\item 
+virtual void \hyperlink{classGraspVisualization_a1498b5c983abd973e9482f2da97aa5c2}{run} ()\label{classGraspVisualization_a1498b5c983abd973e9482f2da97aa5c2}
+
+\begin{DoxyCompactList}\small\item\em Run function of the thread. \end{DoxyCompactList}\item 
+virtual void \hyperlink{classGraspVisualization_a1c25a50d14603a5cda42626afb4aaa47}{thread\+Release} ()\label{classGraspVisualization_a1c25a50d14603a5cda42626afb4aaa47}
+
+\begin{DoxyCompactList}\small\item\em release function of the thread \end{DoxyCompactList}\item 
+double \hyperlink{classGraspVisualization_ac9d26a90c1f1b6121ebbb0521053a80f}{get\+Time} ()
+\begin{DoxyCompactList}\small\item\em Get time required for showing the superquadrics and poses. \end{DoxyCompactList}\item 
+void \hyperlink{classGraspVisualization_a11fdc62f11352941ce39bf0444060290}{get\+Poses} (const yarp\+::os\+::\+Property \&poses)
+\begin{DoxyCompactList}\small\item\em Acquire poses from other threads. \end{DoxyCompactList}\item 
+void \hyperlink{classGraspVisualization_a68062fbac492b9277576f4ee871bdb41}{set\+Par} (const yarp\+::os\+::\+Property \&new\+Options, bool first\+\_\+time)
+\begin{DoxyCompactList}\small\item\em Set parameters for visualization. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspVisualization_a9071090277d53e90c6392b7e879e0247}{get\+Par} ()
+\begin{DoxyCompactList}\small\item\em Set parameters used for visualization. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+yarp\+::dev\+::\+I\+Gaze\+Control $\ast$ {\bfseries igaze}\label{classGraspVisualization_a21aac46017bc0d4b77d37657715961c0}
+
+\item 
+double \hyperlink{classGraspVisualization_a99b826fdf481e24b0257eea6c1942f8d}{t\+\_\+vis}\label{classGraspVisualization_a99b826fdf481e24b0257eea6c1942f8d}
+
+\begin{DoxyCompactList}\small\item\em Visualization time. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspVisualization_a973a23fe3e4429f3d8c420d27b5ce77f}{show\+\_\+hand}\label{classGraspVisualization_a973a23fe3e4429f3d8c420d27b5ce77f}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for set if to show hand or not. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspVisualization_a166196c3b0420564d434a93987223951}{look\+\_\+object}\label{classGraspVisualization_a166196c3b0420564d434a93987223951}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for set if to look object or not. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspVisualization_a12af63a6de8420f32b727aa934c68c8c}{show\+\_\+only\+\_\+pose}\label{classGraspVisualization_a12af63a6de8420f32b727aa934c68c8c}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for set if to show trajectory or not. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classGraspVisualization_ac960abe59ca5c92521d9cb9f01dc6370}{left\+\_\+or\+\_\+right}\label{classGraspVisualization_ac960abe59ca5c92521d9cb9f01dc6370}
+
+\begin{DoxyCompactList}\small\item\em Which hand is involved. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Mutex {\bfseries mutex}\label{classGraspVisualization_a2fd6a0f8c21ddf8097efe413cfd16bea}
+
+\item 
+const yarp\+::sig\+::\+Vector \& \hyperlink{classGraspVisualization_a2d3a7e82db39172cf777189f4b006dbf}{object}\label{classGraspVisualization_a2d3a7e82db39172cf777189f4b006dbf}
+
+\begin{DoxyCompactList}\small\item\em Object superquadric. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Image\+Of$<$ yarp\+::sig\+::\+Pixel\+Rgb $>$ $\ast$ \hyperlink{classGraspVisualization_a67af368e12d13ef91e99e01a92e60850}{img\+In}\label{classGraspVisualization_a67af368e12d13ef91e99e01a92e60850}
+
+\begin{DoxyCompactList}\small\item\em Input image. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Property \hyperlink{classGraspVisualization_a0efcb3e2545e09b7480da109ceaa4533}{vis\+\_\+par}\label{classGraspVisualization_a0efcb3e2545e09b7480da109ceaa4533}
+
+\begin{DoxyCompactList}\small\item\em Visualization parameters. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \& \hyperlink{classGraspVisualization_af6ecf326ddb626e2dd7f83e8d75d12eb}{hand}\label{classGraspVisualization_af6ecf326ddb626e2dd7f83e8d75d12eb}
+
+\begin{DoxyCompactList}\small\item\em One hand ellipsoid. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \& \hyperlink{classGraspVisualization_a23c0f2f9e30b20ff6ec38e0fe119ab39}{hand1}\label{classGraspVisualization_a23c0f2f9e30b20ff6ec38e0fe119ab39}
+
+\begin{DoxyCompactList}\small\item\em One hand ellipsoid. \end{DoxyCompactList}\item 
+const yarp\+::os\+::\+Property \& \hyperlink{classGraspVisualization_a542f3bc536b354d12256f2c95fcadab1}{complete\+\_\+sol}\label{classGraspVisualization_a542f3bc536b354d12256f2c95fcadab1}
+
+\begin{DoxyCompactList}\small\item\em Complete solution. \end{DoxyCompactList}\item 
+bool \& \hyperlink{classGraspVisualization_ac1c748f2c0bbb38c4ea19216cb4dbfc8}{executed}\label{classGraspVisualization_ac1c748f2c0bbb38c4ea19216cb4dbfc8}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable taking into account if the movement has been accomplished. \end{DoxyCompactList}\item 
+bool \hyperlink{classGraspVisualization_ad26b15866f86df9e9c2ec59658cfdd80}{stop\+\_\+fixate}\label{classGraspVisualization_ad26b15866f86df9e9c2ec59658cfdd80}
+
+\begin{DoxyCompactList}\small\item\em Boolean variable for stopping fixating the object. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Buffered\+Port$<$ yarp\+::sig\+::\+Image\+Of$<$ yarp\+::sig\+::\+Pixel\+Rgb $>$ $>$ \hyperlink{classGraspVisualization_a82ecdc743d9883336682ffd0e6b9c113}{port\+Img\+In}\label{classGraspVisualization_a82ecdc743d9883336682ffd0e6b9c113}
+
+\begin{DoxyCompactList}\small\item\em Buffered port of input image. \end{DoxyCompactList}\item 
+yarp\+::os\+::\+Buffered\+Port$<$ yarp\+::sig\+::\+Image\+Of$<$ yarp\+::sig\+::\+Pixel\+Rgb $>$ $>$ \hyperlink{classGraspVisualization_a9d9aab016248eb6eec902fed80e74d65}{port\+Img\+Out}\label{classGraspVisualization_a9d9aab016248eb6eec902fed80e74d65}
+
+\begin{DoxyCompactList}\small\item\em Buffered port of output image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{classGraspVisualization_ace61511b9d00f72c39311e6213dc4047}{eye}\label{classGraspVisualization_ace61511b9d00f72c39311e6213dc4047}
+
+\begin{DoxyCompactList}\small\item\em Eye camera selected for visualization. \end{DoxyCompactList}\item 
+yarp\+::dev\+::\+Poly\+Driver {\bfseries Gaze\+Ctrl}\label{classGraspVisualization_ad7bdd9a15a2c683a358e77bb694598d2}
+
+\item 
+yarp\+::sig\+::\+Matrix {\bfseries K}\label{classGraspVisualization_a36a4e8dd697faf597dcb41d95aac83de}
+
+\item 
+yarp\+::sig\+::\+Matrix {\bfseries H}\label{classGraspVisualization_a422df68dee6c62ba04f00677dccae57e}
+
+\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_afe153394fdf1ffd1b70a3396d469188d}{poseL}\label{classGraspVisualization_afe153394fdf1ffd1b70a3396d469188d}
+
+\begin{DoxyCompactList}\small\item\em Robot hand pose computed by the solver for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_a4952ee1be9e70461326b47ef50f064f2}{solL}\label{classGraspVisualization_a4952ee1be9e70461326b47ef50f064f2}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid pose computed by the solver for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_ab78d3c9bb633b704b22244db49b08423}{poseR}\label{classGraspVisualization_ab78d3c9bb633b704b22244db49b08423}
+
+\begin{DoxyCompactList}\small\item\em Robot hand pose computed by the solver for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_a2f2c72e622512ee74014e3715beba78b}{solR}\label{classGraspVisualization_a2f2c72e622512ee74014e3715beba78b}
+
+\begin{DoxyCompactList}\small\item\em Hand ellipsoid pose computed by the solver for the right hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_a25591f12c24270bc2257eb2a5446e85d}{hand\+\_\+in\+\_\+poseL}\label{classGraspVisualization_a25591f12c24270bc2257eb2a5446e85d}
+
+\begin{DoxyCompactList}\small\item\em Left hand ellipsoid in the computed pose for visualization. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector \hyperlink{classGraspVisualization_ae4f26a3c1c3c4b51ac043bdfb1176092}{hand\+\_\+in\+\_\+poseR}\label{classGraspVisualization_ae4f26a3c1c3c4b51ac043bdfb1176092}
+
+\begin{DoxyCompactList}\small\item\em Left hand ellipsoid in the computed pose for visualization. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspVisualization_af2ad3c4bb204694b6948fa99d508282f}{trajectory\+\_\+right}\label{classGraspVisualization_af2ad3c4bb204694b6948fa99d508282f}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) for the right hand. \end{DoxyCompactList}\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspVisualization_a8d400d538af6c649485081f306d43e3e}{trajectory\+\_\+left}\label{classGraspVisualization_a8d400d538af6c649485081f306d43e3e}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) for the left hand. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Vector {\bfseries point2D}\label{classGraspVisualization_ad377be64896271582eb9f5257ecef819}
+
+\item 
+yarp\+::sig\+::\+Vector {\bfseries point}\label{classGraspVisualization_ae8cf3097e9a8542ba3562fdfc8837995}
+
+\item 
+yarp\+::sig\+::\+Vector {\bfseries point1}\label{classGraspVisualization_a0a87a52dda56b81b1b6f7d36c969672c}
+
+\item 
+yarp\+::sig\+::\+Vector {\bfseries superq}\label{classGraspVisualization_a38fa19f89c4185545bc35be510ad6158}
+
+\item 
+std\+::deque$<$ yarp\+::sig\+::\+Vector $>$ \hyperlink{classGraspVisualization_a7a9b020ba00e06ffc1d272214697a6b7}{trajectory}\label{classGraspVisualization_a7a9b020ba00e06ffc1d272214697a6b7}
+
+\begin{DoxyCompactList}\small\item\em Entire trajectory (final pose and waypoint) selected for grasping the object. \end{DoxyCompactList}\item 
+yarp\+::sig\+::\+Matrix {\bfseries R}\label{classGraspVisualization_a0171ee2be1eb60dde9f889313b247658}
+
+\item 
+double \& \hyperlink{classGraspVisualization_aa82104f77a9903438727132275401f96}{quality\+\_\+right}\label{classGraspVisualization_aa82104f77a9903438727132275401f96}
+
+\begin{DoxyCompactList}\small\item\em Quality of pose right. \end{DoxyCompactList}\item 
+double \& \hyperlink{classGraspVisualization_a773050ce006cffa999ffc3aeea671752}{quality\+\_\+left}\label{classGraspVisualization_a773050ce006cffa999ffc3aeea671752}
+
+\begin{DoxyCompactList}\small\item\em Quality of pose left. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class shows the computed grasping pose and trajectory overlapped to the camera images. 
+
+Definition at line 36 of file grasp\+Visualization.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!add\+Superq@{add\+Superq}}
+\index{add\+Superq@{add\+Superq}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{add\+Superq(const yarp\+::sig\+::\+Vector \&x, yarp\+::sig\+::\+Image\+Of$<$ yarp\+::sig\+::\+Pixel\+Rgb $>$ \&img\+Out, const int \&col)}{addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf< yarp::sig::PixelRgb > &imgOut, const int &col)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasp\+Visualization\+::add\+Superq (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::sig\+::\+Vector \&}]{x, }
+\item[{yarp\+::sig\+::\+Image\+Of$<$ yarp\+::sig\+::\+Pixel\+Rgb $>$ \&}]{img\+Out, }
+\item[{const int \&}]{col}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_a0069fc0b6752a254d09d5f5f7f72dba8}
+
+
+Overlap superquadric on the camera image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & is the superquadric to be visualization \\
+\hline
+{\em img\+Out} & is the image on which to overlpa the superquadroc \\
+\hline
+{\em col} & is the color to be used for drawing \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 251 of file grasp\+Visualization.\+cpp.
+
+
+
+References Grasping\+Module\+::eye.
+
+
+\begin{DoxyCode}
+252 \{
+253     \textcolor{keywordtype}{int} count=0;
+254 
+255     PixelRgb color(col,0,0);
+256 
+257     \textcolor{keywordflow}{if} (col==0)
+258     \{
+259         color.r=0;
+260         color.b=255;
+261     \}
+262 
+263     Vector pos, orient;
+264     \textcolor{keywordtype}{double} co,so,ce,se;
+265     Stamp *stamp=NULL;
+266 
+267     Matrix R=euler2dcm(x.subVector(8,10));
+268     R=R.transposed();
+269 
+270     \textcolor{keywordflow}{if} ((norm(x)>0.0))
+271     \{
+272         \textcolor{keywordflow}{if} (eye==\textcolor{stringliteral}{"left"})
+273         \{
+274             \textcolor{keywordflow}{if} (igaze->getLeftEyePose(pos,orient,stamp))
+275             \{
+276                 H=axis2dcm(orient);
+277                 H.setSubcol(pos,0,3);
+278                 H=SE3inv(H);
+279             \}
+280         \}
+281         \textcolor{keywordflow}{else}
+282         \{
+283             \textcolor{keywordflow}{if} (igaze->getRightEyePose(pos,orient,stamp))
+284             \{
+285                 H=axis2dcm(orient);
+286                 H.setSubcol(pos,0,3);
+287                 H=SE3inv(H);
+288             \}
+289         \}
+290 
+291         Vector point(3,0.0);
+292         Vector point2D(2,0.0);
+293         \textcolor{keywordtype}{double} step=2*M\_PI/50;
+294 
+295         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{double} eta=-M\_PI; eta<M\_PI; eta+=step)
+296         \{
+297              \textcolor{keywordflow}{for} (\textcolor{keywordtype}{double} omega=-M\_PI; omega<M\_PI;omega+=step)
+298              \{
+299                  co=cos(omega); so=sin(omega);
+300                  ce=cos(eta); se=sin(eta);
+301 
+302                  point[0]=x[0] * sign(ce)*(pow(abs(ce),x[3])) * sign(co)*(pow(abs(co),x[4])) * R(0,0) +
+303                             x[1] * sign(ce)*(pow(abs(ce),x[3]))* sign(so)*(pow(abs(so),x[4])) * R(0,1)+
+304                                 x[2] * sign(se)*(pow(abs(se),x[3])) * R(0,2) + x[5];
+305 
+306                  point[1]=x[0] * sign(ce)*(pow(abs(ce),x[3])) * sign(co)*(pow(abs(co),x[4])) * R(1,0) +
+307                             x[1] * sign(ce)*(pow(abs(ce),x[3])) * sign(so)*(pow(abs(so),x[4])) * R(1,1)+
+308                                 x[2] * sign(se)*(pow(abs(se),x[3])) * R(1,2) + x[6];
+309 
+310                  point[2]=x[0] * sign(ce)*(pow(abs(ce),x[3])) * sign(co)*(pow(abs(co),x[4])) * R(2,0) +
+311                             x[1] * sign(ce)*(pow(abs(ce),x[3])) * sign(so)*(pow(abs(so),x[4])) * R(2,1)+
+312                                 x[2] * sign(se)*(pow(abs(se),x[3])) * R(2,2) + x[7];
+313 
+314                  point2D=from3Dto2D(point);
+315 
+316                  cv::Point target\_point((\textcolor{keywordtype}{int})point2D[0],(\textcolor{keywordtype}{int})point2D[1]);
+317 
+318                  \textcolor{keywordflow}{if} ((target\_point.x<0) || (target\_point.y<0) || (target\_point.x>=320) || (target\_point.y>=
+      240))
+319                  \{
+320                      count++;
+321                  \}
+322                  \textcolor{keywordflow}{else}
+323                     imgOut.pixel(target\_point.x, target\_point.y)=color;
+324              \}
+325          \}
+326     \}
+327 \}
+\end{DoxyCode}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!from3\+Dto2D@{from3\+Dto2D}}
+\index{from3\+Dto2D@{from3\+Dto2D}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{from3\+Dto2\+D(const yarp\+::sig\+::\+Vector \&point3\+D)}{from3Dto2D(const yarp::sig::Vector &point3D)}}]{\setlength{\rightskip}{0pt plus 5cm}Vector Grasp\+Visualization\+::from3\+Dto2D (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::sig\+::\+Vector \&}]{point3D}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_a7217275a38ec798541bd68a84618bda6}
+
+
+Convert 3D point to 3D point. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em point3D} & is the 3D point to be converted \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a 2D vector representing the pixel 
+\end{DoxyReturn}
+
+
+Definition at line 330 of file grasp\+Visualization.\+cpp.
+
+
+\begin{DoxyCode}
+331 \{
+332     Vector point2D(3,0.0);
+333     Vector point\_aux(4,1.0);
+334     point\_aux.setSubvector(0,point3D);
+335     point2D=K*H*point\_aux;
+336     \textcolor{keywordflow}{return} point2D.subVector(0,1)/point2D[2];
+337 \}
+\end{DoxyCode}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!get\+Par@{get\+Par}}
+\index{get\+Par@{get\+Par}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{get\+Par()}{getPar()}}]{\setlength{\rightskip}{0pt plus 5cm}Property Grasp\+Visualization\+::get\+Par (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_a9071090277d53e90c6392b7e879e0247}
+
+
+Set parameters used for visualization. 
+
+\begin{DoxyReturn}{Returns}
+a Property with the options set for visualization 
+\end{DoxyReturn}
+
+
+Definition at line 546 of file grasp\+Visualization.\+cpp.
+
+
+
+References Grasping\+Module\+::look\+\_\+object, Grasping\+Module\+::show\+\_\+hand, and Grasping\+Module\+::show\+\_\+only\+\_\+pose.
+
+
+\begin{DoxyCode}
+547 \{
+548     LockGuard lg(mutex);
+549 
+550     Property advOptions;
+551     \textcolor{keywordflow}{if} (show_hand)
+552         advOptions.put(\textcolor{stringliteral}{"show\_hand"},\textcolor{stringliteral}{"on"});
+553     \textcolor{keywordflow}{else}
+554         advOptions.put(\textcolor{stringliteral}{"show\_hand"},\textcolor{stringliteral}{"off"});
+555     \textcolor{keywordflow}{if} (look_object)
+556         advOptions.put(\textcolor{stringliteral}{"look\_object"},\textcolor{stringliteral}{"on"});
+557     \textcolor{keywordflow}{else}
+558         advOptions.put(\textcolor{stringliteral}{"look\_object"},\textcolor{stringliteral}{"off"});
+559     \textcolor{keywordflow}{if} (show_only_pose)
+560         advOptions.put(\textcolor{stringliteral}{"show\_only\_pose"},\textcolor{stringliteral}{"on"});
+561     \textcolor{keywordflow}{else}
+562         advOptions.put(\textcolor{stringliteral}{"show\_only\_pose"},\textcolor{stringliteral}{"off"});
+563 
+564     \textcolor{keywordflow}{return} advOptions;
+565 \}
+\end{DoxyCode}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!get\+Poses@{get\+Poses}}
+\index{get\+Poses@{get\+Poses}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{get\+Poses(const yarp\+::os\+::\+Property \&poses)}{getPoses(const yarp::os::Property &poses)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasp\+Visualization\+::get\+Poses (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{poses}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_a11fdc62f11352941ce39bf0444060290}
+
+
+Acquire poses from other threads. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em poses} & contains the poses to be reached \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 415 of file grasp\+Visualization.\+cpp.
+
+
+
+References Grasping\+Module\+::solL, Grasping\+Module\+::solR, Grasping\+Module\+::trajectory\+\_\+left, and Grasping\+Module\+::trajectory\+\_\+right.
+
+
+\begin{DoxyCode}
+416 \{
+417     LockGuard lg(mutex);
+418     Vector tmp(6,0.0);
+419     trajectory_right.clear();
+420     trajectory_left.clear();
+421 
+422     Bottle &bottle\_right\_poses=poses.findGroup(\textcolor{stringliteral}{"trajectory\_right"});
+423 
+424     \textcolor{keywordflow}{if} (!bottle\_right\_poses.isNull())
+425     \{
+426         Bottle *bottle\_right\_pose=bottle\_right\_poses.get(1).asList();
+427         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<bottle\_right\_pose->size(); i++)
+428         \{
+429             Bottle *bottle\_right=bottle\_right\_pose->get(i).asList();
+430 
+431 
+432             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j=0; j<bottle\_right->size(); j++)
+433             \{
+434                 tmp[j]=bottle\_right->get(j).asDouble();
+435             \}
+436 
+437             trajectory_right.push\_back(tmp);
+438         \}
+439     \}
+440 
+441     Bottle &bottle\_left\_poses=poses.findGroup(\textcolor{stringliteral}{"trajectory\_left"});
+442 
+443     \textcolor{keywordflow}{if} (!bottle\_left\_poses.isNull())
+444     \{
+445         Bottle *bottle\_left\_pose=bottle\_left\_poses.get(1).asList();
+446         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<bottle\_left\_pose->size(); i++)
+447         \{
+448             Bottle *bottle\_left=bottle\_left\_pose->get(i).asList();
+449 
+450 
+451             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j=0; j<bottle\_left->size(); j++)
+452             \{
+453                 tmp[j]=bottle\_left->get(j).asDouble();
+454             \}
+455             trajectory_left.push\_back(tmp);
+456         \}
+457     \}
+458 
+459     Bottle &bottle\_right\_sol=poses.findGroup(\textcolor{stringliteral}{"solution\_right"});
+460     \textcolor{keywordflow}{if} (!bottle\_right\_sol.isNull())
+461     \{
+462         Bottle *right\_sol=bottle\_right\_sol.get(1).asList();
+463 
+464         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<right\_sol->size(); i++)
+465             solR[i]=right\_sol->get(i).asDouble();
+466     \}
+467 
+468     Bottle &bottle\_left\_sol=poses.findGroup(\textcolor{stringliteral}{"solution\_left"});
+469     \textcolor{keywordflow}{if} (!bottle\_left\_sol.isNull())
+470     \{
+471         Bottle *left\_sol=bottle\_left\_sol.get(1).asList();
+472 
+473         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<left\_sol->size(); i++)
+474             solL[i]=left\_sol->get(i).asDouble();
+475     \}
+476 \}
+\end{DoxyCode}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!get\+Time@{get\+Time}}
+\index{get\+Time@{get\+Time}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{get\+Time()}{getTime()}}]{\setlength{\rightskip}{0pt plus 5cm}double Grasp\+Visualization\+::get\+Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_ac9d26a90c1f1b6121ebbb0521053a80f}
+
+
+Get time required for showing the superquadrics and poses. 
+
+\begin{DoxyReturn}{Returns}
+the thread period 
+\end{DoxyReturn}
+
+
+Definition at line 479 of file grasp\+Visualization.\+cpp.
+
+
+\begin{DoxyCode}
+480 \{
+481     LockGuard lg(mutex);
+482     \textcolor{keywordflow}{return} t_vis;
+483 \}
+\end{DoxyCode}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!set\+Par@{set\+Par}}
+\index{set\+Par@{set\+Par}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{set\+Par(const yarp\+::os\+::\+Property \&new\+Options, bool first\+\_\+time)}{setPar(const yarp::os::Property &newOptions, bool first_time)}}]{\setlength{\rightskip}{0pt plus 5cm}void Grasp\+Visualization\+::set\+Par (
+\begin{DoxyParamCaption}
+\item[{const yarp\+::os\+::\+Property \&}]{new\+Options, }
+\item[{bool}]{first\+\_\+time}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_a68062fbac492b9277576f4ee871bdb41}
+
+
+Set parameters for visualization. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Options} & are the options to be set \\
+\hline
+{\em first\+\_\+time} & takes into account if the options have been set once \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 486 of file grasp\+Visualization.\+cpp.
+
+
+
+References Grasping\+Module\+::look\+\_\+object, Grasping\+Module\+::show\+\_\+hand, and Grasping\+Module\+::show\+\_\+only\+\_\+pose.
+
+
+\begin{DoxyCode}
+487 \{
+488     LockGuard lg(mutex);
+489 
+490     \textcolor{keywordtype}{string} show\_h=newOptions.find(\textcolor{stringliteral}{"show\_hand"}).asString();
+491 
+492     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"show\_hand"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+493     \{
+494         show_hand=\textcolor{keyword}{false};
+495     \}
+496     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"show\_hand"}).isNull())
+497     \{
+498         \textcolor{keywordflow}{if} ((show\_h==\textcolor{stringliteral}{"on"}) || (show\_h==\textcolor{stringliteral}{"off"}))
+499         \{
+500             show_hand=(show\_h==\textcolor{stringliteral}{"on"});
+501         \}
+502         \textcolor{keywordflow}{else}
+503         \{
+504             show_hand=\textcolor{keyword}{false};
+505         \}
+506     \}
+507 
+508     \textcolor{keywordtype}{string} l\_o=newOptions.find(\textcolor{stringliteral}{"look\_object"}).asString();
+509 
+510     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"look\_object"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+511     \{
+512         look_object=\textcolor{keyword}{false};
+513     \}
+514     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"look\_object"}).isNull())
+515     \{
+516         \textcolor{keywordflow}{if} ((l\_o==\textcolor{stringliteral}{"on"}) || (l\_o==\textcolor{stringliteral}{"off"}))
+517         \{
+518             look_object=(l\_o==\textcolor{stringliteral}{"on"});
+519         \}
+520         \textcolor{keywordflow}{else}
+521         \{
+522             look_object=\textcolor{keyword}{false};
+523         \}
+524     \}
+525 
+526     \textcolor{keywordtype}{string} show\_pose=newOptions.find(\textcolor{stringliteral}{"show\_only\_pose"}).asString();
+527 
+528     \textcolor{keywordflow}{if} (newOptions.find(\textcolor{stringliteral}{"show\_only\_pose"}).isNull() && (first\_time==\textcolor{keyword}{true}))
+529     \{
+530         show_only_pose=\textcolor{keyword}{false};
+531     \}
+532     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!newOptions.find(\textcolor{stringliteral}{"show\_only\_pose"}).isNull())
+533     \{
+534         \textcolor{keywordflow}{if} ((show\_pose==\textcolor{stringliteral}{"on"}) || (show\_pose==\textcolor{stringliteral}{"off"}))
+535         \{
+536             show_only_pose=(show\_pose==\textcolor{stringliteral}{"on"});
+537         \}
+538         \textcolor{keywordflow}{else}
+539         \{
+540             show_only_pose=\textcolor{keyword}{false};
+541         \}
+542     \}
+543 \}
+\end{DoxyCode}
+\index{Grasp\+Visualization@{Grasp\+Visualization}!show\+Trajectory@{show\+Trajectory}}
+\index{show\+Trajectory@{show\+Trajectory}!Grasp\+Visualization@{Grasp\+Visualization}}
+\subsubsection[{\texorpdfstring{show\+Trajectory(const std\+::string \&hand)}{showTrajectory(const std::string &hand)}}]{\setlength{\rightskip}{0pt plus 5cm}bool Grasp\+Visualization\+::show\+Trajectory (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{hand}
+\end{DoxyParamCaption}
+)}\label{classGraspVisualization_a3ada3605a942fb51696e9747fed52a72}
+
+
+Show the computed trajectory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hand} & is the name of the hand used \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+\end{DoxyReturn}
+
+
+Definition at line 39 of file grasp\+Visualization.\+cpp.
+
+
+
+References Grasping\+Module\+::eye, Grasping\+Module\+::hand, Grasping\+Module\+::hand1, Grasping\+Module\+::quality\+\_\+left, Grasping\+Module\+::quality\+\_\+right, Grasping\+Module\+::show\+\_\+hand, Grasping\+Module\+::show\+\_\+only\+\_\+pose, Grasping\+Module\+::solL, Grasping\+Module\+::solR, Grasping\+Module\+::trajectory\+\_\+left, and Grasping\+Module\+::trajectory\+\_\+right.
+
+
+\begin{DoxyCode}
+40 \{
+41     \textcolor{keywordtype}{int} count=0;
+42     ImageOf<PixelRgb> *imgIn=portImgIn.read(\textcolor{keyword}{false});
+43     \textcolor{keywordflow}{if} (imgIn==NULL)
+44         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+45 
+46     ImageOf<PixelRgb> &imgOut=portImgOut.prepare();
+47     imgOut=*imgIn;
+48 
+49     cv::Mat imgInMat=cv::cvarrToMat((IplImage*)imgIn->getIplImage());
+50     cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
+51     imgInMat.copyTo(imgOutMat);
+52 
+53     PixelRgb color(255,255,0);
+54     \textcolor{keywordtype}{double} length=0.04;
+55 
+56     Vector x(3,0.0);
+57     Vector y(3,0.0);
+58     Vector z(3,0.0);  
+59     Vector x2D(2,0.0);
+60     Vector y2D(2,0.0);
+61     Vector z2D(2,0.0);  
+62     Vector dir\_x(3,0.0);
+63     Vector dir\_y(3,0.0);
+64     Vector dir\_z(3,0.0);
+65     Vector waypoint(6,0.0);
+66     Vector waypoint2D(2,0.0);
+67 
+68     addSuperq(\textcolor{keywordtype}{object},imgOut,255);
+69 
+70     \textcolor{keywordflow}{if} (trajectory_right.size()>0 || trajectory_left.size()>0)
+71     \{
+72         trajectory.clear();
+73 
+74         \textcolor{keywordflow}{if} (hand\_str==\textcolor{stringliteral}{"right"})
+75         \{
+76             hand_in_poseR.setSubvector(0,hand);
+77             hand_in_poseR.setSubvector(5,solR);
+78 
+79             \textcolor{keywordflow}{if} (show_hand)
+80                 addSuperq(hand_in_poseR,imgOut,0);
+81 
+82             \textcolor{keywordflow}{if} (show_only_pose)
+83             \{
+84                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_right.size(); i++)
+85                     trajectory.push\_back(trajectory_right[trajectory_right.size()-1]);
+86             \}
+87             \textcolor{keywordflow}{else}
+88             \{
+89                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_right.size(); i++)
+90                     trajectory.push\_back(trajectory_right[i]);
+91             \}
+92         \}
+93         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (hand\_str==\textcolor{stringliteral}{"left"})
+94         \{
+95             hand_in_poseL.setSubvector(0,hand1);
+96             hand_in_poseL.setSubvector(5,solL);
+97 
+98             \textcolor{keywordflow}{if} (show_hand)               
+99                 addSuperq(hand_in_poseL,imgOut,0);
+100 
+101             \textcolor{keywordflow}{if} (show_only_pose)
+102             \{
+103                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_left.size(); i++)
+104                     trajectory.push\_back(trajectory_left[trajectory_left.size()-1]);
+105             \}
+106             \textcolor{keywordflow}{else}
+107             \{
+108                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_left.size(); i++)
+109                     trajectory.push\_back(trajectory_left[i]);
+110             \}
+111         \}
+112         \textcolor{keywordflow}{else}
+113         \{
+114             hand_in_poseR.setSubvector(0,hand);
+115             hand_in_poseR.setSubvector(5,solR);
+116             \textcolor{keywordflow}{if} (show_hand)
+117                 addSuperq(hand_in_poseR,imgOut,0);
+118 
+119             \textcolor{keywordflow}{if} (show_only_pose)
+120             \{
+121                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_right.size(); i++)
+122                     trajectory.push\_back(trajectory_right[trajectory_right.size()-1]);
+123             \}
+124             \textcolor{keywordflow}{else}
+125             \{
+126                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_right.size(); i++)
+127                     trajectory.push\_back(trajectory_right[i]);
+128             \}
+129 
+130             hand_in_poseL.setSubvector(0,hand1);
+131             hand_in_poseL.setSubvector(5,solL);
+132             \textcolor{keywordflow}{if} (show_hand)
+133                 addSuperq(hand_in_poseL,imgOut,0);
+134 
+135             \textcolor{keywordflow}{if} (show_only_pose)
+136             \{
+137                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_left.size(); i++)
+138                     trajectory.push\_back(trajectory_left[trajectory_left.size()-1]);
+139             \}
+140             \textcolor{keywordflow}{else}
+141             \{
+142                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory_left.size(); i++)
+143                     trajectory.push\_back(trajectory_left[i]);
+144             \}
+145         \}
+146 
+147         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i=0; i<trajectory.size(); i++)
+148         \{
+149             waypoint=trajectory[i];
+150 
+151             \textcolor{keywordflow}{if} (eye==\textcolor{stringliteral}{"left"})
+152                 igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
+153             \textcolor{keywordflow}{else}
+154                 igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
+155 
+156             Matrix H=euler2dcm(waypoint.subVector(3,5));
+157 
+158             dir\_x=H.subcol(0,0,3);
+159             dir\_y=H.subcol(0,1,3);
+160             dir\_z=H.subcol(0,2,3);
+161 
+162             x[0]=waypoint[0]+length*dir\_x[0]; x[1]=waypoint[1]+length*dir\_x[1]; x[2]=waypoint[2]+length*
+      dir\_x[2];
+163             y[0]=waypoint[0]+length*dir\_y[0]; y[1]=waypoint[1]+length*dir\_y[1]; y[2]=waypoint[2]+length*
+      dir\_y[2];
+164             z[0]=waypoint[0]+length*dir\_z[0]; z[1]=waypoint[1]+length*dir\_z[1]; z[2]=waypoint[2]+length*
+      dir\_z[2];
+165 
+166             \textcolor{keywordflow}{if} (eye==\textcolor{stringliteral}{"left"})
+167             \{
+168                 igaze->get2DPixel(0,x,x2D);
+169                 igaze->get2DPixel(0,y,y2D);
+170                 igaze->get2DPixel(0,z,z2D);
+171             \}
+172             \textcolor{keywordflow}{else}
+173             \{
+174                 igaze->get2DPixel(1,x,x2D);
+175                 igaze->get2DPixel(1,y,y2D);
+176                 igaze->get2DPixel(1,z,z2D);
+177             \}
+178 
+179             cv::Point  target\_point((\textcolor{keywordtype}{int})waypoint2D[0],(\textcolor{keywordtype}{int})waypoint2D[1]);
+180             cv::Point  target\_pointx((\textcolor{keywordtype}{int})x2D[0],(\textcolor{keywordtype}{int})x2D[1]);
+181             cv::Point  target\_pointy((\textcolor{keywordtype}{int})y2D[0],(\textcolor{keywordtype}{int})y2D[1]);
+182             cv::Point  target\_pointz((\textcolor{keywordtype}{int})z2D[0],(\textcolor{keywordtype}{int})z2D[1]);
+183 
+184             \textcolor{keywordflow}{if} ((target\_point.x<0) || (target\_point.y<0) || (target\_point.x>=320) || (target\_point.y>=240))
+185             \{
+186                 count++;
+187             \}
+188             \textcolor{keywordflow}{else}
+189                 imgOut.pixel(target\_point.x, target\_point.y)= color;
+190 
+191             \textcolor{keywordflow}{if} ((target\_pointx.x<0) || (target\_pointx.y<0) || (target\_pointx.x>=320) || (target\_pointx.y>=2
+      40))
+192             \{
+193                 count++;
+194             \}
+195             \textcolor{keywordflow}{else}
+196                 cv::line(imgOutMat,target\_point,target\_pointx,cv::Scalar(255,0,0));
+197 
+198             \textcolor{keywordflow}{if} ((target\_pointy.x<0) || (target\_pointy.y<0) || (target\_pointy.x>=320) || (target\_pointy.y>=2
+      40))
+199             \{
+200                 count++;
+201             \}
+202             \textcolor{keywordflow}{else}
+203                 cv::line(imgOutMat,target\_point,target\_pointy,cv::Scalar(0,255,0));
+204 
+205             \textcolor{keywordflow}{if} ((target\_pointz.x<0) || (target\_pointz.y<0) || (target\_pointz.x>=320) || (target\_pointz.y>=2
+      40))
+206             \{
+207                 count++;
+208             \}
+209             \textcolor{keywordflow}{else}
+210                 cv::line(imgOutMat,target\_point,target\_pointz,cv::Scalar(0,0,255));            
+211         \}
+212 
+213         \textcolor{keywordflow}{if} (hand\_str==\textcolor{stringliteral}{"both"})
+214         \{
+215             stringstream q\_r, q\_l;
+216             q\_r<<round( quality_right * 100.0 ) / 100.0;
+217             q\_l<<round( quality_left * 100.0 ) / 100.0;
+218 
+219             stringstream right, left;
+220             right<<\textcolor{stringliteral}{"cost right"};
+221             left<<\textcolor{stringliteral}{"cost left"};
+222 
+223             \textcolor{keywordtype}{int} thickness=2.0;
+224             \textcolor{keywordtype}{int} font=cv::FONT\_HERSHEY\_SIMPLEX;
+225             \textcolor{keywordtype}{double} fontScale=0.5;
+226 
+227             cv::Scalar green(22,88,248);
+228             cv::Scalar red(244,16, 46);
+229 
+230             \textcolor{keywordflow}{if} ((quality_right<quality_left) && (quality_right!=0.0) && (
+      quality_left!=0.0))
+231             \{
+232                 cv::putText(imgOutMat, q\_r.str(), cv::Point(200,85), font, fontScale, green, thickness);
+233                 cv::putText(imgOutMat, q\_l.str(), cv::Point(50,85), font, fontScale, red, thickness);
+234                 cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, green, thickness);
+235                 cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, red, thickness);
+236             \}
+237             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} ((quality_right>quality_left) && (quality_right!=0.0) && (
+      quality_left!=0.0))
+238             \{
+239                 cv::putText(imgOutMat, q\_r.str(), cv::Point(200,85), font, fontScale, red, thickness);
+240                 cv::putText(imgOutMat, q\_l.str(), cv::Point(50,85), font, fontScale, green, thickness);
+241                 cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, red, thickness);
+242                 cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, green, thickness);
+243             \}
+244         \}            
+245     \}
+246 
+247     portImgOut.write();
+248 \}
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/include/grasp\+Visualization.\+h\item 
+/home/gvezzani/\+Desktop/\+Ph\+D/\+Anno\+\_\+1/super\+Quadratiche/superquadric-\/grasp/src/grasp\+Visualization.\+cpp\end{DoxyCompactItemize}
