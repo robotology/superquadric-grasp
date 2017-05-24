@@ -9,7 +9,7 @@ make install
 ## How to communicate with the superquadric-grasp 
 Once the user has a superquadric modeling the object as a `yarp::Vector sol` (for example, by querying the [superquadric-model](https://github.com/robotology/superquadric-model)), he can query the superquadric-grasp for
 getting a suitable grasping pose for the hand `std::string hand` through the `thrift services`:
-```
+```cpp
 graspRpc.open("/testing-graspmodule/superq:rpc");
 
 Bottle cmd, reply;
@@ -61,7 +61,7 @@ In this case, the solution will also include the quantity:
 ```
 
 If the user wants the robot to grasp the object with one of the hands, the user should type:
-```
+```cpp
 Bottle cmd, reply;
 
 cmd.addString("move");
@@ -86,6 +86,5 @@ yarpserver --write
 
 The simulator will perform a fake grasping pose computation and execution.
 
-If, instead, the user is interested in running the [`superquadric-model`](https://github.com/robotology/superquadric-model/tree/master) and the `superquadric-grasp` in a real scenario, an example code is provided by [`experiment-1`](https://github.com/robotology-playground/experiment-new-grasp/tree/master/experiment-1) folder.
 
 Enjoy! :smiley:
