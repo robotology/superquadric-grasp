@@ -3,6 +3,7 @@
    
     <module>
        <name>testing-graspmodule</name>
+       <parameters> --from config.ini <parameters>
        <node>icub21</node>
     </module>
 
