@@ -64,7 +64,9 @@ Here is an example of grasping poses computed with our method:
 <img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/results.png">
 </p>
 
-The execution time for pose computation is nealy 2.0 s. [Here](https://www.youtube.com/watch?v=eGZO8peAVao) you can find a video showing the computed poses used for real grasping tasks.
+The execution time for pose computation is nealy 2.0 s. Hereafter, you can find a video showing the computed poses used for real grasping tasks:
+
+[<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/video-snap.png" width=1000>](https://www.youtube.com/watch?v=eGZO8peAVao)
 
 ## Documentation
 Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
