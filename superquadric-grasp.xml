@@ -9,10 +9,10 @@
   <version> 1.0</version>
 
   <description-long>
-  This module provides an grasping pose computation tool based on superquadric functions.
+  This module provides a grasping pose computation tool based on superquadric functions.
 A tutorial on how to use the module is provided in the dedicated repository <a href="https://github.com/robotology/superquadric-grasp/tree/master/tutorial"><b>tutorial</b></a>.
 
-This page illustrates the main parameters of the module (Section <b>Parameters</b>), the available ports and services.
+This page illustrates the main parameters of the module (Section <b>Parameters</b>), the available ports (Section <b>Input</b> and <b> Output</b>) and services (Section <b>Services</b>).
 The modules parameters are labeled as standard and advanced. Note: change the advanced parameters only if you are familiar with the implemented techniques.
   </description-long>
 
@@ -21,7 +21,7 @@ The modules parameters are labeled as standard and advanced. Note: change the ad
     <param default="right" desc="Hand used (standard parameter).">left_or_right</param>
  <param default="z" desc="Appraching direction in hand frame.Possible values: z or xz (standard parameter).">dir</param>
  <param default="left" desc="Eyes used to get image (standard parameter).">eye</param>
- <param default="true" desc="Acquire an external point cloud or not online or not (standard parameter).">mode_online</param>
+ <param default="true" desc="Acquire an external point cloud or not (standard parameter).">mode_online</param>
  <param default="0.05" desc="Distance used for approach on x axis (standard parameter).">distance</param>
  <param default="0.05" desc="Distance used for approach on z axis (standard parameter).">distance1</param>
  <param default="false" desc="Save or not the results (standard parameter).">save_poses</param>
@@ -30,7 +30,7 @@ The modules parameters are labeled as standard and advanced. Note: change the ad
  <param default="true" desc="Show the hand ellipsoid or not (standard parameter).">show_hand</param>
  <param default="true" desc="Look the object or not (standard parameter).">look_object</param>
  <param default="true" desc="If on, only the pose is shown, without the trajectory (standard parameter).">show_only_pose</param>
- <param default="1.0" desc="Trajectory time (standard parameter).">traj_time</param>
+ <param default="1.0" desc="Trajectory time for each waypoint (standard parameter).">traj_time</param>
  <param default="0.001" desc="Trajectory tolerance (standard parameter).">traj_tol</param>
 <param default="0.15" desc="Quantity on z axis for object lifting (standard parameter).">lift_z</param>
  <param default="(0.0 0.0 1.0 0.18)" desc="Plane representing the table (advanced parameter).">plane</param>
