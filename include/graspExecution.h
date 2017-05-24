@@ -55,6 +55,7 @@ protected:
     int i;
     bool grasp;    
     double lift_z;
+    double torso_pitch_max;
     double traj_time,traj_tol;
 
 public:

@@ -85,6 +85,7 @@ protected:
     bool save_poses;
 
     double lift_z;
+    double torso_pitch_max;
     double traj_time, traj_tol;
     yarp::sig::Vector shift;
     yarp::sig::Vector home_right;

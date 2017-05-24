@@ -314,6 +314,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
     traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
+    torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
 
     readSuperq("shift",shift,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
@@ -324,6 +325,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("traj_time",traj_time);
     movement_par.put("traj_tol",traj_tol);
     movement_par.put("lift_z", lift_z);
+    movement_par.put("torso_pitch_max", torso_pitch_max);
 
     Bottle planed;
     Bottle &pd=planed.addList();

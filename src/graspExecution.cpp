@@ -404,6 +404,28 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
             home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
         }
     }
+
+    double pitch_max=newOptions.find("torso_pitch_max").asDouble();
+
+    if (newOptions.find("torso_pitch_max").isNull() && (first_time==true))
+    {
+        torso_pitch_max=30.0;
+    }
+    else if (!newOptions.find("torso_pitch_max").isNull())
+    {
+        if ((pitch_max>=0.0) && (pitch_max<=40.0))
+        {
+            torso_pitch_max=pitch_max;
+        }
+        else if (pitch_max<0.0)
+        {
+            torso_pitch_max=0.0;
+        }
+        else if (pitch_max>40.0)
+        {
+            torso_pitch_max=40.0;
+        }
+    }
 }
 
 /*******************************************************************************/
@@ -627,7 +649,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         {
             icart_right->setLimits(0,limit_min[0], limit_max[0]);
             icart_right->setLimits(1,limit_min[1], limit_max[1]);
-            icart_right->setLimits(2,limit_min[2], limit_max[2]);    
+            icart_right->setLimits(2,limit_min[2], torso_pitch_max);
         }
 
     }
@@ -666,7 +688,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         {
             icart_left->setLimits(0,limit_min[0], limit_max[0]);
             icart_left->setLimits(1,limit_min[1], limit_max[1]);
-            icart_left->setLimits(2,limit_min[2], limit_max[2]);    
+            icart_left->setLimits(2,limit_min[2], torso_pitch_max);
         }
     }
 
