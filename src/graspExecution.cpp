@@ -733,6 +733,8 @@ bool GraspExecution::goHome(const string &hand)
 
     if (hand=="right")
     {
+        yDebug()<<"[GraspExecution]: opening hand ... ";
+        handContr_right.openHand(false, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
@@ -747,6 +749,8 @@ bool GraspExecution::goHome(const string &hand)
     }
     if (hand=="left")
     {
+        yDebug()<<"[GraspExecution]: opening hand ... ";
+        handContr_left.openHand(false, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();
