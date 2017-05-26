@@ -462,7 +462,20 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     }
     else
     {
-        yError()<<"[GraspComputation]: Problem not solved!";
+        yError()<<"[GraspComputation]: Problem for "<<l_o_r<<" not solved!";
+        if (l_o_r=="right")
+        {
+            solR.resize(6,0.0);
+            poseR.resize(6,0.0);
+        }
+
+        if (l_o_r=="left")
+        {
+            solL.resize(6,0.0);
+            poseL.resize(6,0.0);
+        }
+        
+        
         return false;
     }
 }
@@ -643,7 +656,7 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 /***********************************************************************/
 void GraspComputation::setPar(const string &par_name, const string &value)
 {
-    LockGuard lg(mutex);
+    //LockGuard lg(mutex);
     if (par_name=="hand")
         left_or_right=value;
 }

@@ -514,11 +514,12 @@ bool GraspExecution::executeTrajectory(string &hand)
     trajectory.clear();
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
-
         if (hand=="right")
         {
             for (size_t i=0; i<trajectory_right.size(); i++)
+            {               
                 trajectory.push_back(trajectory_right[i]);
+            }
 
                 liftObject(trajectory, trajectory_right.size());
 
@@ -530,7 +531,9 @@ bool GraspExecution::executeTrajectory(string &hand)
         else
         {
             for (size_t i=0; i<trajectory_left.size(); i++)
+            {
                 trajectory.push_back(trajectory_left[i]);
+            }
 
                 liftObject(trajectory, trajectory_left.size());
 
@@ -633,6 +636,12 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         icart_right->getDOF(curDof);
         icart_right->setDOF(newDof,curDof);
 
+        if (i==0)
+        {
+            yDebug()<<"[GraspExecution]: opening hand ... ";
+            handContr_right.openHand(true, true);
+        }
+
         icart_right->goToPoseSync(x,o);
         icart_right->waitMotionDone();
         icart_right->checkMotionDone(&done);
@@ -671,6 +680,12 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
  
         icart_left->getDOF(curDof);
         icart_left->setDOF(newDof,curDof);
+
+        if (i==0)
+        {
+            yDebug()<<"[GraspExecution]: opening hand ... ";
+            handContr_left.openHand(true, true);
+        }
 
         icart_left->goToPoseSync(x,o);
         icart_left->waitMotionDone();
@@ -734,7 +749,7 @@ bool GraspExecution::goHome(const string &hand)
     if (hand=="right")
     {
         yDebug()<<"[GraspExecution]: opening hand ... ";
-        handContr_right.openHand(false, true);
+        handContr_right.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
         icart_right->waitMotionDone();
@@ -750,7 +765,7 @@ bool GraspExecution::goHome(const string &hand)
     if (hand=="left")
     {
         yDebug()<<"[GraspExecution]: opening hand ... ";
-        handContr_left.openHand(false, true);
+        handContr_left.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
         icart_left->waitMotionDone();

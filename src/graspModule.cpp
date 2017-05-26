@@ -58,7 +58,7 @@ bool GraspingModule::clear_poses()
 /**********************************************************************/
 Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
 {
-    LockGuard lg(mutex);
+    //LockGuard lg(mutex);
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -391,7 +391,7 @@ bool GraspingModule::interruptModule()
 /****************************************************************/
 bool GraspingModule::updateModule()
 {    
-    LockGuard lg(mutex);
+    //LockGuard lg(mutex);
 
     if (visualization)
     {
