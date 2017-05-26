@@ -432,7 +432,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetStringValue("hessian_approximation","limited-memory");
     app->Options()->SetStringValue("derivative_test","first-order");
     app->Options()->SetStringValue("derivative_test_print_all","yes");
-    app->Options()->SetIntegerValue("print_level",0);
+    app->Options()->SetIntegerValue("print_level",5);
     app->Initialize();
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
