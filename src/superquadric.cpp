@@ -118,36 +118,69 @@ void grasping_NLP::checkZbound()
 Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand)
 {
     Vector point(3,0.0);
-    double theta;
+    double theta, omega;
+    double ce,se,co,so;
 
     if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
         hand[1]=findMax(object.subVector(0,2));
     else if (findMax(object.subVector(0,2))<findMax(hand.subVector(0,2)))
-        hand[1]=findMax(object.subVector(0,2));
+        hand[1]=findMax(object.subVector(0,2));  
+
+    //Shape adaptation
+    hand[3]=object[3];
+    hand[4]=object[4];
+
+
+    Matrix R=euler2dcm(hand.subVector(8,10));
+    //R=R.transposed();
 
     if (str_hand=="right")
     {
-        if (j<l/3)
-        {
-            theta=j*M_PI/8;
-            point[0]=cos(theta)*hand[0];
-            point[1]=sin(theta)*hand[1];
-            point[2]=0.0;
-        }
-        if(j>=l/3 && j<l/3*2)
-        {
-            theta=j*M_PI/16;
-            point[0]=cos(theta)*hand[0];
-            point[1]=0.0;
-            point[2]=sin(theta)*hand[2];
-        }
-        if(j>=l/3*2 && j<l)
-        {
-            theta=j*M_PI/16+M_PI;
-            point[0]=0.0;
-            point[1]=cos(theta)*hand[1];
-            point[2]=sin(theta)*hand[2];
-        }
+        //if (j<l/3)
+        //{
+            theta=j*M_PI/(l)-M_PI/2;
+
+            for (size_t i=0; i<l; i++)
+            {
+                omega=i*2*M_PI/l-M_PI;
+
+                ce=cos(theta);
+                se=sin(theta);
+                co=cos(omega);
+                so=sin(omega);
+
+//                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+//                point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+//                point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+
+                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(0,0) +
+                           hand[1] * sign(ce)*(pow(abs(ce),hand[3]))* sign(so)*(pow(abs(so),hand[4])) * R(0,1)+
+                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(0,2) + hand[5];
+
+                point[1]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(1,0) +
+                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(1,1)+
+                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(1,2) + hand[6];
+
+                point[2]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(2,0) +
+                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(2,1)+
+                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(2,2) + hand[7];
+                cout<<" "<<point.toString()<<endl;
+            }
+//        }
+//        if(j>=l/3 && j<l/3*2)
+//        {
+//            theta=j*M_PI/16;
+//            point[0]=cos(theta)*hand[0];
+//            point[1]=0.0;
+//            point[2]=sin(theta)*hand[2];
+//        }
+//        if(j>=l/3*2 && j<l)
+//        {
+//            theta=j*M_PI/16+M_PI;
+//            point[0]=0.0;
+//            point[1]=cos(theta)*hand[1];
+//            point[2]=sin(theta)*hand[2];
+//        }
     }
     else
     {
