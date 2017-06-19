@@ -118,7 +118,7 @@ void grasping_NLP::checkZbound()
 Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand)
 {
     Vector point(3,0.0);
-    double theta, omega;
+    double omega, theta;
     double ce,se,co,so;
 
     if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
@@ -138,32 +138,49 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     {
         //if (j<l/3)
         //{
-            theta=j*M_PI/(l)-M_PI/2;
+            //omega=j*2*M_PI/l-M_PI;
+        omega=j*2*M_PI/(l);
 
-            for (size_t i=0; i<l; i++)
+            for (double theta=-M_PI/2; theta<0; theta+=M_PI/(2*7))
+            //    for (double theta=-M_PI; theta<M_PI; theta+=2*M_PI/7)
             {
-                omega=i*2*M_PI/l-M_PI;
-
                 ce=cos(theta);
                 se=sin(theta);
                 co=cos(omega);
                 so=sin(omega);
 
-//                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
-//                point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
-//                point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+                point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+                point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
 
-                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(0,0) +
-                           hand[1] * sign(ce)*(pow(abs(ce),hand[3]))* sign(so)*(pow(abs(so),hand[4])) * R(0,1)+
-                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(0,2) + hand[5];
+//                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(0,0) +
+//                           hand[1] * sign(ce)*(pow(abs(ce),hand[3]))* sign(so)*(pow(abs(so),hand[4])) * R(0,1)+
+//                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(0,2) + hand[5];
 
-                point[1]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(1,0) +
-                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(1,1)+
-                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(1,2) + hand[6];
+//                point[1]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(1,0) +
+//                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(1,1)+
+//                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(1,2) + hand[6];
 
-                point[2]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(2,0) +
-                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(2,1)+
-                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(2,2) + hand[7];
+//                point[2]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(2,0) +
+//                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(2,1)+
+//                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(2,2) + hand[7];
+
+                Vector point_tr(4,0.0);
+
+                euler[0]=hand[8];
+                euler[1]=hand[9];
+                euler[2]=hand[10];
+                H_h2w=euler2dcm(euler);
+                euler[0]=hand[5];
+                euler[1]=hand[6];
+                euler[2]=hand[7];
+                H_h2w.setSubcol(euler,0,3);
+
+                Vector point_tmp(4,1.0);
+                point_tmp.setSubvector(0,point);
+                point_tr=H_h2w*point_tmp;
+                point=point_tr.subVector(0,2);
+
                 cout<<" "<<point.toString()<<endl;
             }
 //        }
