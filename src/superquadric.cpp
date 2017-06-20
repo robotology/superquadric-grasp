@@ -71,9 +71,12 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoi
     euler[2]=hand[7];
     H_h2w.setSubcol(euler,0,3);
 
-    for(int i=0; i<n_handpoints; i++)
+    for(int i=0; i<(int)sqrt(n_handpoints); i++)
     {
-        points_on.push_back(computePointsHand(hand,i, n_handpoints, str_hand));
+        for (double theta=-M_PI/2; theta<0; theta+=M_PI/(2*(int)sqrt(n_handpoints)))
+        {
+            points_on.push_back(computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta));
+        }
     }
 
     aux_objvalue=0.0;
@@ -115,10 +118,10 @@ void grasping_NLP::checkZbound()
 }
 
 /****************************************************************/
-Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand)
+Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand, double &theta)
 {
     Vector point(3,0.0);
-    double omega, theta;
+    double omega;
     double ce,se,co,so;
 
     if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
@@ -127,103 +130,38 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
         hand[1]=findMax(object.subVector(0,2));  
 
     //Shape adaptation
-    hand[3]=object[3];
-    hand[4]=object[4];
+    //hand[3]=object[3];
+    //hand[4]=object[4];
 
-
-    Matrix R=euler2dcm(hand.subVector(8,10));
-    //R=R.transposed();
 
     if (str_hand=="right")
     {
-        //if (j<l/3)
-        //{
-            //omega=j*2*M_PI/l-M_PI;
         omega=j*2*M_PI/(l);
 
-            for (double theta=-M_PI/2; theta<0; theta+=M_PI/(2*7))
-            //    for (double theta=-M_PI; theta<M_PI; theta+=2*M_PI/7)
-            {
-                ce=cos(theta);
-                se=sin(theta);
-                co=cos(omega);
-                so=sin(omega);
+        ce=cos(theta);
+        se=sin(theta);
+        co=cos(omega);
+        so=sin(omega);
 
-                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
-                point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
-                point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+        point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+        point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+        point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
 
-//                point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(0,0) +
-//                           hand[1] * sign(ce)*(pow(abs(ce),hand[3]))* sign(so)*(pow(abs(so),hand[4])) * R(0,1)+
-//                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(0,2) + hand[5];
-
-//                point[1]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(1,0) +
-//                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(1,1)+
-//                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(1,2) + hand[6];
-
-//                point[2]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4])) * R(2,0) +
-//                           hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4])) * R(2,1)+
-//                               hand[2] * sign(se)*(pow(abs(se),hand[3])) * R(2,2) + hand[7];
-
-                Vector point_tr(4,0.0);
-
-                euler[0]=hand[8];
-                euler[1]=hand[9];
-                euler[2]=hand[10];
-                H_h2w=euler2dcm(euler);
-                euler[0]=hand[5];
-                euler[1]=hand[6];
-                euler[2]=hand[7];
-                H_h2w.setSubcol(euler,0,3);
-
-                Vector point_tmp(4,1.0);
-                point_tmp.setSubvector(0,point);
-                point_tr=H_h2w*point_tmp;
-                point=point_tr.subVector(0,2);
-
-                cout<<" "<<point.toString()<<endl;
-            }
-//        }
-//        if(j>=l/3 && j<l/3*2)
-//        {
-//            theta=j*M_PI/16;
-//            point[0]=cos(theta)*hand[0];
-//            point[1]=0.0;
-//            point[2]=sin(theta)*hand[2];
-//        }
-//        if(j>=l/3*2 && j<l)
-//        {
-//            theta=j*M_PI/16+M_PI;
-//            point[0]=0.0;
-//            point[1]=cos(theta)*hand[1];
-//            point[2]=sin(theta)*hand[2];
-//        }
     }
     else
     {
-        if (j<l/3)
-        {
-            theta=j*M_PI/8+M_PI;
-            point[0]=cos(theta)*hand[0];
-            point[1]=sin(theta)*hand[1];
-            point[2]=0.0;
-        }
-        if(j>=l/3 && j<l/3*2)
-        {
-            theta=j*M_PI/16+M_PI;
-            point[0]=cos(theta)*hand[0];
-            point[1]=0.0;
-            point[2]=sin(theta)*hand[2];
-        }
-        if(j>=l/3*2 && j<l)
-        {
-            theta=j*M_PI/16;
-            point[0]=0.0;
-            point[1]=cos(theta)*hand[1];
-            point[2]=sin(theta)*hand[2];
-        }
+        omega=j*2*M_PI/(l);
 
+        ce=cos(theta+M_PI/2);
+        se=sin(theta+M_PI/2);
+        co=cos(omega);
+        so=sin(omega);
+
+        point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+        point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+        point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
     }
+
     Vector point_tr(4,0.0);
 
     euler[0]=hand[8];
@@ -239,6 +177,8 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     point_tmp.setSubvector(0,point);
     point_tr=H_h2w*point_tmp;
     point=point_tr.subVector(0,2);
+
+    cout<<" "<<point.toString()<<endl;
 
     return point;
 }
@@ -787,6 +727,7 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
     robot_pose.resize(6,0.0);
     robot_pose.setSubvector(3,dcm2euler(H));
+
     if (l_o_r=="right")
     {
         robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));

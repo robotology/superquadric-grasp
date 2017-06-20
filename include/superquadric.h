@@ -59,7 +59,7 @@ public:
     void checkZbound();
 
     /****************************************************************/
-    yarp::sig::Vector computePointsHand(yarp::sig::Vector &hand, int j, int l, const std::string &str_hand);
+    yarp::sig::Vector computePointsHand(yarp::sig::Vector &hand, int j, int l, const std::string &str_hand, double &theta);
 
     /****************************************************************/
     bool get_nlp_info(Ipopt::Index &n, Ipopt::Index &m,Ipopt::Index &nnz_jac_g,
