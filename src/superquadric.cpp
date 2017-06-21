@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
  * Author: Giulia Vezzani
@@ -741,9 +740,9 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
     }
 
-
+cout<<" Point in solution"<<endl;
     /*********************/
-    /**for(size_t i=0;i<points_on.size();i++)
+    for(size_t i=0;i<points_on.size();i++)
     {
         Vector point(3,0.0);
         point=points_on[i];
@@ -762,6 +761,7 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
         H_x.setSubcol(euler,0,3);
 
         point_tr=H_x*point_tmp;
+
         cout<<point_tr.subVector(0,2).toString()<<endl;
     }
     /*********************/
