@@ -72,7 +72,8 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoi
 
     for(int i=0; i<(int)sqrt(n_handpoints); i++)
     {
-        for (double theta=-M_PI/2; theta<0; theta+=M_PI/(2*(int)sqrt(n_handpoints)))
+        //for (double theta=-M_PI/2; theta<0; theta+=M_PI/(2*(int)sqrt(n_handpoints)))
+        for (double theta=-M_PI/2; theta<=0; theta+=M_PI/((int)sqrt(n_handpoints)))
         {
             points_on.push_back(computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta));
         }
@@ -455,11 +456,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      euler[2]=x[2];
      H_x.setSubcol(euler,0,3);
 
-
-     euler[0]=hand[8];
-     euler[1]=hand[9];
-     euler[2]=hand[10];
-     H_h2w=euler2dcm(euler);
      Matrix H(4,4);
      H=H_x*H_h2w;
 
