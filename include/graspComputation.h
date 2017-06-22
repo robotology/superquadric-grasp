@@ -27,7 +27,7 @@ class GraspComputation
 {
 protected:
 
-    std::string left_or_right;
+    std::string left_right;
 
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;

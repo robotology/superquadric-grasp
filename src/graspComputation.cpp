@@ -21,7 +21,7 @@ GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
                                    Property &_complete_sol, const Vector &_object):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
-                                   left_or_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), complete_sol(_complete_sol), object(_object)
+                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), complete_sol(_complete_sol), object(_object)
 
 {
 
@@ -394,9 +394,9 @@ void GraspComputation::run()
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
     {
-        if (left_or_right!="both")
-            go_on=computePose(hand, left_or_right);
-        else if (left_or_right=="both" && norm(hand1)!=0.0)
+        if (left_right!="both")
+            go_on=computePose(hand, left_right);
+        else if (left_right=="both" && norm(hand1)!=0.0)
         {
             go_on=computePose(hand, "right");
             bool go_on1=computePose(hand1, "left");
@@ -406,8 +406,8 @@ void GraspComputation::run()
 
     if ((go_on==true))
     {
-        if (left_or_right!="both")
-            computeTrajectory(left_or_right, dir);
+        if (left_right!="both")
+            computeTrajectory(left_right, dir);
         else
         {
             go_on=computeTrajectory("right", dir);
@@ -657,6 +657,6 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 void GraspComputation::setPar(const string &par_name, const string &value)
 {
     //LockGuard lg(mutex);
-    if (par_name=="hand")
-        left_or_right=value;
+    if (par_name=="left_or_right")
+        left_right=value;
 }
