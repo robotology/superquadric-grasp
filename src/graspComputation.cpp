@@ -422,6 +422,7 @@ void GraspComputation::run()
 /***********************************************************************/
 bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 {
+    string context=this->rf->getHomeContextPath().c_str();
     Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
     app->Options()->SetNumericValue("tol",tol);
     app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol);
@@ -432,7 +433,8 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetStringValue("hessian_approximation","limited-memory");
     app->Options()->SetStringValue("derivative_test","first-order");
     app->Options()->SetStringValue("derivative_test_print_all","yes");
-    app->Options()->SetIntegerValue("print_level",0);
+    app->Options()->SetStringValue("output_file", context+"/ipopt.out");
+    app->Options()->SetIntegerValue("print_level",4);
     app->Initialize();
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
