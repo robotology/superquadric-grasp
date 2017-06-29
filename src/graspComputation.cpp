@@ -19,10 +19,10 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object, int _print_level):
+                                   Property &_complete_sol, const Vector &_object):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf),
-                                   complete_sol(_complete_sol), object(_object), print_level(_print_level)
+                                   complete_sol(_complete_sol), object(_object)
 
 {
 
@@ -406,6 +406,8 @@ bool GraspComputation::init()
 
     go_on=false;
 
+    count_file=0;
+
     return true;
 }
 
@@ -425,6 +427,9 @@ void GraspComputation::run()
             bool go_on1=computePose(hand1, "left");
             go_on=((go_on==true) || (go_on1==true));
         }
+
+        count_file++;
+        count_file_old=count_file;
     }
 
     if ((go_on==true))
@@ -445,6 +450,10 @@ void GraspComputation::run()
 /***********************************************************************/
 bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 {
+    stringstream ss;
+    ss << count_file;
+    string count_file_string=ss.str();
+
     string context=this->rf->getHomeContextPath().c_str();
     Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
     app->Options()->SetNumericValue("tol",tol);
@@ -459,7 +468,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetIntegerValue("print_level",print_level);
 
     if (print_level > 0)
-        app->Options()->SetStringValue("output_file", context+"/ipopt.out");
+        app->Options()->SetStringValue("output_file", context+"/ipopt_"+l_o_r+"_"+count_file_string+".out");
 
     app->Initialize();
 
@@ -486,6 +495,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
         }
+
         return true;
     }
     else

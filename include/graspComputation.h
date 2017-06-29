@@ -63,12 +63,14 @@ public:
     yarp::sig::Vector &hand, &hand1;
     yarp::os::Property &complete_sol;
     const yarp::sig::Vector &object;
+    int count_file_old;
+    int count_file;
 
     /*******************************************************************************/
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
-                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, int print_level);
+                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
 
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);

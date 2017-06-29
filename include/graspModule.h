@@ -84,6 +84,7 @@ protected:
     bool visualization;
     bool mode_online;    
     bool save_poses;
+    bool also_traj;
 
     double lift_z;
     double torso_pitch_max;
