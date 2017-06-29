@@ -19,9 +19,10 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object):
+                                   Property &_complete_sol, const Vector &_object, int _print_level):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
-                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), complete_sol(_complete_sol), object(_object)
+                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf),
+                                   complete_sol(_complete_sol), object(_object), print_level(_print_level)
 
 {
 
@@ -166,6 +167,27 @@ void GraspComputation::setIpoptPar(const Property &newOptions, bool first_time)
             nlp_scaling_method="gradient-based";
         }
     }
+
+    int pl=newOptions.find("print_level").asInt();
+    if (newOptions.find("print_level").isNull() && (first_time==true))
+    {
+        print_level=0;
+    }
+    else if (!newOptions.find("print_level").isNull())
+    {
+        if ((pl>=0 )&& (pl<=10))
+        {
+             print_level=pl;
+        }
+        else if (pl<0 )
+        {
+            pl=0;
+        }
+        else if (pl>10)
+        {
+            print_level=10;
+        }
+    }
 }
 
 /***********************************************************************/
@@ -180,6 +202,7 @@ Property GraspComputation::getIpoptPar()
     advOptions.put("acceptable_iter",acceptable_iter);
     advOptions.put("IPOPT_mu_strategy",mu_strategy);
     advOptions.put("IPOPT_nlp_scaling_method",nlp_scaling_method);
+    advOptions.put("IPOPT_print_level", print_level);
     return advOptions;
 }
 
@@ -432,9 +455,12 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetStringValue("nlp_scaling_method",nlp_scaling_method);
     app->Options()->SetStringValue("hessian_approximation","limited-memory");
     app->Options()->SetStringValue("derivative_test","first-order");
-    app->Options()->SetStringValue("derivative_test_print_all","yes");
-    app->Options()->SetStringValue("output_file", context+"/ipopt.out");
-    app->Options()->SetIntegerValue("print_level",4);
+    app->Options()->SetStringValue("derivative_test_print_all","yes");    
+    app->Options()->SetIntegerValue("print_level",print_level);
+
+    if (print_level > 0)
+        app->Options()->SetStringValue("output_file", context+"/ipopt.out");
+
     app->Initialize();
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;

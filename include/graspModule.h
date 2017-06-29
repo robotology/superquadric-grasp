@@ -48,6 +48,7 @@ protected:
 
     int context_gaze;
     int rate_vis;
+    int print_level;
     double t,t0, t_grasp, t_vis;
     std::deque<double> times_vis;
 

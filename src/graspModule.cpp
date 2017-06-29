@@ -302,6 +302,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     save_poses=(rf.check("save_poses", Value("on")).asString()=="on");
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
+    print_level=rf.check("print_level", Value(0)).asInt();
 
     go_on=false;
 
@@ -579,7 +580,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object, print_level);
 
     graspComp->init();
 

@@ -56,6 +56,8 @@ protected:
 
     yarp::os::ResourceFinder *rf;
 
+    int print_level;
+
 public:
     
     yarp::sig::Vector &hand, &hand1;
@@ -66,7 +68,7 @@ public:
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
-                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
+                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, int print_level);
 
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);
