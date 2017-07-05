@@ -75,8 +75,9 @@ protected:
     yarp::dev::PolyDriver GazeCtrl;
     yarp::dev::IGazeControl *igaze;
 
+    bool fing;
     bool go_on;
-    bool grasp;
+    bool grasp;    
     bool executed;
     std::string show_hand;
     std::string show_only_pose;
