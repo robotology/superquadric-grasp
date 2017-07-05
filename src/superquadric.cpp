@@ -133,7 +133,6 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     //hand[3]=object[3];
     //hand[4]=object[4];
 
-
     if (str_hand=="right")
     {
         omega=j*2*M_PI/(l);
@@ -146,7 +145,6 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
         point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
         point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
         point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
-
     }
     else
     {
@@ -177,8 +175,6 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     point_tmp.setSubvector(0,point);
     point_tr=H_h2w*point_tmp;
     point=point_tr.subVector(0,2);
-
-    cout<<" "<<point.toString()<<endl;
 
     return point;
 }
