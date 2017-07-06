@@ -55,7 +55,7 @@ protected:
     int i;
     bool grasp;    
     double lift_z;
-    bool five_fingers;
+    std::string five_fingers;
     double torso_pitch_max;
     double traj_time,traj_tol;
 

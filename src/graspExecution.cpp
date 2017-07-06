@@ -171,21 +171,21 @@ bool GraspExecution::configGrasp()
     {
         handContr_right.set("hand", Value("right"));
         handContr_right.openHand(true, true);
-        handContr_right.set("useRingLittleFingers", five_fingers);
+        handContr_right.set("useRingLittleFingers", Value(five_fingers));        
     }
     else if (left_or_right=="left")
     {
         handContr_left.set("hand", Value("left"));
         handContr_left.openHand(true, true);
-        handContr_left.set("useRingLittleFingers", five_fingers);
+        handContr_left.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="both")
     {
         handContr_right.set("hand", Value("right"));
         handContr_left.set("hand", Value("left"));
 
-        handContr_right.set("useRingLittleFingers", five_fingers);
-        handContr_left.set("useRingLittleFingers", five_fingers);
+        handContr_right.set("useRingLittleFingers", Value(five_fingers));
+        handContr_left.set("useRingLittleFingers", Value(five_fingers));
 
         handContr_right.openHand(true, true);
         handContr_left.openHand(true, true);
@@ -247,20 +247,25 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
-    bool fivef=(newOptions.find("5_fingers").asString()=="on");
+    string fivef=newOptions.find("five_fingers").asString();
 
-    if (newOptions.find("5_fingers").isNull() && (first_time==true))
+    if (newOptions.find("five_fingers").isNull() && (first_time==true))
     {
-        five_fingers=false;
+        five_fingers="false";
     }
-    else if (!newOptions.find("5_fingers").isNull())
+    else if (!newOptions.find("five_fingers").isNull())
     {
-        five_fingers=fivef;
+        if (fivef=="on")
+            five_fingers="true";
+        else 
+            five_fingers="false";
 
-        if ((left_or_right=="right") || (left_or_right=="right"))
-            handContr_right.set("useRingLittleFingers", five_fingers);
+        if ((left_or_right=="right") || (left_or_right=="both"))
+        {
+            handContr_right.set("useRingLittleFingers", Value(five_fingers));
+        }
         else if ((left_or_right=="left") || ("left_or_right"=="both"))
-            handContr_left.set("useRingLittleFingers", five_fingers);
+            handContr_left.set("useRingLittleFingers", Value(five_fingers));
     }
 
     double ttime=newOptions.find("traj_time").asDouble();
@@ -457,6 +462,8 @@ Property GraspExecution::getPosePar()
     Property advOptions;
     advOptions.put("robot",robot);
     advOptions.put("hand",left_or_right);
+    advOptions.put("five_fingers",five_fingers);
+    advOptions.put("five_fingers",five_fingers);
     advOptions.put("traj_time",traj_time);
     advOptions.put("traj_tol",traj_tol);
     advOptions.put("lift_z",lift_z);
