@@ -164,40 +164,42 @@ bool GraspExecution::configCartesian(const string &which_hand)
 /*******************************************************************************/
 bool GraspExecution::configGrasp()
 {
-    handContr_right.set(lib_context, lib_filename);
-    handContr_left.set(lib_context, lib_filename);
-
     if (left_or_right=="right")
     {
+        handContr_right.set(lib_context, lib_filename);
         handContr_right.set("hand", Value("right"));
         handContr_right.openHand(true, true);
         handContr_right.set("useRingLittleFingers", Value(five_fingers));        
     }
     else if (left_or_right=="left")
     {
+        handContr_left.set(lib_context, lib_filename);
         handContr_left.set("hand", Value("left"));
         handContr_left.openHand(true, true);
         handContr_left.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="both")
     {
-        handContr_right.set("hand", Value("right"));
-        handContr_left.set("hand", Value("left"));
+        handContr_right.set(lib_context, lib_filename);
+        handContr_left.set(lib_context, lib_filename);
 
+        handContr_right.set("hand", Value("right"));
         handContr_right.set("useRingLittleFingers", Value(five_fingers));
+
+        handContr_left.set("hand", Value("left"));       
         handContr_left.set("useRingLittleFingers", Value(five_fingers));
 
         handContr_right.openHand(true, true);
         handContr_left.openHand(true, true);
     }
 
-    if (!handContr_right.open())
+    if ((left_or_right !="left") && (!handContr_right.open()))
     {
         yError()<<"[GraspExecution]: Problems in initializing the tactile control for right arm";
         return false;
     }
 
-    if (!handContr_left.open())
+    if ((left_or_right!="right") && (!handContr_left.open()))
     {
         yError()<<"[GraspExecution]: Problems in initializing the tactile control for left arm";
         return false;
@@ -246,6 +248,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
             left_or_right="both";
         }
     }
+
+yDebug()<<"L O R IN EXEC"<<left_or_right;
 
     string fivef=newOptions.find("five_fingers").asString();
 
@@ -745,24 +749,29 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 /*******************************************************************************/
 bool GraspExecution::release()
 {
-    if (hand_to_move=="right")
+    if (hand_to_move=="right" && left_or_right !="left")
         icart_right->stopControl();
-    else
+    else if (hand_to_move=="left" && left_or_right !="right")
         icart_left->stopControl();
 
-    icart_right->restoreContext(context_right);
-    icart_left->restoreContext(context_left);
-
     if (left_or_right=="both" || left_or_right=="right")
+    {
         robotDevice_right.close();
+        icart_right->restoreContext(context_right);
+    }
     if (left_or_right=="both" || left_or_right=="left")
+    {
         robotDevice_left.close();
+        icart_left->restoreContext(context_left);
+    }
 
     if (grasp==true)
-    {   
-        handContr_right.close();
+    { 
+        if (left_or_right != "left")  
+            handContr_right.close();
 
-        handContr_left.close();
+        if (left_or_right != "right") 
+            handContr_left.close();
     }
 
     return true;
