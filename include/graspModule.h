@@ -86,7 +86,9 @@ protected:
     bool mode_online;    
     bool save_poses;
     bool also_traj;
+    std::string visual_servoing;
 
+    double pixel_tol;
     double lift_z;
     double torso_pitch_max;
     double traj_time, traj_tol;

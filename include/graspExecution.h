@@ -21,6 +21,7 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/dev/all.h>
+#include <yarp/dev/IVisualServoing.h>
 
 #include "TactileControl/HandController.h"
 
@@ -55,6 +56,7 @@ protected:
     int i;
     bool grasp;    
     double lift_z;
+    bool visual_serv;
     std::string five_fingers;
     double torso_pitch_max;
     double traj_time,traj_tol;
@@ -63,6 +65,10 @@ public:
 
     bool reached;
     bool reached_tot;
+
+    double pixel_tol;
+    yarp::dev::PolyDriver drv_server_vs;
+    yarp::dev::IVisualServoing *visual_servoing_right;
 
     std::string lib_context;
     std::string lib_filename;
@@ -119,6 +125,12 @@ public:
 
     /*******************************************************************************/
     bool releaseObject(const std::string &hand);
+
+    /*******************************************************************************/
+    bool reachWithVisual(int i, std::string &hand);
+
+    /*******************************************************************************/
+    bool configVisualServoing();
 };
 
 #endif

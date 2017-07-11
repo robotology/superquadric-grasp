@@ -304,6 +304,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     also_traj=(rf.check("also_traj", Value("off")).asString()=="on");
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
+    visual_servoing=rf.check("visual_servoing", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
 
     go_on=false;
@@ -316,6 +317,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 {
     traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
     traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
+    pixel_tol=rf.check("pixel_tol", Value(15)).asDouble();
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
     torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
     fing=rf.check("five_fingers", Value("off")).asString();
@@ -333,6 +335,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("traj_tol",traj_tol);
     movement_par.put("lift_z", lift_z);
     movement_par.put("torso_pitch_max", torso_pitch_max);
+    movement_par.put("visual_servoing", visual_servoing);
+    movement_par.put("pixel_tol", pixel_tol);
 
     Bottle planed;
     Bottle &pd=planed.addList();

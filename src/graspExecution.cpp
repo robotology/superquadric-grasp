@@ -50,6 +50,10 @@ bool GraspExecution::configure()
         config=config && configCartesian("left");
     }
 
+    if (visual_serv)
+        config=config && configVisualServoing();
+
+
     if (grasp)
     {
         config=config && configGrasp();
@@ -110,8 +114,6 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[1]=0;
         newDof[2]=1;
         icart_right->setDOF(newDof,curDof);
-
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
     else if (which_hand=="left")
     {
@@ -154,11 +156,37 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[1]=0;
         newDof[2]=1;
         icart_right->setDOF(newDof,curDof);
-
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
 
     return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::configVisualServoing()
+{
+    Property prop_server_vs;
+    prop_server_vs.put("device","visualservoingclient");
+    prop_server_vs.put("verbosity",true);
+    prop_server_vs.put("local","/VisualServoingClientTest");
+    prop_server_vs.put("remote", "/visual-servoing");
+
+    drv_server_vs.open(prop_server_vs);
+    if (!drv_server_vs.isValid())
+    {
+       yError("Could not run VisualServoingClient!");
+       return false;
+    }
+
+    drv_server_vs.view(visual_servoing_right);
+    if (visual_servoing_right == NULL)
+    {
+       yError("Could not get interfacate to VisualServoingClient!");
+       return false;
+    }
+
+    visual_servoing_right->setGoToGoalTolerance(pixel_tol);
+
+    return true;
 }
 
 /*******************************************************************************/
@@ -249,8 +277,6 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
-yDebug()<<"L O R IN EXEC"<<left_or_right;
-
     string fivef=newOptions.find("five_fingers").asString();
 
     if (newOptions.find("five_fingers").isNull() && (first_time==true))
@@ -270,6 +296,20 @@ yDebug()<<"L O R IN EXEC"<<left_or_right;
         }
         else if ((left_or_right=="left") || ("left_or_right"=="both"))
             handContr_left.set("useRingLittleFingers", Value(five_fingers));
+    }
+
+    string vs=newOptions.find("visual_servoing").asString();
+
+    if (newOptions.find("visual_servoing").isNull() && (first_time==true))
+    {
+        visual_serv=false;
+    }
+    else if (!newOptions.find("visual_servoing").isNull())
+    {
+        if (vs=="on")
+            visual_serv=true;
+        else
+            visual_serv=false;
     }
 
     double ttime=newOptions.find("traj_time").asDouble();
@@ -329,6 +369,33 @@ yDebug()<<"L O R IN EXEC"<<left_or_right;
                 icart_right->setInTargetTol(traj_tol);
             else if ((left_or_right=="left") || (left_or_right=="both"))
                 icart_left->setInTargetTol(traj_tol);
+        }
+    }
+
+    double ptol=newOptions.find("pixel_tol").asDouble();
+
+    if (newOptions.find("pixel_tol").isNull() && (first_time==true))
+    {
+        pixel_tol=15.0;
+    }
+    else if (!newOptions.find("pixel_tol").isNull())
+    {
+        if ((ptol>=5.0) && (ptol<=20.0))
+        {
+            pixel_tol=ptol;
+        }
+        else if (ptol<5.0)
+        {
+            pixel_tol=5.0;
+        }
+        else if (ptol>20.0)
+        {
+            pixel_tol=20.0;
+        }
+
+        if (first_time==false)
+        {
+            visual_servoing_right->setGoToGoalTolerance(pixel_tol);
         }
     }
 
@@ -591,7 +658,11 @@ bool GraspExecution::executeTrajectory(string &hand)
         if ((reached==false) && (i<=trajectory.size()) && (i>=0))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
-            reached=reachWaypoint(i, hand);
+
+            if ((visual_serv==false) || (hand=="left") || (i != trajectory_right.size()-1))
+                reached=reachWaypoint(i, hand);
+            else if ((visual_serv==true) && (hand=="right") && (i == trajectory_right.size()-1))
+                reached=reachWithVisual(i,hand);
 
             if (grasp==true && reached==true)
             {
@@ -742,6 +813,42 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     Vector Dof;
     icart_right->getDOF(Dof);
     yDebug()<<"Dof used "<<Dof.toString(3,3);
+
+    return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::reachWithVisual(int i, string &hand)
+{
+    Vector x(3,0.0);
+    Vector o(4,0.0);
+    bool done;
+
+    vector<Vector> pixels_left, pixels_right;
+
+    x=trajectory[i].subVector(0,2);
+    if (trajectory[i].size()==6)
+        o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
+    else
+        o=trajectory[i].subVector(3,6);
+
+    pixels_left=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o, IVisualServoing::CamSel::left);
+    pixels_right=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o,IVisualServoing::CamSel::right);
+
+    yDebug()<<"pixels left";
+
+   for (Vector v : pixels_left)
+       yDebug()<<v.toString();
+
+   yDebug()<<"pixels right";
+
+  for (Vector v : pixels_right)
+      yDebug()<<v.toString();
+
+    visual_servoing_right->goToGoal(pixels_left, pixels_right);
+    done=visual_servoing_right->waitVisualServoingDone();
+
+    yDebug()<<"done";
 
     return done;
 }
