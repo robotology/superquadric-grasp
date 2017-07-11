@@ -835,20 +835,12 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     pixels_left=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o, IVisualServoing::CamSel::left);
     pixels_right=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o,IVisualServoing::CamSel::right);
 
-    yDebug()<<"pixels left";
-
-   for (Vector v : pixels_left)
-       yDebug()<<v.toString();
-
-   yDebug()<<"pixels right";
-
-  for (Vector v : pixels_right)
-      yDebug()<<v.toString();
-
     visual_servoing_right->goToGoal(pixels_left, pixels_right);
+
+    Time::delay(2.0);
     done=visual_servoing_right->waitVisualServoingDone();
 
-    yDebug()<<"done";
+    yDebug()<<"done"<<done;
 
     return done;
 }
@@ -870,6 +862,11 @@ bool GraspExecution::release()
     {
         robotDevice_left.close();
         icart_left->restoreContext(context_left);
+    }
+
+    if (visual_serv==true)
+    {
+        drv_server_vs.close();
     }
 
     if (grasp==true)
