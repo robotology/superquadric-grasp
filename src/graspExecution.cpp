@@ -534,7 +534,10 @@ Property GraspExecution::getPosePar()
     advOptions.put("robot",robot);
     advOptions.put("hand",left_or_right);
     advOptions.put("five_fingers",five_fingers);
-    advOptions.put("five_fingers",five_fingers);
+    if (visual_serv)
+        advOptions.put("visual_servoing","on");
+    else
+        advOptions.put("visual_servoing","off");
     advOptions.put("traj_time",traj_time);
     advOptions.put("traj_tol",traj_tol);
     advOptions.put("lift_z",lift_z);
