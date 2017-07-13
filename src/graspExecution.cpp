@@ -824,7 +824,7 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     Vector o(4,0.0);
     bool done;
 
-    vector<Vector> pixels_left, pixels_right;
+//    vector<Vector> pixels_left, pixels_right;
 
     x=trajectory[i].subVector(0,2);
     if (trajectory[i].size()==6)
@@ -832,12 +832,10 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     else
         o=trajectory[i].subVector(3,6);
 
-    pixels_left=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o, IVisualServoing::CamSel::left);
-    pixels_right=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o,IVisualServoing::CamSel::right);
+//    pixels_left=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o, IVisualServoing::CamSel::left);
+//    pixels_right=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o,IVisualServoing::CamSel::right);
 
-    visual_servoing_right->goToGoal(pixels_left, pixels_right);
-
-    Time::delay(2.0);
+    visual_servoing_right->goToGoal(x,o);
     done=visual_servoing_right->waitVisualServoingDone();
 
     yDebug()<<"done"<<done;
