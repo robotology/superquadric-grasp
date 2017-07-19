@@ -539,6 +539,7 @@ Property GraspExecution::getPosePar()
     else
         advOptions.put("visual_servoing","off");
     advOptions.put("traj_time",traj_time);
+    advOptions.put("pixel_tol",pixel_tol);
     advOptions.put("traj_tol",traj_tol);
     advOptions.put("lift_z",lift_z);
     Bottle s;
