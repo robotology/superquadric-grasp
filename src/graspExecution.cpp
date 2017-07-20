@@ -155,7 +155,7 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[0]=1;
         newDof[1]=0;
         newDof[2]=1;
-        icart_right->setDOF(newDof,curDof);
+        icart_left->setDOF(newDof,curDof);
     }
 
     return done;
@@ -641,7 +641,7 @@ bool GraspExecution::executeTrajectory(string &hand)
                 liftObject(trajectory, trajectory_left.size());
 
             for (size_t i=1; i<trajectory_left.size(); i++)
-                trajectory.push_back(trajectory_left[trajectory_right.size()-1-i]);
+                trajectory.push_back(trajectory_left[trajectory_left.size()-1-i]);
 
             trajectory.push_back(home_left);
         }
@@ -814,9 +814,9 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
     }
 
-    Vector Dof;
-    icart_right->getDOF(Dof);
-    yDebug()<<"Dof used "<<Dof.toString(3,3);
+    //Vector Dof;
+    //icart_right->getDOF(Dof);
+    //yDebug()<<"Dof used "<<Dof.toString(3,3);
 
     return done;
 }
