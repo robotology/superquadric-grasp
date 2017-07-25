@@ -369,8 +369,8 @@ bool GraspVisualization::threadInit()
 
     portImgIn.open("/superquadric-grasp/img:i");
     portImgOut.open("/superquadric-grasp/img:o");
-    portFrameIn.open("/superquadric-model/frame:i");
-    portGaze.open("/superquadric-model/motor:o");
+    portFrameIn.open("/superquadric-grasp/frame:i");
+    portGaze.open("/superquadric-grasp/motor:o");
 
     R.resize(4,4);
     H.resize(4,4);
