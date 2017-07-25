@@ -370,6 +370,7 @@ bool GraspVisualization::threadInit()
     portImgIn.open("/superquadric-grasp/img:i");
     portImgOut.open("/superquadric-grasp/img:o");
     portFrameIn.open("/superquadric-model/frame:i");
+    portGaze.open("/superquadric-model/motor:o");
 
     R.resize(4,4);
     H.resize(4,4);
@@ -406,6 +407,9 @@ void GraspVisualization::threadRelease()
 
     if (!portFrameIn.isClosed())
         portFrameIn.close();
+
+    if (!portGaze.isClosed())
+        portGaze.close();
 }
 
 /***********************************************************************/
@@ -416,10 +420,59 @@ void GraspVisualization::run()
 
     showTrajectory(left_or_right);
 
-//    if ((norm(object)>0.0) && (look_object==true))
-//        igaze->lookAtFixationPoint(object.subVector(5,7));
+    if ((norm(object)>0.0) && (look_object==true))
+        look(object.subVector(5,7));
 
     t_vis=Time::now()-t0;
+}
+
+/***********************************************************************/
+void GraspVisualization::look(Vector point3d)
+{
+    Property *frame_info=portFrameIn.read(false);
+    Matrix H;
+    H.resize(4,0.0);
+
+    Vector x(3);
+    Vector o(4);
+
+    if (frame_info!=NULL)
+    {
+        Bottle &pose_b=frame_info->findGroup("depth");
+        Bottle *pose=pose_b.get(1).asList();
+        x[0]=pose->get(0).asDouble();
+        x[1]=pose->get(1).asDouble();
+        x[2]=pose->get(2).asDouble();
+
+        o[0]=pose->get(3).asDouble();
+        o[1]=pose->get(4).asDouble();
+        o[2]=pose->get(5).asDouble();
+        o[3]=pose->get(6).asDouble();
+
+        H=axis2dcm(o);
+        H.setSubcol(x,0,3);
+        H(3,3)=1;
+        H=SE3inv(H);
+    }
+
+    Vector point2d(2,0.0);
+    point2d=from3Dto2D(point3d, H);
+
+    Bottle b;
+    Bottle &bl=b.addList();
+    bl.addInt(point2d[0]);
+    bl.addInt(point2d[1]);
+
+    Property &cmd=portGaze.prepare();
+    cmd.clear();
+
+    cmd.put("control-frame","depth");
+    cmd.put("target-type","image");
+    cmd.put("image","depth_rgb");
+    cmd.put("target-location",b.get(0));
+
+    portGaze.writeStrict();
+
 }
 
 /***********************************************************************/

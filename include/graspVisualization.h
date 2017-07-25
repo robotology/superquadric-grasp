@@ -61,6 +61,7 @@ public:
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
     yarp::os::BufferedPort<yarp::os::Property > portFrameIn;
+    yarp::os::BufferedPort<yarp::os::Property > portGaze;
 
     /***********************************************************************/
     GraspVisualization(int rate, const std::string &_eye, const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
@@ -86,6 +87,9 @@ public:
 
     /***********************************************************************/
     double getTime();
+
+    /***********************************************************************/
+    void look(yarp::sig::Vector point);
 
     /***********************************************************************/
     void getPoses(const yarp::os::Property &poses);
