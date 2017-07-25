@@ -512,8 +512,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             solL.resize(6,0.0);
             poseL.resize(6,0.0);
         }
-        
-        
+               
         return false;
     }
 }

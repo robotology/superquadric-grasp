@@ -27,9 +27,9 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
+GraspVisualization::GraspVisualization(int _rate,const string &_eye,const Matrix _K, const string _left_or_right,
                                        const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par):
-                                       RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
+                                       RateThread(_rate), eye(_eye), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
                                        object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par)
 {
 
@@ -49,6 +49,10 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     cv::Mat imgInMat=cv::cvarrToMat((IplImage*)imgIn->getIplImage());
     cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
     imgInMat.copyTo(imgOutMat);
+
+    Property *frame_info=portFrameIn.read(false);
+    Matrix H;
+    H.resize(4,0.0);
 
     PixelRgb color(255,255,0);
 
@@ -70,6 +74,28 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
+        Vector x(3);
+        Vector o(4);
+
+        if (frame_info!=NULL)
+        {
+            Bottle &pose_b=frame_info->findGroup("depth");
+            Bottle *pose=pose_b.get(1).asList();
+            x[0]=pose->get(0).asDouble();
+            x[1]=pose->get(1).asDouble();
+            x[2]=pose->get(2).asDouble();
+
+            o[0]=pose->get(3).asDouble();
+            o[1]=pose->get(4).asDouble();
+            o[2]=pose->get(5).asDouble();
+            o[3]=pose->get(6).asDouble();
+
+            H=axis2dcm(o);
+            H.setSubcol(x,0,3);
+            H(3,3)=1;
+            H=SE3inv(H);
+        }
+
         trajectory.clear();
 
         if (hand_str=="right")
@@ -147,10 +173,12 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {
             waypoint=trajectory[i];
 
-            if (eye=="left")
-                igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
-            else
-                igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
+            waypoint2D=from3Dto2D(waypoint, H);
+
+//            if (eye=="left")
+//                igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
+//            else
+//                igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
 
             Matrix H=euler2dcm(waypoint.subVector(3,5));
 
@@ -162,18 +190,24 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             y[0]=waypoint[0]+length*dir_y[0]; y[1]=waypoint[1]+length*dir_y[1]; y[2]=waypoint[2]+length*dir_y[2];
             z[0]=waypoint[0]+length*dir_z[0]; z[1]=waypoint[1]+length*dir_z[1]; z[2]=waypoint[2]+length*dir_z[2];
 
-            if (eye=="left")
-            {
-                igaze->get2DPixel(0,x,x2D);
-                igaze->get2DPixel(0,y,y2D);
-                igaze->get2DPixel(0,z,z2D);
-            }
-            else
-            {
-                igaze->get2DPixel(1,x,x2D);
-                igaze->get2DPixel(1,y,y2D);
-                igaze->get2DPixel(1,z,z2D);
-            }
+
+            x2D=from3Dto2D(x, H);
+            y2D=from3Dto2D(y, H);
+            z2D=from3Dto2D(z, H);
+
+
+//            if (eye=="left")
+//            {
+//                igaze->get2DPixel(0,x,x2D);
+//                igaze->get2DPixel(0,y,y2D);
+//                igaze->get2DPixel(0,z,z2D);
+//            }
+//            else
+//            {
+//                igaze->get2DPixel(1,x,x2D);
+//                igaze->get2DPixel(1,y,y2D);
+//                igaze->get2DPixel(1,z,z2D);
+//            }
 
             cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
             cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
@@ -216,6 +250,10 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 /***********************************************************************/
 void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
 {
+    Property *frame_info=portFrameIn.read(false);
+    Matrix H;
+    H.resize(4,0.0);
+
     int count=0;
 
     PixelRgb color(col,0,0);
@@ -235,24 +273,46 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 
     if ((norm(x)>0.0))
     {
-        if (eye=="left")
+        Vector x(3);
+        Vector o(4);
+
+        if (frame_info!=NULL)
         {
-            if (igaze->getLeftEyePose(pos,orient,stamp))
-            {
-                H=axis2dcm(orient);
-                H.setSubcol(pos,0,3);
-                H=SE3inv(H);
-            }
+            Bottle &pose_b=frame_info->findGroup("depth");
+            Bottle *pose=pose_b.get(1).asList();
+            x[0]=pose->get(0).asDouble();
+            x[1]=pose->get(1).asDouble();
+            x[2]=pose->get(2).asDouble();
+
+            o[0]=pose->get(3).asDouble();
+            o[1]=pose->get(4).asDouble();
+            o[2]=pose->get(5).asDouble();
+            o[3]=pose->get(6).asDouble();
+
+            H=axis2dcm(o);
+            H.setSubcol(x,0,3);
+            H(3,3)=1;
+            H=SE3inv(H);
         }
-        else
-        {
-            if (igaze->getRightEyePose(pos,orient,stamp))
-            {
-                H=axis2dcm(orient);
-                H.setSubcol(pos,0,3);
-                H=SE3inv(H);
-            }
-        }
+
+//        if (eye=="left")
+//        {
+//            if (igaze->getLeftEyePose(pos,orient,stamp))
+//            {
+//                H=axis2dcm(orient);
+//                H.setSubcol(pos,0,3);
+//                H=SE3inv(H);
+//            }
+//        }
+//        else
+//        {
+//            if (igaze->getRightEyePose(pos,orient,stamp))
+//            {
+//                H=axis2dcm(orient);
+//                H.setSubcol(pos,0,3);
+//                H=SE3inv(H);
+//            }
+//        }
 
         Vector point(3,0.0);
         Vector point2D(2,0.0);
@@ -277,7 +337,7 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
                             x[1] * sign(ce)*(pow(abs(ce),x[3])) * sign(so)*(pow(abs(so),x[4])) * R(2,1)+
                                 x[2] * sign(se)*(pow(abs(se),x[3])) * R(2,2) + x[7];
 
-                 point2D=from3Dto2D(point);
+                 point2D=from3Dto2D(point, H);
 
                  cv::Point target_point((int)point2D[0],(int)point2D[1]);
 
@@ -293,7 +353,7 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 }
 
 /*******************************************************************************/
-Vector GraspVisualization::from3Dto2D(const Vector &point3D)
+Vector GraspVisualization::from3Dto2D(const Vector &point3D, Matrix &H)
 {
     Vector point2D(3,0.0);
     Vector point_aux(4,1.0);
@@ -309,6 +369,7 @@ bool GraspVisualization::threadInit()
 
     portImgIn.open("/superquadric-grasp/img:i");
     portImgOut.open("/superquadric-grasp/img:o");
+    portFrameIn.open("/superquadric-model/frame:i");
 
     R.resize(4,4);
     H.resize(4,4);
@@ -343,7 +404,8 @@ void GraspVisualization::threadRelease()
     if (!portImgOut.isClosed())
         portImgOut.close();
 
-    igaze->stopControl();
+    if (!portFrameIn.isClosed())
+        portFrameIn.close();
 }
 
 /***********************************************************************/
@@ -354,8 +416,8 @@ void GraspVisualization::run()
 
     showTrajectory(left_or_right);
 
-    if ((norm(object)>0.0) && (look_object==true))
-        igaze->lookAtFixationPoint(object.subVector(5,7));
+//    if ((norm(object)>0.0) && (look_object==true))
+//        igaze->lookAtFixationPoint(object.subVector(5,7));
 
     t_vis=Time::now()-t0;
 }

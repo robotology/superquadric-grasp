@@ -25,7 +25,7 @@
 #include "superquadric.h"
 #include "graspComputation.h"
 #include "graspVisualization.h"
-#include "graspExecution.h"
+//#include "graspExecution.h"
 
 #include "src/superquadricGrasp_IDL.h"
 
@@ -46,7 +46,6 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
 
-    int context_gaze;
     int rate_vis;
     int print_level;
     double t,t0, t_grasp, t_vis;
@@ -72,8 +71,6 @@ protected:
 
     std::string eye;
     yarp::sig::Matrix K,H;
-    yarp::dev::PolyDriver GazeCtrl;
-    yarp::dev::IGazeControl *igaze;
 
     std::string fing;
     bool go_on;
@@ -106,7 +103,7 @@ protected:
 
     GraspComputation *graspComp;
     GraspVisualization *graspVis;
-    GraspExecution *graspExec;
+    //GraspExecution *graspExec;
 
 
     yarp::os::Property vis_par;
@@ -193,8 +190,8 @@ public:
     /************************************************************************/
     void saveSol(const yarp::os::Property &sol);
 
-    /**********************************************************************/
-    bool go_home(const std::string &entry);
+    ///**********************************************************************/
+    //bool go_home(const std::string &entry);
 
 };
 

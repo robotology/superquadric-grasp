@@ -732,7 +732,6 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
     }
 
-cout<<" Point in solution"<<endl;
     /*********************/
     for(size_t i=0;i<points_on.size();i++)
     {
@@ -753,8 +752,6 @@ cout<<" Point in solution"<<endl;
         H_x.setSubcol(euler,0,3);
 
         point_tr=H_x*point_tmp;
-
-        cout<<point_tr.subVector(0,2).toString()<<endl;
     }
     /*********************/
 }

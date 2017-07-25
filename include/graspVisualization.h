@@ -33,8 +33,6 @@ class GraspVisualization : public yarp::os::RateThread
 {
 protected:
     std::string eye;
-    yarp::dev::PolyDriver GazeCtrl;
-    yarp::dev::IGazeControl *igaze;
     yarp::sig::Matrix K,H;
 
     yarp::sig::Vector poseR, poseL, solR, solL;
@@ -62,17 +60,17 @@ public:
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
+    yarp::os::BufferedPort<yarp::os::Property > portFrameIn;
 
     /***********************************************************************/
-    GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
-                       const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
+    GraspVisualization(int rate, const std::string &_eye, const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
                        const yarp::sig::Vector &_object,  yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par );
 
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);
 
     /***********************************************************************/
-    yarp::sig::Vector from3Dto2D(const yarp::sig::Vector &point3D);
+    yarp::sig::Vector from3Dto2D(const yarp::sig::Vector &point3D, yarp::sig::Matrix &H);
 
     /***********************************************************************/
     bool showTrajectory(const std::string &hand);

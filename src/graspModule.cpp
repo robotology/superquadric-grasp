@@ -177,8 +177,8 @@ bool GraspingModule::set_options(const Property &newOptions, const string &field
         graspComp->setTrajectoryPar(newOptions, false);
     else if (field=="optimization")
         graspComp->setIpoptPar(newOptions, false);
-    else if (field=="execution")
-        graspExec->setPosePar(newOptions, false);
+//    else if (field=="execution")
+//        graspExec->setPosePar(newOptions, false);
     else if (field=="visualization")
         graspVis->setPar(newOptions,false);
     else
@@ -197,8 +197,8 @@ Property GraspingModule::get_options(const string &field)
         advOptions=graspComp->getTrajectoryPar();
     else if (field=="optimization")
         advOptions=graspComp->getIpoptPar();
-    else if (field=="execution")
-        advOptions=graspExec->getPosePar();
+   // else if (field=="execution")
+   //     advOptions=graspExec->getPosePar();
     else if (field=="visualization")
         advOptions=graspVis->getPar();
     else if (field=="statistics")
@@ -251,34 +251,34 @@ bool GraspingModule::move(const string &entry)
 }
 
 /**********************************************************************/
-bool GraspingModule::go_home(const string &entry)
-{
-    LockGuard lg(mutex);
+//bool GraspingModule::go_home(const string &entry)
+//{
+//    LockGuard lg(mutex);
 
-    if ((entry=="right") || (entry=="left"))
-    {
-        executed=true;
-        graspExec->reached=true;
-        graspExec->reached_tot=true;
-        graspExec->stop();
-        graspExec->goHome(entry);
+//    if ((entry=="right") || (entry=="left"))
+//    {
+//        executed=true;
+//        graspExec->reached=true;
+//        graspExec->reached_tot=true;
+//        graspExec->stop();
+//        graspExec->goHome(entry);
 
-        return true;
-    }
-    else if (entry=="both")
-    {
-        executed=true;
-        graspExec->reached=true;
-        graspExec->reached_tot=true;
-        graspExec->stop();
-        graspExec->goHome("right");
-        graspExec->goHome("left");
+//        return true;
+//    }
+//    else if (entry=="both")
+//    {
+//        executed=true;
+//        graspExec->reached=true;
+//        graspExec->reached_tot=true;
+//        graspExec->stop();
+//        graspExec->goHome("right");
+//        graspExec->goHome("left");
 
-        return true;
-    }
+//        return true;
+//    }
 
-    return false;
-}
+//    return false;
+//}
 
 /****************************************************************/
 bool GraspingModule::configBasics(ResourceFinder &rf)
@@ -377,18 +377,14 @@ bool GraspingModule::close()
 {
     delete graspComp;
 
-    graspExec->release();
-    delete graspExec;
+//    graspExec->release();
+//    delete graspExec;
 
     graspVis->stop();
     delete graspVis;
 
     if (portRpc.asPort().isOpen())
         portRpc.close();
-
-    igaze->restoreContext(context_gaze);
-
-    GazeCtrl.close();
 
     return true;
 }
@@ -421,11 +417,11 @@ bool GraspingModule::updateModule()
             times_vis.clear();
     }
 
-    if (executed==false)
-    {
-        graspExec->getPoses(complete_sol);
-        executed=graspExec->executeTrajectory(hand_to_move);
-    }
+//    if (executed==false)
+//    {
+//        graspExec->getPoses(complete_sol);
+//        executed=graspExec->executeTrajectory(hand_to_move);
+//    }
 
     if (save_poses && (graspComp->count_file == graspComp->count_file_old))
         saveSol(complete_sol);
@@ -447,45 +443,14 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     look_object=rf.check("look_object", Value("on")).asString();
     show_only_pose=rf.check("show_only_pose", Value("on")).asString();
 
-    Property optionG;
-    optionG.put("device","gazecontrollerclient");
-    optionG.put("remote","/iKinGazeCtrl");
-    optionG.put("local","/superquadric-grasp/gaze");
-
-    GazeCtrl.open(optionG);
-    igaze=NULL;
-
-    if (GazeCtrl.isValid())
-    {
-        GazeCtrl.view(igaze);
-    }
-    else
-        return false;
-
-    igaze->storeContext(&context_gaze);
-
-    igaze->setTrackingMode(false);
-    igaze->setSaccadesMode(false);
-
-    Bottle info;
-    igaze->getInfo(info);
     K.resize(3,4);
     K.zero();
 
-    Bottle *intr_par;
-
-    if (eye=="left")
-        intr_par=info.find("camera_intrinsics_left").asList();
-    else
-        intr_par=info.find("camera_intrinsics_right").asList();
-
-    K(0,0)=intr_par->get(0).asDouble();
-    K(0,1)=intr_par->get(1).asDouble();
-    K(0,2)=intr_par->get(2).asDouble();
-    K(1,1)=intr_par->get(5).asDouble();
-    K(1,2)=intr_par->get(6).asDouble();
+    K(0,0)=257.34;
+    K(1,1)=257.34;
+    K(0,2)=160.0;
+    K(1,2)=120.0;
     K(2,2)=1;
-
 
     vis_par.put("look_object",look_object);
     vis_par.put("show_hand", show_hand);
@@ -600,7 +565,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object, hand, hand1, vis_par);
+    graspVis= new GraspVisualization(rate_vis,eye, K, left_or_right, complete_sol, object, hand, hand1, vis_par);
 
     if (visualization)
     {
@@ -619,11 +584,11 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configMovements(rf);
 
-    configGrasp(rf);
+    //configGrasp(rf);
 
-    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
+    //graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
 
-    config=graspExec->configure();
+    //config=graspExec->configure();
 
     if (config==false)
         return false;
