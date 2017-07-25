@@ -89,7 +89,7 @@ public:
     double getTime();
 
     /***********************************************************************/
-    void look(yarp::sig::Vector point);
+    void look(yarp::sig::Vector &point);
 
     /***********************************************************************/
     void getPoses(const yarp::os::Property &poses);

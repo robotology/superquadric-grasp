@@ -51,8 +51,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     imgInMat.copyTo(imgOutMat);
 
     Property *frame_info=portFrameIn.read(false);
-    Matrix H;
-    H.resize(4,0.0);
+    
 
     PixelRgb color(255,255,0);
 
@@ -70,28 +69,30 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     Vector y2D(2,0.0);
     Vector z2D(2,0.0);  
 
-    addSuperq(object,imgOut,255);
+    //addSuperq(object,imgOut,255);
+
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
-        Vector x(3);
-        Vector o(4);
+        
+        Vector x_vis(3);
+        Vector o_vis(4);
 
         if (frame_info!=NULL)
         {
             Bottle &pose_b=frame_info->findGroup("depth");
             Bottle *pose=pose_b.get(1).asList();
-            x[0]=pose->get(0).asDouble();
-            x[1]=pose->get(1).asDouble();
-            x[2]=pose->get(2).asDouble();
+            x_vis[0]=pose->get(0).asDouble();
+            x_vis[1]=pose->get(1).asDouble();
+            x_vis[2]=pose->get(2).asDouble();
 
-            o[0]=pose->get(3).asDouble();
-            o[1]=pose->get(4).asDouble();
-            o[2]=pose->get(5).asDouble();
-            o[3]=pose->get(6).asDouble();
+            o_vis[0]=pose->get(3).asDouble();
+            o_vis[1]=pose->get(4).asDouble();
+            o_vis[2]=pose->get(5).asDouble();
+            o_vis[3]=pose->get(6).asDouble();
 
-            H=axis2dcm(o);
-            H.setSubcol(x,0,3);
+            H=axis2dcm(o_vis);
+            H.setSubcol(x_vis,0,3);
             H(3,3)=1;
             H=SE3inv(H);
         }
@@ -169,32 +170,31 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
         }
 
-        for (size_t i=0; i<trajectory.size(); i++)
-        {
-            waypoint=trajectory[i];
+        addSuperq(object,imgOut,255);
 
-            waypoint2D=from3Dto2D(waypoint, H);
+        for (size_t i=0; i<trajectory.size(); i++)
+        {           
+            waypoint=trajectory[i];
 
 //            if (eye=="left")
 //                igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
 //            else
 //                igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
 
-            Matrix H=euler2dcm(waypoint.subVector(3,5));
+            Matrix H_tmp=euler2dcm(waypoint.subVector(3,5));
 
-            dir_x=H.subcol(0,0,3);
-            dir_y=H.subcol(0,1,3);
-            dir_z=H.subcol(0,2,3);
+            dir_x=H_tmp.subcol(0,0,3);
+            dir_y=H_tmp.subcol(0,1,3);
+            dir_z=H_tmp.subcol(0,2,3);
 
             x[0]=waypoint[0]+length*dir_x[0]; x[1]=waypoint[1]+length*dir_x[1]; x[2]=waypoint[2]+length*dir_x[2];
             y[0]=waypoint[0]+length*dir_y[0]; y[1]=waypoint[1]+length*dir_y[1]; y[2]=waypoint[2]+length*dir_y[2];
             z[0]=waypoint[0]+length*dir_z[0]; z[1]=waypoint[1]+length*dir_z[1]; z[2]=waypoint[2]+length*dir_z[2];
-
-
+            
+            waypoint2D=from3Dto2D(waypoint.subVector(0,2), H);
             x2D=from3Dto2D(x, H);
             y2D=from3Dto2D(y, H);
             z2D=from3Dto2D(z, H);
-
 
 //            if (eye=="left")
 //            {
@@ -242,6 +242,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             else
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
         }
+
+        //addSuperq(object,imgOut,255);
     }
 
     portImgOut.write();
@@ -251,8 +253,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,const int &col)
 {
     Property *frame_info=portFrameIn.read(false);
-    Matrix H;
-    H.resize(4,0.0);
 
     int count=0;
 
@@ -273,24 +273,24 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 
     if ((norm(x)>0.0))
     {
-        Vector x(3);
-        Vector o(4);
+        Vector x_vis(3);
+        Vector o_vis(4);
 
         if (frame_info!=NULL)
         {
             Bottle &pose_b=frame_info->findGroup("depth");
             Bottle *pose=pose_b.get(1).asList();
-            x[0]=pose->get(0).asDouble();
-            x[1]=pose->get(1).asDouble();
-            x[2]=pose->get(2).asDouble();
+            x_vis[0]=pose->get(0).asDouble();
+            x_vis[1]=pose->get(1).asDouble();
+            x_vis[2]=pose->get(2).asDouble();
 
-            o[0]=pose->get(3).asDouble();
-            o[1]=pose->get(4).asDouble();
-            o[2]=pose->get(5).asDouble();
-            o[3]=pose->get(6).asDouble();
+            o_vis[0]=pose->get(3).asDouble();
+            o_vis[1]=pose->get(4).asDouble();
+            o_vis[2]=pose->get(5).asDouble();
+            o_vis[3]=pose->get(6).asDouble();
 
-            H=axis2dcm(o);
-            H.setSubcol(x,0,3);
+            H=axis2dcm(o_vis);
+            H.setSubcol(x_vis,0,3);
             H(3,3)=1;
             H=SE3inv(H);
         }
@@ -391,6 +391,8 @@ bool GraspVisualization::threadInit()
 
     setPar(vis_par, true);
 
+    H.resize(4,0.0);
+
     return true;
 }
 
@@ -421,54 +423,25 @@ void GraspVisualization::run()
     showTrajectory(left_or_right);
 
     if ((norm(object)>0.0) && (look_object==true))
-        look(object.subVector(5,7));
+    {
+        Vector obj_to_see=object.subVector(5,7);
+        look(obj_to_see);
+    }
 
     t_vis=Time::now()-t0;
 }
 
 /***********************************************************************/
-void GraspVisualization::look(Vector point3d)
+void GraspVisualization::look(Vector &point3d)
 {
-    Property *frame_info=portFrameIn.read(false);
-    Matrix H;
-    H.resize(4,0.0);
-
-    Vector x(3);
-    Vector o(4);
-
-    if (frame_info!=NULL)
-    {
-        Bottle &pose_b=frame_info->findGroup("depth");
-        Bottle *pose=pose_b.get(1).asList();
-        x[0]=pose->get(0).asDouble();
-        x[1]=pose->get(1).asDouble();
-        x[2]=pose->get(2).asDouble();
-
-        o[0]=pose->get(3).asDouble();
-        o[1]=pose->get(4).asDouble();
-        o[2]=pose->get(5).asDouble();
-        o[3]=pose->get(6).asDouble();
-
-        H=axis2dcm(o);
-        H.setSubcol(x,0,3);
-        H(3,3)=1;
-        H=SE3inv(H);
-    }
-
-    Vector point2d(2,0.0);
-    point2d=from3Dto2D(point3d, H);
-
     Bottle b;
-    Bottle &bl=b.addList();
-    bl.addInt(point2d[0]);
-    bl.addInt(point2d[1]);
+    b.addList().read(point3d);
 
     Property &cmd=portGaze.prepare();
     cmd.clear();
 
     cmd.put("control-frame","depth");
-    cmd.put("target-type","image");
-    cmd.put("image","depth_rgb");
+    cmd.put("target-type","cartesian");
     cmd.put("target-location",b.get(0));
 
     portGaze.writeStrict();
