@@ -32,7 +32,6 @@
 class GraspVisualization : public yarp::os::RateThread
 {
 protected:
-    std::string eye;
     yarp::sig::Matrix K,H;
 
     yarp::sig::Vector poseR, poseL, solR, solL;
@@ -64,7 +63,7 @@ public:
     yarp::os::BufferedPort<yarp::os::Property > portGaze;
 
     /***********************************************************************/
-    GraspVisualization(int rate, const std::string &_eye, const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
+    GraspVisualization(int rate, const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
                        const yarp::sig::Vector &_object,  yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par );
 
     /***********************************************************************/

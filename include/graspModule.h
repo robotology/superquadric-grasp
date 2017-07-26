@@ -69,10 +69,8 @@ protected:
 
     yarp::os::RpcServer portRpc;
 
-    std::string eye;
     yarp::sig::Matrix K,H;
 
-    std::string fing;
     bool go_on;
     bool grasp;    
     bool executed;
@@ -83,9 +81,7 @@ protected:
     bool mode_online;    
     bool save_poses;
     bool also_traj;
-    std::string visual_servoing;
 
-    double pixel_tol;
     double lift_z;
     double torso_pitch_max;
     double traj_time, traj_tol;
@@ -96,8 +92,6 @@ protected:
 
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
-
-    std::string lib_context, lib_filename;
 
     yarp::os::Mutex mutex;
 

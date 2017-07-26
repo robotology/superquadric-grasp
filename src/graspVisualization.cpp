@@ -27,9 +27,9 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspVisualization::GraspVisualization(int _rate,const string &_eye,const Matrix _K, const string _left_or_right,
+GraspVisualization::GraspVisualization(int _rate,const Matrix _K, const string _left_or_right,
                                        const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par):
-                                       RateThread(_rate), eye(_eye), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
+                                       RateThread(_rate), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
                                        object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par)
 {
 
@@ -52,7 +52,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 
     Property *frame_info=portFrameIn.read(false);
     
-
     PixelRgb color(255,255,0);
 
     Vector waypoint(6,0.0);

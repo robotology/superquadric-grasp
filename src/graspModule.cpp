@@ -304,7 +304,6 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     also_traj=(rf.check("also_traj", Value("off")).asString()=="on");
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
-    visual_servoing=rf.check("visual_servoing", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
 
     go_on=false;
@@ -317,10 +316,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 {
     traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
     traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
-    pixel_tol=rf.check("pixel_tol", Value(15)).asDouble();
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
     torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
-    fing=rf.check("five_fingers", Value("off")).asString();
 
     readSuperq("shift",shift,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
@@ -328,15 +325,11 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 
     movement_par.put("robot",robot);
     movement_par.put("hand",left_or_right);
-    movement_par.put("five_fingers",fing);
-    movement_par.put("five_fingers",fing);
 
     movement_par.put("traj_time",traj_time);
     movement_par.put("traj_tol",traj_tol);
     movement_par.put("lift_z", lift_z);
     movement_par.put("torso_pitch_max", torso_pitch_max);
-    movement_par.put("visual_servoing", visual_servoing);
-    movement_par.put("pixel_tol", pixel_tol);
 
     Bottle planed;
     Bottle &pd=planed.addList();
@@ -366,9 +359,6 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
-    lib_context=rf.check("lib_context", Value("superquadric-grasp")).asString();
-    lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
-
     return true;
 }
 
@@ -438,7 +428,6 @@ double GraspingModule::getPeriod()
 /***********************************************************************/
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
-    eye=rf.check("eye", Value("left")).asString();
     show_hand=rf.check("show_hand", Value("on")).asString();
     look_object=rf.check("look_object", Value("on")).asString();
     show_only_pose=rf.check("show_only_pose", Value("on")).asString();
@@ -565,7 +554,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye, K, left_or_right, complete_sol, object, hand, hand1, vis_par);
+    graspVis= new GraspVisualization(rate_vis, K, left_or_right, complete_sol, object, hand, hand1, vis_par);
 
     if (visualization)
     {
