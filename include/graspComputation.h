@@ -65,6 +65,7 @@ public:
     const yarp::sig::Vector &object;
     int count_file_old;
     int count_file;
+    double final_value_R, final_value_L, cos_zr, cos_zl;
 
     /*******************************************************************************/
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
@@ -113,6 +114,9 @@ public:
 
     /**********************************************************************/
     void setPar(const std::string &tag, const std::string &value);
+
+    /***********************************************************************/
+    void bestPose();
 };
 
 #endif

@@ -733,6 +733,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
     }
 
 cout<<" Point in solution"<<endl;
+
+    tmp_value=0.0;
     /*********************/
     for(size_t i=0;i<points_on.size();i++)
     {
@@ -755,7 +757,13 @@ cout<<" Point in solution"<<endl;
         point_tr=H_x*point_tmp;
 
         cout<<point_tr.subVector(0,2).toString()<<endl;
+
+        tmp_value+= pow( pow(f(object,x,points_on[i]),object[3])-1,2 );
     }
+
+    tmp_value/=points_on.size();
+
+    yDebug()<<"****************************** value of loss function with final pose ******************************"<< tmp_value;
     /*********************/
 }
 
@@ -769,6 +777,12 @@ Vector grasping_NLP::get_result() const
 Vector grasping_NLP::get_hand() const
 {
    return hand;
+}
+
+/****************************************************************/
+double grasping_NLP::get_final_F() const
+{
+   return tmp_value;
 }
 
 

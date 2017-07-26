@@ -428,6 +428,9 @@ void GraspComputation::run()
             go_on=((go_on==true) || (go_on1==true));
         }
 
+        if (left_right=="both")
+            bestPose();
+
         count_file++;
         count_file_old=count_file;
     }
@@ -483,17 +486,49 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         if (l_o_r=="right")
         {
             solR=grasp_nlp->get_result();
+            final_value_R=grasp_nlp->get_final_F();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
+
+
+            /****************************/
+            Matrix H=euler2dcm(poseR.subVector(3,5));
+
+            //dir_z=H.subcol(0,2,3);
+
+            cos_zr=abs(H(2,2));
+
+            cout<<endl<<endl;
+
+            yDebug()<<"********************** Cos of z with z root"<<abs(H(2,2));
+
+            yDebug()<<"********************** Final cost function value"<<final_value_R;
+
+            cout<<endl<<endl;
         }
         else
         {
             solL=grasp_nlp->get_result();
+            final_value_L=grasp_nlp->get_final_F();
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
+
+            /****************************/
+            Matrix H=euler2dcm(poseL.subVector(3,5));
+
+            //dir_z=H.subcol(0,2,3);
+            cos_zl=abs(H(2,2));
+
+            cout<<endl<<endl;
+
+            yDebug()<<"********************** Cos of z with z root"<<abs(H(2,2));
+
+            yDebug()<<"********************** Final cost function value"<<final_value_L;
+
+            cout<<endl<<endl;
         }
 
         return true;
@@ -698,3 +733,29 @@ void GraspComputation::setPar(const string &par_name, const string &value)
     if (par_name=="left_or_right")
         left_right=value;
 }
+
+/***********************************************************************/
+void GraspComputation::bestPose()
+{
+    double quality_r=0.0;
+    double quality_l=0.0;
+
+    double w1, w2;
+
+    w1=2.5;
+    w2=0.5;
+
+    quality_r=w1*final_value_R + w2*cos_zr;
+
+    quality_l=w1*final_value_L + w2*cos_zl;
+
+    yDebug()<<"Quality right "<<quality_r;
+     yDebug()<<"Quality left "<<quality_l;
+
+    if (quality_r<=quality_l)
+        yInfo()<<"Best pose for grasping is right pose";
+    else
+        yInfo()<<"Best pose for grasping is left pose";
+
+}
+

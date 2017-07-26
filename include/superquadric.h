@@ -51,6 +51,7 @@ public:
     yarp::sig::Vector solution;
     yarp::sig::Vector robot_pose;
     std::string l_o_r;
+    double tmp_value;
 
     /****************************************************************/
     void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext, int &n_handpoints, const std::string &str_hand);
@@ -130,6 +131,9 @@ public:
 
    /****************************************************************/
    yarp::sig::Vector get_hand() const;
+
+   /****************************************************************/
+   double get_final_F() const;
 
 
 
