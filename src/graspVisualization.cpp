@@ -73,8 +73,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
-    {
-        
+    {        
         Vector x_vis(3);
         Vector o_vis(4);
 
@@ -176,11 +175,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {           
             waypoint=trajectory[i];
 
-//            if (eye=="left")
-//                igaze->get2DPixel(0,waypoint.subVector(0,2),waypoint2D);
-//            else
-//                igaze->get2DPixel(1,waypoint.subVector(0,2),waypoint2D);
-
             Matrix H_tmp=euler2dcm(waypoint.subVector(3,5));
 
             dir_x=H_tmp.subcol(0,0,3);
@@ -195,19 +189,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             x2D=from3Dto2D(x, H);
             y2D=from3Dto2D(y, H);
             z2D=from3Dto2D(z, H);
-
-//            if (eye=="left")
-//            {
-//                igaze->get2DPixel(0,x,x2D);
-//                igaze->get2DPixel(0,y,y2D);
-//                igaze->get2DPixel(0,z,z2D);
-//            }
-//            else
-//            {
-//                igaze->get2DPixel(1,x,x2D);
-//                igaze->get2DPixel(1,y,y2D);
-//                igaze->get2DPixel(1,z,z2D);
-//            }
 
             cv::Point  target_point((int)waypoint2D[0],(int)waypoint2D[1]);
             cv::Point  target_pointx((int)x2D[0],(int)x2D[1]);
@@ -242,8 +223,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             else
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
         }
-
-        //addSuperq(object,imgOut,255);
     }
 
     portImgOut.write();
@@ -294,25 +273,6 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
             H(3,3)=1;
             H=SE3inv(H);
         }
-
-//        if (eye=="left")
-//        {
-//            if (igaze->getLeftEyePose(pos,orient,stamp))
-//            {
-//                H=axis2dcm(orient);
-//                H.setSubcol(pos,0,3);
-//                H=SE3inv(H);
-//            }
-//        }
-//        else
-//        {
-//            if (igaze->getRightEyePose(pos,orient,stamp))
-//            {
-//                H=axis2dcm(orient);
-//                H.setSubcol(pos,0,3);
-//                H=SE3inv(H);
-//            }
-//        }
 
         Vector point(3,0.0);
         Vector point2D(2,0.0);
@@ -391,7 +351,8 @@ bool GraspVisualization::threadInit()
 
     setPar(vis_par, true);
 
-    H.resize(4,0.0);
+    H.resize(4,4);
+    H.eye();
 
     return true;
 }
