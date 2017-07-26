@@ -21,9 +21,6 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/dev/all.h>
-#include <yarp/dev/IVisualServoing.h>
-
-#include "TactileControl/HandController.h"
 
 /*******************************************************************************/
 class GraspExecution
@@ -42,47 +39,38 @@ protected:
 
     yarp::os::Mutex mutex;
 
-    yarp::dev::ICartesianControl *icart_right;
-    yarp::dev::ICartesianControl *icart_left;
+    yarp::dev::IEncoders *ienc_right;
+    yarp::dev::IControlMode2 *imod_right;
+    yarp::dev::IPositionControl2 *ipos_right;
+    yarp::dev::IEncoders *ienc_left;
+    yarp::dev::IControlMode2 *imod_left;
+    yarp::dev::IPositionControl2 *ipos_left;
 
-    yarp::dev::PolyDriver robotDevice_right;
-    yarp::dev::PolyDriver robotDevice_left;
-
-    yarp::dev::IEncoders *enc;
-
-    int context_right;
-    int context_left;
+    yarp::dev::PolyDriver driver_right;
+    yarp::dev::PolyDriver driver_left;
 
     int i;
     bool grasp;    
     double lift_z;
-    bool visual_serv;
-    std::string five_fingers;
-    double torso_pitch_max;
-    double traj_time,traj_tol;
+
+    double angle_paddle;
+    double angle_thumb;
 
 public:
 
     bool reached;
     bool reached_tot;
 
-    double pixel_tol;
-    yarp::dev::PolyDriver drv_server_vs;
-    yarp::dev::IVisualServoing *visual_servoing_right;
-
-    std::string lib_context;
-    std::string lib_filename;
-
     const yarp::os::Property &complete_sol;
     yarp::os::Property movement_par;
 
-    tactileControl:: HandController handContr_right;
-    tactileControl:: HandController handContr_left;
-
+    yarp::os::RpcClient reachRightPort;
+    yarp::os:: RpcClient reachLeftPort;
+    yarp::os::BufferedPort<yarp::sig::Vector> stateRightPort;
+    yarp::os::BufferedPort<yarp::sig::Vector> stateLeftPort;
 
     /*******************************************************************************/
-    GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol,
-                   bool _grasp, std::string _lib_context, std::string _lib_filename);
+    GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol, bool _grasp);
 
     /*******************************************************************************/
     bool configure();
@@ -97,7 +85,7 @@ public:
     bool goHome(const std::string &hand);
 
     /*******************************************************************************/
-    bool configCartesian(const std::string &which_hand);
+    bool configController(const std::string &which_hand);
 
     /*******************************************************************************/
     bool configGrasp();

@@ -7,7 +7,6 @@
 #include <yarp/math/Math.h>
 #include <iCub/iKin/iKinFwd.h>
 
-
 #include "graspExecution.h"
 
 using namespace std;
@@ -15,13 +14,10 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace tactileControl;
 
 /*******************************************************************************/
 GraspExecution::GraspExecution(Property &_movement_par, const Property &_complete_sol,
-                               bool _grasp, string _lib_context, string _lib_filename):
-                                movement_par(_movement_par), complete_sol(_complete_sol),
-                                grasp(_grasp), lib_context(_lib_context), lib_filename(_lib_filename)
+                               bool _grasp):movement_par(_movement_par), complete_sol(_complete_sol), grasp(_grasp)
 
 {
 
@@ -42,17 +38,13 @@ bool GraspExecution::configure()
 
     if (left_or_right!="both")
     {
-        config=configCartesian(left_or_right);
+        config=configController(left_or_right);
     }
     else
     {
-        config=configCartesian("right");
-        config=config && configCartesian("left");
+        config=configController("right");
+        config=config && configController("left");
     }
-
-    if (visual_serv)
-        config=config && configVisualServoing();
-
 
     if (grasp)
     {
@@ -67,170 +59,82 @@ bool GraspExecution::configure()
 }
 
 /*******************************************************************************/
-bool GraspExecution::configCartesian(const string &which_hand)
+bool GraspExecution::configController(const string &which_hand)
 {
     bool done;
     int context_tmp;
 
     if (which_hand=="right")
     {
-        Property option_arm_r("(device cartesiancontrollerclient)");
-        option_arm_r.put("remote","/"+robot+"/cartesianController/"+which_hand+"_arm");
-        option_arm_r.put("local","/superquadric-grasp/cartesian/"+which_hand+"_arm");
-
-        robotDevice_right.open(option_arm_r);
-
-        if (!robotDevice_right.isValid())
-        {
-            yError("Device index for right arm not available!");
-            return false;
-        }
-
-        robotDevice_right.view(icart_right);
-
-        Vector curDof;
-        icart_right->getDOF(curDof);
-        Vector newDof(3);
-        newDof[0]=0;
-        newDof[1]=0;
-        newDof[2]=0;
-        icart_right->setDOF(newDof,curDof);
-
-        icart_right->getDOF(curDof);
-
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
-
-        icart_right->storeContext(&context_right);
-
-        icart_right->setTrajTime(traj_time);
-
-        icart_right->setInTargetTol(traj_tol);
-
-        icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
-
-        newDof[0]=1;
-        newDof[1]=0;
-        newDof[2]=1;
-        icart_right->setDOF(newDof,curDof);
+        reachRightPort.open("/superquadric-grasp/right/reach:rpc");
+        stateRightPort.open("/superquadric-grasp/right/state:i");
     }
     else if (which_hand=="left")
     {
-        Property option_arm_l("(device cartesiancontrollerclient)");
-        option_arm_l.put("remote","/"+robot+"/cartesianController/"+which_hand+"_arm");
-        option_arm_l.put("local","/superquadric-grasp/cartesian/"+which_hand+"_arm");
-
-        robotDevice_left.open(option_arm_l);
-
-        if (!robotDevice_left.isValid())
-        {
-            yError("Device index for left arm not available!");
-            return false;
-        }
-
-        robotDevice_left.view(icart_left);
-
-        Vector curDof;
-        icart_left->getDOF(curDof);
-        Vector newDof(3);
-        newDof[0]=0;
-        newDof[1]=0;
-        newDof[2]=0;
-        icart_left->setDOF(newDof,curDof);
-
-        icart_left->getDOF(curDof);
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
-
-        icart_left->storeContext(&context_left);
-
-        icart_left->setTrajTime(traj_time);
-
-        icart_left->setInTargetTol(traj_tol);
-
-        icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
-
-        newDof[0]=1;
-        newDof[1]=0;
-        newDof[2]=1;
-        icart_left->setDOF(newDof,curDof);
+        reachLeftPort.open("/superquadric-grasp/left/reach:rpc");
+        stateLeftPort.open("/superquadric-grasp/left/state:i");
     }
 
     return done;
 }
 
 /*******************************************************************************/
-bool GraspExecution::configVisualServoing()
-{
-    Property prop_server_vs;
-    prop_server_vs.put("device","visualservoingclient");
-    prop_server_vs.put("verbosity",true);
-    prop_server_vs.put("local","/VisualServoingClientTest");
-    prop_server_vs.put("remote", "/visual-servoing");
-
-    drv_server_vs.open(prop_server_vs);
-    if (!drv_server_vs.isValid())
-    {
-       yError("Could not run VisualServoingClient!");
-       return false;
-    }
-
-    drv_server_vs.view(visual_servoing_right);
-    if (visual_servoing_right == NULL)
-    {
-       yError("Could not get interfacate to VisualServoingClient!");
-       return false;
-    }
-
-    visual_servoing_right->setGoToGoalTolerance(pixel_tol);
-
-    return true;
-}
-
-/*******************************************************************************/
 bool GraspExecution::configGrasp()
 {
-    if (left_or_right=="right")
+    if (left_or_right=="right" || left_or_right=="both")
     {
-        handContr_right.set(lib_context, lib_filename);
-        handContr_right.set("hand", Value("right"));
-        handContr_right.openHand(true, true);
-        handContr_right.set("useRingLittleFingers", Value(five_fingers));        
-    }
-    else if (left_or_right=="left")
-    {
-        handContr_left.set(lib_context, lib_filename);
-        handContr_left.set("hand", Value("left"));
-        handContr_left.openHand(true, true);
-        handContr_left.set("useRingLittleFingers", Value(five_fingers));
-    }
-    else if (left_or_right=="both")
-    {
-        handContr_right.set(lib_context, lib_filename);
-        handContr_left.set(lib_context, lib_filename);
+        // configure the options for the driver
+        Property option;
+        option.put("device","remote_controlboard");
+        option.put("remote","/CER01/right_hand");
+        option.put("local","/controller");
 
-        handContr_right.set("hand", Value("right"));
-        handContr_right.set("useRingLittleFingers", Value(five_fingers));
+        // open the driver
+        if (!driver_right.open(option))
+        {
+            yError()<<"Unable to open the device driver";
+            return false;
+        }
 
-        handContr_left.set("hand", Value("left"));       
-        handContr_left.set("useRingLittleFingers", Value(five_fingers));
+        // open the views
+        driver_right.view(imod_right);
+        driver_right.view(ienc_right);
+        driver_right.view(ipos_right);
 
-        handContr_right.openHand(true, true);
-        handContr_left.openHand(true, true);
-    }
-
-    if ((left_or_right !="left") && (!handContr_right.open()))
-    {
-        yError()<<"[GraspExecution]: Problems in initializing the tactile control for right arm";
-        return false;
+        // tell the device we aim to control
+        // in position mode all the joints
+        int nAxes;
+        ienc_right->getAxes(&nAxes);
+        vector<int> modes(nAxes,VOCAB_CM_POSITION);
+        imod_right->setControlModes(modes.data());
     }
 
-    if ((left_or_right!="right") && (!handContr_left.open()))
+    if (left_or_right=="left" || left_or_right=="both")
     {
-        yError()<<"[GraspExecution]: Problems in initializing the tactile control for left arm";
-        return false;
+        // configure the options for the driver
+        Property option;
+        option.put("device","remote_controlboard");
+        option.put("remote","/CER01/right_hand");
+        option.put("local","/controller");
+
+        // open the driver
+        if (!driver_right.open(option))
+        {
+            yError()<<"Unable to open the device driver";
+            return false;
+        }
+
+        // open the views
+        driver_right.view(imod_right);
+        driver_right.view(ienc_right);
+        driver_right.view(ipos_right);
+
+        // tell the device we aim to control
+        // in position mode all the joints
+        int nAxes;
+        ienc_right->getAxes(&nAxes);
+        vector<int> modes(nAxes,VOCAB_CM_POSITION);
+        imod_right->setControlModes(modes.data());
     }
 
     return true;
@@ -277,128 +181,6 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
-    string fivef=newOptions.find("five_fingers").asString();
-
-    if (newOptions.find("five_fingers").isNull() && (first_time==true))
-    {
-        five_fingers="false";
-    }
-    else if (!newOptions.find("five_fingers").isNull())
-    {
-        if (fivef=="on")
-            five_fingers="true";
-        else 
-            five_fingers="false";
-
-        if ((left_or_right=="right") || (left_or_right=="both"))
-        {
-            handContr_right.set("useRingLittleFingers", Value(five_fingers));
-        }
-        else if ((left_or_right=="left") || ("left_or_right"=="both"))
-            handContr_left.set("useRingLittleFingers", Value(five_fingers));
-    }
-
-    string vs=newOptions.find("visual_servoing").asString();
-
-    if (newOptions.find("visual_servoing").isNull() && (first_time==true))
-    {
-        visual_serv=false;
-    }
-    else if (!newOptions.find("visual_servoing").isNull())
-    {
-        if (vs=="on")
-            visual_serv=true;
-        else
-            visual_serv=false;
-    }
-
-    double ttime=newOptions.find("traj_time").asDouble();
-
-    if (newOptions.find("traj_time").isNull() && (first_time==true))
-    {
-        traj_time=2.0;
-    }
-    else if (!newOptions.find("traj_time").isNull())
-    {
-        if ((ttime>=0.5) && (ttime<=5.0))
-        {
-            traj_time=ttime;
-        }
-        else if (ttime<0.5)
-        {
-            traj_time=0.5;
-        }
-        else if (ttime>5.0)
-        {
-            traj_time=5.0;
-        }
-
-        if (first_time==false)
-        {
-            if ((left_or_right=="right") || (left_or_right=="both"))
-                icart_right->setTrajTime(traj_time);
-            else if ((left_or_right=="left") || (left_or_right=="both"))
-                icart_left->setTrajTime(traj_time);
-        }
-    }
-
-    double ttol=newOptions.find("traj_tol").asDouble();
-
-    if (newOptions.find("traj_tol").isNull() && (first_time==true))
-    {
-        traj_tol=0.005;
-    }
-    else if (!newOptions.find("traj_tol").isNull())
-    {
-        if ((ttol>=0.001) && (ttol<=0.05))
-        {
-            traj_tol=ttol;
-        }
-        else if (ttol<0.001)
-        {
-            traj_tol=0.001;
-        }
-        else if (ttol>0.05)
-        {
-            traj_tol=0.05;
-        }
-
-        if (first_time==false)
-        {
-            if ((left_or_right=="right") || (left_or_right=="both"))
-                icart_right->setInTargetTol(traj_tol);
-            else if ((left_or_right=="left") || (left_or_right=="both"))
-                icart_left->setInTargetTol(traj_tol);
-        }
-    }
-
-    double ptol=newOptions.find("pixel_tol").asDouble();
-
-    if (newOptions.find("pixel_tol").isNull() && (first_time==true))
-    {
-        pixel_tol=15.0;
-    }
-    else if (!newOptions.find("pixel_tol").isNull())
-    {
-        if ((ptol>=5.0) && (ptol<=20.0))
-        {
-            pixel_tol=ptol;
-        }
-        else if (ptol<5.0)
-        {
-            pixel_tol=5.0;
-        }
-        else if (ptol>20.0)
-        {
-            pixel_tol=20.0;
-        }
-
-        if (first_time==false)
-        {
-            visual_servoing_right->setGoToGoalTolerance(pixel_tol);
-        }
-    }
-
     double lz=newOptions.find("lift_z").asDouble();
 
     if (newOptions.find("lift_z").isNull() && (first_time==true))
@@ -418,6 +200,50 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         else if (lz>0.3)
         {
             lift_z=0.3;
+        }
+    }
+
+    double angp=newOptions.find("angle_paddle").asDouble();
+
+    if (newOptions.find("angle_paddle").isNull() && (first_time==true))
+    {
+        angle_paddle=0.005;
+    }
+    else if (!newOptions.find("angle_paddle").isNull())
+    {
+        if ((angp>=0.001) && (angp<=0.05))
+        {
+            angle_paddle=angp;
+        }
+        else if (angp<0.001)
+        {
+            angle_paddle=0.001;
+        }
+        else if (angp>0.05)
+        {
+            angle_paddle=0.05;
+        }
+    }
+
+    double angt=newOptions.find("angle_thumb").asDouble();
+
+    if (newOptions.find("angle_thumb").isNull() && (first_time==true))
+    {
+        angle_thumb=0.005;
+    }
+    else if (!newOptions.find("angle_thumb").isNull())
+    {
+        if ((angt>=0.001) && (angt<=0.05))
+        {
+            angle_thumb=angp;
+        }
+        else if (angt<0.001)
+        {
+            angle_thumb=0.001;
+        }
+        else if (angt>0.05)
+        {
+            angle_thumb=0.05;
         }
     }
 
@@ -470,7 +296,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
+            home_right[0]=0.35; home_right[1]=-0.25; home_right[2]=0.9;
+            //ORIENTATION????
             home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
         }
     }
@@ -497,30 +324,9 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
+            home_left[0]=0.35; home_left[1]=0.25; home_left[2]=0.9;
+            //ORIENTATION????
             home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
-        }
-    }
-
-    double pitch_max=newOptions.find("torso_pitch_max").asDouble();
-
-    if (newOptions.find("torso_pitch_max").isNull() && (first_time==true))
-    {
-        torso_pitch_max=30.0;
-    }
-    else if (!newOptions.find("torso_pitch_max").isNull())
-    {
-        if ((pitch_max>=0.0) && (pitch_max<=40.0))
-        {
-            torso_pitch_max=pitch_max;
-        }
-        else if (pitch_max<0.0)
-        {
-            torso_pitch_max=0.0;
-        }
-        else if (pitch_max>40.0)
-        {
-            torso_pitch_max=40.0;
         }
     }
 }
@@ -533,15 +339,10 @@ Property GraspExecution::getPosePar()
     Property advOptions;
     advOptions.put("robot",robot);
     advOptions.put("hand",left_or_right);
-    advOptions.put("five_fingers",five_fingers);
-    if (visual_serv)
-        advOptions.put("visual_servoing","on");
-    else
-        advOptions.put("visual_servoing","off");
-    advOptions.put("traj_time",traj_time);
-    advOptions.put("pixel_tol",pixel_tol);
-    advOptions.put("traj_tol",traj_tol);
+
     advOptions.put("lift_z",lift_z);
+    advOptions.put("angle_paddle",angle_paddle);
+    advOptions.put("angle_thumb",angle_thumb);
     Bottle s;
     Bottle &pd=s.addList();
     pd.addDouble(shift[0]); pd.addDouble(shift[1]);
@@ -663,10 +464,7 @@ bool GraspExecution::executeTrajectory(string &hand)
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
 
-            if ((visual_serv==false) || (hand=="left") || (i != trajectory_right.size()-1))
-                reached=reachWaypoint(i, hand);
-            else if ((visual_serv==true) && (hand=="right") && (i == trajectory_right.size()-1))
-                reached=reachWithVisual(i,hand);
+            reached=reachWaypoint(i, hand);
 
             if (grasp==true && reached==true)
             {
@@ -704,19 +502,11 @@ bool GraspExecution::executeTrajectory(string &hand)
 bool GraspExecution::reachWaypoint(int i, string &hand)
 {
     bool done;
-    int context_tmp;
 
     double min, max;
 
     Vector x(3,0.0);
     Vector o(4,0.0);
-
-    Vector newDof, curDof;
-    newDof.resize(3,1);
-    newDof[1]=0;
-
-    Vector limit_min(10,0.0);
-    Vector limit_max(10,0.0);
 
     x=trajectory[i].subVector(0,2);
     if (trajectory[i].size()==6)
@@ -726,123 +516,117 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
     if (hand=="right")
     {
-        if(i==trajectory.size()-1)
-        {
-            for (size_t i=0; i<limit_min.size(); i++)
-            {
-                icart_right->getLimits(i, &min, &max);
-                limit_min[i]=min;
-                limit_max[i]=max;
-            }
-
-            icart_right->setLimits(0,0.0, 0.0);
-            icart_right->setLimits(1,0.0, 0.0);
-            icart_right->setLimits(2,0.0, 0.0);    
-        }
-        
-        icart_right->getDOF(curDof);
-        icart_right->setDOF(newDof,curDof);
-
         if (i==0)
         {
             yDebug()<<"[GraspExecution]: opening hand ... ";
-            handContr_right.openHand(true, true);
+            //handContr_right.openHand(true, true);
+            releaseObject(hand);
         }
 
-        icart_right->goToPoseSync(x,o);
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
+        Bottle cmd, reply;
+        cmd.addString("go");
+        Bottle &content=cmd.addList();
+        Bottle &par=content.addList();
+        par.addString("parameters");
+        Bottle &par_val=par.addList();
+        Bottle &value=par_val.addList();
+        value.addString("mode");
+        value.addString("full_pose+torso_no_heave");
+
+        Bottle &target=content.addList();
+        target.addString("target");
+        Bottle &pose_t=target.addList();
+        pose_t.addDouble(x[0]); pose_t.addDouble(x[1]); pose_t.addDouble(x[2]);
+        pose_t.addDouble(o[0]); pose_t.addDouble(o[1]); pose_t.addDouble(o[2]); pose_t.addDouble(o[3]);
+
+        yDebug()<<"Command for moving "<<cmd.toString();
+
+        reachRightPort.write(cmd, reply);
+
+        if (reply.get(0).asString()=="ask")
+            yInfo()<<"Motion started";
+        else
+            yError()<<"Problems in sending the command";
+
+        cmd.clear(); reply.clear();
+        cmd.addString("done");
+
+        reachRightPort.write(cmd, reply);
+
+        if (reply.get(1).asInt()==1)
+        {
+            done=true;
+            yInfo()<<"Movement completed";
+        }
+        else
+        {
+            done=false;
+            yError()<<"Problems in executing the movement!";
+        }
 
         if (done)
         {
-             Vector x_reached(3,0.0);
-             Vector o_reached(4,0.0);
-             icart_right->getPose(x_reached, o_reached);
-             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
-        }
-
-        if(i==trajectory.size()-1)
-        {
-            icart_right->setLimits(0,limit_min[0], limit_max[0]);
-            icart_right->setLimits(1,limit_min[1], limit_max[1]);
-            icart_right->setLimits(2,limit_min[2], torso_pitch_max);
+             Vector *pose_reached=stateRightPort.read(false);
+             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
         }
 
     }
     if (hand=="left")
     {
-        if(i==trajectory.size()-1)
-        {
-            for (size_t i=0; i<limit_min.size(); i++)
-            {
-                icart_left->getLimits(i, &min, &max);
-                limit_min[i]=min;
-                limit_max[i]=max;
-            }
-
-            icart_left->setLimits(0,0.0, 0.0);
-            icart_left->setLimits(1,0.0, 0.0);
-            icart_left->setLimits(2,0.0, 0.0);  
-        }
- 
-        icart_left->getDOF(curDof);
-        icart_left->setDOF(newDof,curDof);
-
         if (i==0)
         {
             yDebug()<<"[GraspExecution]: opening hand ... ";
-            handContr_left.openHand(true, true);
+            releaseObject(hand);
+            //handContr_left.openHand(true, true);
         }
 
-        icart_left->goToPoseSync(x,o);
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
+        Bottle cmd, reply;
+        cmd.addString("go");
+        Bottle &content=cmd.addList();
+        Bottle &par=content.addList();
+        par.addString("parameters");
+        Bottle &par_val=par.addList();
+        Bottle &value=par_val.addList();
+        value.addString("mode");
+        value.addString("full_pose+torso_no_heave");
+
+        Bottle &target=content.addList();
+        target.addString("target");
+        Bottle &pose_t=target.addList();
+        pose_t.addDouble(x[0]); pose_t.addDouble(x[1]); pose_t.addDouble(x[2]);
+        pose_t.addDouble(o[0]); pose_t.addDouble(o[1]); pose_t.addDouble(o[2]); pose_t.addDouble(o[3]);
+
+        yDebug()<<"Command for moving "<<cmd.toString();
+
+        reachLeftPort.write(cmd, reply);
+
+        if (reply.get(0).asString()=="ask")
+            yInfo()<<"Motion started";
+        else
+            yError()<<"Problems in sending the command";
+
+        cmd.clear(); reply.clear();
+        cmd.addString("done");
+
+        reachLeftPort.write(cmd, reply);
+
+        if (reply.get(1).asInt()==1)
+        {
+            done=true;
+            yInfo()<<"Movement completed";
+        }
+        else
+        {
+            done=false;
+            yError()<<"Problems in executing the movement!";
+        }
 
         if (done)
         {
-            Vector x_reached(3,0.0);
-            Vector o_reached(4,0.0);
-            icart_left->getPose(x_reached, o_reached);
-            yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
-        }
-
-        if(i==trajectory.size()-1)
-        {
-            icart_left->setLimits(0,limit_min[0], limit_max[0]);
-            icart_left->setLimits(1,limit_min[1], limit_max[1]);
-            icart_left->setLimits(2,limit_min[2], torso_pitch_max);
+            Vector *pose_reached=stateLeftPort.read(false);
+            yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
         }
     }
-
-    //Vector Dof;
-    //icart_right->getDOF(Dof);
-    //yDebug()<<"Dof used "<<Dof.toString(3,3);
-
-    return done;
-}
-
-/*******************************************************************************/
-bool GraspExecution::reachWithVisual(int i, string &hand)
-{
-    Vector x(3,0.0);
-    Vector o(4,0.0);
-    bool done;
-
-//    vector<Vector> pixels_left, pixels_right;
-
-    x=trajectory[i].subVector(0,2);
-    if (trajectory[i].size()==6)
-        o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
-    else
-        o=trajectory[i].subVector(3,6);
-
-//    pixels_left=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o, IVisualServoing::CamSel::left);
-//    pixels_right=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o,IVisualServoing::CamSel::right);
-
-    visual_servoing_right->goToGoal(x,o);
-    done=visual_servoing_right->waitVisualServoingDone();
-
-    yDebug()<<"done"<<done;
 
     return done;
 }
@@ -850,34 +634,21 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
 /*******************************************************************************/
 bool GraspExecution::release()
 {
-    if (hand_to_move=="right" && left_or_right !="left")
-        icart_right->stopControl();
-    else if (hand_to_move=="left" && left_or_right !="right")
-        icart_left->stopControl();
-
     if (left_or_right=="both" || left_or_right=="right")
     {
-        robotDevice_right.close();
-        icart_right->restoreContext(context_right);
+        if (reachRightPort.asPort().isOpen())
+            reachRightPort.close();
+
+        if (!stateRightPort.isClosed())
+            stateRightPort.close();
     }
     if (left_or_right=="both" || left_or_right=="left")
     {
-        robotDevice_left.close();
-        icart_left->restoreContext(context_left);
-    }
+        if (reachLeftPort.asPort().isOpen())
+            reachLeftPort.close();
 
-    if (visual_serv==true)
-    {
-        drv_server_vs.close();
-    }
-
-    if (grasp==true)
-    { 
-        if (left_or_right != "left")  
-            handContr_right.close();
-
-        if (left_or_right != "right") 
-            handContr_left.close();
+        if (!stateLeftPort.isClosed())
+            stateLeftPort.close();
     }
 
     return true;
@@ -887,38 +658,111 @@ bool GraspExecution::release()
 bool GraspExecution::goHome(const string &hand)
 {
     bool done;
-    int context_tmp;
 
     if (hand=="right")
-    {
+    {        
         yDebug()<<"[GraspExecution]: opening hand ... ";
-        handContr_right.openHand(true, true);
+        releaseObject(hand);
+        //handContr_right.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
-        icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
+        Bottle cmd, reply;
+        cmd.addString("go");
+        Bottle &content=cmd.addList();
+        Bottle &par=content.addList();
+        par.addString("parameters");
+        Bottle &par_val=par.addList();
+        Bottle &value=par_val.addList();
+        value.addString("mode");
+        value.addString("full_pose+torso_no_heave");
+
+        Bottle &target=content.addList();
+        target.addString("target");
+        Bottle &pose_t=target.addList();
+        pose_t.addDouble(home_right[0]); pose_t.addDouble(home_right[1]); pose_t.addDouble(home_right[2]);
+        pose_t.addDouble(home_right[0]); pose_t.addDouble(home_right[1]); pose_t.addDouble(home_right[2]); pose_t.addDouble(home_right[3]);
+
+        yDebug()<<"Command for moving "<<cmd.toString();
+
+        reachRightPort.write(cmd, reply);
+
+        if (reply.get(0).asString()=="ask")
+            yInfo()<<"Motion started";
+        else
+            yError()<<"Problems in sending the command";
+
+        cmd.clear(); reply.clear();
+        cmd.addString("done");
+
+        reachRightPort.write(cmd, reply);
+
+        if (reply.get(1).asInt()==1)
+        {
+            done=true;
+            yInfo()<<"Movement completed";
+        }
+        else
+        {
+            done=false;
+            yError()<<"Problems in executing the movement!";
+        }
+
         if (done)
         {
-             Vector x_reached(3,0.0);
-             Vector o_reached(4,0.0);
-             icart_right->getPose(x_reached, o_reached);
-             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_right.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_right.subVector(3,6)-o_reached);
+            Vector *pose_reached=stateRightPort.read(false);
+            yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_right.subVector(0,2)-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(home_right.subVector(3,6)-pose_reached->subVector(3,6));
         }
     }
     if (hand=="left")
     {
         yDebug()<<"[GraspExecution]: opening hand ... ";
-        handContr_left.openHand(true, true);
+        releaseObject(hand);
+        //handContr_left.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
-        icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
+        Bottle cmd, reply;
+        cmd.addString("go");
+        Bottle &content=cmd.addList();
+        Bottle &par=content.addList();
+        par.addString("parameters");
+        Bottle &par_val=par.addList();
+        Bottle &value=par_val.addList();
+        value.addString("mode");
+        value.addString("full_pose+torso_no_heave");
+
+        Bottle &target=content.addList();
+        target.addString("target");
+        Bottle &pose_t=target.addList();
+        pose_t.addDouble(home_left[0]); pose_t.addDouble(home_left[1]); pose_t.addDouble(home_left[2]);
+        pose_t.addDouble(home_left[0]); pose_t.addDouble(home_left[1]); pose_t.addDouble(home_left[2]); pose_t.addDouble(home_left[3]);
+
+        yDebug()<<"Command for moving "<<cmd.toString();
+
+        reachRightPort.write(cmd, reply);
+
+        if (reply.get(0).asString()=="ask")
+            yInfo()<<"Motion started";
+        else
+            yError()<<"Problems in sending the command";
+
+        cmd.clear(); reply.clear();
+        cmd.addString("done");
+
+        reachRightPort.write(cmd, reply);
+
+        if (reply.get(1).asInt()==1)
+        {
+            done=true;
+            yInfo()<<"Movement completed";
+        }
+        else
+        {
+            done=false;
+            yError()<<"Problems in executing the movement!";
+        }
+
         if (done)
         {
-             Vector x_reached(3,0.0);
-             Vector o_reached(4,0.0);
-             icart_left->getPose(x_reached, o_reached);
-             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
+            Vector *pose_reached=stateLeftPort.read(false);
+            yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(home_left.subVector(3,6)-pose_reached->subVector(3,6));
         }
     }
 
@@ -949,15 +793,13 @@ bool GraspExecution::graspObject(const string &hand)
     bool f;
     if (hand=="right")
     {
-        handContr_right.openHand(false,true);
-        handContr_right.closeHand(true);
-        f=handContr_right.isHandClose();
+       f=ipos_right->positionMove(0,angle_thumb);
+       f=f && ipos_right->positionMove(1,angle_paddle);
     }
     else
     {
-        handContr_left.openHand(false,true);
-        handContr_left.closeHand(true);
-        f=handContr_left.isHandClose();
+        f=ipos_left->positionMove(0,angle_thumb);
+        f=f && ipos_left->positionMove(1,angle_paddle);
     }
 
     return f;
@@ -970,11 +812,13 @@ bool GraspExecution::releaseObject(const string &hand)
     bool f;
     if (hand=="right")
     {
-        handContr_right.openHand(true, true);
+       f=ipos_right->positionMove(0,0.0);
+       f=f && ipos_right->positionMove(1,0.0);
     }
     else
     {
-        handContr_left.openHand(true, true);
+        f=ipos_left->positionMove(0,0.0);
+        f=f && ipos_left->positionMove(1,0.0);
     }
 
     return true;

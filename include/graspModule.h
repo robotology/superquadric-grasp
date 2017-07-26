@@ -25,7 +25,7 @@
 #include "superquadric.h"
 #include "graspComputation.h"
 #include "graspVisualization.h"
-//#include "graspExecution.h"
+#include "graspExecution.h"
 
 #include "src/superquadricGrasp_IDL.h"
 
@@ -67,6 +67,9 @@ protected:
     yarp::sig::Vector displacement;
     yarp::sig::Vector plane;
 
+    double angle_thumb;
+    double angle_paddle;
+
     yarp::os::RpcServer portRpc;
 
     yarp::sig::Matrix K,H;
@@ -84,7 +87,6 @@ protected:
 
     double lift_z;
     double torso_pitch_max;
-    double traj_time, traj_tol;
     yarp::sig::Vector shift;
     yarp::sig::Vector home_right;
     yarp::sig::Vector home_left;
@@ -97,7 +99,7 @@ protected:
 
     GraspComputation *graspComp;
     GraspVisualization *graspVis;
-    //GraspExecution *graspExec;
+    GraspExecution *graspExec;
 
 
     yarp::os::Property vis_par;
@@ -185,7 +187,7 @@ public:
     void saveSol(const yarp::os::Property &sol);
 
     ///**********************************************************************/
-    //bool go_home(const std::string &entry);
+    bool go_home(const std::string &entry);
 
 };
 
