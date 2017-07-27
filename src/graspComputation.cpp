@@ -742,8 +742,16 @@ void GraspComputation::bestPose()
 
     double w1, w2;
 
-    w1=2.5;
-    w2=0.5;
+    if (cos_zr <=0.85 && cos_zl<=0.85)
+    {
+        w1=2.0;
+        w2=0.5;
+    }
+    else
+    {
+        w1=1.0;
+        w2=2.5;
+    }
 
     quality_r=w1*final_value_R + w2*cos_zr;
 
