@@ -276,8 +276,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     Bottle *pl=newOptions.find("home_right").asList();
     if (newOptions.find("home_right").isNull() && (first_time==true))
     {
-        home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
-        home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
+        home_right[0]=0.35; home_right[1]=-0.25; home_right[2]=0.7;
+        home_right[3]=1.0; home_right[4]=0.0; home_right[5]=0.0; home_right[6]=-1.57;
     }
     else if (!newOptions.find("home_right").isNull())
     {
@@ -296,17 +296,16 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_right[0]=0.35; home_right[1]=-0.25; home_right[2]=0.9;
-            //ORIENTATION????
-            home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
+            home_right[0]=0.35; home_right[1]=-0.25; home_right[2]=0.7;
+            home_right[3]=1.0; home_right[4]=0.0; home_right[5]=0.0; home_right[6]=-1.57;
         }
     }
 
     Bottle *pll=newOptions.find("home_left").asList();
     if (newOptions.find("home_left").isNull() && (first_time==true))
     {
-        home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
-        home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
+        home_left[0]=0.35; home_left[1]=0.25; home_left[2]=0.7;
+        home_left[3]=1.0; home_left[4]=0.0; home_left[5]=0.0; home_left[6]=-1.57;
     }
     else if (!newOptions.find("home_left").isNull())
     {
@@ -324,9 +323,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_left[0]=0.35; home_left[1]=0.25; home_left[2]=0.9;
-            //ORIENTATION????
-            home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
+            home_left[0]=0.35; home_left[1]=0.25; home_left[2]=0.7;
+            home_left[3]=1.0; home_left[4]=0.0; home_left[5]=0.0; home_left[6]=-1.57;
         }
     }
 }
@@ -464,7 +462,9 @@ bool GraspExecution::executeTrajectory(string &hand)
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
 
-            reached=reachWaypoint(i, hand);
+            string mode="heave";
+
+            reached=reachWaypoint(i, hand, mode);
 
             if (grasp==true && reached==true)
             {
@@ -499,9 +499,9 @@ bool GraspExecution::executeTrajectory(string &hand)
 }
 
 /*******************************************************************************/
-bool GraspExecution::reachWaypoint(int i, string &hand)
+bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode)
 {
-    bool done;
+    bool done=false;
 
     double min, max;
 
@@ -531,7 +531,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         Bottle &par_val=par.addList();
         Bottle &value=par_val.addList();
         value.addString("mode");
-        value.addString("full_pose+torso_no_heave");
+        value.addString("full_pose+no_torso_"+mode);
 
         Bottle &target=content.addList();
         target.addString("target");
@@ -548,20 +548,20 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         else
             yError()<<"Problems in sending the command";
 
-        cmd.clear(); reply.clear();
-        cmd.addString("done");
-
-        reachRightPort.write(cmd, reply);
-
-        if (reply.get(1).asInt()==1)
+        double t0=Time::now();
+        while (Time::now()-t0<5.0)
         {
-            done=true;
-            yInfo()<<"Movement completed";
-        }
-        else
-        {
-            done=false;
-            yError()<<"Problems in executing the movement!";
+            cmd.clear(); reply.clear();
+            cmd.addString("done");
+
+            reachRightPort.write(cmd, reply);
+
+            if (reply.get(1).asInt()==1)
+            {
+                done=true;
+                yInfo()<<"Movement completed";
+                break;
+            }
         }
 
         if (done)
@@ -569,7 +569,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
              Vector *pose_reached=stateRightPort.read(false);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
         }
-
+        else
+            yError()<<"Target point not reached!";
     }
     if (hand=="left")
     {
@@ -588,7 +589,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         Bottle &par_val=par.addList();
         Bottle &value=par_val.addList();
         value.addString("mode");
-        value.addString("full_pose+torso_no_heave");
+        value.addString("full_pose+no_torso_"+mode);
 
         Bottle &target=content.addList();
         target.addString("target");
@@ -605,20 +606,20 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         else
             yError()<<"Problems in sending the command";
 
-        cmd.clear(); reply.clear();
-        cmd.addString("done");
-
-        reachLeftPort.write(cmd, reply);
-
-        if (reply.get(1).asInt()==1)
+        double t0=Time::now();
+        while (Time::now()-t0<5.0)
         {
-            done=true;
-            yInfo()<<"Movement completed";
-        }
-        else
-        {
-            done=false;
-            yError()<<"Problems in executing the movement!";
+            cmd.clear(); reply.clear();
+            cmd.addString("done");
+
+            reachLeftPort.write(cmd, reply);
+
+            if (reply.get(1).asInt()==1)
+            {
+                done=true;
+                yInfo()<<"Movement completed";
+                break;
+            }
         }
 
         if (done)
@@ -626,6 +627,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
             Vector *pose_reached=stateLeftPort.read(false);
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
         }
+        else
+            yError()<<"Target point not reached!";
     }
 
     return done;
@@ -673,7 +676,7 @@ bool GraspExecution::goHome(const string &hand)
         Bottle &par_val=par.addList();
         Bottle &value=par_val.addList();
         value.addString("mode");
-        value.addString("full_pose+torso_no_heave");
+        value.addString("full_pose+no_torso_no_heave");
 
         Bottle &target=content.addList();
         target.addString("target");
@@ -690,20 +693,20 @@ bool GraspExecution::goHome(const string &hand)
         else
             yError()<<"Problems in sending the command";
 
-        cmd.clear(); reply.clear();
-        cmd.addString("done");
-
-        reachRightPort.write(cmd, reply);
-
-        if (reply.get(1).asInt()==1)
+        double t0=Time::now();
+        while (Time::now()-t0<5.0)
         {
-            done=true;
-            yInfo()<<"Movement completed";
-        }
-        else
-        {
-            done=false;
-            yError()<<"Problems in executing the movement!";
+            cmd.clear(); reply.clear();
+            cmd.addString("done");
+
+            reachRightPort.write(cmd, reply);
+
+            if (reply.get(1).asInt()==1)
+            {
+                done=true;
+                yInfo()<<"Movement completed";
+                break;
+            }
         }
 
         if (done)
@@ -711,6 +714,8 @@ bool GraspExecution::goHome(const string &hand)
             Vector *pose_reached=stateRightPort.read(false);
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_right.subVector(0,2)-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(home_right.subVector(3,6)-pose_reached->subVector(3,6));
         }
+        else
+            yError()<<"Home position not reached!";
     }
     if (hand=="left")
     {
@@ -726,7 +731,7 @@ bool GraspExecution::goHome(const string &hand)
         Bottle &par_val=par.addList();
         Bottle &value=par_val.addList();
         value.addString("mode");
-        value.addString("full_pose+torso_no_heave");
+        value.addString("full_pose+no_torso_no_heave");
 
         Bottle &target=content.addList();
         target.addString("target");
@@ -743,20 +748,20 @@ bool GraspExecution::goHome(const string &hand)
         else
             yError()<<"Problems in sending the command";
 
-        cmd.clear(); reply.clear();
-        cmd.addString("done");
-
-        reachRightPort.write(cmd, reply);
-
-        if (reply.get(1).asInt()==1)
+        double t0=Time::now();
+        while (Time::now()-t0<5.0)
         {
-            done=true;
-            yInfo()<<"Movement completed";
-        }
-        else
-        {
-            done=false;
-            yError()<<"Problems in executing the movement!";
+            cmd.clear(); reply.clear();
+            cmd.addString("done");
+
+            reachLeftPort.write(cmd, reply);
+
+            if (reply.get(1).asInt()==1)
+            {
+                done=true;
+                yInfo()<<"Movement completed";
+                break;
+            }
         }
 
         if (done)
@@ -764,6 +769,8 @@ bool GraspExecution::goHome(const string &hand)
             Vector *pose_reached=stateLeftPort.read(false);
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(home_left.subVector(3,6)-pose_reached->subVector(3,6));
         }
+        else
+            yError()<<"Home position not reached!";
     }
 
     return done;
@@ -793,13 +800,21 @@ bool GraspExecution::graspObject(const string &hand)
     bool f;
     if (hand=="right")
     {
-       f=ipos_right->positionMove(0,angle_thumb);
-       f=f && ipos_right->positionMove(1,angle_paddle);
+        // ipos_right->setRefAcceleration();
+        // ipos_right->setRefSpeed();
+        Vector angles(2);
+        angles[0]=angle_paddle;
+        angles[1]=angle_thumb;
+        f=ipos_right->positionMove(angles.data());
     }
     else
     {
-        f=ipos_left->positionMove(0,angle_thumb);
-        f=f && ipos_left->positionMove(1,angle_paddle);
+        // ipos_left->setRefAcceleration();
+        // ipos_left->setRefSpeed();
+        Vector angles(2);
+        angles[0]=angle_paddle;
+        angles[1]=angle_thumb;
+        f=ipos_left->positionMove(angles.data());
     }
 
     return f;
@@ -812,13 +827,17 @@ bool GraspExecution::releaseObject(const string &hand)
     bool f;
     if (hand=="right")
     {
-       f=ipos_right->positionMove(0,0.0);
-       f=f && ipos_right->positionMove(1,0.0);
+        // ipos_right->setRefAcceleration();
+        // ipos_right->setRefSpeed();
+        Vector angles(2, 0.0);
+        f=ipos_right->positionMove(angles.data());
     }
     else
     {
-        f=ipos_left->positionMove(0,0.0);
-        f=f && ipos_left->positionMove(1,0.0);
+        // ipos_left->setRefAcceleration();
+        // ipos_left->setRefSpeed();
+        Vector angles(2, 0.0);
+        f=ipos_left->positionMove(angles.data());
     }
 
     return true;

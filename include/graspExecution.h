@@ -76,7 +76,7 @@ public:
     bool configure();
 
     /*******************************************************************************/
-    bool reachWaypoint(int i, std::string &hand);
+    bool reachWaypoint(int i, const std::string &hand, const std::string &mode);
 
     /*******************************************************************************/
     bool executeTrajectory(std::string &hand);
