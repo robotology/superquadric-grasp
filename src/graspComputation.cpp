@@ -619,6 +619,14 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         }
         poses.put("pose_right", bottle.get(0));
 
+        /*************/
+        Vector pose_right_7(7,0.0);
+        Matrix H=euler2dcm(poseR.subVector(3,5));
+        pose_right_7.setSubvector(0,poseR.subVector(0,2));
+        pose_right_7.setSubvector(3,dcm2axis(H));
+        
+        yDebug()<<"POSE RIGHT "<<pose_right_7.toString(3,3);
+
         Bottle &bright1=bottle.addList();
         for (size_t i=0; i<solR.size(); i++)
         {

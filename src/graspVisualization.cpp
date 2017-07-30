@@ -78,7 +78,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 
         if (frame_info!=NULL)
         {
-            Bottle &pose_b=frame_info->findGroup("depth");
+            Bottle &pose_b=frame_info->findGroup("depth_rgb");
             Bottle *pose=pose_b.get(1).asList();
             x_vis[0]=pose->get(0).asDouble();
             x_vis[1]=pose->get(1).asDouble();
@@ -256,7 +256,7 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 
         if (frame_info!=NULL)
         {
-            Bottle &pose_b=frame_info->findGroup("depth");
+            Bottle &pose_b=frame_info->findGroup("depth_rgb");
             Bottle *pose=pose_b.get(1).asList();
             x_vis[0]=pose->get(0).asDouble();
             x_vis[1]=pose->get(1).asDouble();
