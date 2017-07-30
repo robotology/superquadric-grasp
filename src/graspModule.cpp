@@ -255,26 +255,29 @@ bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);
 
-    if ((entry=="right") || (entry=="left"))
+    if (execution_on)
     {
-        executed=true;
-        graspExec->reached=true;
-        graspExec->reached_tot=true;
-        graspExec->stop();
-        graspExec->goHome(entry);
+        if ((entry=="right") || (entry=="left"))
+        {
+            executed=true;
+            graspExec->reached=true;
+            graspExec->reached_tot=true;
+            graspExec->stop();
+            graspExec->goHome(entry);
 
-        return true;
-    }
-    else if (entry=="both")
-    {
-        executed=true;
-        graspExec->reached=true;
-        graspExec->reached_tot=true;
-        graspExec->stop();
-        graspExec->goHome("right");
-        graspExec->goHome("left");
+            return true;
+        }
+        else if (entry=="both")
+        {
+            executed=true;
+            graspExec->reached=true;
+            graspExec->reached_tot=true;
+            graspExec->stop();
+            graspExec->goHome("right");
+            graspExec->goHome("left");
 
-        return true;
+            return true;
+        }
     }
 
     return false;
@@ -305,6 +308,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
     print_level=rf.check("print_level", Value(0)).asInt();
+    execution_on=(rf.check("execution", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -368,8 +372,11 @@ bool GraspingModule::close()
 {
     delete graspComp;
 
-    graspExec->release();
-    delete graspExec;
+    if (execution_on)
+    {
+        graspExec->release();
+        delete graspExec;
+    }
 
     graspVis->stop();
     delete graspVis;
@@ -408,7 +415,7 @@ bool GraspingModule::updateModule()
             times_vis.clear();
     }
 
-    if (executed==false)
+    if ((executed==false) && (execution_on==true))
     {
         graspExec->getPoses(complete_sol);
         executed=graspExec->executeTrajectory(hand_to_move);
@@ -576,9 +583,12 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configGrasp(rf);
 
-    graspExec= new GraspExecution(movement_par, complete_sol, grasp);
+    if (execution_on)
+    {
+        graspExec= new GraspExecution(movement_par, complete_sol, grasp);
 
-    config=graspExec->configure();
+        config=graspExec->configure();
+    }
 
     if (config==false)
         return false;
