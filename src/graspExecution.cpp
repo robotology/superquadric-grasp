@@ -389,6 +389,16 @@ void GraspExecution::getPoses(const Property &poses)
 
             trajectory_right.push_back(tmp);
         }
+
+        if (norm(shift)>0.0)
+        {
+            for (size_t k=0; k<trajectory_right.size(); k++)
+            {
+                yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory_right[k].toString(3,3);
+                trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +shift);
+                yDebug()<<"[GraspExecution]: Shifted waypoint "<<k<<trajectory_right[k].toString(3,3);
+            }
+        }
     }
 
     Bottle &pose3=poses.findGroup("trajectory_left");
@@ -406,6 +416,17 @@ void GraspExecution::getPoses(const Property &poses)
                 tmp[j]=p1->get(j).asDouble();
             }
             trajectory_left.push_back(tmp);
+        }
+
+
+        if (norm(shift)>0.0)
+        {
+            for (size_t k=0; k<trajectory_left.size(); k++)
+            {
+                yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory_left[k].toString(3,3);
+                trajectory_left[k].setSubvector(0,trajectory_left[k].subVector(0,2) +shift);
+                yDebug()<<"[GraspExecution]: Shifted waypoint "<<k<<trajectory_left[k].toString(3,3);
+            }
         }
     }
 }
@@ -448,7 +469,7 @@ bool GraspExecution::executeTrajectory(string &hand)
         yDebug()<<"[GraspExecution]: Complete trajectory ";
         for (size_t k=0; k<trajectory.size(); k++)
         {
-            yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString(3,3);
+            yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString(3,3);         
         }
 
         if (i==-1)
