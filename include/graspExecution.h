@@ -50,7 +50,7 @@ protected:
     yarp::dev::PolyDriver driver_left;
 
     int i;
-    bool grasp;    
+    bool grasp;
     double lift_z;
 
     double angle_paddle;
@@ -58,6 +58,7 @@ protected:
 
 public:
 
+    bool pause_movement;
     bool reached;
     bool reached_tot;
 

@@ -55,6 +55,8 @@ bool GraspExecution::configure()
 
     reached=false;
 
+    pause_movement=false;
+
     return config;
 }
 
@@ -479,7 +481,7 @@ bool GraspExecution::executeTrajectory(string &hand)
             i++;
         }
 
-        if ((reached==false) && (i<=trajectory.size()) && (i>=0))
+        if ((reached==false) && (i<=trajectory.size()) && (i>=0) && (pause_movement==false))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
 
@@ -492,6 +494,7 @@ bool GraspExecution::executeTrajectory(string &hand)
                 if (((i==trajectory_right.size()-1) && (hand=="right")) || ((i==trajectory_left.size()-1) && (hand=="left")))
                     reached=graspObject(hand);
 
+                //Commenta dopo
                 if (((i==trajectory_right.size()+1) && (hand=="right")) || ((i==trajectory_left.size()+1) && (hand=="left")))
                     reached=releaseObject(hand);
             }
@@ -819,10 +822,10 @@ bool GraspExecution::graspObject(const string &hand)
 {
     yDebug()<<"[GraspExecution]: Grasping object ..";
     bool f;
+    Vector vel(2,30.0);
     if (hand=="right")
-    {
-        // ipos_right->setRefAcceleration();
-        // ipos_right->setRefSpeed();
+    {        
+        ipos_right->setRefSpeed(vel.data());
         Vector angles(2);
         angles[0]=angle_paddle;
         angles[1]=angle_thumb;
@@ -830,8 +833,7 @@ bool GraspExecution::graspObject(const string &hand)
     }
     else
     {
-        // ipos_left->setRefAcceleration();
-        // ipos_left->setRefSpeed();
+        ipos_left->setRefSpeed(vel.data());
         Vector angles(2);
         angles[0]=angle_paddle;
         angles[1]=angle_thumb;
@@ -846,17 +848,16 @@ bool GraspExecution::releaseObject(const string &hand)
 {
     yDebug()<<"[GraspExecution]: Releasing object ..";
     bool f;
+    Vector vel(2,30.0);
     if (hand=="right")
     {
-        // ipos_right->setRefAcceleration();
-        // ipos_right->setRefSpeed();
+        ipos_right->setRefSpeed(vel.data());
         Vector angles(2, 0.0);
         f=ipos_right->positionMove(angles.data());
     }
     else
     {
-        // ipos_left->setRefAcceleration();
-        // ipos_left->setRefSpeed();
+        ipos_left->setRefSpeed(vel.data());
         Vector angles(2, 0.0);
         f=ipos_left->positionMove(angles.data());
     }

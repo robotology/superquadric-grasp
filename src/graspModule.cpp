@@ -251,6 +251,50 @@ bool GraspingModule::move(const string &entry)
 }
 
 /**********************************************************************/
+bool GraspingModule::grasp_object(const string &entry)
+{
+    LockGuard lg(mutex);
+
+    if ((entry=="right") || (entry=="left"))
+    {
+        graspExec->graspObject(entry);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**********************************************************************/
+bool GraspingModule::open(const string &entry)
+{
+    LockGuard lg(mutex);
+
+    if ((entry=="right") || (entry=="left"))
+    {
+        graspExec->releaseObject(entry);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**********************************************************************/
+bool GraspingModule::pause()
+{
+    graspExec->pause_movement=true;
+    return true;
+}
+
+/**********************************************************************/
+bool GraspingModule::restart()
+{
+    graspExec->pause_movement=false;
+    return true;
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);
