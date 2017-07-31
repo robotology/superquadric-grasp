@@ -57,15 +57,15 @@ bool GraspExecution::configure()
 
     pause_movement=false;
 
+    home_right.resize(7,0.0);
+    home_left.resize(7,0.0);
+
     return config;
 }
 
 /*******************************************************************************/
 bool GraspExecution::configController(const string &which_hand)
 {
-    bool done;
-    int context_tmp;
-
     if (which_hand=="right")
     {
         reachRightPort.open("/superquadric-grasp/right/reach:rpc");
@@ -77,7 +77,7 @@ bool GraspExecution::configController(const string &which_hand)
         stateLeftPort.open("/superquadric-grasp/left/state:i");
     }
 
-    return done;
+    return true;
 }
 
 /*******************************************************************************/
@@ -88,7 +88,7 @@ bool GraspExecution::configGrasp()
         // configure the options for the driver
         Property option;
         option.put("device","remote_controlboard");
-        option.put("remote","/CER01/right_hand");
+        option.put("remote","/cer/right_hand");
         option.put("local","/controller");
 
         // open the driver
@@ -116,27 +116,27 @@ bool GraspExecution::configGrasp()
         // configure the options for the driver
         Property option;
         option.put("device","remote_controlboard");
-        option.put("remote","/CER01/right_hand");
+        option.put("remote","/cer/left_hand");
         option.put("local","/controller");
 
         // open the driver
-        if (!driver_right.open(option))
+        if (!driver_left.open(option))
         {
             yError()<<"Unable to open the device driver";
             return false;
         }
 
         // open the views
-        driver_right.view(imod_right);
-        driver_right.view(ienc_right);
-        driver_right.view(ipos_right);
+        driver_left.view(imod_left);
+        driver_left.view(ienc_left);
+        driver_left.view(ipos_left);
 
         // tell the device we aim to control
         // in position mode all the joints
         int nAxes;
-        ienc_right->getAxes(&nAxes);
+        ienc_left->getAxes(&nAxes);
         vector<int> modes(nAxes,VOCAB_CM_POSITION);
-        imod_right->setControlModes(modes.data());
+        imod_left->setControlModes(modes.data());
     }
 
     return true;
@@ -209,7 +209,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
 
     if (newOptions.find("angle_paddle").isNull() && (first_time==true))
     {
-        angle_paddle=0.005;
+        angle_paddle=30.0;
     }
     else if (!newOptions.find("angle_paddle").isNull())
     {
@@ -374,6 +374,10 @@ void GraspExecution::getPoses(const Property &poses)
     trajectory_right.clear();
     trajectory_left.clear();
 
+shift[2]=0.05;
+shift[0]=0.05;
+shift[1]=-0.07;
+
     Bottle &pose2=poses.findGroup("trajectory_right");
 
     if (!pose2.isNull())
@@ -397,6 +401,7 @@ void GraspExecution::getPoses(const Property &poses)
             for (size_t k=0; k<trajectory_right.size(); k++)
             {
                 yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory_right[k].toString(3,3);
+                
                 trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +shift);
                 yDebug()<<"[GraspExecution]: Shifted waypoint "<<k<<trajectory_right[k].toString(3,3);
             }
@@ -451,7 +456,7 @@ bool GraspExecution::executeTrajectory(string &hand)
             for (size_t i=1; i<trajectory_right.size(); i++)
                 trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
 
-            trajectory.push_back(home_right);
+            //trajectory.push_back(home_right);
         }
         else
         {
@@ -465,7 +470,7 @@ bool GraspExecution::executeTrajectory(string &hand)
             for (size_t i=1; i<trajectory_left.size(); i++)
                 trajectory.push_back(trajectory_left[trajectory_left.size()-1-i]);
 
-            trajectory.push_back(home_left);
+            //trajectory.push_back(home_left);
         }
 
         yDebug()<<"[GraspExecution]: Complete trajectory ";
@@ -481,7 +486,7 @@ bool GraspExecution::executeTrajectory(string &hand)
             i++;
         }
 
-        if ((reached==false) && (i<=trajectory.size()) && (i>=0) && (pause_movement==false))
+        if ((reached==false) && (i<=2) && (i>=0) && (pause_movement==false))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
 
@@ -489,9 +494,12 @@ bool GraspExecution::executeTrajectory(string &hand)
 
             reached=reachWaypoint(i, hand, mode);
 
+            yDebug()<<"REACHED"<<reached;
+
             if (grasp==true && reached==true)
             {
-                if (((i==trajectory_right.size()-1) && (hand=="right")) || ((i==trajectory_left.size()-1) && (hand=="left")))
+                yDebug()<<"REACHED"<<reached;
+                if (((i==1) && (hand=="right")) || ((i==1) && (hand=="left")))
                     reached=graspObject(hand);
 
                 //Commenta dopo
@@ -544,7 +552,7 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         {
             yDebug()<<"[GraspExecution]: opening hand ... ";
             //handContr_right.openHand(true, true);
-            releaseObject(hand);
+            //releaseObject(hand);
         }
 
         Bottle cmd, reply;
@@ -567,13 +575,13 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
 
         reachRightPort.write(cmd, reply);
 
-        if (reply.get(0).asString()=="ask")
+        if (reply.get(0).asString()=="ack")
             yInfo()<<"Motion started";
         else
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<5.0)
+        while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("done");
@@ -601,7 +609,7 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         if (i==0)
         {
             yDebug()<<"[GraspExecution]: opening hand ... ";
-            releaseObject(hand);
+            //releaseObject(hand);
             //handContr_left.openHand(true, true);
         }
 
@@ -689,7 +697,7 @@ bool GraspExecution::goHome(const string &hand)
     if (hand=="right")
     {        
         yDebug()<<"[GraspExecution]: opening hand ... ";
-        releaseObject(hand);
+        //releaseObject(hand);
         //handContr_right.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
         Bottle cmd, reply;
@@ -744,7 +752,7 @@ bool GraspExecution::goHome(const string &hand)
     if (hand=="left")
     {
         yDebug()<<"[GraspExecution]: opening hand ... ";
-        releaseObject(hand);
+        //releaseObject(hand);
         //handContr_left.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
         Bottle cmd, reply;
@@ -820,12 +828,12 @@ void GraspExecution::liftObject(deque<Vector> &traj, int index)
 /*******************************************************************************/
 bool GraspExecution::graspObject(const string &hand)
 {
-    yDebug()<<"[GraspExecution]: Grasping object ..";
+    yDebug()<<"[GraspExecution]: Grasping object with hand .."<<hand;
     bool f;
-    Vector vel(2,30.0);
+    Vector vel(2,50.0);
     if (hand=="right")
     {        
-        ipos_right->setRefSpeed(vel.data());
+        ipos_right->setRefSpeeds(vel.data());
         Vector angles(2);
         angles[0]=angle_paddle;
         angles[1]=angle_thumb;
@@ -833,11 +841,15 @@ bool GraspExecution::graspObject(const string &hand)
     }
     else
     {
-        ipos_left->setRefSpeed(vel.data());
+        ipos_left->setRefSpeeds(vel.data());
         Vector angles(2);
-        angles[0]=angle_paddle;
-        angles[1]=angle_thumb;
+        angles[0]=70.0;
+        angles[1]=50.0;
+        yDebug()<<"angles "<<angles.toString();
         f=ipos_left->positionMove(angles.data());
+        Time::delay(4.0);
+        yDebug()<<"Delay ....";
+        yDebug()<<"f "<<f;
     }
 
     return f;
@@ -851,13 +863,13 @@ bool GraspExecution::releaseObject(const string &hand)
     Vector vel(2,30.0);
     if (hand=="right")
     {
-        ipos_right->setRefSpeed(vel.data());
+        ipos_right->setRefSpeeds(vel.data());
         Vector angles(2, 0.0);
         f=ipos_right->positionMove(angles.data());
     }
     else
     {
-        ipos_left->setRefSpeed(vel.data());
+        ipos_left->setRefSpeeds(vel.data());
         Vector angles(2, 0.0);
         f=ipos_left->positionMove(angles.data());
     }

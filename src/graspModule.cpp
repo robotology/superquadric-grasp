@@ -352,9 +352,9 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
     print_level=rf.check("print_level", Value(0)).asInt();
-    execution_on=(rf.check("execution", Value("off")).asString()=="on");
+    execution_on=(rf.check("execution", Value("on")).asString()=="on");
 
-    execution_on=false;
+    //execution_on=false;
 
     go_on=false;
 
@@ -364,12 +364,15 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::configMovements(ResourceFinder &rf)
 {
-    lift_z=rf.check("lift_z", Value(0.15)).asDouble();
+    lift_z=rf.check("lift_z", Value(0.05)).asDouble();
     torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
 
     readSuperq("shift",shift,3,this->rf);
-    readSuperq("home_right",home_right,7,this->rf);
-    readSuperq("home_left",home_left,7,this->rf);
+    //readSuperq("home_right",home_right,7,this->rf);
+    //readSuperq("home_left",home_left,7,this->rf);
+
+home_right.resize(7,0.0);
+home_left.resize(7,0.0);
 
     movement_par.put("robot",robot);
     movement_par.put("hand",left_or_right);
@@ -627,7 +630,11 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configMovements(rf);
 
+yDebug()<<"DEBUG ";
+
     configGrasp(rf);
+
+yDebug()<<"DEBUG ";
 
     if (execution_on)
     {
@@ -635,6 +642,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
         config=graspExec->configure();
     }
+
+yDebug()<<"DEBUG ";
 
     if (config==false)
         return false;
