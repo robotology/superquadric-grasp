@@ -858,6 +858,8 @@ bool GraspExecution::graspObject(const string &hand)
         angles[1]=angle_thumb;
         yDebug()<<"Angles "<<angles.toString(3,3);
         f=ipos_right->positionMove(angles.data());
+        Time::delay(4.0);
+        yDebug()<<"Delay ....";
     }
     else
     {
