@@ -58,7 +58,6 @@ protected:
 
 public:
 
-    bool pause_movement;
     bool reached;
     bool reached_tot;
 

@@ -255,7 +255,7 @@ bool GraspingModule::grasp_object(const string &entry)
 {
     LockGuard lg(mutex);
 
-    if ((entry=="right") || (entry=="left"))
+    if ((entry=="right") || (entry=="left") && (grasp==true))
     {
         graspExec->graspObject(entry);
 
@@ -270,7 +270,7 @@ bool GraspingModule::open(const string &entry)
 {
     LockGuard lg(mutex);
 
-    if ((entry=="right") || (entry=="left"))
+    if ((entry=="right") || (entry=="left") && (grasp==true))
     {
         graspExec->releaseObject(entry);
 
@@ -278,20 +278,6 @@ bool GraspingModule::open(const string &entry)
     }
 
     return false;
-}
-
-/**********************************************************************/
-bool GraspingModule::pause()
-{
-    graspExec->pause_movement=true;
-    return true;
-}
-
-/**********************************************************************/
-bool GraspingModule::restart()
-{
-    graspExec->pause_movement=false;
-    return true;
 }
 
 /**********************************************************************/
@@ -356,6 +342,14 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 
     //execution_on=false;
 
+    yInfo()<<"[GraspModule] robot: "<<robot;
+    yInfo()<<"[GraspModule] hand: "<<left_or_right;
+    yInfo()<<"[GraspModule] approaching_direction: "<<dir;
+    yInfo()<<"[GraspModule] save_poses: "<<save_poses;
+    yInfo()<<"[GraspModule] visualization: "<<visualization;
+    yInfo()<<"[GraspModule] grasp: "<<grasp;
+    yInfo()<<"[GraspModule] execution_on: "<<execution_on;
+
     go_on=false;
 
     return true;
@@ -365,20 +359,18 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 bool GraspingModule::configMovements(ResourceFinder &rf)
 {
     lift_z=rf.check("lift_z", Value(0.05)).asDouble();
-    torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
 
     readSuperq("shift",shift,3,this->rf);
-    //readSuperq("home_right",home_right,7,this->rf);
-    //readSuperq("home_left",home_left,7,this->rf);
+    readSuperq("home_right",home_right,7,this->rf);
+    readSuperq("home_left",home_left,7,this->rf);
 
-home_right.resize(7,0.0);
-home_left.resize(7,0.0);
+//home_right.resize(7,0.0);
+//home_left.resize(7,0.0);
 
     movement_par.put("robot",robot);
     movement_par.put("hand",left_or_right);
 
     movement_par.put("lift_z", lift_z);
-    movement_par.put("torso_pitch_max", torso_pitch_max);
 
     Bottle planed;
     Bottle &pd=planed.addList();
@@ -402,27 +394,35 @@ home_left.resize(7,0.0);
     executed=true;
     hand_to_move="right";
 
+    yInfo()<<"[GraspExecution] lift_z:     "<<lift_z;
+    yInfo()<<"[GraspExecution] shift:      "<<shift.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right: "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:  "<<home_left.toString(3,3);
+
     return true;
 }
 
 /****************************************************************/
 bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
-    angle_thumb=rf.check("angle_thumb", Value(30.0)).asDouble();
-    angle_paddle=rf.check("angle_paddle", Value(30.0)).asDouble();
+    angle_thumb=rf.check("angle_thumb", Value(50.0)).asDouble();
+    angle_paddle=rf.check("angle_paddle", Value(70.0)).asDouble();
 
     movement_par.put("angle_thumb", angle_thumb);
-    movement_par.put("angle_thumb", angle_paddle);
+    movement_par.put("angle_paddle", angle_paddle);
+
+    yInfo()<<"[GraspExecution] angle_paddle: "<<angle_paddle;
+    yInfo()<<"[GraspExecution] angle_thumb:  "<<angle_thumb;
+
     return true;
 }
 
 /****************************************************************/
 bool GraspingModule::close()
 {
-    delete graspComp;
-
     if (execution_on)
     {
+        delete graspComp;
         graspExec->release();
         delete graspExec;
     }
@@ -500,6 +500,9 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
 
     vis_par.put("look_object",look_object);
     vis_par.put("show_hand", show_hand);
+
+    yInfo()<<"[GrasVisualization]  show_hand:   "<<show_hand;
+    yInfo()<<"[GraspVisualization] look_object: "<<look_object;
 
     return true;
 }
@@ -589,6 +592,17 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
 
+    yInfo()<<"[GraspComputation]  distance_on_x:        "<<distance;
+    yInfo()<<"[GraspComputation]  distance_on_z:        "<<distance1;
+    yInfo()<<"[GraspComputation]  displacement:         "<<displacement.toString(3.3);
+    yInfo()<<"[GraspComputation]  plane:                "<<plane.toString(3,3);
+    yInfo()<<"[GraspComputation]: max_cpu_time          "<<max_cpu_time;
+    yInfo()<<"[GraspComputation]: tol                   "<<tol;
+    yInfo()<<"[GraspComputation]: acceptable_iter       "<<acceptable_iter;
+    yInfo()<<"[GraspComputation]: max_iter              "<<max_iter;
+    yInfo()<<"[GraspComputation]: mu_strategy           "<<mu_strategy;
+    yInfo()<<"[GraspComputation]: nlp_scaling_method    "<<nlp_scaling_method;
+
     return true;
 }
 
@@ -630,11 +644,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configMovements(rf);
 
-yDebug()<<"DEBUG ";
-
     configGrasp(rf);
-
-yDebug()<<"DEBUG ";
 
     if (execution_on)
     {
@@ -642,8 +652,6 @@ yDebug()<<"DEBUG ";
 
         config=graspExec->configure();
     }
-
-yDebug()<<"DEBUG ";
 
     if (config==false)
         return false;

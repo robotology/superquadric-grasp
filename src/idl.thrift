@@ -148,5 +148,19 @@ service superquadricGrasp_IDL
     */
     bool go_home(1: string e)
 
+    /**
+    * Grasp object 
+    *@param e is the selected hand
+    *@return "on" or "off" if e is right or left.
+    */
+    bool grasp_object(1: string e)
+
+    /**
+    * Release object 
+    *@param e is the selected hand
+    *@return "on" or "off" if e is right or left.
+    */
+    bool open(1: string e)
+
 }
     
