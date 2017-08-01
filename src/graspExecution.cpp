@@ -82,7 +82,7 @@ bool GraspExecution::configGrasp()
         Property option;
         option.put("device","remote_controlboard");
         option.put("remote","/cer/right_hand");
-        option.put("local","/controller");
+        option.put("local","/controller/right");
 
         // open the driver
         if (!driver_right.open(option))
@@ -110,7 +110,7 @@ bool GraspExecution::configGrasp()
         Property option;
         option.put("device","remote_controlboard");
         option.put("remote","/cer/left_hand");
-        option.put("local","/controller");
+        option.put("local","/controller/left");
 
         // open the driver
         if (!driver_left.open(option))
@@ -495,7 +495,7 @@ bool GraspExecution::executeTrajectory(string &hand)
 
             Time::delay(2.0);
 
-            if (grasp==true && reached==true)
+            if (grasp==true)
             {
                if (((i==1) && (hand=="right")) || ((i==1) && (hand=="left")))
                     reached=graspObject(hand);
@@ -503,14 +503,16 @@ bool GraspExecution::executeTrajectory(string &hand)
                 //if (((i==trajectory_right.size()+1) && (hand=="right")) || ((i==trajectory_left.size()+1) && (hand=="left")))
                 //    reached=releaseObject(hand);
             }
-        }
 
-        if (reached==true)
-        {
             i++;
         }
 
-        if ((i==3) && (reached==true))
+        //if (reached==true)
+        //{
+       //     i++;
+       // }
+
+        if ((i==3)) // && (reached==true))
             reached_tot=true;
 
         if (reached_tot==true)
@@ -591,15 +593,20 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
                 yInfo()<<"Movement completed";
                 break;
             }
+
+            Time::delay(0.1);
         }
 
         if (done)
         {
-             Vector *pose_reached=stateRightPort.read(false);
-             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
+             Vector *pose_reached=stateRightPort.read(false);             
         }
         else
             yError()<<"Target point not reached!";
+
+Vector *pose_reached=stateRightPort.read(false); 
+
+        yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
 
         if ((done==false) && (i==2))
         {
@@ -648,7 +655,7 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<5.0)
+        while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("done");
@@ -661,15 +668,20 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
                 yInfo()<<"Movement completed";
                 break;
             }
+            
+            Time::delay(0.1);
         }
 
         if (done)
         {
             Vector *pose_reached=stateLeftPort.read(false);
-            yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
+           
         }
         else
             yError()<<"Target point not reached!";
+
+Vector *pose_reached=stateLeftPort.read(false);
+        yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
 
         if ((done==false) && (i==2))
         {
@@ -747,7 +759,7 @@ bool GraspExecution::goHome(const string &hand)
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<5.0)
+        while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("done");
@@ -760,6 +772,8 @@ bool GraspExecution::goHome(const string &hand)
                 yInfo()<<"Movement completed";
                 break;
             }
+
+            Time::delay(0.1);
         }
 
         if (done)
@@ -802,7 +816,7 @@ bool GraspExecution::goHome(const string &hand)
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<5.0)
+        while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("done");
@@ -815,6 +829,8 @@ bool GraspExecution::goHome(const string &hand)
                 yInfo()<<"Movement completed";
                 break;
             }
+
+            Time::delay(0.1);
         }
 
         if (done)
