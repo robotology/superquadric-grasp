@@ -206,7 +206,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     }
     else if (!newOptions.find("angle_paddle").isNull())
     {
-        if ((angp>=0.001) && (angp<=80.0))
+        if ((angp>=0.001) && (angp<=100.0))
         {
             angle_paddle=angp;
         }
@@ -214,9 +214,9 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         {
             angle_paddle=0.001;
         }
-        else if (angp>80.0)
+        else if (angp>100.0)
         {
-            angle_paddle=70.0;
+            angle_paddle=100.0;
         }
     }
 
@@ -228,7 +228,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     }
     else if (!newOptions.find("angle_thumb").isNull())
     {
-        if ((angt>=0.001) && (angt<=80.0))
+        if ((angt>=0.001) && (angt<=100.0))
         {
             angle_thumb=angt;
         }
@@ -236,9 +236,9 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         {
             angle_thumb=0.001;
         }
-        else if (angt>80.0)
+        else if (angt>100.0)
         {
-            angle_thumb=80.0;
+            angle_thumb=100.0;
         }
     }
 
@@ -489,9 +489,11 @@ bool GraspExecution::executeTrajectory(string &hand)
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
 
-            string mode="heave";
+            string mode="no_heave";
 
             reached=reachWaypoint(i, hand, mode);
+
+            Time::delay(2.0);
 
             if (grasp==true && reached==true)
             {
