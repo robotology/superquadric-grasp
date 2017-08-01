@@ -88,7 +88,8 @@ protected:
 
     double lift_z;
     double torso_pitch_max;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector shift_right;
+    yarp::sig::Vector shift_left;
     yarp::sig::Vector home_right;
     yarp::sig::Vector home_left;
     std::string hand_to_move;
