@@ -830,16 +830,18 @@ bool GraspExecution::graspObject(const string &hand)
     {        
         ipos_right->setRefSpeeds(vel.data());
         Vector angles(2);
-        angles[0]=70.0;
-        angles[1]=50.0;
+        angles[0]=angle_paddle;
+        angles[1]=angle_thumb;
+        yDebug()<<"Angles "<<angles.toString(3,3);
         f=ipos_right->positionMove(angles.data());
     }
     else
     {
         ipos_left->setRefSpeeds(vel.data());
         Vector angles(2);
-        angles[0]=70.0;
-        angles[1]=50.0;
+        angles[0]=angle_paddle;
+        angles[1]=angle_thumb;
+        yDebug()<<"Angles "<<angles.toString(3,3);
         f=ipos_left->positionMove(angles.data());
         Time::delay(4.0);
         yDebug()<<"Delay ....";
