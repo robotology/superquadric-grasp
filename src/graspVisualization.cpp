@@ -174,6 +174,10 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {           
             waypoint=trajectory[i];
 
+            waypoint[0]=-0.4;
+            waypoint[1]=-0.2;
+            waypoint[2]=0.15;
+
             Matrix H_tmp=euler2dcm(waypoint.subVector(3,5));
 
             dir_x=H_tmp.subcol(0,0,3);

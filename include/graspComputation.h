@@ -113,6 +113,9 @@ public:
 
     /**********************************************************************/
     void setPar(const std::string &tag, const std::string &value);
+
+    /***********************************************************************/
+    void rotatePose(yarp::sig::Vector &p);
 };
 
 #endif

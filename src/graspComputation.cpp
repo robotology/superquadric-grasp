@@ -485,6 +485,8 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             solR=grasp_nlp->get_result();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
+            yDebug()<<"DEBUG";
+            rotatePose(poseR);
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
         }
@@ -493,6 +495,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             solL=grasp_nlp->get_result();
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
+            rotatePose(poseL);
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
         }
 
@@ -515,6 +518,55 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
                
         return false;
     }
+}
+
+/***********************************************************************/
+void GraspComputation::rotatePose(Vector &p)
+{
+    Matrix H=euler2dcm(p.subVector(3,5));
+
+    yDebug()<<"H "<<H.toString();
+
+    Vector x=H.getCol(0).subVector(0,2);
+    Vector y(3,0.0);
+    Vector z=H.getCol(2).subVector(0,2);
+
+    Vector x1=x+p.subVector(0,2);
+    Vector z1=z+p.subVector(0,2);
+
+    yDebug()<<"x "<<x1.toString();
+    yDebug()<<"y "<<y.toString();
+    yDebug()<<"z "<<z1.toString();
+
+    x1[2]=p[2];
+    z1[2]=p[2];
+
+    y[2]=-1;
+
+    yDebug()<<"x after"<<x1.toString();
+    yDebug()<<"y after"<<y.toString();
+    yDebug()<<"z after"<<z1.toString();
+
+
+
+    x=(x1-p.subVector(0,2));
+    z=(z1-p.subVector(0,2));
+    x/=norm(x);
+    z/=norm(z);
+
+    yDebug()<<"x after"<<x.toString();
+    yDebug()<<"y after"<<y.toString();
+    yDebug()<<"z after"<<z.toString();
+
+    yDebug()<<"cross 1 "<<cross(x,y).toString();
+    yDebug()<<"cross 2 "<<cross(x,z).toString();
+
+    H.setSubcol(x,0,0);
+    H.setSubcol(y,0,1);
+    H.setSubcol(z,0,2);
+
+    p.setSubvector(3,dcm2euler(H));
+
 }
 
 /***********************************************************************/
@@ -625,7 +677,7 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         pose_right_7.setSubvector(0,poseR.subVector(0,2));
         pose_right_7.setSubvector(3,dcm2axis(H));
         
-        yDebug()<<"POSE RIGHT "<<pose_right_7.toString(3,3);
+        //yDebug()<<"POSE RIGHT "<<pose_right_7.toString(3,3);
 
         Bottle &bright1=bottle.addList();
         for (size_t i=0; i<solR.size(); i++)
