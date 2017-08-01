@@ -668,6 +668,18 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         }
         else
             yError()<<"Target point not reached!";
+
+        if ((done==false) && (i==2))
+        {
+            cmd.clear(); reply.clear();
+            cmd.addString("stop");
+            reachLeftPort.write(cmd, reply);
+
+            if (reply.get(0).asString()=="ack")
+            {
+                yInfo()<<"Controller stopped";
+            }
+        }
     }
 
     return done;
