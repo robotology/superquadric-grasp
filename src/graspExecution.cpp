@@ -17,7 +17,8 @@ using namespace yarp::math;
 
 /*******************************************************************************/
 GraspExecution::GraspExecution(Property &_movement_par, const Property &_complete_sol,
-                               bool _grasp):movement_par(_movement_par), complete_sol(_complete_sol), grasp(_grasp)
+                               bool _grasp, Event &_event_mov):movement_par(_movement_par), complete_sol(_complete_sol),
+                               grasp(_grasp), event_mov(_event_mov)
 
 {
 
@@ -520,6 +521,11 @@ bool GraspExecution::executeTrajectory(string &hand)
 
         reached=false;
 
+        if (reached_tot)
+        {
+            event_mov.signal();
+        }
+
         return reached_tot;
     }
     else
@@ -583,6 +589,7 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
+            cmd.addString("get");
             cmd.addString("done");
 
             reachRightPort.write(cmd, reply);
@@ -604,7 +611,8 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         else
             yError()<<"Target point not reached!";
 
-Vector *pose_reached=stateRightPort.read(false); 
+        Vector *pose_reached=stateRightPort.read(false);
+        errorOrientation(o, *pose_reached);
 
         yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
 
@@ -658,6 +666,7 @@ Vector *pose_reached=stateRightPort.read(false);
         while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
+            cmd.addString("get");
             cmd.addString("done");
 
             reachLeftPort.write(cmd, reply);
@@ -680,7 +689,8 @@ Vector *pose_reached=stateRightPort.read(false);
         else
             yError()<<"Target point not reached!";
 
-Vector *pose_reached=stateLeftPort.read(false);
+        Vector *pose_reached=stateLeftPort.read(false);
+        errorOrientation(o, *pose_reached);
         yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
 
         if ((done==false) && (i==2))
@@ -697,6 +707,21 @@ Vector *pose_reached=stateLeftPort.read(false);
     }
 
     return done;
+}
+
+/*******************************************************************************/
+double GraspExecution::errorOrientation(Vector &o1, Vector &o2)
+{
+    yDebug()<<"o1 "<<o1.toString();
+    yDebug()<<"o2 "<<o2.toString();
+    Vector e(3,0.0);
+    Matrix Des=axis2dcm(o1.subVector(3,6));
+    Vector ax=dcm2axis(Des*SE3inv(axis2dcm(o2.subVector(3,6))));
+    e[0]=ax[3]*ax[0];
+    e[1]=ax[3]*ax[1];
+    e[2]=ax[3]*ax[2];
+
+    return norm(e);
 }
 
 /*******************************************************************************/
@@ -762,6 +787,7 @@ bool GraspExecution::goHome(const string &hand)
         while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
+            cmd.addString("get");
             cmd.addString("done");
 
             reachRightPort.write(cmd, reply);
@@ -819,6 +845,7 @@ bool GraspExecution::goHome(const string &hand)
         while (Time::now()-t0<10.0)
         {
             cmd.clear(); reply.clear();
+            cmd.addString("get");
             cmd.addString("done");
 
             reachLeftPort.write(cmd, reply);

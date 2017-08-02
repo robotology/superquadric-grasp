@@ -111,6 +111,8 @@ protected:
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
 
+    yarp::os::Event event_mov;
+
 public:
     /************************************************************************/
     bool attach(yarp::os::RpcServer &source);
@@ -150,6 +152,9 @@ public:
 
     /**********************************************************************/
     bool move(const std::string &entry);
+
+    /**********************************************************************/
+    bool move_and_wait(const std::string &entry);
 
     /************************************************************************/
     bool configBasics(yarp::os::ResourceFinder &rf);

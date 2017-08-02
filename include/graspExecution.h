@@ -58,6 +58,8 @@ protected:
 
 public:
 
+    yarp::os::Event event_mov;
+
     bool reached;
     bool reached_tot;
 
@@ -70,7 +72,7 @@ public:
     yarp::os::BufferedPort<yarp::sig::Vector> stateLeftPort;
 
     /*******************************************************************************/
-    GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol, bool _grasp);
+    GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol, bool _grasp, yarp::os::Event &event_mov);
 
     /*******************************************************************************/
     bool configure();
@@ -119,6 +121,9 @@ public:
 
     /*******************************************************************************/
     bool configVisualServoing();
+
+    /*******************************************************************************/
+    double errorOrientation(yarp::sig::Vector &o1, yarp::sig::Vector &o2);
 };
 
 #endif

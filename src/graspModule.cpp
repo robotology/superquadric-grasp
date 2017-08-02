@@ -251,6 +251,24 @@ bool GraspingModule::move(const string &entry)
 }
 
 /**********************************************************************/
+bool GraspingModule::move_and_wait(const string &entry)
+{
+    LockGuard lg(mutex);
+
+    if ((entry=="right") || (entry=="left"))
+    {
+        hand_to_move=entry;
+        executed=false;
+        event_mov.reset();
+        event_mov.wait();
+
+        return true;
+    }
+
+    return false;
+}
+
+/**********************************************************************/
 bool GraspingModule::grasp_object(const string &entry)
 {
     LockGuard lg(mutex);
@@ -648,7 +666,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     if (execution_on)
     {
-        graspExec= new GraspExecution(movement_par, complete_sol, grasp);
+        event_mov.reset();
+        graspExec= new GraspExecution(movement_par, complete_sol, grasp, event_mov);
 
         config=graspExec->configure();
     }
