@@ -123,7 +123,7 @@ public:
     bool configVisualServoing();
 
     /*******************************************************************************/
-    double errorOrientation(yarp::sig::Vector &o1, yarp::sig::Vector &o2);
+    double errorOrientation(yarp::sig::Vector &o1, yarp::sig::Vector *o2);
 };
 
 #endif

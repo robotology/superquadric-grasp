@@ -162,5 +162,12 @@ service superquadricGrasp_IDL
     */
     bool open(1: string e)
 
+    /**
+    * move and wait 
+    *@param e is the selected hand
+    *@return "true" when finished movement.
+    */
+    bool move_and_wait(1:string e)
+
 }
     

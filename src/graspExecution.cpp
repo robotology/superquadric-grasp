@@ -586,7 +586,7 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<10.0)
+        while (Time::now()-t0<5.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("get");
@@ -611,8 +611,8 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         else
             yError()<<"Target point not reached!";
 
-        Vector *pose_reached=stateRightPort.read(false);
-        errorOrientation(o, *pose_reached);
+        Vector *pose_reached=stateRightPort.read(true);
+        errorOrientation(o, pose_reached);
 
         yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<norm(o-pose_reached->subVector(3,6));
 
@@ -663,7 +663,7 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<10.0)
+        while (Time::now()-t0<5.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("get");
@@ -689,8 +689,8 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
         else
             yError()<<"Target point not reached!";
 
-        Vector *pose_reached=stateLeftPort.read(false);
-        double error_o=errorOrientation(o, *pose_reached);
+        Vector *pose_reached=stateLeftPort.read(true);
+        double error_o=errorOrientation(o, pose_reached);
         yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-pose_reached->subVector(0,2))<<" and in orientation: "<<error_o;
 
         if ((done==false) && (i==2))
@@ -710,13 +710,13 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
 }
 
 /*******************************************************************************/
-double GraspExecution::errorOrientation(Vector &o1, Vector &o2)
+double GraspExecution::errorOrientation(Vector &o1, Vector *o2)
 {
     yDebug()<<"o1 "<<o1.toString();
-    yDebug()<<"o2 "<<o2.toString();
+    yDebug()<<"o2 "<<o2->toString();
     Vector e(3,0.0);
     Matrix Des=axis2dcm(o1);
-    Vector ax=dcm2axis(Des*SE3inv(axis2dcm(o2.subVector(3,6))));
+    Vector ax=dcm2axis(Des*SE3inv(axis2dcm(o2->subVector(3,6))));
     e[0]=ax[3]*ax[0];
     e[1]=ax[3]*ax[1];
     e[2]=ax[3]*ax[2];
@@ -784,7 +784,7 @@ bool GraspExecution::goHome(const string &hand)
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<10.0)
+        while (Time::now()-t0<5.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("get");
@@ -842,7 +842,7 @@ bool GraspExecution::goHome(const string &hand)
             yError()<<"Problems in sending the command";
 
         double t0=Time::now();
-        while (Time::now()-t0<10.0)
+        while (Time::now()-t0<5.0)
         {
             cmd.clear(); reply.clear();
             cmd.addString("get");
