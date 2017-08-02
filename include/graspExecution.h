@@ -34,7 +34,7 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
     std::deque<yarp::sig::Vector> trajectory;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right, home_left;
 
     yarp::os::Mutex mutex;

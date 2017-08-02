@@ -378,7 +378,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 {
     lift_z=rf.check("lift_z", Value(0.05)).asDouble();
 
-    readSuperq("shift",shift,3,this->rf);
+    readSuperq("shift_right",shift_right,3,this->rf);
+    readSuperq("shift_left",shift_left,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
     readSuperq("home_left",home_left,7,this->rf);
 
@@ -392,9 +393,14 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 
     Bottle planed;
     Bottle &pd=planed.addList();
-    pd.addDouble(shift[0]); pd.addDouble(shift[1]);
-    pd.addDouble(shift[2]);
-    movement_par.put("shift",planed.get(0));
+    pd.addDouble(shift_right[0]); pd.addDouble(shift_right[1]);
+    pd.addDouble(shift_right[2]);
+    movement_par.put("shift_right",planed.get(0));
+    Bottle planed2;
+    Bottle &pd2=planed2.addList();
+    pd2.addDouble(shift_left[0]); pd2.addDouble(shift_left[1]);
+    pd2.addDouble(shift_left[2]);
+    movement_par.put("shift_left",planed2.get(0));
     Bottle planeb;
     Bottle &p2=planeb.addList();
     p2.addDouble(home_right[0]); p2.addDouble(home_right[1]);
@@ -412,10 +418,11 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     executed=true;
     hand_to_move="right";
 
-    yInfo()<<"[GraspExecution] lift_z:     "<<lift_z;
-    yInfo()<<"[GraspExecution] shift:      "<<shift.toString(3,3);
-    yInfo()<<"[GraspExecution] home_right: "<<home_right.toString(3,3);
-    yInfo()<<"[GraspExecution] home_left:  "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] lift_z:      "<<lift_z;
+    yInfo()<<"[GraspExecution] shift_right: "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:  "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right:  "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:   "<<home_left.toString(3,3);
 
     return true;
 }

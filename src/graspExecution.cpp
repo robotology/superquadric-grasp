@@ -29,7 +29,8 @@ bool GraspExecution::configure()
 {
     bool config;
 
-    shift.resize(3,0.0);
+    shift_right.resize(3,0.0);
+    shift_left.resize(3,0.0);
 
     i=-1;
 
@@ -243,14 +244,14 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
-    Bottle *sh=newOptions.find("shift").asList();
-    if (newOptions.find("shift").isNull() && (first_time==true))
+    Bottle *sh=newOptions.find("shift_right").asList();
+    if (newOptions.find("shift_right").isNull() && (first_time==true))
     {
-        shift[0]=0.0;
-        shift[1]=0.0;
-        shift[2]=0.0;
+        shift_right[0]=0.0;
+        shift_right[1]=0.0;
+        shift_right[2]=0.0;
     }
-    else if (!newOptions.find("shift").isNull())
+    else if (!newOptions.find("shift_right").isNull())
     {
         Vector tmp(3,0.0);
         tmp[0]=sh->get(0).asDouble();
@@ -259,15 +260,42 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
 
         if (norm(tmp)>0.0)
         {
-            shift=tmp;
+            shift_right=tmp;
         }
         else
         {
-            shift[0]=0.0;
-            shift[1]=0.0;
-            shift[2]=0.0;
+            shift_right[0]=0.0;
+            shift_right[1]=0.0;
+            shift_right[2]=0.0;
         }
     }
+
+    Bottle *sh2=newOptions.find("shift_left").asList();
+    if (newOptions.find("shift_left").isNull() && (first_time==true))
+    {
+        shift_left[0]=0.0;
+        shift_left[1]=0.0;
+        shift_left[2]=0.0;
+    }
+    else if (!newOptions.find("shift_left").isNull())
+    {
+        Vector tmp(3,0.0);
+        tmp[0]=sh2->get(0).asDouble();
+        tmp[1]=sh2->get(1).asDouble();
+        tmp[2]=sh2->get(2).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            shift_left=tmp;
+        }
+        else
+        {
+            shift_left[0]=0.0;
+            shift_left[1]=0.0;
+            shift_left[2]=0.0;
+        }
+    }
+
 
     Bottle *pl=newOptions.find("home_right").asList();
     if (newOptions.find("home_right").isNull() && (first_time==true))
@@ -326,7 +354,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
 
     yDebug()<<"In execution module ....";
     yInfo()<<"[GraspExecution] lift_z:     "<<lift_z;
-    yInfo()<<"[GraspExecution] shift:      "<<shift.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_right:"<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:"<<shift_left.toString(3,3);
     yInfo()<<"[GraspExecution] home_right: "<<home_right.toString(3,3);
     yInfo()<<"[GraspExecution] home_left:  "<<home_left.toString(3,3);
     yInfo()<<"[GraspExecution] angle_paddle: "<<angle_paddle;
@@ -349,9 +378,13 @@ Property GraspExecution::getPosePar()
     advOptions.put("angle_thumb",angle_thumb);
     Bottle s;
     Bottle &pd=s.addList();
-    pd.addDouble(shift[0]); pd.addDouble(shift[1]);
-    pd.addDouble(shift[2]);
-    advOptions.put("shift",s.get(0));
+    pd.addDouble(shift_right[0]); pd.addDouble(shift_right[1]);
+    pd.addDouble(shift_right[2]);
+    advOptions.put("shift_right",s.get(0));
+    Bottle &pd2=s.addList();
+    pd2.addDouble(shift_left[0]); pd2.addDouble(shift_left[1]);
+    pd2.addDouble(shift_left[2]);
+    advOptions.put("shift_left",s.get(0));
 
     Bottle planeb;
     Bottle &p2=planeb.addList();
@@ -396,14 +429,14 @@ void GraspExecution::getPoses(const Property &poses)
             trajectory_right.push_back(tmp);
         }
 
-        if (norm(shift)>0.0)
+        if (norm(shift_right)>0.0)
         {
             for (size_t k=0; k<trajectory_right.size(); k++)
             {
-                yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory_right[k].toString(3,3);
+                yDebug()<<"[GraspExecution]: Waypoint right"<<k<<trajectory_right[k].toString(3,3);
                 
-                trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +shift);
-                yDebug()<<"[GraspExecution]: Shifted waypoint "<<k<<trajectory_right[k].toString(3,3);
+                trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +shift_right);
+                yDebug()<<"[GraspExecution]: Shifted waypoint right"<<k<<trajectory_right[k].toString(3,3);
             }
         }
     }
@@ -424,15 +457,16 @@ void GraspExecution::getPoses(const Property &poses)
             }
             trajectory_left.push_back(tmp);
         }
+        yDebug()<<"shift left "<<shift_left.toString();
 
-
-        if (norm(shift)>0.0)
+        if (norm(shift_left)>0.0)
         {
+            yDebug()<<"shift left "<<shift_left.toString();
             for (size_t k=0; k<trajectory_left.size(); k++)
             {
-                yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory_left[k].toString(3,3);
-                trajectory_left[k].setSubvector(0,trajectory_left[k].subVector(0,2) +shift);
-                yDebug()<<"[GraspExecution]: Shifted waypoint "<<k<<trajectory_left[k].toString(3,3);
+                yDebug()<<"[GraspExecution]: Waypoint left"<<k<<trajectory_left[k].toString(3,3);
+                trajectory_left[k].setSubvector(0,trajectory_left[k].subVector(0,2) +shift_left);
+                yDebug()<<"[GraspExecution]: Shifted waypoint left"<<k<<trajectory_left[k].toString(3,3);
             }
         }
     }
@@ -473,10 +507,10 @@ bool GraspExecution::executeTrajectory(string &hand)
             //trajectory.push_back(home_left);
         }
 
-        yDebug()<<"[GraspExecution]: Complete trajectory ";
+        yDebug()<<"[GraspExecution]: Complete trajectory for selectd hand "<<hand;
         for (size_t k=0; k<trajectory.size(); k++)
         {
-            yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString(3,3);         
+            yDebug()<<"[GraspExecution]: Waypoint to be reached"<<k<<trajectory[k].toString(3,3);
         }
 
         if (i==-1)
