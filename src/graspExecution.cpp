@@ -1043,4 +1043,28 @@ bool GraspExecution::restHand(const string &hand)
     return f;
 }
 
+/*******************************************************************************/
+bool GraspExecution::demoHand(const string &hand)
+{
+    yDebug()<<"[GraspExecution]: Releasing object ..";
+    bool f;
+    Vector vel(2,50.0);
+    if (hand=="right")
+    {
+        ipos_right->setRefSpeeds(vel.data());
+        Vector angles(2, 0.0);
+        angles[1]=70.0;
+        f=ipos_right->positionMove(angles.data());
+    }
+    else
+    {
+        ipos_left->setRefSpeeds(vel.data());
+        Vector angles(2, 0.0);
+        angles[1]=70.0;
+        f=ipos_left->positionMove(angles.data());
+    }
+
+    return f;
+}
+
 

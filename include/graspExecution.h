@@ -130,6 +130,9 @@ public:
 
     /*******************************************************************************/
     bool changeWristHeaveLength(double l, const std::string &hand);
+
+    /*******************************************************************************/
+    bool demoHand(const std::string &hand);
 };
 
 #endif

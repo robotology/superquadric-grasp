@@ -314,6 +314,21 @@ bool GraspingModule::rest(const string &entry)
 }
 
 /**********************************************************************/
+bool GraspingModule::pointing(const string &entry)
+{
+    LockGuard lg(mutex);
+
+    if ((entry=="right") || (entry=="left") && (grasp==true))
+    {
+        graspExec->demoHand(entry);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);

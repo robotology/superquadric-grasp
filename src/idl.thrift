@@ -176,5 +176,12 @@ service superquadricGrasp_IDL
     */
     bool move_and_wait(1:string e)
 
+    /**
+    * pointing hand pose 
+    *@param e is the selected hand
+    *@return "true" when finished movement.
+    */
+    bool pointing(1:string e)
+
 }
     
