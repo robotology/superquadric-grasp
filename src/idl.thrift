@@ -163,6 +163,13 @@ service superquadricGrasp_IDL
     bool open(1: string e)
 
     /**
+    * Put hand in relaxed pose
+    *@param e is the selected hand
+    *@return "on" or "off".
+    */
+    bool rest(1: string e)
+
+    /**
     * move and wait 
     *@param e is the selected hand
     *@return "true" when finished movement.

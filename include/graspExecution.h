@@ -117,6 +117,9 @@ public:
     bool releaseObject(const std::string &hand);
 
     /*******************************************************************************/
+    bool restHand(const std::string &hand);
+
+    /*******************************************************************************/
     bool reachWithVisual(int i, std::string &hand);
 
     /*******************************************************************************/
@@ -124,6 +127,9 @@ public:
 
     /*******************************************************************************/
     double errorOrientation(yarp::sig::Vector &o1, yarp::sig::Vector *o2);
+
+    /*******************************************************************************/
+    bool changeWristHeaveLength(double l, const std::string &hand);
 };
 
 #endif

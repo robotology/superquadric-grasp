@@ -520,6 +520,13 @@ bool GraspExecution::executeTrajectory(string &hand)
             i++;
         }
 
+        if (i==0)
+        {
+            bool heave=changeWristHeaveLength(0.04, hand);
+
+            yDebug()<<"Heave moved "<<heave;
+        }
+
         if ((reached==false) && (i<=2) && (i>=0))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
@@ -547,8 +554,17 @@ bool GraspExecution::executeTrajectory(string &hand)
        //     i++;
        // }
 
+        if (i==2)
+        {
+            bool heave=changeWristHeaveLength(0.02, hand);
+
+            yDebug()<<"Heave moved "<<heave;
+        }
+
         if ((i==3)) // && (reached==true))
+        {            
             reached_tot=true;
+        }
 
         if (reached_tot==true)
             i=-1;
@@ -741,6 +757,34 @@ bool GraspExecution::reachWaypoint(int i, const string &hand, const string &mode
     }
 
     return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::changeWristHeaveLength(double l, const string &hand)
+{
+    if (hand=="right")
+    {
+        Bottle cmd, reply;
+        cmd.addString("set");
+        cmd.addString("lower_arm_heave");
+        cmd.addDouble(l);
+
+        reachRightPort.write(cmd, reply);
+            
+        return reply.get(0).asString()=="ack";        
+    }
+    else if (hand=="left")
+    {
+        Bottle cmd, reply;
+        cmd.addString("set");
+        cmd.addString("lower_arm_heave");
+        cmd.addDouble(l);
+
+        reachLeftPort.write(cmd, reply);
+            
+        return reply.get(0).asString()=="ack";    
+    }
+   
 }
 
 /*******************************************************************************/
@@ -971,6 +1015,28 @@ bool GraspExecution::releaseObject(const string &hand)
     {
         ipos_left->setRefSpeeds(vel.data());
         Vector angles(2, 0.0);
+        f=ipos_left->positionMove(angles.data());
+    }
+
+    return f;
+}
+
+/*******************************************************************************/
+bool GraspExecution::restHand(const string &hand)
+{
+    yDebug()<<"[GraspExecution]: Releasing object ..";
+    bool f;
+    Vector vel(2,50.0);
+    if (hand=="right")
+    {
+        ipos_right->setRefSpeeds(vel.data());
+        Vector angles(2, 30.0);
+        f=ipos_right->positionMove(angles.data());
+    }
+    else
+    {
+        ipos_left->setRefSpeeds(vel.data());
+        Vector angles(2, 30.0);
         f=ipos_left->positionMove(angles.data());
     }
 
