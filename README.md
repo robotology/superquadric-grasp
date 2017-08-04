@@ -18,9 +18,9 @@ The cost function imposes the minimization of the distance between the ellipsoid
 <img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/optimization-problem-specific.png" width=400>
 </p>
 
-More details will be available soon in the following paper:
+More details are in the following paper:
 
-G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadric models", _accepted at IEEE ICRA 2016_, Sngapore.
+G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadric models", _IEEE-RAS International Conference on Robotics and Automation 2017_, pp 1579-1586.
 
 ## Dependencies
 - [YARP](https://github.com/robotology/yarp)
