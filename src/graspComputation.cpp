@@ -492,19 +492,16 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
 
-
-            /****************************/
             Matrix H=euler2dcm(poseR.subVector(3,5));
 
-            //dir_z=H.subcol(0,2,3);
 
             cos_zr=abs(H(2,2));
 
             cout<<endl<<endl;
 
-            yDebug()<<"********************** Cos of z with z root"<<abs(H(2,2));
+            yDebug()<<"Cos of z with z root"<<abs(H(2,2));
 
-            yDebug()<<"********************** Final cost function value"<<final_value_R;
+            yDebug()<<"Final cost function value"<<final_value_R;
 
             cout<<endl<<endl;
         }
@@ -519,14 +516,13 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             /****************************/
             Matrix H=euler2dcm(poseL.subVector(3,5));
 
-            //dir_z=H.subcol(0,2,3);
             cos_zl=abs(H(2,2));
 
             cout<<endl<<endl;
 
-            yDebug()<<"********************** Cos of z with z root"<<abs(H(2,2));
+            yDebug()<<"Cos of z with z root"<<abs(H(2,2));
 
-            yDebug()<<"********************** Final cost function value"<<final_value_L;
+            yDebug()<<"Final cost function value"<<final_value_L;
 
             cout<<endl<<endl;
         }
@@ -757,13 +753,19 @@ void GraspComputation::bestPose()
 
     quality_l=w1*final_value_L + w2*cos_zl;
 
-    yDebug()<<"Quality right "<<quality_r;
-     yDebug()<<"Quality left "<<quality_l;
+    yDebug()<<"Quality right "<<1.0/quality_r;
+    yDebug()<<"Quality left "<<1.0/quality_l;
 
     if (quality_r<=quality_l)
+    {
         yInfo()<<"Best pose for grasping is right pose";
+        best_hand="right";
+    }
     else
+    {
         yInfo()<<"Best pose for grasping is left pose";
+        best_hand="left";
+    }
 
 }
 

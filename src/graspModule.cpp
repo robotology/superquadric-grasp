@@ -119,6 +119,11 @@ string GraspingModule::get_visualization()
         return "off";
 }
 
+string GraspingModule::get_best_hand()
+{
+    return graspComp->best_hand;
+}
+
 /**********************************************************************/
 bool GraspingModule::set_visualization(const string &e)
 {

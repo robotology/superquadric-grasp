@@ -129,6 +129,9 @@ public:
     bool set_visualization(const std::string &e);
 
     /************************************************************************/
+    std::string get_best_hand();
+
+    /************************************************************************/
     yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
 
     /************************************************************************/

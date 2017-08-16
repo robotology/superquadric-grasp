@@ -148,5 +148,10 @@ service superquadricGrasp_IDL
     */
     bool go_home(1: string e)
 
+    /**
+    * Get the name of the best hand for grasping the object
+    *@return right or left
+    */
+    string get_best_hand()
 }
     
