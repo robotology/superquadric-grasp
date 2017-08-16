@@ -305,6 +305,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
     visual_servoing=rf.check("visual_servoing", Value("off")).asString();
+    use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
 
     go_on=false;
@@ -336,6 +337,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("lift_z", lift_z);
     movement_par.put("torso_pitch_max", torso_pitch_max);
     movement_par.put("visual_servoing", visual_servoing);
+    movement_par.put("use_direct_kin", use_direct_kin);
     movement_par.put("pixel_tol", pixel_tol);
 
     Bottle planed;

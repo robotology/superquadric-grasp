@@ -197,7 +197,7 @@ bool GraspExecution::configGrasp()
         handContr_right.set(lib_context, lib_filename);
         handContr_right.set("hand", Value("right"));
         handContr_right.openHand(true, true);
-        handContr_right.set("useRingLittleFingers", Value(five_fingers));        
+        handContr_right.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="left")
     {
@@ -214,7 +214,7 @@ bool GraspExecution::configGrasp()
         handContr_right.set("hand", Value("right"));
         handContr_right.set("useRingLittleFingers", Value(five_fingers));
 
-        handContr_left.set("hand", Value("left"));       
+        handContr_left.set("hand", Value("left"));
         handContr_left.set("useRingLittleFingers", Value(five_fingers));
 
         handContr_right.openHand(true, true);
@@ -310,6 +310,20 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
             visual_serv=true;
         else
             visual_serv=false;
+    }
+
+    string direct_kin=newOptions.find("use_direct_kin").asString();
+
+    if (newOptions.find("use_direct_kin").isNull() && (first_time==true))
+    {
+        use_direct_kin=false;
+    }
+    else if (!newOptions.find("use_direct_kin").isNull())
+    {
+        if (direct_kin=="on")
+            use_direct_kin=true;
+        else
+            use_direct_kin=false;
     }
 
     double ttime=newOptions.find("traj_time").asDouble();
@@ -538,6 +552,10 @@ Property GraspExecution::getPosePar()
         advOptions.put("visual_servoing","on");
     else
         advOptions.put("visual_servoing","off");
+    if (use_direct_kin)
+        advOptions.put("use_direct_kin","on");
+    else
+        advOptions.put("use_direct_kin","off");
     advOptions.put("traj_time",traj_time);
     advOptions.put("pixel_tol",pixel_tol);
     advOptions.put("traj_tol",traj_tol);
@@ -814,10 +832,6 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
     }
 
-    //Vector Dof;
-    //icart_right->getDOF(Dof);
-    //yDebug()<<"Dof used "<<Dof.toString(3,3);
-
     return done;
 }
 
@@ -828,21 +842,19 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     Vector o(4,0.0);
     bool done;
 
-//    vector<Vector> pixels_left, pixels_right;
-
     x=trajectory[i].subVector(0,2);
     if (trajectory[i].size()==6)
         o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
     else
         o=trajectory[i].subVector(3,6);
 
-//    pixels_left=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o, IVisualServoing::CamSel::left);
-//    pixels_right=visual_servoing_right->getPixelPositionGoalFrom3DPose(x,o,IVisualServoing::CamSel::right);
+    visual_servoing_right->initFacilities(use_direct_kin);
 
     visual_servoing_right->goToGoal(x,o);
     done=visual_servoing_right->waitVisualServoingDone();
 
-    yDebug()<<"done"<<done;
+    if (done)
+        visual_servoing_right->stopFacilities();
 
     return done;
 }

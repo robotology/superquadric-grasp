@@ -87,6 +87,7 @@ protected:
     bool save_poses;
     bool also_traj;
     std::string visual_servoing;
+    std::string use_direct_kin;
 
     double pixel_tol;
     double lift_z;
