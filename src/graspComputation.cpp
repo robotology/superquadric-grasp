@@ -375,6 +375,16 @@ void GraspComputation::setTrajectoryPar(const Property &newOptions, bool first_t
             dir="xz";
         }
     }
+
+    string rot=newOptions.find("rotation").asString();
+    if (newOptions.find("rotation").isNull() && (first_time==true))
+    {
+        rotation=rot;
+    }
+    else if (!newOptions.find("rotation").isNull())
+    {
+        rotation="off";
+    }
 }
 
 /***********************************************************************/
@@ -386,6 +396,7 @@ Property GraspComputation::getTrajectoryPar()
     advOptions.put("distance_on_x",distance);
     advOptions.put("distance_on_z",distance1);
     advOptions.put("approaching_direction",dir);
+    advOptions.put("rotation",rotation);
 
     return advOptions;
 }
@@ -598,6 +609,21 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
             pose1.setSubvector(0,pose.subVector(0,2)+distance1*(H.getCol(2).subVector(0,2)));
             pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
         }
+    }
+
+    rotation="off";
+
+    if ((rotation=="on"))
+    {
+        yDebug()<<"Rotation pose ";
+        Vector euler(3,0.0);
+        euler[0]=1.57/2.0;
+        euler[1]=1.57/2.0;
+        euler[2]=-1.57/2.0;
+        Matrix H_rot=euler2dcm(euler);
+        
+        yDebug()<<"H  "<<H_rot.toString();
+        pose1.setSubvector(3, dcm2euler(H_rot*H));
     }
 
     if (chosen_hand=="right")

@@ -168,7 +168,7 @@ bool GraspExecution::configVisualServoing()
     prop_server_vs.put("device","visualservoingclient");
     prop_server_vs.put("verbosity",true);
     prop_server_vs.put("local","/VisualServoingClientTest");
-    prop_server_vs.put("remote", "/visual-servoing");
+    prop_server_vs.put("remote", "/visualservoing");
 
     drv_server_vs.open(prop_server_vs);
     if (!drv_server_vs.isValid())
@@ -853,8 +853,7 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     visual_servoing_right->goToGoal(x,o);
     done=visual_servoing_right->waitVisualServoingDone();
 
-    if (done)
-        visual_servoing_right->stopFacilities();
+    visual_servoing_right->stopFacilities();
 
     return done;
 }

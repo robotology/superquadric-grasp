@@ -509,6 +509,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     distance=rf.check("distance_on_x", Value(0.13)).asDouble();
     distance1=rf.check("distance_on_z", Value(0.05)).asDouble();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
+    rotation=rf.check("rotation", Value("on")).asString();
 
     object.resize(11,0.0);
 
@@ -581,6 +582,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     traj_par.put("distance_on_x",distance);
     traj_par.put("distance_on_z",distance1);
     traj_par.put("approaching_direction",dir);
+    traj_par.put("rotation",rotation);
 
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);

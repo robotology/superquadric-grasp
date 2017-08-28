@@ -354,8 +354,12 @@ void GraspVisualization::run()
 
     showTrajectory(left_or_right);
 
+    Vector shift_rot(3,0.0);
+    shift_rot[1]=0.1;
+
     if ((norm(object)>0.0) && (look_object==true))
         igaze->lookAtFixationPoint(object.subVector(5,7));
+        //igaze->lookAtFixationPoint(object.subVector(5,7) + shift_rot);
 
     t_vis=Time::now()-t0;
 }

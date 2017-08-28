@@ -65,6 +65,7 @@ public:
     const yarp::sig::Vector &object;
     int count_file_old;
     int count_file;
+    std::string rotation;
     std::string best_hand;
     double final_value_R, final_value_L, cos_zr, cos_zl;
 
