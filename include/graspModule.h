@@ -93,7 +93,7 @@ protected:
     double lift_z;
     double torso_pitch_max;
     double traj_time, traj_tol;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right;
     yarp::sig::Vector home_left;
     std::string hand_to_move;
@@ -101,7 +101,7 @@ protected:
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
 
-    std::string lib_context, lib_filename;
+    std::string lib_context, lib_filename_right, lib_filename_left;
 
     yarp::os::Mutex mutex;
 

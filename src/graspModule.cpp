@@ -328,7 +328,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
     fing=rf.check("five_fingers", Value("off")).asString();
 
-    readSuperq("shift",shift,3,this->rf);
+    readSuperq("shift_right",shift_right,3,this->rf);
+    readSuperq("shift_left",shift_left,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
     readSuperq("home_left",home_left,7,this->rf);
 
@@ -347,9 +348,14 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 
     Bottle planed;
     Bottle &pd=planed.addList();
-    pd.addDouble(shift[0]); pd.addDouble(shift[1]);
-    pd.addDouble(shift[2]);
-    movement_par.put("shift",planed.get(0));
+    pd.addDouble(shift_right[0]); pd.addDouble(shift_right[1]);
+    pd.addDouble(shift_right[2]);
+    movement_par.put("shift_right",planed.get(0));
+    Bottle planed2;
+    Bottle &pd2=planed2.addList();
+    pd2.addDouble(shift_left[0]); pd2.addDouble(shift_left[1]);
+    pd2.addDouble(shift_left[2]);
+    movement_par.put("shift_left",planed2.get(0));
     Bottle planeb;
     Bottle &p2=planeb.addList();
     p2.addDouble(home_right[0]); p2.addDouble(home_right[1]);
@@ -367,6 +373,12 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     executed=true;
     hand_to_move="right";
 
+    yInfo()<<"[GraspExecution] lift_z:      "<<lift_z;
+    yInfo()<<"[GraspExecution] shift_right: "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:  "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right:  "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:   "<<home_left.toString(3,3);
+
     return true;
 }
 
@@ -374,7 +386,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
     lib_context=rf.check("lib_context", Value("superquadric-grasp")).asString();
-    lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
+    lib_filename_right=rf.check("lib_filename", Value("confTactileControlLib_right")).asString();
+    lib_filename_left=rf.check("lib_filename", Value("confTactileControlLib_left")).asString();
 
     return true;
 }
@@ -630,7 +643,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configGrasp(rf);
 
-    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
+    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename_right, lib_filename_left);
 
     config=graspExec->configure();
 
