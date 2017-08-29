@@ -19,9 +19,9 @@ using namespace tactileControl;
 
 /*******************************************************************************/
 GraspExecution::GraspExecution(Property &_movement_par, const Property &_complete_sol,
-                               bool _grasp, string _lib_context, string _lib_filename_right, string _lib_filename_left):
+                               bool _grasp, string _lib_context, string _lib_filename):
                                 movement_par(_movement_par), complete_sol(_complete_sol),
-                                grasp(_grasp), lib_context(_lib_context), lib_filename_right(_lib_filename_right), lib_filename_left(_lib_filename_left)
+                                grasp(_grasp), lib_context(_lib_context), lib_filename(_lib_filename)
 
 {
 
@@ -195,22 +195,22 @@ bool GraspExecution::configGrasp()
 {
     if (left_or_right=="right")
     {
-        handContr_right.set(lib_context, lib_filename_right);
+        handContr_right.set(lib_context, lib_filename);
         handContr_right.set("hand", Value("right"));
         handContr_right.openHand(true, true);
         handContr_right.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="left")
     {
-        handContr_left.set(lib_context, lib_filename_left);
+        handContr_left.set(lib_context, lib_filename);
         handContr_left.set("hand", Value("left"));
         handContr_left.openHand(true, true);
         handContr_left.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="both")
     {
-        handContr_right.set(lib_context, lib_filename_right);
-        handContr_left.set(lib_context, lib_filename_left);
+        handContr_right.set(lib_context, lib_filename);
+        handContr_left.set(lib_context, lib_filename);
 
         handContr_right.set("hand", Value("right"));
         handContr_right.set("useRingLittleFingers", Value(five_fingers));

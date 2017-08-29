@@ -101,7 +101,7 @@ protected:
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
 
-    std::string lib_context, lib_filename_right, lib_filename_left;
+    std::string lib_context, lib_filename;
 
     yarp::os::Mutex mutex;
 

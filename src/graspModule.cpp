@@ -386,8 +386,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
 bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
     lib_context=rf.check("lib_context", Value("superquadric-grasp")).asString();
-    lib_filename_right=rf.check("lib_filename", Value("confTactileControlLib_right")).asString();
-    lib_filename_left=rf.check("lib_filename", Value("confTactileControlLib_left")).asString();
+    lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
+    lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
 
     return true;
 }
@@ -534,6 +534,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     }
 
     readSuperq("displacement",displacement,3,this->rf);
+    yDebug()<<"displacement "<<displacement.toString();
     readSuperq("plane",plane,4,this->rf);
 
     if (plane.size()==0 && displacement.size()==0)
@@ -643,7 +644,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     configGrasp(rf);
 
-    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename_right, lib_filename_left);
+    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
 
     config=graspExec->configure();
 

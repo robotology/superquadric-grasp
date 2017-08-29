@@ -252,16 +252,8 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         tmp[1]=disp->get(1).asDouble();
         tmp[2]=disp->get(2).asDouble();
 
-        if (norm(tmp)>0.0)
-        {
-            displacement=tmp;
-        }
-        else
-        {
-            displacement[0]=0.05;
-            displacement[1]=0.0;
-            displacement[2]=0.0;
-        }
+        displacement=tmp;
+
     }
     Bottle *pl=newOptions.find("plane").asList();
 

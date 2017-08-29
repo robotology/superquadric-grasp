@@ -72,7 +72,7 @@ public:
     yarp::dev::IVisualServoing *visual_servoing_right;
 
     std::string lib_context;
-    std::string lib_filename_right, lib_filename_left;
+    std::string lib_filename;
 
     const yarp::os::Property &complete_sol;
     yarp::os::Property movement_par;
@@ -83,7 +83,7 @@ public:
 
     /*******************************************************************************/
     GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol,
-                   bool _grasp, std::string _lib_context, std::string _lib_filename_right, std::string _lib_filename_left);
+                   bool _grasp, std::string _lib_context, std::string _lib_filename);
 
     /*******************************************************************************/
     bool configure();
