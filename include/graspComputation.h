@@ -69,11 +69,13 @@ public:
     std::string best_hand;
     double final_value_R, final_value_L, cos_zr, cos_zl;
 
+    double &quality_right, &quality_left;
+
     /*******************************************************************************/
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
-                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
+                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, double &_quality_right, double &_quality_left);
 
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);

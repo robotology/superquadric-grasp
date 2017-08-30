@@ -19,10 +19,10 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object):
+                                   Property &_complete_sol, const Vector &_object, double &_quality_right, double &_quality_left):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf),
-                                   complete_sol(_complete_sol), object(_object)
+                                   complete_sol(_complete_sol), object(_object), quality_right(_quality_right), quality_left(_quality_left)
 
 {
 
@@ -751,8 +751,8 @@ void GraspComputation::setPar(const string &par_name, const string &value)
 /***********************************************************************/
 void GraspComputation::bestPose()
 {
-    double quality_r=0.0;
-    double quality_l=0.0;
+    double q_r=0.0;
+    double q_l=0.0;
 
     double w1, w2;
 
@@ -767,14 +767,18 @@ void GraspComputation::bestPose()
         w2=2.5;
     }
 
-    quality_r=w1*final_value_R + w2*cos_zr;
+    quality_right=w1*final_value_R + w2*cos_zr;
 
-    quality_l=w1*final_value_L + w2*cos_zl;
+    quality_left=w1*final_value_L + w2*cos_zl;
+    
+    quality_right=1.0/quality_right;
 
-    yDebug()<<"Quality right "<<1.0/quality_r;
-    yDebug()<<"Quality left "<<1.0/quality_l;
+    quality_left=1.0/quality_left;
 
-    if (quality_r<=quality_l)
+    yDebug()<<"Quality right "<<quality_right;
+    yDebug()<<"Quality left "<<quality_left;
+
+    if (quality_right<=quality_left)
     {
         yInfo()<<"Best pose for grasping is right pose";
         best_hand="right";

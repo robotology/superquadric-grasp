@@ -120,6 +120,8 @@ protected:
 
     std::string rotation;
 
+    double quality_right, quality_left;
+
 public:
     /************************************************************************/
     bool attach(yarp::os::RpcServer &source);

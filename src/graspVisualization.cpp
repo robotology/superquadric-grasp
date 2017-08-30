@@ -28,9 +28,9 @@ using namespace yarp::math;
 
 /***********************************************************************/
 GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
-                                       const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par):
+                                       const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right, double &_quality_left):
                                        RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
-                                       object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par)
+                                       object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right(_quality_right), quality_left(_quality_left)
 {
 
 }
@@ -207,6 +207,38 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
             else
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+
+            stringstream q_r, q_l;
+            q_r<<round( quality_right * 100.0 ) / 100.0;
+            q_l<<round( quality_left * 100.0 ) / 100.0;
+
+            stringstream right, left;
+            right<<"quality right";
+            left<<"quality left";
+
+            int thickness=2.0;
+            int font=0;
+            double fontScale=0.5;
+
+            cv::Scalar red(230,0,0);
+            cv::Scalar blue(0,240,0);
+
+            if (quality_right>quality_left)
+            {
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, blue, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, red, thickness);
+                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, blue, thickness);
+                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, red, thickness);
+
+            }
+            else if (quality_right<quality_left)
+            {
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, red, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, blue, thickness);
+                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, red, thickness);
+                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, blue, thickness);
+
+            }
         }
     }
 

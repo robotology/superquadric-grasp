@@ -614,7 +614,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object, quality_right, quality_left);
 
     graspComp->init();
 
@@ -623,7 +623,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object, hand, hand1, vis_par);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object, hand, hand1, vis_par, quality_right, quality_left);
 
     if (visualization)
     {
