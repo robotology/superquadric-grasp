@@ -395,13 +395,13 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     }
     else if (!newOptions.find("pixel_tol").isNull())
     {
-        if ((ptol>=5.0) && (ptol<=20.0))
+        if ((ptol>=1.0) && (ptol<=20.0))
         {
             pixel_tol=ptol;
         }
-        else if (ptol<5.0)
+        else if (ptol<1.0)
         {
-            pixel_tol=5.0;
+            pixel_tol=1.0;
         }
         else if (ptol>20.0)
         {
