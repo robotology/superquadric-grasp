@@ -223,7 +223,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             cv::Scalar red(230,0,0);
             cv::Scalar blue(0,240,0);
 
-            if (quality_right<quality_left)
+            if (quality_right>quality_left)
             {
                 cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, blue, thickness);
                 cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, red, thickness);
@@ -231,7 +231,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, red, thickness);
 
             }
-            else if (quality_right>quality_left)
+            else if (quality_right<quality_left)
             {
                 cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, red, thickness);
                 cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, blue, thickness);

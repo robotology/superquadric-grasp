@@ -771,14 +771,14 @@ void GraspComputation::bestPose()
 
     quality_left=w1*final_value_L + w2*cos_zl;
     
-    //quality_right=1.0/quality_right;
+    quality_right=1.0/quality_right;
 
-    //quality_left=1.0/quality_left;
+    quality_left=1.0/quality_left;
 
     yDebug()<<"Quality right "<<quality_right;
     yDebug()<<"Quality left "<<quality_left;
 
-    if (quality_right<=quality_left)
+    if (quality_right>=quality_left)
     {
         yInfo()<<"Best pose for grasping is right pose";
         best_hand="right";
