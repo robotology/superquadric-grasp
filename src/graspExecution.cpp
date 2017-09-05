@@ -960,6 +960,9 @@ bool GraspExecution::goHome(const string &hand)
     bool done;
     int context_tmp;
 
+    if (visual_serv)
+        visual_servoing_right->stopFacilities();
+
     if (hand=="right")
     {
         yDebug()<<"[GraspExecution]: opening hand ... ";
