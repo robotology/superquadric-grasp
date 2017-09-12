@@ -72,7 +72,6 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoi
 
     for(int i=0; i<(int)sqrt(n_handpoints); i++)
     {
-        //for (double theta=-M_PI/2; theta<0; theta+=M_PI/(2*(int)sqrt(n_handpoints)))
         for (double theta=-M_PI/2; theta<=0; theta+=M_PI/((int)sqrt(n_handpoints)))
         {
             points_on.push_back(computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta));
@@ -129,9 +128,6 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     //else if (findMax(object.subVector(0,2))<findMax(hand.subVector(0,2)))
     //    hand[1]=findMax(object.subVector(0,2));  
 
-    //Shape adaptation
-    //hand[3]=object[3];
-    //hand[4]=object[4];
 
     if (str_hand=="right")
     {
@@ -732,10 +728,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
     }
 
-cout<<" Point in solution"<<endl;
-
     tmp_value=0.0;
-    /*********************/
+
     for(size_t i=0;i<points_on.size();i++)
     {
         Vector point(3,0.0);
@@ -756,15 +750,10 @@ cout<<" Point in solution"<<endl;
 
         point_tr=H_x*point_tmp;
 
-        cout<<point_tr.subVector(0,2).toString()<<endl;
-
         tmp_value+= pow( pow(f(object,x,points_on[i]),object[3])-1,2 );
     }
 
     tmp_value/=points_on.size();
-
-    yDebug()<<"****************************** value of loss function with final pose ******************************"<< tmp_value;
-    /*********************/
 }
 
 /****************************************************************/

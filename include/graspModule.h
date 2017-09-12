@@ -118,8 +118,6 @@ protected:
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
 
-    std::string rotation;
-
     double quality_right, quality_left;
 
 public:

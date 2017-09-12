@@ -367,16 +367,6 @@ void GraspComputation::setTrajectoryPar(const Property &newOptions, bool first_t
             dir="xz";
         }
     }
-
-    string rot=newOptions.find("rotation").asString();
-    if (newOptions.find("rotation").isNull() && (first_time==true))
-    {
-        rotation=rot;
-    }
-    else if (!newOptions.find("rotation").isNull())
-    {
-        rotation="off";
-    }
 }
 
 /***********************************************************************/
@@ -388,7 +378,6 @@ Property GraspComputation::getTrajectoryPar()
     advOptions.put("distance_on_x",distance);
     advOptions.put("distance_on_z",distance1);
     advOptions.put("approaching_direction",dir);
-    advOptions.put("rotation",rotation);
 
     return advOptions;
 }
@@ -492,21 +481,16 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             final_value_R=grasp_nlp->get_final_F();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
+
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
 
             Matrix H=euler2dcm(poseR.subVector(3,5));
-
-
             cos_zr=abs(H(2,2));
 
-            cout<<endl<<endl;
+            yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
 
-            yDebug()<<"Cos of z with z root"<<abs(H(2,2));
-
-            yDebug()<<"Final cost function value"<<final_value_R;
-
-            cout<<endl<<endl;
+            yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_R;
         }
         else
         {
@@ -518,16 +502,11 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 
             /****************************/
             Matrix H=euler2dcm(poseL.subVector(3,5));
-
             cos_zl=abs(H(2,2));
 
-            cout<<endl<<endl;
+            yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
 
-            yDebug()<<"Cos of z with z root"<<abs(H(2,2));
-
-            yDebug()<<"Final cost function value"<<final_value_L;
-
-            cout<<endl<<endl;
+            yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_L;
         }
 
         return true;
@@ -601,21 +580,6 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
             pose1.setSubvector(0,pose.subVector(0,2)+distance1*(H.getCol(2).subVector(0,2)));
             pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
         }
-    }
-
-    rotation="off";
-
-    if ((rotation=="on"))
-    {
-        yDebug()<<"Rotation pose ";
-        Vector euler(3,0.0);
-        euler[0]=1.57/2.0;
-        euler[1]=1.57/2.0;
-        euler[2]=-1.57/2.0;
-        Matrix H_rot=euler2dcm(euler);
-        
-        yDebug()<<"H  "<<H_rot.toString();
-        pose1.setSubvector(3, dcm2euler(H_rot*H));
     }
 
     if (chosen_hand=="right")
@@ -775,19 +739,18 @@ void GraspComputation::bestPose()
 
     quality_left=1.0/quality_left;
 
-    yDebug()<<"Quality right "<<quality_right;
-    yDebug()<<"Quality left "<<quality_left;
+    yInfo()<<"[GraspComputation]: quality right "<<quality_right;
+    yInfo()<<"[GraspComputation]: quality left "<<quality_left;
 
     if (quality_right>=quality_left)
     {
-        yInfo()<<"Best pose for grasping is right pose";
+        yInfo()<<"Best pose for grasping is right hand";
         best_hand="right";
     }
     else
     {
-        yInfo()<<"Best pose for grasping is left pose";
+        yInfo()<<"Best pose for grasping is left hand";
         best_hand="left";
     }
-
 }
 

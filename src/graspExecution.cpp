@@ -928,13 +928,13 @@ bool GraspExecution::release()
 
     if (left_or_right=="both" || left_or_right=="right")
     {
-        robotDevice_right.close();
         icart_right->restoreContext(context_right);
+        robotDevice_right.close();        
     }
     if (left_or_right=="both" || left_or_right=="left")
     {
-        robotDevice_left.close();
         icart_left->restoreContext(context_left);
+        robotDevice_left.close();
     }
 
     if (visual_serv==true)

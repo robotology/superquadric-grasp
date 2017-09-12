@@ -388,7 +388,6 @@ bool GraspingModule::configGrasp(ResourceFinder &rf)
 {
     lib_context=rf.check("lib_context", Value("superquadric-grasp")).asString();
     lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
-    lib_filename=rf.check("lib_filename", Value("confTactileControlLib")).asString();
 
     return true;
 }
@@ -401,7 +400,9 @@ bool GraspingModule::close()
     graspExec->release();
     delete graspExec;
 
-    graspVis->stop();
+    if (visualization)
+        graspVis->stop();
+
     delete graspVis;
 
     if (portRpc.asPort().isOpen())
@@ -523,7 +524,6 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     distance=rf.check("distance_on_x", Value(0.13)).asDouble();
     distance1=rf.check("distance_on_z", Value(0.05)).asDouble();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
-    rotation=rf.check("rotation", Value("on")).asString();
 
     object.resize(11,0.0);
 
@@ -597,7 +597,6 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     traj_par.put("distance_on_x",distance);
     traj_par.put("distance_on_z",distance1);
     traj_par.put("approaching_direction",dir);
-    traj_par.put("rotation",rotation);
 
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
@@ -649,6 +648,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=graspExec->configure();
 
+
     if (config==false)
         return false;
 
@@ -658,6 +658,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
 {
+    x.resize(dimension, 0.0);
+
     if (Bottle *b=rf->find(name_obj.c_str()).asList())
     {
         if (b->size()>=dimension)
