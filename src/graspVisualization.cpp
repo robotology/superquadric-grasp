@@ -94,6 +94,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {
             hand_in_poseL.setSubvector(0,hand1);
             hand_in_poseL.setSubvector(5,solL);
+
             if (show_hand)               
                 addSuperq(hand_in_poseL,imgOut,0);
 
@@ -206,40 +207,40 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 count++;
             }
             else
-                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));            
+        }
 
-            stringstream q_r, q_l;
-            q_r<<round( quality_right * 100.0 ) / 100.0;
-            q_l<<round( quality_left * 100.0 ) / 100.0;
+        stringstream q_r, q_l;
+        q_r<<round( quality_right * 100.0 ) / 100.0;
+        q_l<<round( quality_left * 100.0 ) / 100.0;
 
-            stringstream right, left;
-            right<<"quality right";
-            left<<"quality left";
+        stringstream right, left;
+        right<<"quality right";
+        left<<"quality left";
 
-            int thickness=2.0;
-            int font=cv::FONT_HERSHEY_SIMPLEX;
-            double fontScale=0.5;
+        int thickness=2.0;
+        int font=cv::FONT_HERSHEY_SIMPLEX;
+        double fontScale=0.5;
 
-            cv::Scalar red(230,0,0);
-            cv::Scalar blue(0,240,0);
+        cv::Scalar red(230,0,0);
+        cv::Scalar blue(0,240,0);
 
-            cv::Scalar iol_green(22,118,238);
-            cv::Scalar iol_red(244,36, 96);
+        cv::Scalar iol_green(22,88,248);
+        cv::Scalar iol_red(244,16, 46);
 
-            if (quality_right>quality_left)
-            {
-                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
-                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
-                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
-                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
-            }
-            else if (quality_right<quality_left)
-            {
-                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
-                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
-                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
-                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
-            }
+        if (quality_right>quality_left)
+        {
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
+        }
+        else if (quality_right<quality_left)
+        {
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
         }
     }
 

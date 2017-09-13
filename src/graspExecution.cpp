@@ -491,8 +491,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     Bottle *pl=newOptions.find("home_right").asList();
     if (newOptions.find("home_right").isNull() && (first_time==true))
     {
-        home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
-        home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
+        home_right[0]=-0.30; home_right[1]=0.21; home_right[2]=0.15;
+        home_right[3]=0.113261; home_right[4]=-0.954747; home_right[5]=0.275008; home_right[6]=2.868312;
     }
     else if (!newOptions.find("home_right").isNull())
     {
@@ -511,16 +511,16 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
-            home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
+            home_right[0]=-0.30; home_right[1]=0.21; home_right[2]=0.15;
+            home_right[3]=0.113261; home_right[4]=-0.954747; home_right[5]=0.275008; home_right[6]=2.868312;
         }
     }
 
     Bottle *pll=newOptions.find("home_left").asList();
     if (newOptions.find("home_left").isNull() && (first_time==true))
     {
-        home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
-        home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
+        home_left[0]=-0.30; home_left[1]=-0.21; home_left[2]=0.15;
+        home_left[3]=0.13631; home_left[4]=-0.30149; home_left[5]=0.943675; home_left[6]=2.865295;
     }
     else if (!newOptions.find("home_left").isNull())
     {
@@ -538,8 +538,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
-            home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
+            home_left[0]=-0.30; home_left[1]=-0.21; home_left[2]=0.15;
+            home_left[3]=0.13631; home_left[4]=-0.30149; home_left[5]=0.943675; home_left[6]=2.865295;
         }
     }
 
