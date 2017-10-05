@@ -72,11 +72,23 @@ The execution time for pose computation is nealy 2.0 s. Hereafter, you can find 
 ## Documentation
 Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
 
+## Going beyod
+The method and the code we developed has been tested on the iCub humanoid robot in case one object is in the robot field of view. However, this approach can be extended to other robotic hands and to work with multiple objects scenario.
+#### Porting the approach to other robots
+Our grasping approach is based on modeling the volume graspable by the robot hand instead of using a detailed representation of the hand itself. For this reason, our method can be ported to other robots, just **changing the dimensions and the shape  of the superquadric modeling the volume graspable by the hand**. At this regard, we already managed to performed autonomous grasps with our approach with the R1 robot [1].
+
+#### Dealing with multiple objects
+If more than one objects are in the robot field of view, the `superquadric-model` approach is able to compute the superquadric of the desired object as long as the objects can be properly segmented by [lbpExtract module](https://github.com/robotology/segmentation), i.e. if their images are not adjacient in the image.
+The `superquadric-grasp` works in a multiple objects scenario if the objects do not hinder the arm momevements during the approaching phase.
+
+[1] A. Parmiggiani, L. Fiorio, A. Scalzo, A. V. Sureshbabu, Ma. Randazzo, M. Maggiali, U. Pattacini, H. Lehmann, V. Tikhanoff, D. Domenichelli, A. Cardellino, P. Congiu, R. Cingolani, L. Natale, G. Metta, "The Design and Validation of the R1 Personal Humanoid," _2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2017), Vancouver, Canada_, 2017.
+
 ## License
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_
 and is released under the terms of the GPL v2.0 or later. See the file LICENSE for details.
 
 [![DOI](https://zenodo.org/badge/54572419.svg)](https://zenodo.org/badge/latestdoi/54572419)
+
 
 
 
