@@ -252,58 +252,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
  /****************************************************************/
- int grasping_NLP::bigComponent()
- {
-     Vector obj_rot(3,0.0);
-     Vector aux(4,0.0);
-     Vector aux2(4,0.0);
-
-     aux2[0]=object[0];
-     aux2[3]=1;
-     aux=H_o2w*aux2;
-     obj_rot[0]=norm(aux.subVector(0,2)-object.subVector(5,7));
-
-     aux2[0]=0;
-     aux2[1]=object[1];
-     aux2[3]=1;
-     aux=H_o2w*aux2;
-     obj_rot[1]=norm(aux.subVector(0,2)-object.subVector(5,7));
-
-     aux2[1]=0;
-     aux2[2]=object[2];
-     aux2[3]=1;
-     aux=H_o2w*aux2;
-     obj_rot[2]=norm(aux.subVector(0,2)-object.subVector(5,7));
-
-     int j;
-     Vector prod(3,0.0);
-     Vector x,y,z;
-     x.resize(3,0.0);
-     y.resize(3,0.0);
-     z.resize(3,0.0);
-     x=H_o2w.getCol(0).subVector(0,2);
-     y=H_o2w.getCol(1).subVector(0,2);
-     z=H_o2w.getCol(2).subVector(0,2);
-
-     aux.resize(3,0.0);
-     aux[0]=1;
-     prod[0]=abs(x[0]*aux[0]+x[1]*aux[1]+x[2]*aux[2]);
-     aux[0]=0; aux[1]=1;
-     prod[1]=abs(y[0]*aux[0]+y[1]*aux[1]+y[2]*aux[2]);
-     aux[1]=0; aux[2]=1;
-     prod[2]=abs(z[0]*aux[0]+z[1]*aux[1]+z[2]*aux[2]);
-
-     for(size_t i=0; i<3; i++)
-     {
-         if(findMax(prod)==prod[i])
-         if (findMax(obj_rot)==obj_rot[i])
-            j=i;
-     }
-
-     return j;
- }
-
- /****************************************************************/
  double grasping_NLP::F(const Ipopt::Number *x, deque<Vector> &points_on, bool new_x)
  {
      double value=0.0;

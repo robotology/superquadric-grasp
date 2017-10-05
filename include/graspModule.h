@@ -37,10 +37,12 @@ protected:
 
     yarp::os::ResourceFinder *rf;
 
+    // Strings for setting the experiment scenario
     std::string robot;
     std::string left_or_right;
     std::string homeContextPath;
 
+    // Pose and trajectory computed for the arms
     yarp::sig::Vector poseL, solL;
     yarp::sig::Vector poseR, solR;
     std::deque<yarp::sig::Vector> trajectory_right;
@@ -51,6 +53,7 @@ protected:
     double t,t0, t_grasp, t_vis;
     std::deque<double> times_vis;
 
+    // Optimization parameters
     double tol;
     int max_iter;
     int n_pointshand;
@@ -60,6 +63,7 @@ protected:
     std::string nlp_scaling_method;
     double max_cpu_time;
     
+    // Geometric parameters for pose computation
     std::string dir;
     yarp::sig::Vector object;
     yarp::sig::Vector hand, hand1;
@@ -69,11 +73,13 @@ protected:
 
     yarp::os::RpcServer portRpc;
 
+    // Gaze parameters
     std::string eye;
     yarp::sig::Matrix K,H;
     yarp::dev::PolyDriver GazeCtrl;
     yarp::dev::IGazeControl *igaze;
 
+    // Variables for state machine and enabling/disabling options
     bool go_on;
     bool grasp;
     bool executed;
@@ -92,6 +98,7 @@ protected:
     yarp::sig::Vector home_left;
     std::string hand_to_move;
 
+    // Information for saving results
     std::string nameFileOut_right, nameFileTrajectory_right;
     std::string nameFileOut_left, nameFileTrajectory_left;
 
@@ -99,11 +106,12 @@ protected:
 
     yarp::os::Mutex mutex;
 
+    // Different threads
     GraspComputation *graspComp;
     GraspVisualization *graspVis;
     GraspExecution *graspExec;
 
-
+    // Properties with all the class parameters
     yarp::os::Property vis_par;
     yarp::os::Property pose_par;
     yarp::os::Property traj_par;
@@ -116,78 +124,103 @@ public:
     /************************************************************************/
     bool attach(yarp::os::RpcServer &source);
 
+    /* Return if visualization is on or off */
     /************************************************************************/
     std::string get_visualization();
 
+    /* Set visualization option on or off */
     /************************************************************************/
     bool set_visualization(const std::string &e);
 
+    /* Return the computed grasping poses */
     /************************************************************************/
     yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
 
+    /* Get options of the field of interest */
     /************************************************************************/
     yarp::os::Property get_options(const std::string &field);
 
+    /* Set options of the field of interest */
     /************************************************************************/
     bool set_options(const yarp::os::Property &newOptions, const std::string &field);
 
+    /* Return which hand has been enabled */
     /**********************************************************************/
     std::string get_hand();
 
+    /* Set hand enabled */
     /**********************************************************************/
     bool set_hand(const std::string &e);
 
+    /* Return if poses are saved or not */
     /************************************************************************/
     bool set_save_poses(const std::string &entry);
 
+    /* Set if poses are saved or not */
     /************************************************************************/
     std::string get_save_poses();
 
+    /* Fill property with the grasping solutions */
     /************************************************************************/
     yarp::os::Property fillProperty(const yarp::sig::Vector &sol);
 
+    /* Delete computed poses */
     /************************************************************************/
     bool clear_poses();
 
+    /* Move the selected arm */
     /**********************************************************************/
     bool move(const std::string &entry);
 
+    /* Configure basics options */
     /************************************************************************/
     bool configBasics(yarp::os::ResourceFinder &rf);
 
+    /* Close function of the RF module */
     /************************************************************************/
     bool close();
 
+    /* Interrupt function of the RF module */
     /************************************************************************/
     bool interruptModule();
 
+    /* Update function of the RF module */
     /************************************************************************/
     bool updateModule();
 
+    /* Get period function of the RF module */
     /************************************************************************/
     double getPeriod();
 
+    /* Configure options for visualization */
     /***********************************************************************/
     bool configViewer(yarp::os::ResourceFinder &rf);
 
+    /* Configure options for pose computation */
     /***********************************************************************/
     bool configPose(yarp::os::ResourceFinder &rf);
 
+    /* Configure options for arm movements */
     /***********************************************************************/
     bool configMovements(yarp::os::ResourceFinder &rf);
 
+    /* Configure options for grasping */
     /***********************************************************************/
     bool configGrasp(yarp::os::ResourceFinder &rf);
 
+    /* Configure function of RF module */
     /***********************************************************************/
     bool configure(yarp::os::ResourceFinder &rf);
 
+    /* Read object model from text file for simulation tests */
     /************************************************************************/
     bool readSuperq(const std::string &name_obj, yarp::sig::Vector &x, const int &dimension, yarp::os::ResourceFinder *rf);
 
+    /* Save solutions */
     /************************************************************************/
     void saveSol(const yarp::os::Property &sol);
 
+    /* Go back to home position */
     /**********************************************************************/
     bool go_home(const std::string &entry);
 

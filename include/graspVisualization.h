@@ -32,11 +32,13 @@
 class GraspVisualization : public yarp::os::RateThread
 {
 protected:
+    // Gaze variables
     std::string eye;
     yarp::dev::PolyDriver GazeCtrl;
     yarp::dev::IGazeControl *igaze;
     yarp::sig::Matrix K,H;
 
+    // pose and trajectory variables
     yarp::sig::Vector poseR, poseL, solR, solL;
     yarp::sig::Vector hand_in_poseL, hand_in_poseR;
     std::deque<yarp::sig::Vector> trajectory_right;
@@ -47,6 +49,7 @@ protected:
 
 public:
 
+    // Options for the visualizer
     double t_vis;
     bool show_hand;
     bool look_object;
@@ -56,10 +59,12 @@ public:
     const yarp::sig::Vector &object;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
+    // Parameters for visualization and shared variables
     yarp::os::Property vis_par;
     yarp::sig::Vector &hand, &hand1;
     const yarp::os::Property &complete_sol;
 
+    // Port for input and output image
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
 
@@ -68,33 +73,43 @@ public:
                        const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
                        const yarp::sig::Vector &_object,  yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par );
 
+    /* Overlap superquadric on the camera image */
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);
 
+    /* Convert 3D point to 3D point */
     /***********************************************************************/
     yarp::sig::Vector from3Dto2D(const yarp::sig::Vector &point3D);
 
+    /* Show the computed trajectory */
     /***********************************************************************/
     bool showTrajectory(const std::string &hand);
 
+    /* Init function of the thread */
     /***********************************************************************/
     virtual bool threadInit();
 
+    /* Run function of the thread */
     /***********************************************************************/
     virtual void run();
 
+     /* release function of the thread */
     /***********************************************************************/
     virtual void threadRelease();
 
+     /* Get time required for showing the superquadrics and poses */
     /***********************************************************************/
     double getTime();
 
+     /* Acquire poses from other threads */
     /***********************************************************************/
     void getPoses(const yarp::os::Property &poses);
 
+     /* Set parameters for visualization */
     /***********************************************************************/
     void setPar(const yarp::os::Property &newOptions, bool first_time);
 
+    /* Set parameters used for visualization */
     /***********************************************************************/
     yarp::os::Property getPar();
 };
