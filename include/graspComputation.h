@@ -22,6 +22,12 @@
 
 #include "superquadric.h"
 
+/**
+  * This class computes the grasping pose for grasping and object
+  * once the superquadric modeling the object is provided.
+  * The solution is given by solving an optimization problem
+  * with the Ipopt software package.
+  */
 /*******************************************************************************/
 class GraspComputation
 {

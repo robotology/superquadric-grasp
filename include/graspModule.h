@@ -29,6 +29,12 @@
 
 #include "src/superquadricGrasp_IDL.h"
 
+/**
+  * This class handles the grasping pose computation and
+  * visualization, together with the interaction with the user.
+  * In particular, it launches the visualization thread and implements a state machine
+  * for handling the grasping pose computation and excution.
+  */
 /*******************************************************************************/
 class GraspingModule: public yarp::os::RFModule,
                       public superquadricGrasp_IDL

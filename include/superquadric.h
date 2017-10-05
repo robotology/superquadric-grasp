@@ -29,6 +29,11 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 
+/**
+  * This class computes the grasping pose for a given hand
+  * and a superquadric modeling an objct by solving an optimization
+  * problem with the Ipopt software package.
+  */
 class grasping_NLP : public Ipopt::TNLP
 {
     double aux_objvalue;

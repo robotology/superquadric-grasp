@@ -24,6 +24,11 @@
 
 #include "TactileControl/HandController.h"
 
+/**
+  * This class implements the arm movements for reaching
+  * the desired pose for grasping the object and for closing the
+  * fingers and stably grasping the object by using tactile feedback.
+  */
 /*******************************************************************************/
 class GraspExecution
 {

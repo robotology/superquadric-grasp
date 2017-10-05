@@ -28,6 +28,10 @@
 
 #include <opencv2/opencv.hpp>
 
+/**
+  * This class shows the computed grasping pose and trajectory overlapped
+  * to the camera images.
+  */
 /*******************************************************************************/
 class GraspVisualization : public yarp::os::RateThread
 {
