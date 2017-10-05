@@ -81,7 +81,7 @@ yarpserver --write
 2. Launch the [`iCub_SIM`](http://wiki.icub.org/wiki/Simulator_README).
 3. Launch the basic modules  for the simulator (`yarprobotinterface`, `iKinGazeCtrl`, `iKinCartsianSolver`- for both right and left arm-).
 4. Launch the `superquadric-grasp` and a `yarpviewer`, using [this xml](https://github.com/robotology/superquadric-grasp/blob/master/app/scripts/superquadric-grasp.xml.template).
-**Note** The _Tactile Control Library_ cannot be executed on the simulator, since it communicates with low level ports of the robot. For this reason, pay attention to specify `grasp   off` in the [configuration file](). In this scenario, the robot will only reach the pose without closing the fingers.
+**Note** The _Tactile Control Library_ cannot be executed on the simulator, since it communicates with low level ports of the robot. For this reason, pay attention to specify `grasp   off` in the [configuration file](https://github.com/robotology/superquadric-grasp/blob/master/app/conf/config.ini#L30). In this scenario, the robot will only reach the pose without closing the fingers.
 5. Launch the tutorial with [this xml](https://github.com/robotology/superquadric-grasp/blob/master/tutorial/app/script/testing-graspmodule.xml.template).
 6. Connect everything.
 
