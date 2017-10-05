@@ -89,3 +89,10 @@ The simulator will perform a fake grasping pose computation and execution.
 
 
 Enjoy! :smiley:
+
+## Setting up
+
+In order to achieve the desired performance, it is strongly recommended to calibrate the robot following the `fine calibration` procedure:
+- for the [arms](http://wiki.icub.org/wiki/ArmFineCalibration);
+- for the [head](http://wiki.icub.org/wiki/HeadFineCalibration);
+- for the [torso](http://wiki.icub.org/wiki/TorsoFineCalibration).
