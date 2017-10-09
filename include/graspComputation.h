@@ -22,7 +22,7 @@
 
 #include "superquadric.h"
 
-/**
+ /**
   * This class computes the grasping pose for grasping and object
   * once the superquadric modeling the object is provided.
   * The solution is given by solving an optimization problem
@@ -64,8 +64,13 @@ protected:
 
 public:
     
-    yarp::sig::Vector &hand, &hand1;
+    /** Vector for representing one hand ellipsoid*/
+    yarp::sig::Vector &hand;
+    /** Vector for representing one hand ellipsoid*/
+    yarp::sig::Vector &hand1;
+    /** Complete solution computed */
     yarp::os::Property &complete_sol;
+    /** Object superquadric */
     const yarp::sig::Vector &object;
 
     /*******************************************************************************/
@@ -74,56 +79,56 @@ public:
                      yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
                      yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object);
 
-    /* Set parameters for computing the solution with ipopt
+    /** Set parameters for computing the solution with ipopt
      * @param newOptions is a Property with the new options to be set
      * @param first_time takes into account if it is the first the options are set or not
      */
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);
 
-    /* Get parameters used for computing the solution with ipopt
+    /** Get parameters used for computing the solution with ipopt
     * @return a Property with all the options for ipopt
     */
     /***********************************************************************/
     yarp::os::Property getIpoptPar();
 
-    /* Set parameters for correctly compute the grasping pose
+    /** Set parameters for correctly compute the grasping pose
      * @param newOptions is a Property with the new options to be set
      * @param first_time takes into account if it is the first the options are set or not
      */
     /***********************************************************************/
     void setPosePar(const yarp::os::Property &newOptions, bool first_time);
 
-    /* Get parameters for correctly compute the grasping pose
+    /** Get parameters for correctly compute the grasping pose
      * @return a Property with all the options for pose computation
-    */
+     */
     /***********************************************************************/
     yarp::os::Property getPosePar();
 
-    /* Set parameters for correctly compute the trajectory for approaching the desired pose
+    /** Set parameters for correctly compute the trajectory for approaching the desired pose
      * @param newOptions is a Property with the new options to be set
      * @param first_time takes into account if it is the first the options are set or not
      */
     /***********************************************************************/
     void setTrajectoryPar(const yarp::os::Property &newOptions, bool first_time);
 
-    /* Get parameters used for correctly compute the trajectory for approaching the desired pose
+    /** Get parameters used for correctly compute the trajectory for approaching the desired pose
      * @return a Property with all the options for pose computation
     */
     /***********************************************************************/
     yarp::os::Property getTrajectoryPar();
 
-    /* Init function
+    /** Init function
     * @return true/false on success/failure
     */
     /***********************************************************************/
     bool init();
 
-    /* Run function */
+    /** Run function */
     /***********************************************************************/
     void run();
 
-    /* Compute a given pose for the selected hand
+    /** Compute a given pose for the selected hand
     *  @param hand is the hand ellipsoid
     *  @param left_or_right if the string of the hand: right, left or both
     *  @return true/false on success/failure
@@ -131,7 +136,7 @@ public:
     /***********************************************************************/
     bool computePose(yarp::sig::Vector &hand, const std::string &left_or_right);
 
-    /* Compute the trajectory for the selected hand
+    /** Compute the trajectory for the selected hand
     * @param chosen_hand is the hand selected for moving
     * @direction is an option for building the trajectory. It can be "z" or "xz",
     * according to which direction is used for shifting the trajectory waypoints.
@@ -139,29 +144,29 @@ public:
     /***********************************************************************/
     bool computeTrajectory(const std::string &chosen_hand, const std::string &direction);
 
-    /* Extract the solution from ipopt interface
+    /** Extract the solution from ipopt interface
     * @param hand is the selected hand
     */
     /***********************************************************************/
     void getSolution(const std::string &hand);
 
-    /* Return computation time for getting the pose
+    /** Return computation time for getting the pose
     * @return the period value
     */
     /***********************************************************************/
     double getTime();
 
-    /* Properly fill a property with the computed solution
+    /** Properly fill a property with the computed solution
     * @param hand is the hand string
     * @return the Property with the information inside
     */
     /**********************************************************************/
     yarp::os::Property fillProperty(const std::string &hand);
 
-    /* Set a a parameter equal to a value
+    /** Set a a parameter equal to a value
      * @param tag is the name of the parameter
      * @param value is the new value of parameter
-     * /
+     */
     /**********************************************************************/
     void setPar(const std::string &tag, const std::string &value);
 };

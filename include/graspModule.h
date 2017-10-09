@@ -130,103 +130,171 @@ public:
     /************************************************************************/
     bool attach(yarp::os::RpcServer &source);
 
-    /* Return if visualization is on or off */
+    /** Return if visualization is on or off
+    * @return "on" or "off"
+    * /
     /************************************************************************/
     std::string get_visualization();
 
-    /* Set visualization option on or off */
+    /** Set visualization option on or off
+    * @param e can be "on" or "off" for setting the visualization on or off
+    * @return true/false on success/failure
+    * /
     /************************************************************************/
     bool set_visualization(const std::string &e);
 
-    /* Return the computed grasping poses */
+    /** Return the computed grasping poses
+    * @param superquadric is a property with the object superquadric
+    * @param hand is the name of the hand for which we want to compute the grasping pose
+    * @return a property with the grasping pose solution
+    * /
     /************************************************************************/
     yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
 
-    /* Get options of the field of interest */
+    /** Get options of the field of interest
+    * @param is a string with the field of options of interest
+    * @return a Property with all the options
+    *  /
     /************************************************************************/
     yarp::os::Property get_options(const std::string &field);
 
-    /* Set options of the field of interest */
+    /** Set options of the field of interest
+    * @param newOptions is a proeprty with the new options to be set
+    * @param field is the field of the options to be set
+    * @return true/false on success/failure
+    */
     /************************************************************************/
     bool set_options(const yarp::os::Property &newOptions, const std::string &field);
 
-    /* Return which hand has been enabled */
+    /** Return which hand has been enabled
+    * @return the name of the hand enabled
+    * /
     /**********************************************************************/
     std::string get_hand();
 
-    /* Set hand enabled */
+    /** Set hand enabled
+    * @param e is the name of the selected hand
+    * @return true/false on success/failure
+    * /
     /**********************************************************************/
     bool set_hand(const std::string &e);
 
-    /* Return if poses are saved or not */
+    /** Return if poses are saved or not
+    * @param entry can be "on" or "off"
+    * @return true of false
+    * /
     /************************************************************************/
     bool set_save_poses(const std::string &entry);
 
-    /* Set if poses are saved or not */
+    /** Set if poses are saved or not
+    * @return "on" or "off" is the poses are saved
+    * /
     /************************************************************************/
     std::string get_save_poses();
 
-    /* Fill property with the grasping solutions */
+    /** Fill property with the grasping solutions
+    * @param sol is the solution to be saved in a property
+    * @return the Property with the solution in the proper form
+    * /
     /************************************************************************/
     yarp::os::Property fillProperty(const yarp::sig::Vector &sol);
 
-    /* Delete computed poses */
+    /** Delete computed poses
+    * @return true/false
+    * /
     /************************************************************************/
     bool clear_poses();
 
-    /* Move the selected arm */
+    /** Move the selected arm
+    * @param entry is the name of the hand to be moved
+    * @return true/false on success/failure
+    * /
     /**********************************************************************/
     bool move(const std::string &entry);
 
-    /* Configure basics options */
+    /** Configure basics options
+    * @param rf is the resource finder with all the options from config files
+    * @return true/false on success/failure
+    * /
     /************************************************************************/
     bool configBasics(yarp::os::ResourceFinder &rf);
 
-    /* Close function of the RF module */
+    /** Close function of the RF module
+    * @return true/false on success/failure
+    * /
     /************************************************************************/
     bool close();
 
-    /* Interrupt function of the RF module */
+    /** Interrupt function of the RF module
+    * @return true/false on success/failure
+    * /
     /************************************************************************/
     bool interruptModule();
 
-    /* Update function of the RF module */
+    /** Update function of the RF module
+    * @return true/false on success/failure
+    * /
     /************************************************************************/
     bool updateModule();
 
-    /* Get period function of the RF module */
+    /** Get period function of the RF module
+    * @return the thread period
+    * /
     /************************************************************************/
     double getPeriod();
 
-    /* Configure options for visualization */
+    /** Configure options for visualization
+    * @param rf is the resource finder with all the optins
+    * @return true/false on success/failure
+    * /
     /***********************************************************************/
     bool configViewer(yarp::os::ResourceFinder &rf);
 
-    /* Configure options for pose computation */
+    /** Configure options for pose computation
+    * @param rf is the resource finder with all the optins
+    * @return true/false on success/failure
+    */
     /***********************************************************************/
     bool configPose(yarp::os::ResourceFinder &rf);
 
-    /* Configure options for arm movements */
+    /** Configure options for arm movements
+    * @param rf is the resource finder with all the optins
+    * @return true/false on success/failure
+    */
     /***********************************************************************/
     bool configMovements(yarp::os::ResourceFinder &rf);
 
-    /* Configure options for grasping */
+    /** Configure options for grasping
+    * @param rf is the resource finder with all the optins
+    * @return true/false on success/failure
+    */
     /***********************************************************************/
     bool configGrasp(yarp::os::ResourceFinder &rf);
 
-    /* Configure function of RF module */
+    /** Configure function of RF module */
     /***********************************************************************/
     bool configure(yarp::os::ResourceFinder &rf);
 
-    /* Read object model from text file for simulation tests */
+    /** Read object model from text file for simulation tests
+    * @param name_obj is the name of the object
+    * @param x is the superquadric lot be read
+    * @param dimensions is the dimension of the superquadric (11)
+    * @param rf is the resource finder
+    * @return true/false on success/failure
+    * /
     /************************************************************************/
     bool readSuperq(const std::string &name_obj, yarp::sig::Vector &x, const int &dimension, yarp::os::ResourceFinder *rf);
 
-    /* Save solutions */
+    /** Save solutions
+    * @param sol is a property with the solution to be saved
+    * /
     /************************************************************************/
     void saveSol(const yarp::os::Property &sol);
 
-    /* Go back to home position */
+    /** Go back to home position
+    * @param entry is the name of the hand that is moving
+    * @return true/false on success/failure
+    * /
     /**********************************************************************/
     bool go_home(const std::string &entry);
 

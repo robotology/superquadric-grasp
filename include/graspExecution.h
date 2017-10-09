@@ -68,18 +68,24 @@ protected:
 
 public:
 
+    /** Boolean variable for movements*/
     bool reached;
+    /** Boolean variable for movements*/
     bool reached_tot;
 
+    /** Context file name for grasping library*/
     std::string lib_context;
+    /** Context file name for grasping library*/
     std::string lib_filename;
 
-    // Property with options and solutions
+    /** Property with solution */
     const yarp::os::Property &complete_sol;
+    /** Property with options */
     yarp::os::Property movement_par;
 
-    // Tactile control library
+    /** Tactile control library for right hand */
     tactileControl:: HandController handContr_right;
+    /** Tactile control library for right hand */
     tactileControl:: HandController handContr_left;
 
 
@@ -87,59 +93,92 @@ public:
     GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol,
                    bool _grasp, std::string _lib_context, std::string _lib_filename);
 
-    /* Configure function */
+    /** Configure function
+    * @return true/false on success/failure
+    */
     /*******************************************************************************/
     bool configure();
 
-    /* Reach a single waypoint of the trajectory */
+    /** Reach a single waypoint of the trajectory
+    * @param i is the index of the waypoint
+    * @param hand is the name of the selected hand for moving
+    * @return true/false on success/failure
+    */
     /*******************************************************************************/
     bool reachWaypoint(int i, std::string &hand);
 
-    /* Execute the entire trajectory */
+    /** Execute the entire trajectory
+    * @ hand is the selected hand for moving
+    * @return true/false on success/failure
+    */
     /*******************************************************************************/
     bool executeTrajectory(std::string &hand);
 
-    /* Ask the robot arm to go back to home position */
+    /** Ask the robot arm to go back to home position
+     * @param hand is the name of the selected hand
+     * @return true/false on success/failure
+     */
     /*******************************************************************************/
     bool goHome(const std::string &hand);
 
-    /* Configure Cartesian controller for moving the selected arm */
+    /** Configure Cartesian controller for moving the selected arm
+    *  @param which_hand is the hand for which we want to open the cartesian
+    *  @return true/false on success/failure
+    */
     /*******************************************************************************/
     bool configCartesian(const std::string &which_hand);
 
-    /* Configure tactile control library for grasping the object */
+    /** Configure tactile control library for grasping the object
+    *  @return treu/false on success/failure
+    */
     /*******************************************************************************/
     bool configGrasp();
 
-    /* Set all pose parameters for grasp execution */
+    /** Set all pose parameters for grasp execution
+    *  @param newOptions is the property with the new options to be set
+    *  @param first_time take into account if the options have been set once or not
+    */
     /*******************************************************************************/
     void setPosePar(const yarp::os::Property &newOptions, bool first_time);
 
-    /* Get all pose parameters for grasp execution */
+    /** Get all pose parameters for grasp execution
+    *  @return a Property with all the grasp execution options
+    */
     /*******************************************************************************/
     yarp::os::Property getPosePar();
 
-    /* Acquire poses to be reached from the graspComputation class  */
+    /** Acquire poses to be reached from the graspComputation class
+    * @param poses are the poses computed from graspComputation class
+    */
     /*******************************************************************************/
     void getPoses(const yarp::os::Property &poses);
 
-    /* Release resources */
+    /** Release resources */
     /*******************************************************************************/
     bool release();
 
-    /* Stop movements */
+    /** Stop movements */
     /*******************************************************************************/
     bool stop();
 
-    /* Lift object for testing the stability of the pose */
+    /** Lift object for testing the stability of the pose
+    * @param traj is a deque of Vectors including the trajectory waypoint
+    * @param index is index of the waypoint including the lifting movement
+    */
     /*******************************************************************************/
     void liftObject(std::deque<yarp::sig::Vector> &traj, int index);
 
-    /* Grasp the object with the tactile control library */
+    /** Grasp the object with the tactile control library
+    * @param hand is the hand selected for moving and grasping
+    * @return true when the grasp is completed
+    */
     /*******************************************************************************/
     bool graspObject(const std::string &hand);
 
-    /* Open the hand that kis grasping the object with the tactile control library */
+    /** Open the hand that kis grasping the object with the tactile control library
+    *  @param hand is the hand selected for moving and grasping
+    *  @return true when the hand is open
+    */
     /*******************************************************************************/
     bool releaseObject(const std::string &hand);
 };
