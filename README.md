@@ -25,9 +25,7 @@ The cost function imposes the minimization of the distance between the ellipsoid
 <img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/optimization-problem-specific.png" width=400>
 </p>
 
-More details are in the following paper:
-
-G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadric models", _IEEE-RAS International Conference on Robotics and Automation 2017_, pp 1579-1586.
+More details are in [our ICRA paper [1]](#references).
 
 [`Go to the top`](#superquadric-grasp)
 ## Dependencies
@@ -96,9 +94,12 @@ The `superquadric-grasp` works in a multiple objects scenario if the objects do 
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_
 and is released under the terms of the GPL v2.0 or later. See the file LICENSE for details.
 
-[![DOI](https://zenodo.org/badge/54572419.svg)](https://zenodo.org/badge/latestdoi/54572419)
 
-[1] A. Parmiggiani, L. Fiorio, A. Scalzo, A. V. Sureshbabu, Ma. Randazzo, M. Maggiali, U. Pattacini, H. Lehmann, V. Tikhanoff, D. Domenichelli, A. Cardellino, P. Congiu, R. Cingolani, L. Natale, G. Metta, "The Design and Validation of the R1 Personal Humanoid," _2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2017), Vancouver, Canada_, 2017.
+
+## References
+[1] G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadric models", _IEEE-RAS International Conference on Robotics and Automation 2017_, pp 1579-1586. [![DOI](https://zenodo.org/badge/54572419.svg)](https://zenodo.org/badge/latestdoi/54572419)
+
+[2] A. Parmiggiani, L. Fiorio, A. Scalzo, A. V. Sureshbabu, Ma. Randazzo, M. Maggiali, U. Pattacini, H. Lehmann, V. Tikhanoff, D. Domenichelli, A. Cardellino, P. Congiu, R. Cingolani, L. Natale, G. Metta, "The Design and Validation of the R1 Personal Humanoid," _2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2017), Vancouver, Canada_, 2017.
 
 
 
