@@ -78,6 +78,7 @@ cmd.addString(hand_to_move);
 graspRpc.write(cmd, reply);
 ```
 where `hand_to_move` can be `left` or `right`.
+
 [`Go to the top`](#superquadric-grasp-tutorial)
 ## How to run the `superquadric-grasp` + `tutorial`
 This tutorial is designed to be tested on the `simulator`, since a fake superquadric is used (the tutorial upload an example of superquadric from a configuration file).
@@ -97,6 +98,7 @@ The simulator will perform a fake grasping pose computation and execution.
 
 
 Enjoy! :smiley:
+
 [`Go to the top`](#superquadric-grasp-tutorial)
 ## Setting up before running on the robot
 
@@ -104,3 +106,5 @@ In order to achieve the desired performance, it is strongly recommended to calib
 - for the [arms](http://wiki.icub.org/wiki/ArmFineCalibration);
 - for the [head](http://wiki.icub.org/wiki/HeadFineCalibration);
 - for the [torso](http://wiki.icub.org/wiki/TorsoFineCalibration).
+
+[`Go to the top`](#superquadric-grasp-tutorial)
