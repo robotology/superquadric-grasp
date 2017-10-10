@@ -8,7 +8,7 @@
 - [How to run the overall pipeline](#how-to-run-the-overall-pipeline)
 
 ## How to compile
-```
+```sh
 mkdir build; cd build
 ccmake ..
 make install
@@ -51,7 +51,7 @@ cmd.addString(hand);
 graspRpc.write(cmd, reply);
 ```
 connecting to the corresponding port:
-```
+```sh
 yarp connect /testing-graspmodule/superq:rpc /superquadric-grasp/rpc
 ```
 For instance, in case `hand=right` solution of the grasping pose computation will be received in the format:
@@ -85,7 +85,7 @@ where `hand_to_move` can be `left` or `right`.
 This tutorial is designed to be tested on the `simulator`, since a fake superquadric is used (the tutorial upload an example of superquadric from a configuration file).
 In order to run the tutorial:
 1. Launch a yarpserver on your computer:
-```
+```sh
 yarpserver --write
 ```
 2. Launch the [`iCub_SIM`](http://wiki.icub.org/wiki/Simulator_README).
