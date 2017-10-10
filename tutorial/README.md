@@ -5,7 +5,7 @@
 - [ How to communicate with the module](#how-to-communicate-with-the-superquadric-grasp)
 - [ How to run the `superquadric-grasp` + `tutorial`](#how-to-run-the-superquadric-grasp--tutorial)
 - [Setting up before running on the robot](#setting-up-before-running-on-the-robot)
-- [How to run the superquadric-model and superquadric-grasp module together](#how-to-run-the-superquadric-model-and-superquadric-grasp-module-together)
+- [How to run the entire pipeline](#how-to-run-the-entire-pipeline)
 
 ## How to compile
 ```
@@ -116,7 +116,7 @@ In order to overcome the necessity of a fine hand-eye calibration, we are curren
 
 [`Go to the top`](#superquadric-grasp-tutorial)
 
-## How to run the superquadric-model and superquadric-grasp module together
+## How to run the entire pipeline
 This module is designed in order to be executed together the [`superquadric-model module`](https://github.com/robotology/superquadric-model). A **complete tutorial** on how to execute them together and perform on the robot a **complete modeling and grasping task** is provided in [`this repository`](https://github.com/robotology/superquadric-grasp-example).
 
 [`Go to the top`](#superquadric-grasp-tutorial)
