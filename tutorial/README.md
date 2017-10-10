@@ -1,4 +1,10 @@
 # superquadric-grasp tutorial
+#### Overview
+
+- [ How to compile](#how-to-compile)
+- [ How to communicate with the module](#how-to-communicate-with-the-superquadric-grasp)
+- [ How to run the `superquadric-grasp` + `tutorial`](#how-to-run-the-superquadric-grasp--tutorial)
+- [Setting up before running on the robot](#setting-up-before-running-on-the-robot)
 
 ## How to compile
 ```
@@ -6,6 +12,8 @@ mkdir build; cd build
 ccmake ..
 make install
 ```
+
+[`Go to the top`](#superquadric-grasp-tutorial)
 ## How to communicate with the superquadric-grasp 
 Once the user has a superquadric modeling the object as a `yarp::Vector sol` (for example, by querying the [superquadric-model](https://github.com/robotology/superquadric-model)), he can query the superquadric-grasp for
 getting a suitable grasping pose for the hand `std::string hand` through the `thrift services`:
@@ -70,7 +78,7 @@ cmd.addString(hand_to_move);
 graspRpc.write(cmd, reply);
 ```
 where `hand_to_move` can be `left` or `right`.
-
+[`Go to the top`](#superquadric-grasp-tutorial)
 ## How to run the `superquadric-grasp` + `tutorial`
 This tutorial is designed to be tested on the `simulator`, since a fake superquadric is used (the tutorial upload an example of superquadric from a configuration file).
 In order to run the tutorial:
@@ -89,8 +97,8 @@ The simulator will perform a fake grasping pose computation and execution.
 
 
 Enjoy! :smiley:
-
-## Setting up
+[`Go to the top`](#superquadric-grasp-tutorial)
+## Setting up before running on the robot
 
 In order to achieve the desired performance, it is strongly recommended to calibrate the robot following the `fine calibration` procedure:
 - for the [arms](http://wiki.icub.org/wiki/ArmFineCalibration);
