@@ -5,6 +5,7 @@
 - [ How to communicate with the module](#how-to-communicate-with-the-superquadric-grasp)
 - [ How to run the `superquadric-grasp` + `tutorial`](#how-to-run-the-superquadric-grasp--tutorial)
 - [Setting up before running on the robot](#setting-up-before-running-on-the-robot)
+- [How to run the superquadric-model and superquadric-grasp module together](#how-to-run-the-superquadric-model-and-superquadric-grasp-module-together)
 
 ## How to compile
 ```
@@ -102,9 +103,20 @@ Enjoy! :smiley:
 [`Go to the top`](#superquadric-grasp-tutorial)
 ## Setting up before running on the robot
 
-In order to achieve the desired performance, it is strongly recommended to calibrate the robot following the `fine calibration` procedure:
+In order to achieve the desired performance when running the module on the robot, it is strongly recommended to perform the following steps:
+#### Calibrate the robot following the `fine calibration` procedure:
 - for the [arms](http://wiki.icub.org/wiki/ArmFineCalibration);
 - for the [head](http://wiki.icub.org/wiki/HeadFineCalibration);
 - for the [torso](http://wiki.icub.org/wiki/TorsoFineCalibration).
+
+#### Check the hand-eye calibration 
+Our approach is an open loop approach. For this reason, the grasping goal can be properly reached if the stereo-vision system (see [here](https://github.com/robotology/superquadric-model/tree/master/tutorial#calibrate-the-stereo-vision-through-the-sfm-module) for information on how to calibrate it) and robot kinematics are properly calibrated (previous section).
+
+In order to overcome the necessity of a fine hand-eye calibration, we are currently integrating our work with the visual servoing approach []().
+
+[`Go to the top`](#superquadric-grasp-tutorial)
+
+## How to run the superquadric-model and superquadric-grasp module together
+This module is designed in order to be executed together the [`superquadric-model module`](https://github.com/robotology/superquadric-model). A **complete tutorial** on how to execute them together and perform on the robot a **complete modeling and grasping task** is provided in [`this repository`](https://github.com/robotology/superquadric-grasp-example).
 
 [`Go to the top`](#superquadric-grasp-tutorial)
