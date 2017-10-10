@@ -1,5 +1,12 @@
 # superquadric-grasp
 Framework for computing a good grasping pose, by exploiting superquadric models for the object and the robot hand.
+#### Overview
+- [Theoretical background](#theoretical-background)
+- [Dependencies & how to compile](#dependencies)
+- [Module pipeline](#module-pipeline)
+- [Use case & results](#use-case)
+- [Documentation & more](#documentation)
+
 
 ## Theoretical background
 
@@ -81,14 +88,13 @@ Our grasping approach is based on modeling the volume graspable by the robot han
 If more than one objects are in the robot field of view, the `superquadric-model` approach is able to compute the superquadric of the desired object as long as the objects can be properly segmented by [lbpExtract module](https://github.com/robotology/segmentation), i.e. if their images are not adjacient in the image.
 The `superquadric-grasp` works in a multiple objects scenario if the objects do not hinder the arm momevements during the approaching phase.
 
-[1] A. Parmiggiani, L. Fiorio, A. Scalzo, A. V. Sureshbabu, Ma. Randazzo, M. Maggiali, U. Pattacini, H. Lehmann, V. Tikhanoff, D. Domenichelli, A. Cardellino, P. Congiu, R. Cingolani, L. Natale, G. Metta, "The Design and Validation of the R1 Personal Humanoid," _2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2017), Vancouver, Canada_, 2017.
-
 ## License
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_
 and is released under the terms of the GPL v2.0 or later. See the file LICENSE for details.
 
 [![DOI](https://zenodo.org/badge/54572419.svg)](https://zenodo.org/badge/latestdoi/54572419)
 
+[1] A. Parmiggiani, L. Fiorio, A. Scalzo, A. V. Sureshbabu, Ma. Randazzo, M. Maggiali, U. Pattacini, H. Lehmann, V. Tikhanoff, D. Domenichelli, A. Cardellino, P. Congiu, R. Cingolani, L. Natale, G. Metta, "The Design and Validation of the R1 Personal Humanoid," _2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2017), Vancouver, Canada_, 2017.
 
 
 
