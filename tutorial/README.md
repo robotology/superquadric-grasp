@@ -110,7 +110,7 @@ In order to achieve the desired performance when running the module on the robot
 - for the [torso](http://wiki.icub.org/wiki/TorsoFineCalibration).
 
 #### Check the hand-eye calibration 
-Our approach is an open loop approach. For this reason, the grasping goal can be properly reached if the stereo-vision system (see [here](https://github.com/robotology/superquadric-model/tree/master/tutorial#calibrate-the-stereo-vision-through-the-sfm-module) for information on how to calibrate it) and robot kinematics are properly calibrated (previous section).
+Our approach is an open loop approach. For this reason, the grasping goal can be properly reached if the stereo-vision system (see [here](https://github.com/robotology/superquadric-model/tree/master/tutorial#calibrate-the-stereo-vision-through-the-sfm-module) for information on how to calibrate it) and robot kinematics are properly calibrated (previous section). If the offsets between the two hinder the robot from correctly reaching for the desired pose even after the calibration, the superquadric-grasp module allows the definition of some empirical offsets, in order to compensate for that: `shift_right` and `shift_left`. They are 3D Vectors representing the required offsets for correctly reaching the pose along the *x,y,z* axes of the robot reference frame.
 
 In order to overcome the necessity of a fine hand-eye calibration, we are currently integrating our work with the visual servoing approach described [here](https://github.com/robotology/visual-tracking-control).
 
