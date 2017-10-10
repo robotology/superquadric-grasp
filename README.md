@@ -40,7 +40,7 @@ G. Vezzani, U. Pattacini and L. Natale, "A grasping approach based on superquadr
 
 ## How to compile
 In `Linux systems` code can be compiled as follows:
-```
+```sh
 git clone https://github.com/robotology/superquadric-grasp.git
 cd superquadric-grasp
 mkdir build; cd build
