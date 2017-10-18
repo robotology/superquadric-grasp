@@ -56,6 +56,7 @@ public:
     std::string left_or_right;
     yarp::os::Mutex mutex;
     const yarp::sig::Vector &object;
+    const yarp::sig::Vector &obstacle;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
     yarp::os::Property vis_par;
@@ -68,7 +69,7 @@ public:
     /***********************************************************************/
     GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
                        const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
-                       const yarp::sig::Vector &_object,  yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par, double &quality_right, double &quality_left);
+                       const yarp::sig::Vector &_object, const yarp::sig::Vector &_obstacle, yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par, double &quality_right, double &quality_left);
 
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);

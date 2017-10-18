@@ -63,6 +63,7 @@ protected:
     
     std::string dir;
     yarp::sig::Vector object;
+    yarp::sig::Vector obstacle;
     yarp::sig::Vector hand, hand1;
     double distance, distance1;    
     yarp::sig::Vector displacement;
@@ -134,7 +135,7 @@ public:
     std::string get_best_hand();
 
     /************************************************************************/
-    yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
+    yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric,const yarp::os::Property &obstacle, const std::string &hand);
 
     /************************************************************************/
     yarp::os::Property get_options(const std::string &field);

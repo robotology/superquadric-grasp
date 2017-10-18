@@ -47,6 +47,7 @@ class grasping_NLP : public Ipopt::TNLP
 public:
     yarp::sig::Vector hand;
     yarp::sig::Vector object;
+    yarp::sig::Vector obstacle;
     yarp::sig::Matrix plane;
     yarp::sig::Vector solution;
     yarp::sig::Vector robot_pose;
@@ -54,7 +55,7 @@ public:
     double tmp_value;
 
     /****************************************************************/
-    void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext, int &n_handpoints, const std::string &str_hand);
+    void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext,const yarp::sig::Vector &obstacleext, int &n_handpoints, const std::string &str_hand);
 
     /****************************************************************/
     void checkZbound();

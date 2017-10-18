@@ -28,9 +28,9 @@ using namespace yarp::math;
 
 /***********************************************************************/
 GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
-                                       const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right, double &_quality_left):
+                                       const Property &_complete_sol, const Vector &_object, const Vector &_obstacle, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right, double &_quality_left):
                                        RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
-                                       object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right(_quality_right), quality_left(_quality_left)
+                                       object(_object), obstacle(_obstacle), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right(_quality_right), quality_left(_quality_left)
 {
 
 }
@@ -67,6 +67,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     Vector z2D(2,0.0);  
 
     addSuperq(object,imgOut,255);
+    addSuperq(obstacle,imgOut,255);
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {

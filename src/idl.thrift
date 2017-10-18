@@ -120,7 +120,7 @@ service superquadricGrasp_IDL
     * computed trajectory, in the form center of the end-effector
     * (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5).
     */
-    Property get_grasping_pose(1: Property estimated_superq, 2: string hand);
+    Property get_grasping_pose(1: Property estimated_superq, 2: Property obstacle , 3:string hand);
 
     /**
     * Set if the visualization has to be enabled.

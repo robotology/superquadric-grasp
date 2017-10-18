@@ -50,13 +50,14 @@ bool GraspingModule::clear_poses()
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     object.resize(11,0.0);
+    obstacle.resize(11,0.0);
     complete_sol.clear();
 
     return true;
 }
 
 /**********************************************************************/
-Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
+Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const Property &obstacle_ext, const string &hand)
 {
     //LockGuard lg(mutex);
 
@@ -97,6 +98,14 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
         object.setSubvector(8,dcm2euler(axis2dcm(axis)));
     }
 
+    Bottle *obs=obstacle_ext.find("obstacle").asList();
+    obstacle[0]=obs->get(0).asDouble(); obstacle[1]=obs->get(1).asDouble(); obstacle[2]=obs->get(2).asDouble();
+    obstacle[3]=obs->get(3).asDouble(); obstacle[4]=obs->get(4).asDouble(); obstacle[5]=obs->get(5).asDouble();
+    obstacle[6]=obs->get(6).asDouble(); obstacle[7]=obs->get(7).asDouble(); obstacle[8]=obs->get(8).asDouble();
+    obstacle[9]=obs->get(9).asDouble(); obstacle[10]=obs->get(10).asDouble();
+
+    yDebug()<<"Object "<<object.toString();
+    yDebug()<<"Obstacle "<<obstacle.toString();
     graspComp->setPar("left_or_right", hand);
     graspComp->run();
     graspComp->getSolution(hand);
@@ -526,6 +535,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
     object.resize(11,0.0);
+    obstacle.resize(11,0.0);
 
     readSuperq("hand",hand,11,this->rf);
 
@@ -614,7 +624,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object, quality_right, quality_left);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacle, quality_right, quality_left);
 
     graspComp->init();
 
@@ -623,7 +633,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object, hand, hand1, vis_par, quality_right, quality_left);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object,obstacle, hand, hand1, vis_par, quality_right, quality_left);
 
     if (visualization)
     {
