@@ -96,7 +96,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             hand_in_poseL.setSubvector(0,hand1);
             hand_in_poseL.setSubvector(5,solL);
 
-            if (show_hand)               
+            if (show_hand)
                 addSuperq(hand_in_poseL,imgOut,0);
 
             if (show_only_pose)

@@ -274,7 +274,7 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.11;
+            plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.30;
         }
     }
 }

@@ -475,6 +475,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
      g[3]=plane(0,0)*x_min[0]+plane(1,0)*x_min[1]+plane(2,0)*x_min[2]+plane(3,0);
+     //cout<<"g[3]"<<g[3]<<endl;
 
      Vector robotPose(3,0.0);
      Vector x_tmp(6,0.0);
@@ -495,12 +496,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      //New constraint
 
      g[6]=0;
-//     for(size_t i=0;i<points_on.size();i++)
-//        g[6]+= pow(f(obstacle,x,points_on[i]),obstacle[3])-1;
-////
-//     g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
+     for(size_t i=0;i<points_on.size();i++)
+        g[6]+= pow(f(obstacle,x,points_on[i]),obstacle[3])-1;
 
-     g[6]=obstacle[0]*obstacle[1]*obstacle[2]*(pow(f_v2(obstacle,x_tmp, robotPose), obstacle[3]) -1);
+     g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
 
      cout<<"g[6]"<<g[6]<<endl;
 
@@ -566,12 +565,11 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      //New constraint
 
      g[6]=0;
-//     for(size_t i=0;i<points_on.size();i++)
-//         g[6]+= pow(f_v(obstacle,x,points_on[i]),obstacle[3])-1;
+     for(size_t i=0;i<points_on.size();i++)
+         g[6]+= pow(f_v(obstacle,x,points_on[i]),obstacle[3])-1;
 
-//     g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
-     g[6]=obstacle[0]*obstacle[1]*obstacle[2]*(pow(f_v2(obstacle,x_tmp, robotPose), obstacle[3]) -1);
-     cout<<"g[6]"<<g[6]<<endl;
+     g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
+     //cout<<"g[6]"<<g[6]<<endl;
      return g[i];
  }
 
