@@ -80,6 +80,7 @@ protected:
     bool go_on;
     bool grasp;    
     bool executed;
+    bool multiple_superq;
     std::string show_hand;
     std::string show_only_pose;
     std::string look_object;
@@ -107,6 +108,7 @@ protected:
     yarp::os::Mutex mutex;
 
     GraspComputation *graspComp;
+     GraspComputation *graspComp2;
     GraspVisualization *graspVis;
     GraspExecution *graspExec;
 

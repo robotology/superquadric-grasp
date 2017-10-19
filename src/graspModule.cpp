@@ -131,7 +131,32 @@ string GraspingModule::get_visualization()
 /**********************************************************************/
 string GraspingModule::get_best_hand()
 {
-    return graspComp->best_hand;
+    double quality1, quality2;
+    if (!multiple_superq)
+        return graspComp->best_hand;
+    else
+    {
+        if (graspComp->best_hand=="right")
+            quality1=graspComp->quality_right;
+        if (graspComp2->best_hand=="right")
+            quality2=graspComp2->quality_right;
+        if (graspComp->best_hand=="left")
+            quality1=graspComp->quality_left;
+        if (graspComp2->best_hand=="left")
+            quality2=graspComp2->quality_left;
+
+        if (quality1<quality2)
+        {
+            yDebug()<<"Second scenario";
+            return graspComp2->best_hand;
+        }
+        else
+        {
+            yDebug()<<"First scenario";
+            return graspComp->best_hand;
+        }
+    }
+    //return graspComp->best_hand;
 }
 
 /**********************************************************************/
@@ -322,6 +347,8 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     visual_servoing=rf.check("visual_servoing", Value("off")).asString();
     use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
+
+    multiple_superq=(rf.check("multiple_superq", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -624,7 +651,9 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacle, quality_right, quality_left);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacle, quality_right, quality_left, multiple_superq);
+    if (multiple_superq)
+        graspComp2= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, obstacle, object, quality_right, quality_left, multiple_superq);
 
     graspComp->init();
 

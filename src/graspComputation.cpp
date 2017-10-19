@@ -19,9 +19,9 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object,const Vector &_obstacle, double &_quality_right, double &_quality_left):
+                                   Property &_complete_sol, const Vector &_object,const Vector &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
-                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf),
+                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), multiple_superq(_multiple_superq),
                                    complete_sol(_complete_sol), object(_object), obstacle(_obstacle),quality_right(_quality_right), quality_left(_quality_left)
 
 {
