@@ -501,7 +501,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
 
-     cout<<"g[6]"<<g[6]<<endl;
+     //cout<<"g[6]"<<g[6]<<endl;
 
 
      return true;

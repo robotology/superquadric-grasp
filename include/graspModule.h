@@ -63,7 +63,9 @@ protected:
     
     std::string dir;
     yarp::sig::Vector object;
+    yarp::sig::Vector object2;
     yarp::sig::Vector obstacle;
+    yarp::sig::Vector obstacle2;
     yarp::sig::Vector hand, hand1;
     double distance, distance1;    
     yarp::sig::Vector displacement;
@@ -108,7 +110,7 @@ protected:
     yarp::os::Mutex mutex;
 
     GraspComputation *graspComp;
-     GraspComputation *graspComp2;
+    GraspComputation *graspComp2;
     GraspVisualization *graspVis;
     GraspExecution *graspExec;
 
@@ -120,8 +122,11 @@ protected:
     yarp::os::Property ipopt_par;
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
+    yarp::os::Property complete_sol2;
+    yarp::os::Property complete_sols;
 
     double quality_right, quality_left;
+    double quality_right2, quality_left2;
 
 public:
     /************************************************************************/
@@ -204,6 +209,9 @@ public:
 
     /**********************************************************************/
     bool go_home(const std::string &entry);
+
+    /**********************************************************************/
+    yarp::os::Property mergeProperties(std::string l_o_r);
 
 };
 

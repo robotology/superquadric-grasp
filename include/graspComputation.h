@@ -29,11 +29,6 @@ protected:
 
     std::string left_right;
 
-    std::deque<yarp::sig::Vector> trajectory_right;
-    std::deque<yarp::sig::Vector> trajectory_left;
-    yarp::sig::Vector poseR, solR;
-    yarp::sig::Vector poseL, solL;
-
     double tol, constr_viol_tol;
     int max_iter, acceptable_iter, object_provided;
     std::string mu_strategy,nlp_scaling_method;
@@ -69,6 +64,11 @@ public:
     bool multiple_superq;
     std::string best_hand;
     double final_value_R, final_value_L, cos_zr, cos_zl;
+
+    std::deque<yarp::sig::Vector> trajectory_right;
+    std::deque<yarp::sig::Vector> trajectory_left;
+    yarp::sig::Vector poseR, solR;
+    yarp::sig::Vector poseL, solL;
 
     double &quality_right, &quality_left;
 

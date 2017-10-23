@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
  * Author: Giulia Vezzani
  * email:  giulia.vezzani@iit.it
@@ -52,6 +52,9 @@ bool GraspingModule::clear_poses()
     object.resize(11,0.0);
     obstacle.resize(11,0.0);
     complete_sol.clear();
+    complete_sol2.clear();
+    complete_sols.clear();
+
 
     return true;
 }
@@ -112,11 +115,63 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
+    cout<<endl<<endl;
+
     t_grasp=graspComp->getTime();
 
     graspVis->left_or_right=hand;
 
-    return complete_sol;
+    double quality1, quality2;
+    if (graspComp->best_hand=="right")
+        quality1=graspComp->quality_right;
+    else
+        quality1=graspComp->quality_left;
+
+    if (multiple_superq)
+    {
+        object2=obstacle;
+        obstacle2=object;
+
+        yDebug()<<"Object "<<graspComp2->object.toString();
+        yDebug()<<"Obstacle "<<graspComp2->obstacle.toString();
+        graspComp2->setPar("left_or_right", hand);
+        graspComp2->run();
+        graspComp2->getSolution(hand);
+
+        yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol2.toString();
+
+        t_grasp=graspComp2->getTime();
+
+        graspVis->left_or_right=hand;
+    }
+
+    complete_sols=mergeProperties(left_or_right);
+
+    yDebug()<<"Complete sols "<<complete_sols.toString();
+
+    if (!multiple_superq)
+        return complete_sol;
+    else
+    {
+        if (graspComp2->best_hand=="right")
+            quality2=graspComp2->quality_right;
+        else
+            quality2=graspComp2->quality_left;
+
+        yDebug()<<"quality 1"<<quality1;
+        yDebug()<<"quality 2"<<quality2;
+
+        if (quality1<quality2)
+        {
+            yDebug()<<"Second scenario";
+            return complete_sol;
+        }
+        else
+        {
+            yDebug()<<"First scenario";
+            return complete_sol2;
+        }
+    }
 }
 
 /**********************************************************************/
@@ -176,6 +231,7 @@ bool GraspingModule::set_visualization(const string &e)
         else if ((visualization==true) && (e=="off"))
         {
             graspVis->suspend();
+
             visualization=false;
         }
         return true;
@@ -212,15 +268,31 @@ bool GraspingModule::set_hand(const string &e)
 bool GraspingModule::set_options(const Property &newOptions, const string &field)
 {
     if (field=="pose")
+    {
         graspComp->setPosePar(newOptions, false);
+        if (multiple_superq)
+            graspComp2->setPosePar(newOptions, false);
+    }
     else if (field=="trajectory")
+    {
         graspComp->setTrajectoryPar(newOptions, false);
+        if (multiple_superq)
+            graspComp2->setTrajectoryPar(newOptions, false);
+    }
     else if (field=="optimization")
+    {
         graspComp->setIpoptPar(newOptions, false);
+        if (multiple_superq)
+            graspComp2->setIpoptPar(newOptions, false);
+    }
     else if (field=="execution")
+    {
         graspExec->setPosePar(newOptions, false);
+    }
     else if (field=="visualization")
+    {
         graspVis->setPar(newOptions,false);
+    }
     else
         return false;
 
@@ -232,6 +304,7 @@ Property GraspingModule::get_options(const string &field)
 {
     Property advOptions;
     if (field=="pose")
+
         advOptions=graspComp->getPosePar();
     else if (field=="trajectory")
         advOptions=graspComp->getTrajectoryPar();
@@ -433,13 +506,21 @@ bool GraspingModule::close()
 {
     delete graspComp;
 
+    if (multiple_superq)
+        delete graspComp2;
+
     graspExec->release();
     delete graspExec;
 
     if (visualization)
+    {
         graspVis->stop();
+        if (multiple_superq)
+            graspVis->stop();
+    }
 
     delete graspVis;
+
 
     if (portRpc.asPort().isOpen())
         portRpc.close();
@@ -653,16 +734,19 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacle, quality_right, quality_left, multiple_superq);
     if (multiple_superq)
-        graspComp2= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, obstacle, object, quality_right, quality_left, multiple_superq);
+        graspComp2= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol2, object2, obstacle2, quality_right2, quality_left2, multiple_superq);
 
     graspComp->init();
+
+    if (multiple_superq)
+        graspComp2->init();
 
     config=configViewer(rf);
 
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object,obstacle, hand, hand1, vis_par, quality_right, quality_left);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object,obstacle, hand, hand1, vis_par, quality_right, quality_left, quality_right2, quality_left2);
 
     if (visualization)
     {
@@ -854,6 +938,171 @@ void GraspingModule::saveSol(const Property &poses)
     graspComp->count_file_old++;
 }
 
+/**********************************************************************/
+Property GraspingModule::mergeProperties(string l_o_r)
+{
+    Property poses;
+    Bottle bottle;
+
+    if ((l_o_r=="right") || (l_o_r=="both"))
+    {
+        Bottle &bright2=bottle.addList();
+        for (size_t i=0; i<graspComp->poseR.size(); i++)
+        {
+            bright2.addDouble(graspComp->poseR[i]);
+        }
+        poses.put("pose_right1", bottle.get(0));
+
+        Bottle &bright1=bottle.addList();
+        for (size_t i=0; i<graspComp->solR.size(); i++)
+        {
+            bright1.addDouble(graspComp->solR[i]);
+        }
+        poses.put("solution_right1", bottle.get(1));
+
+        Bottle &bright3=bottle.addList();
+        for (size_t i=0; i<graspComp->trajectory_right.size(); i++)
+        {
+            Bottle &bb=bright3.addList();
+            for (size_t j=0; j<graspComp->trajectory_right[i].size();j++)
+                bb.addDouble(graspComp->trajectory_right[i][j]);
+        }
+        poses.put("trajectory_right1", bottle.get(2));
+    }
+
+    if (l_o_r=="both")
+    {
+        Bottle &bleft2=bottle.addList();
+        for (size_t i=0; i<graspComp->poseL.size(); i++)
+        {
+            bleft2.addDouble(graspComp->poseL[i]);
+        }
+        poses.put("pose_left1", bottle.get(3));
+
+        Bottle &bleft1=bottle.addList();
+        for (size_t i=0; i<graspComp->solL.size(); i++)
+        {
+            bleft1.addDouble(graspComp->solL[i]);
+        }
+        poses.put("solution_left1", bottle.get(4));
+
+        Bottle &bright3=bottle.addList();
+        for (size_t i=0; i<graspComp->trajectory_left.size(); i++)
+        {
+            Bottle &bb=bright3.addList();
+            for (size_t j=0; j<graspComp->trajectory_left[i].size();j++)
+                bb.addDouble(graspComp->trajectory_left[i][j]);
+        }
+        poses.put("trajectory_left1", bottle.get(5));
+    }
+
+    if (l_o_r=="left")
+    {
+        Bottle &bleft2=bottle.addList();
+        for (size_t i=0; i<graspComp->poseL.size(); i++)
+        {
+            bleft2.addDouble(graspComp->poseL[i]);
+        }
+        poses.put("pose_left1", bottle.get(0));
+
+        Bottle &bleft1=bottle.addList();
+        for (size_t i=0; i<graspComp->solL.size(); i++)
+        {
+            bleft1.addDouble(graspComp->solL[i]);
+        }
+        poses.put("solution_left1", bottle.get(1));
+
+        Bottle &bright3=bottle.addList();
+        for (size_t i=0; i<graspComp->trajectory_left.size(); i++)
+        {
+            Bottle &bb=bright3.addList();
+            for (size_t j=0; j<graspComp->trajectory_left[i].size();j++)
+                bb.addDouble(graspComp->trajectory_left[i][j]);
+        }
+        poses.put("trajectory_left1", bottle.get(2));
+    }
+
+    if ((l_o_r=="right") || (l_o_r=="both"))
+    {
+        Bottle &bright6=bottle.addList();
+        for (size_t i=0; i<graspComp2->poseR.size(); i++)
+        {
+            bright6.addDouble(graspComp2->poseR[i]);
+        }
+        poses.put("pose_right2", bottle.get(6));
+
+        Bottle &bright7=bottle.addList();
+        for (size_t i=0; i<graspComp2->solR.size(); i++)
+        {
+            bright7.addDouble(graspComp2->solR[i]);
+        }
+        poses.put("solution_right2", bottle.get(7));
+
+        Bottle &bright8=bottle.addList();
+        for (size_t i=0; i<graspComp2->trajectory_right.size(); i++)
+        {
+            Bottle &bb=bright8.addList();
+            for (size_t j=0; j<graspComp2->trajectory_right[i].size();j++)
+                bb.addDouble(graspComp2->trajectory_right[i][j]);
+        }
+        poses.put("trajectory_right2", bottle.get(8));
+    }
+
+    if (l_o_r=="both")
+    {
+        Bottle &bleft10=bottle.addList();
+        for (size_t i=0; i<graspComp2->poseL.size(); i++)
+        {
+            bleft10.addDouble(graspComp2->poseL[i]);
+        }
+        poses.put("pose_left2", bottle.get(9));
+
+        Bottle &bleft11=bottle.addList();
+        for (size_t i=0; i<graspComp2->solL.size(); i++)
+        {
+            bleft11.addDouble(graspComp2->solL[i]);
+        }
+        poses.put("solution_left2", bottle.get(10));
+
+        Bottle &bright13=bottle.addList();
+        for (size_t i=0; i<graspComp2->trajectory_left.size(); i++)
+        {
+            Bottle &bb=bright13.addList();
+            for (size_t j=0; j<graspComp2->trajectory_left[i].size();j++)
+                bb.addDouble(graspComp2->trajectory_left[i][j]);
+        }
+        poses.put("trajectory_left2", bottle.get(11));
+    }
+
+
+    if (l_o_r=="left")
+    {
+        Bottle &bleft22=bottle.addList();
+        for (size_t i=0; i<graspComp2->poseL.size(); i++)
+        {
+            bleft22.addDouble(graspComp2->poseL[i]);
+        }
+        poses.put("pose_left2", bottle.get(3));
+
+        Bottle &bleft21=bottle.addList();
+        for (size_t i=0; i<graspComp2->solL.size(); i++)
+        {
+            bleft21.addDouble(graspComp2->solL[i]);
+        }
+        poses.put("solution_left2", bottle.get(4));
+
+        Bottle &bright23=bottle.addList();
+        for (size_t i=0; i<graspComp2->trajectory_left.size(); i++)
+        {
+            Bottle &bb=bright23.addList();
+            for (size_t j=0; j<graspComp2->trajectory_left[i].size();j++)
+                bb.addDouble(graspComp2->trajectory_left[i][j]);
+        }
+        poses.put("trajectory_left2", bottle.get(5));
+    }
+
+    return poses;
+}
 
 
 

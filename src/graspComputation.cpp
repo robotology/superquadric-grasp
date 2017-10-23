@@ -19,7 +19,7 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object,const Vector &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq):
+                                   Property &_complete_sol, const Vector &_object, const Vector &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), multiple_superq(_multiple_superq),
                                    complete_sol(_complete_sol), object(_object), obstacle(_obstacle),quality_right(_quality_right), quality_left(_quality_left)
@@ -259,7 +259,7 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
 
     if (newOptions.find("plane").isNull() && (first_time==true))
     {
-        plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.11;
+        plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.3;
     }
     else if (!newOptions.find("plane").isNull())
     {
@@ -274,7 +274,7 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.30;
+            plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.3;
         }
     }
 }

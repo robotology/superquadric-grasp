@@ -28,9 +28,11 @@ using namespace yarp::math;
 
 /***********************************************************************/
 GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
-                                       const Property &_complete_sol, const Vector &_object, const Vector &_obstacle, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right, double &_quality_left):
+                                       const Property &_complete_sol, const Vector &_object, const Vector &_obstacle, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right1, double &_quality_left1,
+                                       double &_quality_right2, double &_quality_left2):
                                        RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
-                                       object(_object), obstacle(_obstacle), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right(_quality_right), quality_left(_quality_left)
+                                       object(_object), obstacle(_obstacle), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right1(_quality_right1), quality_left1(_quality_left1),
+                                       quality_right2(_quality_right2), quality_left2(_quality_left2)
 {
 
 }
@@ -194,7 +196,12 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 count++;
             }
             else
-                cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+            {
+                if (i==0 || i==1 || i==4 || i==5)
+                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+                else
+                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0), 4.0);
+            }
 
             if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
             {
@@ -208,16 +215,30 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 count++;
             }
             else
-                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));            
+            {
+                 if (i==0 || i==1 || i==4 || i==5)
+                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                else
+                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255), 4.0);
+            }
         }
 
         stringstream q_r, q_l;
-        q_r<<round( quality_right * 100.0 ) / 100.0;
-        q_l<<round( quality_left * 100.0 ) / 100.0;
+        q_r<<round( quality_right1 * 100.0 ) / 100.0;
+        q_l<<round( quality_left1 * 100.0 ) / 100.0;
 
-        stringstream right, left;
-        right<<"quality right";
-        left<<"quality left";
+        stringstream q_r2, q_l2;
+        q_r2<<round( quality_right2 * 100.0 ) / 100.0;
+        q_l2<<round( quality_left2 * 100.0 ) / 100.0;
+
+        stringstream right1, left1;
+        right1<<"quality right I";
+        left1<<"quality left I";
+
+        stringstream right2, left2;
+        right2<<"quality right II";
+        left2<<"quality left II";
+
 
         int thickness=2.0;
         int font=cv::FONT_HERSHEY_SIMPLEX;
@@ -229,19 +250,34 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         cv::Scalar iol_green(22,88,248);
         cv::Scalar iol_red(244,16, 46);
 
-        if (quality_right>quality_left)
+        if (quality_right1>quality_left1)
         {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,90), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,90), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, right1.str(), cv::Point(200,60), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, left1.str(), cv::Point(50,60), font, fontScale, iol_red, thickness);
         }
-        else if (quality_right<quality_left)
+        else if (quality_right1<quality_left1)
         {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, q_r2.str(), cv::Point(200,90), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, q_l2.str(), cv::Point(50,90), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, right1.str(), cv::Point(200,60), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, left1.str(), cv::Point(50,60), font, fontScale, iol_green, thickness);
+        }
+
+        if (quality_right2>quality_left2)
+        {
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,35), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,35), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, right2.str(), cv::Point(200,15), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, left2.str(), cv::Point(50,15), font, fontScale, iol_red, thickness);
+        }
+        else if (quality_right2<quality_left2)
+        {
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,35), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,35), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, right2.str(), cv::Point(200,15), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, left2.str(), cv::Point(50,15), font, fontScale, iol_green, thickness);
         }
     }
 
@@ -406,7 +442,7 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
     trajectory_right.clear();
     trajectory_left.clear();
 
-    Bottle &pose2=poses.findGroup("trajectory_right");
+    Bottle &pose2=poses.findGroup("trajectory_right1");
 
     if (!pose2.isNull())
     {
@@ -425,7 +461,7 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
         }
     }
 
-    Bottle &pose3=poses.findGroup("trajectory_left");
+    Bottle &pose3=poses.findGroup("trajectory_left1");
 
     if (!pose3.isNull())
     {
@@ -443,7 +479,7 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
         }
     }
 
-    Bottle &pose=poses.findGroup("solution_right");
+    Bottle &pose=poses.findGroup("solution_right1");
     if (!pose.isNull())
     {
         Bottle *p=pose.get(1).asList();
@@ -452,10 +488,65 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
             solR[i]=p->get(i).asDouble();
     }
 
-    Bottle &pose1=poses.findGroup("solution_left");
+    Bottle &pose1=poses.findGroup("solution_left1");
     if (!pose1.isNull())
     {
         Bottle *p=pose1.get(1).asList();
+
+        for (size_t i=0; i<p->size(); i++)
+            solL[i]=p->get(i).asDouble();
+    }
+
+    Bottle &pose4=poses.findGroup("trajectory_right2");
+
+    if (!pose4.isNull())
+    {
+        Bottle *p=pose4.get(1).asList();
+        for (size_t i=0; i<p->size(); i++)
+        {
+            Bottle *p1=p->get(i).asList();
+
+
+            for (size_t j=0; j<p1->size(); j++)
+            {
+                tmp[j]=p1->get(j).asDouble();
+            }
+
+            trajectory_right.push_back(tmp);
+        }
+    }
+
+    Bottle &pose5=poses.findGroup("trajectory_left2");
+
+    if (!pose5.isNull())
+    {
+        Bottle *p=pose5.get(1).asList();
+        for (size_t i=0; i<p->size(); i++)
+        {
+            Bottle *p1=p->get(i).asList();
+
+
+            for (size_t j=0; j<p1->size(); j++)
+            {
+                tmp[j]=p1->get(j).asDouble();
+            }
+            trajectory_left.push_back(tmp);
+        }
+    }
+
+    Bottle &pose6=poses.findGroup("solution_right2");
+    if (!pose.isNull())
+    {
+        Bottle *p=pose6.get(1).asList();
+
+        for (size_t i=0; i<p->size(); i++)
+            solR[i]=p->get(i).asDouble();
+    }
+
+    Bottle &pose7=poses.findGroup("solution_left2");
+    if (!pose1.isNull())
+    {
+        Bottle *p=pose7.get(1).asList();
 
         for (size_t i=0; i<p->size(); i++)
             solL[i]=p->get(i).asDouble();
