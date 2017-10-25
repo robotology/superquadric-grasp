@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iomanip>
 #include <deque>
+#include <vector>
 
 #include <yarp/math/Math.h>
 #include <yarp/dev/Drivers.h>
@@ -50,7 +51,7 @@ bool GraspingModule::clear_poses()
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     object.resize(11,0.0);
-    obstacle.resize(11,0.0);
+    //obstacle.resize(11,0.0);
     complete_sol.clear();
     complete_sol2.clear();
     complete_sols.clear();
@@ -63,6 +64,7 @@ bool GraspingModule::clear_poses()
 Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const Property &obstacle_ext, const string &hand)
 {
     //LockGuard lg(mutex);
+    Vector obstacle(11,0.0);
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -101,76 +103,104 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
         object.setSubvector(8,dcm2euler(axis2dcm(axis)));
     }
 
-    Bottle *obs=obstacle_ext.find("obstacle").asList();
-    obstacle[0]=obs->get(0).asDouble(); obstacle[1]=obs->get(1).asDouble(); obstacle[2]=obs->get(2).asDouble();
-    obstacle[3]=obs->get(3).asDouble(); obstacle[4]=obs->get(4).asDouble(); obstacle[5]=obs->get(5).asDouble();
-    obstacle[6]=obs->get(6).asDouble(); obstacle[7]=obs->get(7).asDouble(); obstacle[8]=obs->get(8).asDouble();
-    obstacle[9]=obs->get(9).asDouble(); obstacle[10]=obs->get(10).asDouble();
+    object_vis=object;
+
+    Bottle *obs=obstacle_ext.find("obstacles").asList();
+    for (size_t i =0; i<obs->size(); i++)
+    {
+        Bottle *obstacle_sing=obs->get(i).asList();
+
+        obstacle[0]=obstacle_sing->get(0).asDouble(); obstacle[1]=obstacle_sing->get(1).asDouble(); obstacle[2]=obstacle_sing->get(2).asDouble();
+        obstacle[3]=obstacle_sing->get(3).asDouble(); obstacle[4]=obstacle_sing->get(4).asDouble(); obstacle[5]=obstacle_sing->get(5).asDouble();
+        obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble(); obstacle[8]=obstacle_sing->get(8).asDouble();
+        obstacle[9]=obstacle_sing->get(9).asDouble(); obstacle[10]=obstacle_sing->get(10).asDouble();
+        obstacles.push_back(obstacle);
+        obstacles_vis.push_back(obstacle);
+        yDebug()<<"Obstacles "<<obstacles[i].toString();
+    }
 
     yDebug()<<"Object "<<object.toString();
-    yDebug()<<"Obstacle "<<obstacle.toString();
+
+    deque<double> quality;
+    deque<Property> solutions;
+
     graspComp->setPar("left_or_right", hand);
+
+    Vector obj_aux=obstacle;
+    deque<Vector> obs_aux;
+    obs_aux=obstacles;
+
     graspComp->run();
     graspComp->getSolution(hand);
 
-    yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
-
+    yInfo()<<" [GraspingModule]: Complete solution scenario 0 ";
+    cout<<complete_sol.toString();
     cout<<endl<<endl;
+
+    solutions.push_back(complete_sol);
+
+    if (graspComp->best_hand=="right")
+        quality.push_back(graspComp->quality_right);
+    else
+        quality.push_back(graspComp->quality_left);
+
+    for (size_t i=0; i<obstacles.size(); i++)
+    {
+        obj_aux=obs_aux[i];
+        object= obj_aux;
+        obstacles.clear();
+        obstacles.push_back(object);
+        yDebug()<<"Object "<<obj_aux.toString();
+        for (size_t j=0; j<obstacles.size(); j++)
+        {
+            if (j!=i)
+                obstacles.push_back(obs_aux[j]);
+
+            yDebug()<<"Obstacles "<<obstacles[j].toString();
+        }
+        graspComp->run();
+        graspComp->getSolution(hand);
+
+        yInfo()<<" [GraspingModule]: Complete solution scenario"<<i+1;
+        cout<<complete_sol.toString();
+        cout<<endl<<endl;
+        solutions.push_back(complete_sol);
+
+        if (graspComp->best_hand=="right")
+            quality.push_back(graspComp->quality_right);
+        else
+            quality.push_back(graspComp->quality_left);
+    }
 
     t_grasp=graspComp->getTime();
 
     graspVis->left_or_right=hand;
 
-    double quality1, quality2;
-    if (graspComp->best_hand=="right")
-        quality1=graspComp->quality_right;
-    else
-        quality1=graspComp->quality_left;
+    //complete_sols=mergeProperties(left_or_right);
+    complete_sols=solutions;
 
-    if (multiple_superq)
-    {
-        object2=obstacle;
-        obstacle2=object;
-
-        yDebug()<<"Object "<<graspComp2->object.toString();
-        yDebug()<<"Obstacle "<<graspComp2->obstacle.toString();
-        graspComp2->setPar("left_or_right", hand);
-        graspComp2->run();
-        graspComp2->getSolution(hand);
-
-        yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol2.toString();
-
-        t_grasp=graspComp2->getTime();
-
-        graspVis->left_or_right=hand;
-    }
-
-    complete_sols=mergeProperties(left_or_right);
-
-    yDebug()<<"Complete sols "<<complete_sols.toString();
+    //yDebug()<<"Complete sols "<<complete_sols.toString();
+    int best_scenario;
+    double best_quality;
 
     if (!multiple_superq)
         return complete_sol;
     else
     {
-        if (graspComp2->best_hand=="right")
-            quality2=graspComp2->quality_right;
-        else
-            quality2=graspComp2->quality_left;
-
-        yDebug()<<"quality 1"<<quality1;
-        yDebug()<<"quality 2"<<quality2;
-
-        if (quality1<quality2)
+        best_quality=quality[0];
+        for (size_t i=0; i<quality.size(); i++)
         {
-            yDebug()<<"Second scenario";
-            return complete_sol;
+            if (best_quality <= quality[i+1])
+            {
+                best_quality=quality[i+1];
+                best_scenario=i+1;
+            }
+
+            yInfo()<<"Quality "<<i<<quality[i];
         }
-        else
-        {
-            yDebug()<<"First scenario";
-            return complete_sol2;
-        }
+        yInfo()<<"Best scenario "<< best_scenario<< "with quality: "<<best_quality;
+
+        return solutions[best_scenario];
     }
 }
 
@@ -270,20 +300,20 @@ bool GraspingModule::set_options(const Property &newOptions, const string &field
     if (field=="pose")
     {
         graspComp->setPosePar(newOptions, false);
-        if (multiple_superq)
-            graspComp2->setPosePar(newOptions, false);
+        //if (multiple_superq)
+        //    graspComp2->setPosePar(newOptions, false);
     }
     else if (field=="trajectory")
     {
         graspComp->setTrajectoryPar(newOptions, false);
-        if (multiple_superq)
-            graspComp2->setTrajectoryPar(newOptions, false);
+        //if (multiple_superq)
+        //    graspComp2->setTrajectoryPar(newOptions, false);
     }
     else if (field=="optimization")
     {
         graspComp->setIpoptPar(newOptions, false);
-        if (multiple_superq)
-            graspComp2->setIpoptPar(newOptions, false);
+        //if (multiple_superq)
+        //    graspComp2->setIpoptPar(newOptions, false);
     }
     else if (field=="execution")
     {
@@ -506,8 +536,8 @@ bool GraspingModule::close()
 {
     delete graspComp;
 
-    if (multiple_superq)
-        delete graspComp2;
+    //if (multiple_superq)
+     //   delete graspComp2;
 
     graspExec->release();
     delete graspExec;
@@ -515,8 +545,8 @@ bool GraspingModule::close()
     if (visualization)
     {
         graspVis->stop();
-        if (multiple_superq)
-            graspVis->stop();
+        //if (multiple_superq)
+        //    graspVis->stop();
     }
 
     delete graspVis;
@@ -643,7 +673,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
     object.resize(11,0.0);
-    obstacle.resize(11,0.0);
+    //obstacle.resize(11,0.0);
 
     readSuperq("hand",hand,11,this->rf);
 
@@ -732,21 +762,21 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacle, quality_right, quality_left, multiple_superq);
-    if (multiple_superq)
-        graspComp2= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol2, object2, obstacle2, quality_right2, quality_left2, multiple_superq);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacles, quality_right, quality_left, multiple_superq);
+    //if (multiple_superq)
+    //    graspComp2= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol2, object2, obstacle2, quality_right2, quality_left2, multiple_superq);
 
     graspComp->init();
 
-    if (multiple_superq)
-        graspComp2->init();
+    //if (multiple_superq)
+    //    graspComp2->init();
 
     config=configViewer(rf);
 
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object,obstacle, hand, hand1, vis_par, quality_right, quality_left, quality_right2, quality_left2);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, quality_right, quality_left, quality_right2, quality_left2);
 
     if (visualization)
     {

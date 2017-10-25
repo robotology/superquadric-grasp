@@ -19,10 +19,10 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object, const Vector &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq):
+                                   Property &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, double &_quality_right, double &_quality_left, bool &_multiple_superq):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), multiple_superq(_multiple_superq),
-                                   complete_sol(_complete_sol), object(_object), obstacle(_obstacle),quality_right(_quality_right), quality_left(_quality_left)
+                                   complete_sol(_complete_sol), object(_object), obstacles(_obstacles),quality_right(_quality_right), quality_left(_quality_left)
 
 {
 
@@ -469,7 +469,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
     // New constraint
-    grasp_nlp->init(object, which_hand,obstacle, n_pointshand, l_o_r);
+    grasp_nlp->init(object, which_hand,obstacles, n_pointshand, l_o_r);
     //grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
     grasp_nlp->configure(this->rf,l_o_r, displacement, plane);
 

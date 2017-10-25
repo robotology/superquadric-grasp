@@ -28,10 +28,10 @@ using namespace yarp::math;
 
 /***********************************************************************/
 GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
-                                       const Property &_complete_sol, const Vector &_object, const Vector &_obstacle, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right1, double &_quality_left1,
+                                       const deque<Property> &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right1, double &_quality_left1,
                                        double &_quality_right2, double &_quality_left2):
                                        RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
-                                       object(_object), obstacle(_obstacle), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right1(_quality_right1), quality_left1(_quality_left1),
+                                       object(_object), obstacles(_obstacles), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right1(_quality_right1), quality_left1(_quality_left1),
                                        quality_right2(_quality_right2), quality_left2(_quality_left2)
 {
 
@@ -66,10 +66,12 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     Vector dir_z(3,0.0);
     Vector x2D(2,0.0);
     Vector y2D(2,0.0);
-    Vector z2D(2,0.0);  
+    Vector z2D(2,0.0);
+
 
     addSuperq(object,imgOut,255);
-    addSuperq(obstacle,imgOut,255);
+    for (size_t i=0; i<obstacles.size(); i++)
+        addSuperq(obstacles[i],imgOut,255);
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
@@ -435,122 +437,73 @@ void GraspVisualization::run()
 }
 
 /***********************************************************************/
-void GraspVisualization::getPoses(const yarp::os::Property &poses)
+void GraspVisualization::getPoses(const deque<Property> &p)
 {
     LockGuard lg(mutex);
     Vector tmp(6,0.0);
     trajectory_right.clear();
     trajectory_left.clear();
 
-    Bottle &pose2=poses.findGroup("trajectory_right1");
-
-    if (!pose2.isNull())
+    for (size_t i=0; i<p.size(); i++)
     {
-        Bottle *p=pose2.get(1).asList();
-        for (size_t i=0; i<p->size(); i++)
+        Property poses=p[i];
+        Bottle &pose2=poses.findGroup("trajectory_right");
+
+        if (!pose2.isNull())
         {
-            Bottle *p1=p->get(i).asList();
-
-
-            for (size_t j=0; j<p1->size(); j++)
+            Bottle *p=pose2.get(1).asList();
+            for (size_t i=0; i<p->size(); i++)
             {
-                tmp[j]=p1->get(j).asDouble();
-            }
+                Bottle *p1=p->get(i).asList();
 
-            trajectory_right.push_back(tmp);
+
+                for (size_t j=0; j<p1->size(); j++)
+                {
+                    tmp[j]=p1->get(j).asDouble();
+                }
+
+                trajectory_right.push_back(tmp);
+            }
+        }
+
+        Bottle &pose3=poses.findGroup("trajectory_left");
+
+        if (!pose3.isNull())
+        {
+            Bottle *p=pose3.get(1).asList();
+            for (size_t i=0; i<p->size(); i++)
+            {
+                Bottle *p1=p->get(i).asList();
+
+
+                for (size_t j=0; j<p1->size(); j++)
+                {
+                    tmp[j]=p1->get(j).asDouble();
+                }
+                trajectory_left.push_back(tmp);
+            }
+        }
+
+        Bottle &pose=poses.findGroup("solution_right");
+        if (!pose.isNull())
+        {
+            Bottle *p=pose.get(1).asList();
+
+            for (size_t i=0; i<p->size(); i++)
+                solR[i]=p->get(i).asDouble();
+        }
+
+        Bottle &pose1=poses.findGroup("solution_left");
+        if (!pose1.isNull())
+        {
+            Bottle *p=pose1.get(1).asList();
+
+            for (size_t i=0; i<p->size(); i++)
+                solL[i]=p->get(i).asDouble();
         }
     }
 
-    Bottle &pose3=poses.findGroup("trajectory_left1");
 
-    if (!pose3.isNull())
-    {
-        Bottle *p=pose3.get(1).asList();
-        for (size_t i=0; i<p->size(); i++)
-        {
-            Bottle *p1=p->get(i).asList();
-
-
-            for (size_t j=0; j<p1->size(); j++)
-            {
-                tmp[j]=p1->get(j).asDouble();
-            }
-            trajectory_left.push_back(tmp);
-        }
-    }
-
-    Bottle &pose=poses.findGroup("solution_right1");
-    if (!pose.isNull())
-    {
-        Bottle *p=pose.get(1).asList();
-
-        for (size_t i=0; i<p->size(); i++)
-            solR[i]=p->get(i).asDouble();
-    }
-
-    Bottle &pose1=poses.findGroup("solution_left1");
-    if (!pose1.isNull())
-    {
-        Bottle *p=pose1.get(1).asList();
-
-        for (size_t i=0; i<p->size(); i++)
-            solL[i]=p->get(i).asDouble();
-    }
-
-    Bottle &pose4=poses.findGroup("trajectory_right2");
-
-    if (!pose4.isNull())
-    {
-        Bottle *p=pose4.get(1).asList();
-        for (size_t i=0; i<p->size(); i++)
-        {
-            Bottle *p1=p->get(i).asList();
-
-
-            for (size_t j=0; j<p1->size(); j++)
-            {
-                tmp[j]=p1->get(j).asDouble();
-            }
-
-            trajectory_right.push_back(tmp);
-        }
-    }
-
-    Bottle &pose5=poses.findGroup("trajectory_left2");
-
-    if (!pose5.isNull())
-    {
-        Bottle *p=pose5.get(1).asList();
-        for (size_t i=0; i<p->size(); i++)
-        {
-            Bottle *p1=p->get(i).asList();
-
-
-            for (size_t j=0; j<p1->size(); j++)
-            {
-                tmp[j]=p1->get(j).asDouble();
-            }
-            trajectory_left.push_back(tmp);
-        }
-    }
-
-    Bottle &pose6=poses.findGroup("solution_right2");
-    if (!pose.isNull())
-    {
-        Bottle *p=pose6.get(1).asList();
-
-        for (size_t i=0; i<p->size(); i++)
-            solR[i]=p->get(i).asDouble();
-    }
-
-    Bottle &pose7=poses.findGroup("solution_left2");
-    if (!pose1.isNull())
-    {
-        Bottle *p=pose7.get(1).asList();
-
-        for (size_t i=0; i<p->size(); i++)
-            solL[i]=p->get(i).asDouble();
-    }
 }
 
 /***********************************************************************/

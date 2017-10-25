@@ -47,15 +47,16 @@ class grasping_NLP : public Ipopt::TNLP
 public:
     yarp::sig::Vector hand;
     yarp::sig::Vector object;
-    yarp::sig::Vector obstacle;
+    std::deque<yarp::sig::Vector> obstacles;
     yarp::sig::Matrix plane;
     yarp::sig::Vector solution;
     yarp::sig::Vector robot_pose;
     std::string l_o_r;
     double tmp_value;
+    int num_superq;
 
     /****************************************************************/
-    void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext,const yarp::sig::Vector &obstacleext, int &n_handpoints, const std::string &str_hand);
+    void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext,const std::deque<yarp::sig::Vector> &obstacleext, int &n_handpoints, const std::string &str_hand);
 
     /****************************************************************/
     void checkZbound();
@@ -106,7 +107,7 @@ public:
                  Ipopt::Index m, Ipopt::Number *g);
 
     /****************************************************************/
-    double G_v(yarp::sig::Vector &x, int i);
+    double G_v(yarp::sig::Vector &x, int i, Ipopt::Index m);
 
     /****************************************************************/
      bool eval_jac_g(Ipopt::Index n, const Ipopt::Number *x, bool new_x,

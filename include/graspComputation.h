@@ -58,7 +58,7 @@ public:
     yarp::sig::Vector &hand, &hand1;
     yarp::os::Property &complete_sol;
     const yarp::sig::Vector &object;
-    const yarp::sig::Vector &obstacle;
+    const std::deque<yarp::sig::Vector> &obstacles;
     int count_file_old;
     int count_file;
     bool multiple_superq;
@@ -76,7 +76,7 @@ public:
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
-                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, const yarp::sig::Vector &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq);
+                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, const std::deque<yarp::sig::Vector> &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq);
 
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);

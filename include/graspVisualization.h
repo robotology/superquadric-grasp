@@ -58,20 +58,20 @@ public:
     std::string left_or_right;
     yarp::os::Mutex mutex;
     const yarp::sig::Vector &object;
-    const yarp::sig::Vector &obstacle;
+    const std::deque<yarp::sig::Vector> &obstacles;
     yarp::sig::ImageOf<yarp::sig::PixelRgb> *imgIn;
 
     yarp::os::Property vis_par;
     yarp::sig::Vector &hand, &hand1;
-    const yarp::os::Property &complete_sol;
+    const std::deque<yarp::os::Property> &complete_sol;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
 
     /***********************************************************************/
     GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
-                       const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
-                       const yarp::sig::Vector &_object, const yarp::sig::Vector &_obstacle, yarp::sig::Vector &hand,
+                       const yarp::sig::Matrix _K,  std::string left_or_right, const std::deque<yarp::os::Property> &complete_sol,
+                       const yarp::sig::Vector &_object, const std::deque<yarp::sig::Vector> &_obstacles, yarp::sig::Vector &hand,
                        yarp::sig::Vector &hand1, yarp::os::Property &vis_par, double &quality_right, double &quality_left, double &quality_right2, double &quality_left2);
 
     /***********************************************************************/
@@ -96,7 +96,7 @@ public:
     double getTime();
 
     /***********************************************************************/
-    void getPoses(const yarp::os::Property &poses);
+    void getPoses(const std::deque<yarp::os::Property> &poses);
 
     /***********************************************************************/
     void setPar(const yarp::os::Property &newOptions, bool first_time);

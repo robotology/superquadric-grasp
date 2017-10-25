@@ -63,9 +63,9 @@ protected:
     
     std::string dir;
     yarp::sig::Vector object;
-    yarp::sig::Vector object2;
-    yarp::sig::Vector obstacle;
-    yarp::sig::Vector obstacle2;
+    yarp::sig::Vector object_vis;
+    std::deque<yarp::sig::Vector> obstacles;
+    std::deque<yarp::sig::Vector> obstacles_vis;
     yarp::sig::Vector hand, hand1;
     double distance, distance1;    
     yarp::sig::Vector displacement;
@@ -123,7 +123,7 @@ protected:
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
     yarp::os::Property complete_sol2;
-    yarp::os::Property complete_sols;
+    std::deque<yarp::os::Property> complete_sols;
 
     double quality_right, quality_left;
     double quality_right2, quality_left2;

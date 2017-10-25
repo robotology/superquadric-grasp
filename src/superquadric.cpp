@@ -42,11 +42,15 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 /****************************************************************/
-void grasping_NLP::init(const Vector &objectext, Vector &handext, const Vector &obstacleext, int &n_handpoints, const string &str_hand)
+void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Vector> &obstacleext, int &n_handpoints, const string &str_hand)
 {
     hand=handext;
     object=objectext;
-    obstacle=obstacleext;
+    for (size_t i=0; i<obstacleext.size(); i++)
+        obstacles.push_back(obstacleext[i]);
+
+    if (obstacleext.size()!= num_superq)
+        num_superq = obstacleext.size();
 
     H_o2w.resize(4,4);
     H_h2w.resize(4,4);
@@ -181,9 +185,8 @@ bool grasping_NLP::get_nlp_info(Ipopt::Index &n, Ipopt::Index &m,Ipopt::Index &n
                   Ipopt::Index &nnz_h_lag, Ipopt::TNLP::IndexStyleEnum &index_style)
 {
     n=6;
-
-    m=7;
-    nnz_jac_g=42;
+    m=6+(num_superq -1);
+    nnz_jac_g=n*m;
     nnz_h_lag=0;
     index_style=TNLP::C_STYLE;
     x_v.resize(n,0.0);
@@ -475,7 +478,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
      g[3]=plane(0,0)*x_min[0]+plane(1,0)*x_min[1]+plane(2,0)*x_min[2]+plane(3,0);
-     //cout<<"g[3]"<<g[3]<<endl;
 
      Vector robotPose(3,0.0);
      Vector x_tmp(6,0.0);
@@ -493,13 +495,17 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[5]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
-     //New constraint
+     //New constraints
 
-     g[6]=0;
-     for(size_t i=0;i<points_on.size();i++)
-        g[6]+= pow(f(obstacle,x,points_on[i]),obstacle[3])-1;
+     for (size_t j=0; j<num_superq-1; j++)
+     {
+         g[6+j]=0;
 
-     g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
+         for(size_t i=0;i<points_on.size();i++)
+            g[6+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+
+         g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+     }
 
      //cout<<"g[6]"<<g[6]<<endl;
 
@@ -508,9 +514,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
  /****************************************************************/
- double grasping_NLP::G_v(Vector &x, int i)
+ double grasping_NLP::G_v(Vector &x, int i, Ipopt::Index m)
  {
-     Vector g(7,0.0);
+     Vector g(m,0.0);
 
      Matrix H_x,H;
      H_x.resize(4,4);
@@ -564,11 +570,17 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      //New constraint
 
-     g[6]=0;
-     for(size_t i=0;i<points_on.size();i++)
-         g[6]+= pow(f_v(obstacle,x,points_on[i]),obstacle[3])-1;
 
-     g[6]*=obstacle[0]*obstacle[1]*obstacle[2];
+     for (size_t j=0; j<num_superq-1; j++)
+     {
+         g[6+j]=0;
+
+         for(size_t i=0;i<points_on.size();i++)
+            g[6+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+
+         g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+     }
+
      //cout<<"g[6]"<<g[6]<<endl;
      return g[i];
  }
@@ -594,10 +606,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
              {
                  x_tmp[j]=x_tmp[j]+eps;
 
-                 grad_p=G_v(x_tmp,i);
+                 grad_p=G_v(x_tmp,i,m);
                  x_tmp[j]=x_tmp[j]-eps;
 
-                 grad_n=G_v(x_tmp,i);
+                 grad_n=G_v(x_tmp,i,m);
 
                  values[count]=(grad_p-grad_n)/(eps);
                  count++;
@@ -606,23 +618,14 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
      else
     {
-        jCol[0]=0; jCol[1]=1; jCol[2]=2; jCol[3]=3; jCol[4]=4; jCol[5]=5;
-        jCol[6]=0; jCol[7]=1; jCol[8]=2; jCol[9]=3; jCol[10]=4; jCol[11]=5;
-        jCol[12]=0; jCol[13]=1; jCol[14]=2;jCol[15]=3; jCol[16]=4; jCol[17]=5;
-        jCol[18]=0; jCol[19]=1; jCol[20]=2; jCol[21]=3; jCol[22]=4; jCol[23]=5;
-        jCol[24]=0; jCol[25]=1; jCol[26]=2; jCol[27]=3;jCol[28]=4;jCol[29]=5;
-        jCol[30]=0; jCol[31]=1; jCol[32]=2; jCol[33]=3;jCol[34]=4;jCol[35]=5;
-        jCol[36]=0; jCol[37]=1; jCol[38]=2; jCol[39]=3;jCol[40]=4;jCol[41]=5;
-
-        iRow[0]=iRow[1]=iRow[2]=iRow[3]=iRow[4]=iRow[5]=0;
-        iRow[6]=iRow[7]=iRow[8]=iRow[9]=iRow[10]=iRow[11]=1;
-        iRow[12]=iRow[13]=iRow[14]=iRow[15]=iRow[16]=iRow[17]=2;
-
-        iRow[18]=iRow[19]=iRow[20]=iRow[21]=iRow[22]=iRow[23]=3;
-        iRow[24]=iRow[25]=iRow[26]=iRow[27]=iRow[28]=iRow[29]=4;
-        iRow[30]=iRow[31]=iRow[32]=iRow[33]=iRow[34]=iRow[35]=5;
-        iRow[36]=iRow[37]=iRow[38]=iRow[39]=iRow[40]=iRow[41]=6;
-
+        for (size_t j=0; j<m; j++)
+        {
+            for (size_t i=0; i<n ; i++)
+            {
+                jCol[j*(m-1) + i]= i;
+                iRow[j*(m-1)+ i] = j;
+            }
+        }
      }
 
  return true;
@@ -640,14 +643,15 @@ void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, co
         x0[i]=x0_tmp(i,0);
 
     bounds.resize(6,2);
+    num_superq= rf->check("num_superq", Value(2)).asInt();
     readMatrix("bounds_"+left_or_right,bounds, 6, rf);
-    bounds_constr.resize(7,2);
-    readMatrix("bounds_constr_"+left_or_right,bounds_constr,7 , rf);
+    bounds_constr.resize(6 + num_superq - 1,2);
+    readMatrix("bounds_constr_"+left_or_right,bounds_constr,6 + num_superq - 1 , rf);
     plane.resize(4,1);
 
     l_o_r=left_or_right;
     displacement=disp;
-    plane.setCol(0,pl);
+    plane.setCol(0,pl); 
 }
 
 /****************************************************************/
