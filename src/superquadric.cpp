@@ -181,7 +181,7 @@ bool grasping_NLP::get_nlp_info(Ipopt::Index &n, Ipopt::Index &m,Ipopt::Index &n
                   Ipopt::Index &nnz_h_lag, Ipopt::TNLP::IndexStyleEnum &index_style)
 {
     n=6;
-    //  new constraint: old m + 1
+
     m=7;
     nnz_jac_g=42;
     nnz_h_lag=0;
