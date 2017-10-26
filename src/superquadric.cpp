@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
  * Author: Giulia Vezzani
@@ -71,9 +70,12 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoi
     euler[2]=hand[7];
     H_h2w.setSubcol(euler,0,3);
 
-    for(int i=0; i<n_handpoints; i++)
+    for(int i=0; i<(int)sqrt(n_handpoints); i++)
     {
-        points_on.push_back(computePointsHand(hand,i, n_handpoints, str_hand));
+        for (double theta=-M_PI/2; theta<=0; theta+=M_PI/((int)sqrt(n_handpoints)))
+        {
+            points_on.push_back(computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta));
+        }
     }
 
     aux_objvalue=0.0;
@@ -115,65 +117,45 @@ void grasping_NLP::checkZbound()
 }
 
 /****************************************************************/
-Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand)
+Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand, double &theta)
 {
     Vector point(3,0.0);
-    double theta;
+    double omega;
+    double ce,se,co,so;
 
     if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
         hand[1]=findMax(object.subVector(0,2));
-    else if (findMax(object.subVector(0,2))<findMax(hand.subVector(0,2)))
-        hand[1]=findMax(object.subVector(0,2));
+    //else if (findMax(object.subVector(0,2))<findMax(hand.subVector(0,2)))
+    //    hand[1]=findMax(object.subVector(0,2));  
+
 
     if (str_hand=="right")
     {
-        if (j<l/3)
-        {
-            theta=j*M_PI/8;
-            point[0]=cos(theta)*hand[0];
-            point[1]=sin(theta)*hand[1];
-            point[2]=0.0;
-        }
-        if(j>=l/3 && j<l/3*2)
-        {
-            theta=j*M_PI/16;
-            point[0]=cos(theta)*hand[0];
-            point[1]=0.0;
-            point[2]=sin(theta)*hand[2];
-        }
-        if(j>=l/3*2 && j<l)
-        {
-            theta=j*M_PI/16+M_PI;
-            point[0]=0.0;
-            point[1]=cos(theta)*hand[1];
-            point[2]=sin(theta)*hand[2];
-        }
+        omega=j*2*M_PI/(l);
+
+        ce=cos(theta);
+        se=sin(theta);
+        co=cos(omega);
+        so=sin(omega);
+
+        point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+        point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+        point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
     }
     else
     {
-        if (j<l/3)
-        {
-            theta=j*M_PI/8+M_PI;
-            point[0]=cos(theta)*hand[0];
-            point[1]=sin(theta)*hand[1];
-            point[2]=0.0;
-        }
-        if(j>=l/3 && j<l/3*2)
-        {
-            theta=j*M_PI/16+M_PI;
-            point[0]=cos(theta)*hand[0];
-            point[1]=0.0;
-            point[2]=sin(theta)*hand[2];
-        }
-        if(j>=l/3*2 && j<l)
-        {
-            theta=j*M_PI/16;
-            point[0]=0.0;
-            point[1]=cos(theta)*hand[1];
-            point[2]=sin(theta)*hand[2];
-        }
+        omega=j*2*M_PI/(l);
 
+        ce=cos(theta+M_PI/2);
+        se=sin(theta+M_PI/2);
+        co=cos(omega);
+        so=sin(omega);
+
+        point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+        point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+        point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
     }
+
     Vector point_tr(4,0.0);
 
     euler[0]=hand[8];
@@ -414,11 +396,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      euler[2]=x[2];
      H_x.setSubcol(euler,0,3);
 
-
-     euler[0]=hand[8];
-     euler[1]=hand[9];
-     euler[2]=hand[10];
-     H_h2w=euler2dcm(euler);
      Matrix H(4,4);
      H=H_x*H_h2w;
 
@@ -685,6 +662,7 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
     robot_pose.resize(6,0.0);
     robot_pose.setSubvector(3,dcm2euler(H));
+
     if (l_o_r=="right")
     {
         robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H.getCol(2).subVector(0,2)));
@@ -698,9 +676,9 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H.getCol(1).subVector(0,2)));
     }
 
+    tmp_value=0.0;
 
-    /*********************/
-    /**for(size_t i=0;i<points_on.size();i++)
+    for(size_t i=0;i<points_on.size();i++)
     {
         Vector point(3,0.0);
         point=points_on[i];
@@ -719,9 +697,11 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
         H_x.setSubcol(euler,0,3);
 
         point_tr=H_x*point_tmp;
-        cout<<point_tr.subVector(0,2).toString()<<endl;
+
+        tmp_value+= pow( pow(f(object,x,points_on[i]),object[3])-1,2 );
     }
-    /*********************/
+
+    tmp_value/=points_on.size();
 }
 
 /****************************************************************/
@@ -734,6 +714,12 @@ Vector grasping_NLP::get_result() const
 Vector grasping_NLP::get_hand() const
 {
    return hand;
+}
+
+/****************************************************************/
+double grasping_NLP::get_final_F() const
+{
+   return tmp_value;
 }
 
 

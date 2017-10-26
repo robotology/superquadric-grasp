@@ -34,7 +34,8 @@ bool GraspExecution::configure()
 
     home_right.resize(7,0.0);
     home_left.resize(7,0.0);
-    shift.resize(3,0.0);
+    shift_right.resize(3,0.0);
+    shift_left.resize(3,0.0);
 
     i=-1;
 
@@ -49,6 +50,10 @@ bool GraspExecution::configure()
         config=configCartesian("right");
         config=config && configCartesian("left");
     }
+
+    if (visual_serv)
+        config=config && configVisualServoing();
+
 
     if (grasp)
     {
@@ -110,8 +115,6 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[1]=0;
         newDof[2]=1;
         icart_right->setDOF(newDof,curDof);
-
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
     else if (which_hand=="left")
     {
@@ -153,46 +156,79 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[0]=1;
         newDof[1]=0;
         newDof[2]=1;
-        icart_right->setDOF(newDof,curDof);
-
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+        icart_left->setDOF(newDof,curDof);
     }
 
     return done;
 }
 
 /*******************************************************************************/
+bool GraspExecution::configVisualServoing()
+{
+    Property prop_server_vs;
+    prop_server_vs.put("device","visualservoingclient");
+    prop_server_vs.put("verbosity",true);
+    prop_server_vs.put("local","/VisualServoingClientTest");
+    prop_server_vs.put("remote", "/visualservoing");
+
+    drv_server_vs.open(prop_server_vs);
+    if (!drv_server_vs.isValid())
+    {
+       yError("Could not run VisualServoingClient!");
+       return false;
+    }
+
+    drv_server_vs.view(visual_servoing_right);
+    if (visual_servoing_right == NULL)
+    {
+       yError("Could not get interfacate to VisualServoingClient!");
+       return false;
+    }
+
+    visual_servoing_right->setGoToGoalTolerance(pixel_tol);
+
+    return true;
+}
+
+/*******************************************************************************/
 bool GraspExecution::configGrasp()
 {
-    handContr_right.set(lib_context, lib_filename);
-    handContr_left.set(lib_context, lib_filename);
-
     if (left_or_right=="right")
     {
+        handContr_right.set(lib_context, lib_filename);
         handContr_right.set("hand", Value("right"));
         handContr_right.openHand(true, true);
+        handContr_right.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="left")
     {
+        handContr_left.set(lib_context, lib_filename);
         handContr_left.set("hand", Value("left"));
         handContr_left.openHand(true, true);
+        handContr_left.set("useRingLittleFingers", Value(five_fingers));
     }
     else if (left_or_right=="both")
     {
+        handContr_right.set(lib_context, lib_filename);
+        handContr_left.set(lib_context, lib_filename);
+
         handContr_right.set("hand", Value("right"));
+        handContr_right.set("useRingLittleFingers", Value(five_fingers));
+
         handContr_left.set("hand", Value("left"));
+        handContr_left.set("useRingLittleFingers", Value(five_fingers));
 
         handContr_right.openHand(true, true);
         handContr_left.openHand(true, true);
     }
 
-    if (!handContr_right.open())
+    if ((left_or_right !="left") && (!handContr_right.open()))
     {
         yError()<<"[GraspExecution]: Problems in initializing the tactile control for right arm";
         return false;
     }
 
-    if (!handContr_left.open())
+    if ((left_or_right!="right") && (!handContr_left.open()))
     {
         yError()<<"[GraspExecution]: Problems in initializing the tactile control for left arm";
         return false;
@@ -240,6 +276,55 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         {
             left_or_right="both";
         }
+    }
+
+    string fivef=newOptions.find("five_fingers").asString();
+
+    if (newOptions.find("five_fingers").isNull() && (first_time==true))
+    {
+        five_fingers="false";
+    }
+    else if (!newOptions.find("five_fingers").isNull())
+    {
+        if (fivef=="on")
+            five_fingers="true";
+        else 
+            five_fingers="false";
+
+        if ((left_or_right=="right") || (left_or_right=="both"))
+        {
+            handContr_right.set("useRingLittleFingers", Value(five_fingers));
+        }
+        else if ((left_or_right=="left") || ("left_or_right"=="both"))
+            handContr_left.set("useRingLittleFingers", Value(five_fingers));
+    }
+
+    string vs=newOptions.find("visual_servoing").asString();
+
+    if (newOptions.find("visual_servoing").isNull() && (first_time==true))
+    {
+        visual_serv=false;
+    }
+    else if (!newOptions.find("visual_servoing").isNull())
+    {
+        if (vs=="on")
+            visual_serv=true;
+        else
+            visual_serv=false;
+    }
+
+    string direct_kin=newOptions.find("use_direct_kin").asString();
+
+    if (newOptions.find("use_direct_kin").isNull() && (first_time==true))
+    {
+        use_direct_kin=false;
+    }
+    else if (!newOptions.find("use_direct_kin").isNull())
+    {
+        if (direct_kin=="on")
+            use_direct_kin=true;
+        else
+            use_direct_kin=false;
     }
 
     double ttime=newOptions.find("traj_time").asDouble();
@@ -302,6 +387,33 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
+    double ptol=newOptions.find("pixel_tol").asDouble();
+
+    if (newOptions.find("pixel_tol").isNull() && (first_time==true))
+    {
+        pixel_tol=15.0;
+    }
+    else if (!newOptions.find("pixel_tol").isNull())
+    {
+        if ((ptol>=1.0) && (ptol<=20.0))
+        {
+            pixel_tol=ptol;
+        }
+        else if (ptol<1.0)
+        {
+            pixel_tol=1.0;
+        }
+        else if (ptol>20.0)
+        {
+            pixel_tol=20.0;
+        }
+
+        if (first_time==false)
+        {
+            visual_servoing_right->setGoToGoalTolerance(pixel_tol);
+        }
+    }
+
     double lz=newOptions.find("lift_z").asDouble();
 
     if (newOptions.find("lift_z").isNull() && (first_time==true))
@@ -324,14 +436,14 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
-    Bottle *sh=newOptions.find("shift").asList();
-    if (newOptions.find("shift").isNull() && (first_time==true))
+    Bottle *sh=newOptions.find("shift_right").asList();
+    if (newOptions.find("shift_right").isNull() && (first_time==true))
     {
-        shift[0]=0.0;
-        shift[1]=0.0;
-        shift[2]=0.0;
+        shift_right[0]=0.0;
+        shift_right[1]=0.0;
+        shift_right[2]=0.0;
     }
-    else if (!newOptions.find("shift").isNull())
+    else if (!newOptions.find("shift_right").isNull())
     {
         Vector tmp(3,0.0);
         tmp[0]=sh->get(0).asDouble();
@@ -340,21 +452,47 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
 
         if (norm(tmp)>0.0)
         {
-            shift=tmp;
+            shift_right=tmp;
         }
         else
         {
-            shift[0]=0.0;
-            shift[1]=0.0;
-            shift[2]=0.0;
+            shift_right[0]=0.0;
+            shift_right[1]=0.0;
+            shift_right[2]=0.0;
         }
     }
+
+    Bottle *sh2=newOptions.find("shift_left").asList();
+    if (newOptions.find("shift_left").isNull() && (first_time==true))
+    {
+        shift_left[0]=0.0;
+        shift_left[1]=0.0;
+        shift_left[2]=0.0;
+    }
+    else if (!newOptions.find("shift_left").isNull())
+    {
+        Vector tmp(3,0.0);
+        tmp[0]=sh2->get(0).asDouble();
+        tmp[1]=sh2->get(1).asDouble();
+        tmp[2]=sh2->get(2).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            shift_left=tmp;
+        }
+        else
+        {
+            shift_left[0]=0.0;
+            shift_left[1]=0.0;
+            shift_left[2]=0.0;
+        }
+}
 
     Bottle *pl=newOptions.find("home_right").asList();
     if (newOptions.find("home_right").isNull() && (first_time==true))
     {
-        home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
-        home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
+        home_right[0]=-0.30; home_right[1]=0.21; home_right[2]=0.15;
+        home_right[3]=0.113261; home_right[4]=-0.954747; home_right[5]=0.275008; home_right[6]=2.868312;
     }
     else if (!newOptions.find("home_right").isNull())
     {
@@ -373,16 +511,16 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_right[0]=-0.35; home_right[1]=0.25; home_right[2]=0.2;
-            home_right[3]=-0.035166; home_right[4]=-0.67078; home_right[5]=0.734835; home_right[6]=2.46923;
+            home_right[0]=-0.30; home_right[1]=0.21; home_right[2]=0.15;
+            home_right[3]=0.113261; home_right[4]=-0.954747; home_right[5]=0.275008; home_right[6]=2.868312;
         }
     }
 
     Bottle *pll=newOptions.find("home_left").asList();
     if (newOptions.find("home_left").isNull() && (first_time==true))
     {
-        home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
-        home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
+        home_left[0]=-0.30; home_left[1]=-0.21; home_left[2]=0.15;
+        home_left[3]=0.13631; home_left[4]=-0.30149; home_left[5]=0.943675; home_left[6]=2.865295;
     }
     else if (!newOptions.find("home_left").isNull())
     {
@@ -400,8 +538,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            home_left[0]=-0.35; home_left[1]=-0.25; home_left[2]=0.2;
-            home_left[3]=-0.35166; home_left[4]=0.697078; home_left[5]=-0.624835; home_left[6]=3.106923;
+            home_left[0]=-0.30; home_left[1]=-0.21; home_left[2]=0.15;
+            home_left[3]=0.13631; home_left[4]=-0.30149; home_left[5]=0.943675; home_left[6]=2.865295;
         }
     }
 
@@ -426,6 +564,13 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
             torso_pitch_max=40.0;
         }
     }
+
+    yDebug()<<"In execution module ....";
+    yInfo()<<"[GraspExecution] lift_z:     "<<lift_z;
+    yInfo()<<"[GraspExecution] shift_right:"<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:"<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right: "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:  "<<home_left.toString(3,3);
 }
 
 /*******************************************************************************/
@@ -436,14 +581,28 @@ Property GraspExecution::getPosePar()
     Property advOptions;
     advOptions.put("robot",robot);
     advOptions.put("hand",left_or_right);
+    advOptions.put("five_fingers",five_fingers);
+    if (visual_serv)
+        advOptions.put("visual_servoing","on");
+    else
+        advOptions.put("visual_servoing","off");
+    if (use_direct_kin)
+        advOptions.put("use_direct_kin","on");
+    else
+        advOptions.put("use_direct_kin","off");
     advOptions.put("traj_time",traj_time);
+    advOptions.put("pixel_tol",pixel_tol);
     advOptions.put("traj_tol",traj_tol);
     advOptions.put("lift_z",lift_z);
     Bottle s;
     Bottle &pd=s.addList();
-    pd.addDouble(shift[0]); pd.addDouble(shift[1]);
-    pd.addDouble(shift[2]);
-    advOptions.put("shift",s.get(0));
+    pd.addDouble(shift_right[0]); pd.addDouble(shift_right[1]);
+    pd.addDouble(shift_right[2]);
+    advOptions.put("shift_right",s.get(0));
+    Bottle &pd2=s.addList();
+    pd2.addDouble(shift_left[0]); pd2.addDouble(shift_left[1]);
+    pd2.addDouble(shift_left[2]);
+    advOptions.put("shift_left",s.get(0));
 
     Bottle planeb;
     Bottle &p2=planeb.addList();
@@ -487,6 +646,17 @@ void GraspExecution::getPoses(const Property &poses)
 
             trajectory_right.push_back(tmp);
         }
+
+        if (norm(shift_right)>0.0)
+        {
+            for (size_t k=0; k<trajectory_right.size(); k++)
+            {
+                yDebug()<<"[GraspExecution]: Waypoint right"<<k<<trajectory_right[k].toString(3,3);
+                
+                trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +shift_right);
+                yDebug()<<"[GraspExecution]: Shifted waypoint right"<<k<<trajectory_right[k].toString(3,3);
+            }
+        }
     }
 
     Bottle &pose3=poses.findGroup("trajectory_left");
@@ -504,6 +674,17 @@ void GraspExecution::getPoses(const Property &poses)
                 tmp[j]=p1->get(j).asDouble();
             }
             trajectory_left.push_back(tmp);
+        }
+
+        if (norm(shift_left)>0.0)
+        {
+            yDebug()<<"shift left "<<shift_left.toString();
+            for (size_t k=0; k<trajectory_left.size(); k++)
+            {
+                yDebug()<<"[GraspExecution]: Waypoint left"<<k<<trajectory_left[k].toString(3,3);
+                trajectory_left[k].setSubvector(0,trajectory_left[k].subVector(0,2) +shift_left);
+                yDebug()<<"[GraspExecution]: Shifted waypoint left"<<k<<trajectory_left[k].toString(3,3);
+            }
         }
     }
 }
@@ -538,7 +719,7 @@ bool GraspExecution::executeTrajectory(string &hand)
                 liftObject(trajectory, trajectory_left.size());
 
             for (size_t i=1; i<trajectory_left.size(); i++)
-                trajectory.push_back(trajectory_left[trajectory_right.size()-1-i]);
+                trajectory.push_back(trajectory_left[trajectory_left.size()-1-i]);
 
             trajectory.push_back(home_left);
         }
@@ -559,7 +740,11 @@ bool GraspExecution::executeTrajectory(string &hand)
         if ((reached==false) && (i<=trajectory.size()) && (i>=0))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
-            reached=reachWaypoint(i, hand);
+
+            if ((visual_serv==false) || (hand=="left") || (i != trajectory_right.size()-1))
+                reached=reachWaypoint(i, hand);
+            else if ((visual_serv==true) && (hand=="right") && (i == trajectory_right.size()-1))
+                reached=reachWithVisual(i,hand);
 
             if (grasp==true && reached==true)
             {
@@ -707,9 +892,28 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
     }
 
-    Vector Dof;
-    icart_right->getDOF(Dof);
-    yDebug()<<"Dof used "<<Dof.toString(3,3);
+    return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::reachWithVisual(int i, string &hand)
+{
+    Vector x(3,0.0);
+    Vector o(4,0.0);
+    bool done;
+
+    x=trajectory[i].subVector(0,2);
+    if (trajectory[i].size()==6)
+        o=(dcm2axis(euler2dcm(trajectory[i].subVector(3,5))));
+    else
+        o=trajectory[i].subVector(3,6);
+
+    visual_servoing_right->initFacilities(use_direct_kin);
+
+    visual_servoing_right->goToGoal(x,o);
+    done=visual_servoing_right->waitVisualServoingDone();
+
+    visual_servoing_right->stopFacilities();
 
     return done;
 }
@@ -717,24 +921,34 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 /*******************************************************************************/
 bool GraspExecution::release()
 {
-    if (hand_to_move=="right")
+    if (hand_to_move=="right" && left_or_right !="left")
         icart_right->stopControl();
-    else
+    else if (hand_to_move=="left" && left_or_right !="right")
         icart_left->stopControl();
 
-    icart_right->restoreContext(context_right);
-    icart_left->restoreContext(context_left);
-
     if (left_or_right=="both" || left_or_right=="right")
-        robotDevice_right.close();
+    {
+        icart_right->restoreContext(context_right);
+        robotDevice_right.close();        
+    }
     if (left_or_right=="both" || left_or_right=="left")
+    {
+        icart_left->restoreContext(context_left);
         robotDevice_left.close();
+    }
+
+    if (visual_serv==true)
+    {
+        drv_server_vs.close();
+    }
 
     if (grasp==true)
-    {   
-        handContr_right.close();
+    { 
+        if (left_or_right != "left")  
+            handContr_right.close();
 
-        handContr_left.close();
+        if (left_or_right != "right") 
+            handContr_left.close();
     }
 
     return true;
@@ -745,6 +959,9 @@ bool GraspExecution::goHome(const string &hand)
 {
     bool done;
     int context_tmp;
+
+    if (visual_serv)
+        visual_servoing_right->stopFacilities();
 
     if (hand=="right")
     {

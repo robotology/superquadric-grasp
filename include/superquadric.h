@@ -63,6 +63,7 @@ public:
     yarp::sig::Vector robot_pose;
     /** Variable for setting hand of interest */
     std::string l_o_r;
+    double tmp_value;
 
     /** Initialization function
     * @param objectext is the object superquadric
@@ -85,7 +86,7 @@ public:
     * @return a vector with the points sampled on the hand ellipsoid
     */
     /****************************************************************/
-    yarp::sig::Vector computePointsHand(yarp::sig::Vector &hand, int j, int l, const std::string &str_hand);
+    yarp::sig::Vector computePointsHand(yarp::sig::Vector &hand, int j, int l, const std::string &str_hand, double &theta);
 
     /** Get info for the nonlinear problem to be solved with ipopt
     * @param n is the dimension of the variable
@@ -277,6 +278,9 @@ public:
     */
    /****************************************************************/
    yarp::sig::Vector get_hand() const;
+
+   /****************************************************************/
+   double get_final_F() const;
 
 
 

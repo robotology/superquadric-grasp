@@ -56,6 +56,7 @@ protected:
 
     int context_gaze;
     int rate_vis;
+    int print_level;
     double t,t0, t_grasp, t_vis;
     std::deque<double> times_vis;
 
@@ -68,12 +69,12 @@ protected:
     std::string mu_strategy;
     std::string nlp_scaling_method;
     double max_cpu_time;
-    
+
     // Geometric parameters for pose computation
     std::string dir;
     yarp::sig::Vector object;
     yarp::sig::Vector hand, hand1;
-    double distance, distance1;    
+    double distance, distance1;
     yarp::sig::Vector displacement;
     yarp::sig::Vector plane;
 
@@ -86,6 +87,7 @@ protected:
     yarp::dev::IGazeControl *igaze;
 
     // Variables for state machine and enabling/disabling options
+    std::string fing;
     bool go_on;
     bool grasp;
     bool executed;
@@ -93,13 +95,17 @@ protected:
     std::string show_only_pose;
     std::string look_object;
     bool visualization;
-    bool mode_online;    
+    bool mode_online;
     bool save_poses;
+    bool also_traj;
+    std::string visual_servoing;
+    std::string use_direct_kin;
 
+    double pixel_tol;
     double lift_z;
     double torso_pitch_max;
     double traj_time, traj_tol;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right;
     yarp::sig::Vector home_left;
     std::string hand_to_move;
@@ -126,6 +132,8 @@ protected:
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
 
+    double quality_right, quality_left;
+
 public:
     /************************************************************************/
     bool attach(yarp::os::RpcServer &source);
@@ -148,6 +156,9 @@ public:
     * @param hand is the name of the hand for which we want to compute the grasping pose
     * @return a property with the grasping pose solution
     */
+    /************************************************************************/
+    std::string get_best_hand();
+
     /************************************************************************/
     yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
 

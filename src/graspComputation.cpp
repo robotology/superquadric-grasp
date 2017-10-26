@@ -19,9 +19,10 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object):
+                                   Property &_complete_sol, const Vector &_object, double &_quality_right, double &_quality_left):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
-                                   left_or_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), complete_sol(_complete_sol), object(_object)
+                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf),
+                                   complete_sol(_complete_sol), object(_object), quality_right(_quality_right), quality_left(_quality_left)
 
 {
 
@@ -166,6 +167,27 @@ void GraspComputation::setIpoptPar(const Property &newOptions, bool first_time)
             nlp_scaling_method="gradient-based";
         }
     }
+
+    int pl=newOptions.find("print_level").asInt();
+    if (newOptions.find("print_level").isNull() && (first_time==true))
+    {
+        print_level=0;
+    }
+    else if (!newOptions.find("print_level").isNull())
+    {
+        if ((pl>=0 )&& (pl<=10))
+        {
+             print_level=pl;
+        }
+        else if (pl<0 )
+        {
+            pl=0;
+        }
+        else if (pl>10)
+        {
+            print_level=10;
+        }
+    }
 }
 
 /***********************************************************************/
@@ -180,6 +202,7 @@ Property GraspComputation::getIpoptPar()
     advOptions.put("acceptable_iter",acceptable_iter);
     advOptions.put("IPOPT_mu_strategy",mu_strategy);
     advOptions.put("IPOPT_nlp_scaling_method",nlp_scaling_method);
+    advOptions.put("IPOPT_print_level", print_level);
     return advOptions;
 }
 
@@ -229,16 +252,8 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         tmp[1]=disp->get(1).asDouble();
         tmp[2]=disp->get(2).asDouble();
 
-        if (norm(tmp)>0.0)
-        {
-            displacement=tmp;
-        }
-        else
-        {
-            displacement[0]=0.05;
-            displacement[1]=0.0;
-            displacement[2]=0.0;
-        }
+        displacement=tmp;
+
     }
     Bottle *pl=newOptions.find("plane").asList();
 
@@ -383,6 +398,8 @@ bool GraspComputation::init()
 
     go_on=false;
 
+    count_file=0;
+
     return true;
 }
 
@@ -394,20 +411,26 @@ void GraspComputation::run()
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
     {
-        if (left_or_right!="both")
-            go_on=computePose(hand, left_or_right);
-        else if (left_or_right=="both" && norm(hand1)!=0.0)
+        if (left_right!="both")
+            go_on=computePose(hand, left_right);
+        else if (left_right=="both" && norm(hand1)!=0.0)
         {
             go_on=computePose(hand, "right");
             bool go_on1=computePose(hand1, "left");
             go_on=((go_on==true) || (go_on1==true));
         }
+
+        if (left_right=="both")
+            bestPose();
+
+        count_file++;
+        count_file_old=count_file;
     }
 
     if ((go_on==true))
     {
-        if (left_or_right!="both")
-            computeTrajectory(left_or_right, dir);
+        if (left_right!="both")
+            computeTrajectory(left_right, dir);
         else
         {
             go_on=computeTrajectory("right", dir);
@@ -422,6 +445,11 @@ void GraspComputation::run()
 /***********************************************************************/
 bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 {
+    stringstream ss;
+    ss << count_file;
+    string count_file_string=ss.str();
+
+    string context=this->rf->getHomeContextPath().c_str();
     Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
     app->Options()->SetNumericValue("tol",tol);
     app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol);
@@ -431,8 +459,12 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetStringValue("nlp_scaling_method",nlp_scaling_method);
     app->Options()->SetStringValue("hessian_approximation","limited-memory");
     app->Options()->SetStringValue("derivative_test","first-order");
-    app->Options()->SetStringValue("derivative_test_print_all","yes");
-    app->Options()->SetIntegerValue("print_level",0);
+    app->Options()->SetStringValue("derivative_test_print_all","yes");    
+    app->Options()->SetIntegerValue("print_level",print_level);
+
+    if (print_level > 0)
+        app->Options()->SetStringValue("output_file", context+"/ipopt_"+l_o_r+"_"+count_file_string+".out");
+
     app->Initialize();
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
@@ -446,18 +478,37 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         if (l_o_r=="right")
         {
             solR=grasp_nlp->get_result();
+            final_value_R=grasp_nlp->get_final_F();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
+
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
+
+            Matrix H=euler2dcm(poseR.subVector(3,5));
+            cos_zr=abs(H(2,2));
+
+            yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
+
+            yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_R;
         }
         else
         {
             solL=grasp_nlp->get_result();
+            final_value_L=grasp_nlp->get_final_F();
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
+
+            /****************************/
+            Matrix H=euler2dcm(poseL.subVector(3,5));
+            cos_zl=abs(H(2,2));
+
+            yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
+
+            yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_L;
         }
+
         return true;
     }
     else
@@ -657,6 +708,49 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 void GraspComputation::setPar(const string &par_name, const string &value)
 {
     //LockGuard lg(mutex);
-    if (par_name=="hand")
-        left_or_right=value;
+    if (par_name=="left_or_right")
+        left_right=value;
 }
+
+/***********************************************************************/
+void GraspComputation::bestPose()
+{
+    double q_r=0.0;
+    double q_l=0.0;
+
+    double w1, w2;
+
+    if (cos_zr <=0.85 && cos_zl<=0.85)
+    {
+        w1=2.0;
+        w2=0.5;
+    }
+    else
+    {
+        w1=1.0;
+        w2=2.5;
+    }
+
+    quality_right=w1*final_value_R + w2*cos_zr;
+
+    quality_left=w1*final_value_L + w2*cos_zl;
+    
+    quality_right=1.0/quality_right;
+
+    quality_left=1.0/quality_left;
+
+    yInfo()<<"[GraspComputation]: quality right "<<quality_right;
+    yInfo()<<"[GraspComputation]: quality left "<<quality_left;
+
+    if (quality_right>=quality_left)
+    {
+        yInfo()<<"Best pose for grasping is right hand";
+        best_hand="right";
+    }
+    else
+    {
+        yInfo()<<"Best pose for grasping is left hand";
+        best_hand="left";
+    }
+}
+

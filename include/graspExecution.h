@@ -21,6 +21,7 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/dev/all.h>
+#include <yarp/dev/IVisualServoing.h>
 
 #include "TactileControl/HandController.h"
 
@@ -43,7 +44,7 @@ protected:
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;
     std::deque<yarp::sig::Vector> trajectory;
-    yarp::sig::Vector shift;
+    yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right, home_left;
 
     yarp::os::Mutex mutex;
@@ -61,8 +62,11 @@ protected:
     int context_left;
 
     int i;
-    bool grasp;    
+    bool grasp;
     double lift_z;
+    bool visual_serv;
+    bool use_direct_kin;
+    std::string five_fingers;
     double torso_pitch_max;
     double traj_time,traj_tol;
 
@@ -72,6 +76,11 @@ public:
     bool reached;
     /** Boolean variable for movements*/
     bool reached_tot;
+
+    /** Visual servoing variables*/
+    double pixel_tol;
+    yarp::dev::PolyDriver drv_server_vs;
+    yarp::dev::IVisualServoing *visual_servoing_right;
 
     /** Context file name for grasping library*/
     std::string lib_context;
@@ -181,6 +190,12 @@ public:
     */
     /*******************************************************************************/
     bool releaseObject(const std::string &hand);
+
+    /*******************************************************************************/
+    bool reachWithVisual(int i, std::string &hand);
+
+    /*******************************************************************************/
+    bool configVisualServoing();
 };
 
 #endif

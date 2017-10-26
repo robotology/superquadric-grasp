@@ -28,9 +28,9 @@ using namespace yarp::math;
 
 /***********************************************************************/
 GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
-                                       const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par):
+                                       const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right, double &_quality_left):
                                        RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
-                                       object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par)
+                                       object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right(_quality_right), quality_left(_quality_left)
 {
 
 }
@@ -94,6 +94,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {
             hand_in_poseL.setSubvector(0,hand1);
             hand_in_poseL.setSubvector(5,solL);
+
             if (show_hand)               
                 addSuperq(hand_in_poseL,imgOut,0);
 
@@ -206,7 +207,40 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 count++;
             }
             else
-                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));            
+        }
+
+        stringstream q_r, q_l;
+        q_r<<round( quality_right * 100.0 ) / 100.0;
+        q_l<<round( quality_left * 100.0 ) / 100.0;
+
+        stringstream right, left;
+        right<<"quality right";
+        left<<"quality left";
+
+        int thickness=2.0;
+        int font=cv::FONT_HERSHEY_SIMPLEX;
+        double fontScale=0.5;
+
+        cv::Scalar red(230,0,0);
+        cv::Scalar blue(0,240,0);
+
+        cv::Scalar iol_green(22,88,248);
+        cv::Scalar iol_red(244,16, 46);
+
+        if (quality_right>quality_left)
+        {
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
+        }
+        else if (quality_right<quality_left)
+        {
+            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
+            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
+            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
         }
     }
 
@@ -354,6 +388,9 @@ void GraspVisualization::run()
 
     showTrajectory(left_or_right);
 
+    Vector shift_rot(3,0.0);
+    shift_rot[1]=0.1;
+
     if ((norm(object)>0.0) && (look_object==true))
         igaze->lookAtFixationPoint(object.subVector(5,7));
 
@@ -386,8 +423,6 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
             trajectory_right.push_back(tmp);
         }
     }
-    //else
-    //    yError()<<"[GraspVisualization]: No trajectory right found!";
 
     Bottle &pose3=poses.findGroup("trajectory_left");
 
@@ -406,8 +441,6 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
             trajectory_left.push_back(tmp);
         }
     }
-    // else
-    //   yError()<<"[GraspVisualization]: No trajectory left found!";
 
     Bottle &pose=poses.findGroup("solution_right");
     if (!pose.isNull())
@@ -417,8 +450,6 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
         for (size_t i=0; i<p->size(); i++)
             solR[i]=p->get(i).asDouble();
     }
-    //else
-    //     yError()<<"[GraspVisualization]: No solution right found!";
 
     Bottle &pose1=poses.findGroup("solution_left");
     if (!pose1.isNull())
@@ -428,8 +459,6 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
         for (size_t i=0; i<p->size(); i++)
             solL[i]=p->get(i).asDouble();
     }
-    //else
-    //     yError()<<"[GraspVisualization]: No solution left found!";
 }
 
 /***********************************************************************/
