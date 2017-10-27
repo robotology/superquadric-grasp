@@ -115,6 +115,8 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[1]=0;
         newDof[2]=1;
         icart_right->setDOF(newDof,curDof);
+
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
     else if (which_hand=="left")
     {
@@ -157,6 +159,8 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[1]=0;
         newDof[2]=1;
         icart_left->setDOF(newDof,curDof);
+
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
     }
 
     return done;
@@ -825,22 +829,31 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
     if (hand=="right")
     {
-        if(i==trajectory.size()-1)
+        /*for (size_t i=0; i<limit_min.size(); i++)
         {
-            for (size_t i=0; i<limit_min.size(); i++)
+            icart_right->getLimits(i, &min, &max);
+            limit_min[i]=min;
+            limit_max[i]=max;
+        }
+
+        /*if(i==trajectory.size()-1)
+        {
+            /*for (size_t i=0; i<limit_min.size(); i++)
             {
                 icart_right->getLimits(i, &min, &max);
                 limit_min[i]=min;
                 limit_max[i]=max;
-            }
+            }*/
 
-            icart_right->setLimits(0,0.0, 0.0);
-            icart_right->setLimits(1,0.0, 0.0);
-            icart_right->setLimits(2,0.0, 0.0);    
-        }
+            //icart_right->setLimits(0,0.0, 0.0);
+            //icart_right->setLimits(1,0.0, 0.0);
+            //icart_right->setLimits(2,0.0, 0.0);    
+        //}
         
-        icart_right->getDOF(curDof);
-        icart_right->setDOF(newDof,curDof);
+        /*icart_right->getDOF(curDof);
+        icart_right->setDOF(newDof,curDof);*/
+
+yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         if (i==0)
         {
@@ -860,32 +873,41 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
 
-        if(i==trajectory.size()-1)
+        /*if(i==trajectory.size()-1)
         {
             icart_right->setLimits(0,limit_min[0], limit_max[0]);
             icart_right->setLimits(1,limit_min[1], limit_max[1]);
             icart_right->setLimits(2,limit_min[2], torso_pitch_max);
-        }
+        }*/
 
     }
     if (hand=="left")
     {
-        if(i==trajectory.size()-1)
+        /*for (size_t i=0; i<limit_min.size(); i++)
         {
-            for (size_t i=0; i<limit_min.size(); i++)
+            icart_left->getLimits(i, &min, &max);
+            limit_min[i]=min;
+            limit_max[i]=max;
+        }*/
+
+        /*if(i==trajectory.size()-1)
+        {
+            /*for (size_t i=0; i<limit_min.size(); i++)
             {
                 icart_left->getLimits(i, &min, &max);
                 limit_min[i]=min;
                 limit_max[i]=max;
-            }
+            }*/
 
-            icart_left->setLimits(0,0.0, 0.0);
-            icart_left->setLimits(1,0.0, 0.0);
-            icart_left->setLimits(2,0.0, 0.0);  
-        }
+            //icart_left->setLimits(0,0.0, 0.0);
+            //icart_left->setLimits(1,0.0, 0.0);
+            //icart_left->setLimits(2,0.0, 0.0);  
+        //}
  
-        icart_left->getDOF(curDof);
-        icart_left->setDOF(newDof,curDof);
+        /*icart_left->getDOF(curDof);
+        icart_left->setDOF(newDof,curDof);*/
+
+yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         if (i==0)
         {
@@ -905,12 +927,12 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
 
-        if(i==trajectory.size()-1)
+        /*if(i==trajectory.size()-1)
         {
             icart_left->setLimits(0,limit_min[0], limit_max[0]);
             icart_left->setLimits(1,limit_min[1], limit_max[1]);
             icart_left->setLimits(2,limit_min[2], torso_pitch_max);
-        }
+        }*/
     }
 
     return done;
