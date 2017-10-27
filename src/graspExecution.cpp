@@ -727,11 +727,6 @@ bool GraspExecution::executeTrajectory(string &hand)
 
             if (lift_object==true)
                 liftObject(trajectory, trajectory_right.size());
-
-            //for (size_t i=1; i<trajectory_right.size(); i++)
-            //    trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
-
-            //trajectory.push_back(home_right);
         }
         else
         {
@@ -742,11 +737,6 @@ bool GraspExecution::executeTrajectory(string &hand)
 
             if (lift_object==true)
                 liftObject(trajectory, trajectory_left.size());
-
-            //for (size_t i=1; i<trajectory_left.size(); i++)
-            //    trajectory.push_back(trajectory_left[trajectory_left.size()-1-i]);
-
-            //trajectory.push_back(home_left);
         }
 
         yDebug()<<"[GraspExecution]: Complete trajectory ";
@@ -828,32 +818,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         o=trajectory[i].subVector(3,6);
 
     if (hand=="right")
-    {
-        /*for (size_t i=0; i<limit_min.size(); i++)
-        {
-            icart_right->getLimits(i, &min, &max);
-            limit_min[i]=min;
-            limit_max[i]=max;
-        }
-
-        /*if(i==trajectory.size()-1)
-        {
-            /*for (size_t i=0; i<limit_min.size(); i++)
-            {
-                icart_right->getLimits(i, &min, &max);
-                limit_min[i]=min;
-                limit_max[i]=max;
-            }*/
-
-            //icart_right->setLimits(0,0.0, 0.0);
-            //icart_right->setLimits(1,0.0, 0.0);
-            //icart_right->setLimits(2,0.0, 0.0);    
-        //}
-        
-        /*icart_right->getDOF(curDof);
-        icart_right->setDOF(newDof,curDof);*/
-
-yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+    {        
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         if (i==0)
         {
@@ -872,42 +838,10 @@ yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
              icart_right->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
-
-        /*if(i==trajectory.size()-1)
-        {
-            icart_right->setLimits(0,limit_min[0], limit_max[0]);
-            icart_right->setLimits(1,limit_min[1], limit_max[1]);
-            icart_right->setLimits(2,limit_min[2], torso_pitch_max);
-        }*/
-
     }
     if (hand=="left")
     {
-        /*for (size_t i=0; i<limit_min.size(); i++)
-        {
-            icart_left->getLimits(i, &min, &max);
-            limit_min[i]=min;
-            limit_max[i]=max;
-        }*/
-
-        /*if(i==trajectory.size()-1)
-        {
-            /*for (size_t i=0; i<limit_min.size(); i++)
-            {
-                icart_left->getLimits(i, &min, &max);
-                limit_min[i]=min;
-                limit_max[i]=max;
-            }*/
-
-            //icart_left->setLimits(0,0.0, 0.0);
-            //icart_left->setLimits(1,0.0, 0.0);
-            //icart_left->setLimits(2,0.0, 0.0);  
-        //}
- 
-        /*icart_left->getDOF(curDof);
-        icart_left->setDOF(newDof,curDof);*/
-
-yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         if (i==0)
         {
@@ -926,13 +860,6 @@ yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
             icart_left->getPose(x_reached, o_reached);
             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(x-x_reached)<<" and in orientation: "<<norm(o-o_reached);
         }
-
-        /*if(i==trajectory.size()-1)
-        {
-            icart_left->setLimits(0,limit_min[0], limit_max[0]);
-            icart_left->setLimits(1,limit_min[1], limit_max[1]);
-            icart_left->setLimits(2,limit_min[2], torso_pitch_max);
-        }*/
     }
 
     return done;
