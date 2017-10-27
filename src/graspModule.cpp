@@ -660,8 +660,6 @@ bool GraspingModule::configure(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
 {
-    x.resize(dimension, 0.0);
-
     if (Bottle *b=rf->find(name_obj.c_str()).asList())
     {
         if (b->size()>=dimension)
