@@ -63,7 +63,9 @@ protected:
 
     int i;
     bool grasp;
+    std::string lobj;
     double lift_z;
+    bool lift_object;
     bool visual_serv;
     bool use_direct_kin;
     std::string five_fingers;

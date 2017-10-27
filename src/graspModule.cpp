@@ -328,6 +328,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
     torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
     fing=rf.check("five_fingers", Value("off")).asString();
+    lobj=rf.check("lift_object", Value("off")).asString();
 
     readSuperq("shift_right",shift_right,3,this->rf);
     readSuperq("shift_left",shift_left,3,this->rf);
@@ -338,6 +339,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("hand",left_or_right);
     movement_par.put("five_fingers",fing);
     movement_par.put("five_fingers",fing);
+    movement_par.put("lift_object",lobj);
 
     movement_par.put("traj_time",traj_time);
     movement_par.put("traj_tol",traj_tol);

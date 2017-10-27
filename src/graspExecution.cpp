@@ -278,6 +278,20 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
+    string lobj=newOptions.find("lift_object").asString();
+
+    if (newOptions.find("lift_object").isNull() && (first_time==true))
+    {
+        lift_object=false;
+    }
+    else if (!newOptions.find("lift_object").isNull())
+    {
+        if (lobj=="on")
+            lift_object=true;
+        else
+            lift_object=false;
+    }
+
     string fivef=newOptions.find("five_fingers").asString();
 
     if (newOptions.find("five_fingers").isNull() && (first_time==true))
@@ -582,6 +596,11 @@ Property GraspExecution::getPosePar()
     advOptions.put("robot",robot);
     advOptions.put("hand",left_or_right);
     advOptions.put("five_fingers",five_fingers);
+    if (lift_object)
+        advOptions.put("lift_object","on");
+    else
+        advOptions.put("lift_object","off");
+
     if (visual_serv)
         advOptions.put("visual_servoing","on");
     else
@@ -702,12 +721,13 @@ bool GraspExecution::executeTrajectory(string &hand)
                 trajectory.push_back(trajectory_right[i]);
             }
 
+            if (lift_object==true)
                 liftObject(trajectory, trajectory_right.size());
 
-            for (size_t i=1; i<trajectory_right.size(); i++)
-                trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
+            //for (size_t i=1; i<trajectory_right.size(); i++)
+            //    trajectory.push_back(trajectory_right[trajectory_right.size()-1-i]);
 
-            trajectory.push_back(home_right);
+            //trajectory.push_back(home_right);
         }
         else
         {
@@ -716,12 +736,13 @@ bool GraspExecution::executeTrajectory(string &hand)
                 trajectory.push_back(trajectory_left[i]);
             }
 
+            if (lift_object==true)
                 liftObject(trajectory, trajectory_left.size());
 
-            for (size_t i=1; i<trajectory_left.size(); i++)
-                trajectory.push_back(trajectory_left[trajectory_left.size()-1-i]);
+            //for (size_t i=1; i<trajectory_left.size(); i++)
+            //    trajectory.push_back(trajectory_left[trajectory_left.size()-1-i]);
 
-            trajectory.push_back(home_left);
+            //trajectory.push_back(home_left);
         }
 
         yDebug()<<"[GraspExecution]: Complete trajectory ";

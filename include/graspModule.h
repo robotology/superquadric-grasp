@@ -88,6 +88,8 @@ protected:
 
     // Variables for state machine and enabling/disabling options
     std::string fing;
+    bool lift_object;
+    std::string lobj;
     bool go_on;
     bool grasp;
     bool executed;
