@@ -245,10 +245,13 @@ bool GraspingModule::move(const string &entry)
 {
     LockGuard lg(mutex);
 
+    yDebug()<<"command received";
+
     if ((entry=="right") || (entry=="left"))
     {
         hand_to_move=entry;
         executed=false;
+        executed_var=false;
 
         return true;
     }
@@ -259,7 +262,7 @@ bool GraspingModule::move(const string &entry)
 /**********************************************************************/
 bool GraspingModule::check_motion()
 {
-    return executed;
+    return executed_var;
 }
 
 /**********************************************************************/
@@ -461,7 +464,9 @@ bool GraspingModule::updateModule()
     if (executed==false)
     {
         graspExec->getPoses(complete_sol);
-        executed=graspExec->executeTrajectory(hand_to_move);
+        executed_var=executed=graspExec->executeTrajectory(hand_to_move);
+
+        yDebug()<<"executed_var"<<executed_var;
     }
 
     if (save_poses && (graspComp->count_file == graspComp->count_file_old))
@@ -662,6 +667,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
     graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
 
     config=graspExec->configure();
+
+    executed_var=false;
 
 
     if (config==false)

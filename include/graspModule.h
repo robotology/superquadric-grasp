@@ -93,6 +93,7 @@ protected:
     bool go_on;
     bool grasp;
     bool executed;
+    bool executed_var;
     bool reached_home;
     std::string show_hand;
     std::string show_only_pose;
