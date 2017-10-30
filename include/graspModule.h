@@ -93,6 +93,7 @@ protected:
     bool go_on;
     bool grasp;
     bool executed;
+    bool reached_home;
     std::string show_hand;
     std::string show_only_pose;
     std::string look_object;
@@ -310,6 +311,21 @@ public:
     */
     /**********************************************************************/
     bool go_home(const std::string &entry);
+
+    /**
+    * Check if the motion has been completed
+    *@return true/false on success/failure
+    */
+    /**********************************************************************/
+    bool check_motion();
+
+    /**
+    * Check if the motion back to home has been completed
+    *@return true/false on success/failure
+    */
+    /**********************************************************************/
+    bool check_home();
+
 
 };
 

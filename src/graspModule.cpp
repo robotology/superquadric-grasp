@@ -257,9 +257,22 @@ bool GraspingModule::move(const string &entry)
 }
 
 /**********************************************************************/
+bool GraspingModule::check_motion()
+{
+    return executed;
+}
+
+/**********************************************************************/
+bool GraspingModule::check_home()
+{
+    return reached_home;
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);
+    reached_home=false;
 
     if ((entry=="right") || (entry=="left"))
     {
@@ -267,7 +280,7 @@ bool GraspingModule::go_home(const string &entry)
         graspExec->reached=true;
         graspExec->reached_tot=true;
         graspExec->stop();
-        graspExec->goHome(entry);
+        reached_home=graspExec->goHome(entry);
 
         return true;
     }
@@ -278,7 +291,7 @@ bool GraspingModule::go_home(const string &entry)
         graspExec->reached_tot=true;
         graspExec->stop();
         graspExec->goHome("right");
-        graspExec->goHome("left");
+        reached_home=graspExec->goHome("left");
 
         return true;
     }

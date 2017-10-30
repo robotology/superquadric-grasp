@@ -153,5 +153,17 @@ service superquadricGrasp_IDL
     *@return right or left
     */
     string get_best_hand()
+
+    /**
+    * Check if the motion has been completed
+    *@return true/false on success/failure
+    */
+    bool check_motion();
+
+    /**
+    * Check if the motion back to home has been completed
+    *@return true/false on success/failure
+    */
+    bool check_home();
 }
     
