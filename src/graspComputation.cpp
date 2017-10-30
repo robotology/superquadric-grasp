@@ -518,12 +518,14 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         {
             solR.resize(6,0.0);
             poseR.resize(6,0.0);
+            quality_right=0.0;
         }
 
         if (l_o_r=="left")
         {
             solL.resize(6,0.0);
             poseL.resize(6,0.0);
+            quality_left=0.0;
         }
         
         
@@ -731,13 +733,21 @@ void GraspComputation::bestPose()
         w2=2.5;
     }
 
-    quality_right=w1*final_value_R + w2*cos_zr;
+    if (norm(poseR)!=0.0)
+    {
+        quality_right=w1*final_value_R + w2*cos_zr;
+        quality_right=1.0/quality_right;
+    }
+    else
+        quality_right=0.0;
 
-    quality_left=w1*final_value_L + w2*cos_zl;
-    
-    quality_right=1.0/quality_right;
-
-    quality_left=1.0/quality_left;
+    if (norm(poseL)!=0.0)
+    {
+        quality_left=w1*final_value_L + w2*cos_zl;
+        quality_left=1.0/quality_left;
+    }
+    else
+        quality_left=0.0;
 
     yInfo()<<"[GraspComputation]: quality right "<<quality_right;
     yInfo()<<"[GraspComputation]: quality left "<<quality_left;
