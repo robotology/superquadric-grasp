@@ -701,7 +701,7 @@ void GraspExecution::getPoses(const Property &poses)
 
         if (norm(shift_left)>0.0)
         {
-            yDebug()<<"shift left "<<shift_left.toString();
+            yDebug()<<"shift left "<<shift_left.toString(3,3);
             for (size_t k=0; k<trajectory_left.size(); k++)
             {
                 yDebug()<<"[GraspExecution]: Waypoint left"<<k<<trajectory_left[k].toString(3,3);

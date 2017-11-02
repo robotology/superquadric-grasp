@@ -555,7 +555,7 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     }
 
     readSuperq("displacement",displacement,3,this->rf);
-    yDebug()<<"displacement "<<displacement.toString();
+    yDebug()<<"displacement "<<displacement.toString(3,3);
     readSuperq("plane",plane,4,this->rf);
 
     if (plane.size()==0 && displacement.size()==0)
