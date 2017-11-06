@@ -113,11 +113,17 @@ In order to achieve the desired performance when running the module on the robot
 #### Check the hand-eye calibration 
 Our approach is an open loop approach. For this reason, the grasping goal can be properly reached if the stereo-vision system (see [here](https://github.com/robotology/superquadric-model/tree/master/tutorial#calibrate-the-stereo-vision-through-the-sfm-module) for information on how to calibrate it) and robot kinematics are properly calibrated (previous section). If the offsets between the two hinder the robot from correctly reaching for the desired pose even after the calibration, the superquadric-grasp module allows the definition of some empirical offsets, in order to compensate for that: `shift_right` and `shift_left`. They are 3D Vectors representing the required offsets for correctly reaching the pose along the *x,y,z* axes of the robot reference frame.
 
-In order to overcome the need for a fine hand-eye calibration, we are currently integrating our work with the visual servoing approach described [here](https://github.com/robotology/visual-tracking-control).
+In order to overcome the need for a fine hand-eye calibration, we are integrated our work with the visual servoing approach described [here](https://github.com/robotology/visual-tracking-control). More information are available in the following section.
 
 [`Go to the top`](#superquadric-grasp-tutorial)
 
 ## Fine pose reaching with visual servoing
+The approaching trajectory is identified by two waypoints: **w1** and **w2**. The latter **w2** is the desired pose computed by our approach, while the first **w1** is an intermediate waypoint, obtained by shifing the first one along the _x_ and _z_ axes of the hand reference frame. Waypoint **w1** is reached by the robot in open-loop. Instead, **w2** can be reached in open-loop or with a visual servoing controller.  The user can enable or disable the visual-servoing step with the parameter:
+```
+visual_servoing
+```
+which can be set equal to `"on"` or `"off"`.
+In case `visual_servoing="on"`, the robot reaches waypoint **w1**. Then, the particle filter implemented in [this library](https://github.com/robotology/bayes-filters-lib) estimates an accurate hand pose with the use of the hand CAD model and HOG features. This estimates is exploited by the visual servoing controller for reaching for the desired pose for grasping the object. This way, we compensate for the offsets between the kinematics and the stereo vision chains.
 
 [`Go to the top`](#superquadric-grasp-tutorial)
 
