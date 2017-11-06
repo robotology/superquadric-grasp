@@ -81,13 +81,15 @@ public:
     /** Complete solution */
     const yarp::os::Property &complete_sol;
 
+    bool &executed;
+
     /** Buffered port of input image*/
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
     /** Buffered port of output image*/
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgOut;
 
     /***********************************************************************/
-    GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
+    GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze, bool &executed,
                        const yarp::sig::Matrix _K,  std::string left_or_right, const yarp::os::Property &complete_sol,
                        const yarp::sig::Vector &_object,  yarp::sig::Vector &hand,  yarp::sig::Vector &hand1, yarp::os::Property &vis_par, double &quality_right, double &quality_left);
 

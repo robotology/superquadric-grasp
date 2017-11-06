@@ -509,6 +509,10 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     igaze->setTrackingMode(false);
     igaze->setSaccadesMode(false);
 
+    yDebug()<<"Blocking eyes...";
+    igaze->blockEyes(5.0);
+    yDebug()<<"Done: "<<igaze->waitMotionDone();
+
     Bottle info;
     igaze->getInfo(info);
     K.resize(3,4);
@@ -643,7 +647,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sol, object, hand, hand1, vis_par, quality_right, quality_left);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze,executed_var, K, left_or_right, complete_sol, object, hand, hand1, vis_par, quality_right, quality_left);
 
     if (visualization)
     {

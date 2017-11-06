@@ -27,9 +27,9 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
+GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, bool &_executed, const Matrix _K, const string _left_or_right,
                                        const Property &_complete_sol, const Vector &_object, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right, double &_quality_left):
-                                       RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
+                                       RateThread(_rate), eye(_eye), igaze(_igaze), executed(_executed), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
                                        object(_object), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right(_quality_right), quality_left(_quality_left)
 {
 
@@ -363,6 +363,11 @@ bool GraspVisualization::threadInit()
 
     setPar(vis_par, true);
 
+    yDebug()<<"Initial gaze";
+    Vector center(3,0.0);
+    center[1]= -0.4;
+    igaze->lookAtFixationPoint(center);
+
     return true;
 }
 
@@ -391,8 +396,13 @@ void GraspVisualization::run()
     Vector shift_rot(3,0.0);
     shift_rot[1]=0.1;
 
-    if ((norm(object)>0.0) && (look_object==true))
+    Vector center(3,0.0);
+    center[1]= -0.4;
+
+    if ((norm(object)>0.0) && (look_object==true) && (executed==false))
         igaze->lookAtFixationPoint(object.subVector(5,7));
+    else if (executed==true)
+        igaze->lookAtFixationPoint(center);
 
     t_vis=Time::now()-t0;
 }
