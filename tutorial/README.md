@@ -5,6 +5,7 @@
 - [ How to communicate with the module](#how-to-communicate-with-the-superquadric-grasp)
 - [ How to run the `superquadric-grasp` + `tutorial`](#how-to-run-the-superquadric-grasp--tutorial)
 - [Setting up before running on the robot](#setting-up-before-running-on-the-robot)
+- [Fine pose reaching with visual servoing](#fine-pose-reaching-with-visual-servoing)
 - [How to run the overall pipeline](#how-to-run-the-overall-pipeline)
 
 ## How to compile
