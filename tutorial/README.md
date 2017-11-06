@@ -118,7 +118,7 @@ In order to overcome the need for a fine hand-eye calibration, we are currently 
 
 ## Fine pose reaching with visual servoing
 
-Go to the top`](#superquadric-grasp-tutorial)
+[`Go to the top`](#superquadric-grasp-tutorial)
 
 ## How to run the overall pipeline
 This module is designed in order to be executed together the [`superquadric-model module`](https://github.com/robotology/superquadric-model). A **complete tutorial** on how to execute them together and perform on the robot a **complete modeling and grasping task** is provided in [`this repository`](https://github.com/robotology/superquadric-grasp-example).
