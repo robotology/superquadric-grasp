@@ -79,9 +79,11 @@ public:
     /** Boolean variable for movements*/
     bool reached_tot;
 
-    /** Visual servoing variables*/
+    /** Pixel tolerance for visual servoing*/
     double pixel_tol;
+    /** Polydriver for visual servoing server*/
     yarp::dev::PolyDriver drv_server_vs;
+    /** Interface for visual servoing for right hand*/
     yarp::dev::IVisualServoing *visual_servoing_right;
 
     /** Context file name for grasping library*/
