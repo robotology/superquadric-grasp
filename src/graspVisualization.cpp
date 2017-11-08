@@ -210,37 +210,40 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));            
         }
 
-        stringstream q_r, q_l;
-        q_r<<round( quality_right * 100.0 ) / 100.0;
-        q_l<<round( quality_left * 100.0 ) / 100.0;
-
-        stringstream right, left;
-        right<<"quality right";
-        left<<"quality left";
-
-        int thickness=2.0;
-        int font=cv::FONT_HERSHEY_SIMPLEX;
-        double fontScale=0.5;
-
-        cv::Scalar red(230,0,0);
-        cv::Scalar blue(0,240,0);
-
-        cv::Scalar iol_green(22,88,248);
-        cv::Scalar iol_red(244,16, 46);
-
-        if (quality_right>quality_left)
+        if (hand_str=="both")
         {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
-        }
-        else if (quality_right<quality_left)
-        {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
+            stringstream q_r, q_l;
+            q_r<<round( quality_right * 100.0 ) / 100.0;
+            q_l<<round( quality_left * 100.0 ) / 100.0;
+
+            stringstream right, left;
+            right<<"quality right";
+            left<<"quality left";
+
+            int thickness=2.0;
+            int font=cv::FONT_HERSHEY_SIMPLEX;
+            double fontScale=0.5;
+
+            cv::Scalar red(230,0,0);
+            cv::Scalar blue(0,240,0);
+
+            cv::Scalar iol_green(22,88,248);
+            cv::Scalar iol_red(244,16, 46);
+
+            if (quality_right>quality_left)
+            {
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
+            }
+            else if (quality_right<quality_left)
+            {
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
+            }
         }
     }
 
@@ -365,8 +368,10 @@ bool GraspVisualization::threadInit()
 
     yDebug()<<"Initial gaze";
     Vector center(3,0.0);
-    center[1]= -0.4;
+    center[0]= -0.35;
     igaze->lookAtFixationPoint(center);
+
+    stop_fixate=false;
 
     return true;
 }
@@ -397,12 +402,24 @@ void GraspVisualization::run()
     shift_rot[1]=0.1;
 
     Vector center(3,0.0);
-    center[1]= -0.4;
+    center[0]= -0.35;
+    
 
     if ((norm(object)>0.0) && (look_object==true) && (executed==false))
+    {
         igaze->lookAtFixationPoint(object.subVector(5,7));
-    else if (executed==true)
+        //igaze->waitMotionDone(0.25);
+        stop_fixate=false;
+        yDebug()<<"fixing object";
+        
+    }
+    else if ((executed==true) && (stop_fixate==false))
+    {
+        yDebug()<<"fixing center";
         igaze->lookAtFixationPoint(center);
+        igaze->waitMotionDone(1.5);
+        stop_fixate=true;
+    }
 
     t_vis=Time::now()-t0;
 }

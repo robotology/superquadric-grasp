@@ -82,6 +82,8 @@ protected:
 
     // Gaze parameters
     std::string eye;
+    double block_eye;
+    double block_neck;
     yarp::sig::Matrix K,H;
     yarp::dev::PolyDriver GazeCtrl;
     yarp::dev::IGazeControl *igaze;

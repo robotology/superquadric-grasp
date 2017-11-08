@@ -107,6 +107,8 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     graspVis->left_or_right=hand;
 
+    executed_var=false;
+
     return complete_sol;
 }
 
@@ -426,6 +428,8 @@ bool GraspingModule::close()
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
+    igaze->stopControl();
+
     igaze->restoreContext(context_gaze);
 
     GazeCtrl.close();
@@ -484,6 +488,8 @@ double GraspingModule::getPeriod()
 /***********************************************************************/
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
+    block_eye=rf.check("block_eye", Value(5.0)).asDouble();
+    block_neck=rf.check("block_neck", Value(0.0)).asDouble();
     eye=rf.check("eye", Value("left")).asString();
     show_hand=rf.check("show_hand", Value("on")).asString();
     look_object=rf.check("look_object", Value("on")).asString();
@@ -509,9 +515,13 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
     igaze->setTrackingMode(false);
     igaze->setSaccadesMode(false);
 
-    yDebug()<<"Blocking eyes...";
-    igaze->blockEyes(5.0);
-    yDebug()<<"Done: "<<igaze->waitMotionDone();
+    yDebug()<<"Blocking eyes..."<<block_eye;
+    igaze->blockEyes(block_eye);
+    yDebug()<<"Done: "<<igaze->waitMotionDone(2.0);
+
+    yDebug()<<"Blocking roll..."<<block_neck;
+    igaze->blockNeckRoll(block_neck);
+    yDebug()<<"Done: "<<igaze->waitMotionDone(2.0);
 
     Bottle info;
     igaze->getInfo(info);

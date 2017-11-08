@@ -82,6 +82,7 @@ public:
     const yarp::os::Property &complete_sol;
 
     bool &executed;
+    bool stop_fixate;
 
     /** Buffered port of input image*/
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > portImgIn;
