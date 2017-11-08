@@ -193,9 +193,17 @@ public:
     /*******************************************************************************/
     bool releaseObject(const std::string &hand);
 
+    /** Reach a single waypoint of the trajectory with the visual-servoing controller
+    * @param i is the index of the waypoint
+    * @param hand is the name of the selected hand for moving
+    * @return true/false on success/failure
+    */
     /*******************************************************************************/
     bool reachWithVisual(int i, std::string &hand);
 
+    /** Configure visual-servoing controller
+    * @return true/false on success/failure
+    */
     /*******************************************************************************/
     bool configVisualServoing();
 };
