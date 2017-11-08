@@ -107,6 +107,10 @@ protected:
 
     std::string lib_context, lib_filename;
 
+    int best_scenario;
+    std::deque<yarp::os::Property> solutions;
+    std::deque<std::string> best_hands;
+
     yarp::os::Mutex mutex;
 
     GraspComputation *graspComp;

@@ -122,11 +122,11 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     yDebug()<<"Object "<<object.toString();
 
     deque<double> quality;
-    deque<Property> solutions;
+
 
     graspComp->setPar("left_or_right", hand);
 
-    Vector obj_aux=obstacle;
+    Vector obj_aux=object;
     deque<Vector> obs_aux;
     obs_aux=obstacles;
 
@@ -139,19 +139,25 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     solutions.push_back(complete_sol);
 
+    best_hands.clear();
+    best_hands.push_back(graspComp->best_hand);
+
     if (graspComp->best_hand=="right")
         quality.push_back(graspComp->quality_right);
     else
         quality.push_back(graspComp->quality_left);
 
-    for (size_t i=0; i<obstacles.size(); i++)
+    double obst_size=obstacles.size();
+
+    for (size_t i=0; i<obst_size; i++)
     {
-        obj_aux=obs_aux[i];
-        object= obj_aux;
+        object=obs_aux[i];
         obstacles.clear();
-        obstacles.push_back(object);
-        yDebug()<<"Object "<<obj_aux.toString();
-        for (size_t j=0; j<obstacles.size(); j++)
+        obstacles.push_back(obj_aux);
+
+        yDebug()<<"Obj aux "<<i<<obj_aux.toString();
+        yDebug()<<"Object "<<i<<object.toString();
+        for (size_t j=0; j<obst_size; j++)
         {
             if (j!=i)
                 obstacles.push_back(obs_aux[j]);
@@ -170,6 +176,8 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
             quality.push_back(graspComp->quality_right);
         else
             quality.push_back(graspComp->quality_left);
+
+        best_hands.push_back(graspComp->best_hand);
     }
 
     t_grasp=graspComp->getTime();
@@ -180,7 +188,7 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     complete_sols=solutions;
 
     //yDebug()<<"Complete sols "<<complete_sols.toString();
-    int best_scenario;
+
     double best_quality;
 
     if (!multiple_superq)
@@ -195,10 +203,15 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
                 best_quality=quality[i+1];
                 best_scenario=i+1;
             }
+            else if (i==0)
+                best_scenario=i;
 
             yInfo()<<"Quality "<<i<<quality[i];
         }
         yInfo()<<"Best scenario "<< best_scenario<< "with quality: "<<best_quality;
+        for (int k=0; k<best_hands.size(); k++)
+            yInfo()<<"Best hands "<< best_hands[k];
+
 
         return solutions[best_scenario];
     }
@@ -221,25 +234,26 @@ string GraspingModule::get_best_hand()
         return graspComp->best_hand;
     else
     {
-        if (graspComp->best_hand=="right")
-            quality1=graspComp->quality_right;
-        if (graspComp2->best_hand=="right")
-            quality2=graspComp2->quality_right;
-        if (graspComp->best_hand=="left")
-            quality1=graspComp->quality_left;
-        if (graspComp2->best_hand=="left")
-            quality2=graspComp2->quality_left;
+        return best_hands[best_scenario];
+//        if (graspComp->best_hand=="right")
+//            quality1=graspComp->quality_right;
+//        if (graspComp2->best_hand=="right")
+//            quality2=graspComp2->quality_right;
+//        if (graspComp->best_hand=="left")
+//            quality1=graspComp->quality_left;
+//        if (graspComp2->best_hand=="left")
+//            quality2=graspComp2->quality_left;
 
-        if (quality1<quality2)
-        {
-            yDebug()<<"Second scenario";
-            return graspComp2->best_hand;
-        }
-        else
-        {
-            yDebug()<<"First scenario";
-            return graspComp->best_hand;
-        }
+//        if (quality1<quality2)
+//        {
+//            yDebug()<<"Second scenario";
+//            return graspComp2->best_hand;
+//        }
+//        else
+//        {
+//            yDebug()<<"First scenario";
+//            return graspComp->best_hand;
+//        }
     }
     //return graspComp->best_hand;
 }
@@ -592,7 +606,10 @@ bool GraspingModule::updateModule()
 
     if (executed==false)
     {
-        graspExec->getPoses(complete_sol);
+        if (!multiple_superq)
+            graspExec->getPoses(complete_sol);
+        else
+            graspExec->getPoses(solutions[best_scenario]);
         executed=graspExec->executeTrajectory(hand_to_move);
     }
 
