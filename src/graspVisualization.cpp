@@ -413,7 +413,7 @@ void GraspVisualization::run()
         yDebug()<<"fixing object";
         
     }
-    else if ((executed==true) && (stop_fixate==false))
+    else if ((executed==true) && (stop_fixate==false) && (look_object==true))
     {
         yDebug()<<"fixing center";
         igaze->lookAtFixationPoint(center);
