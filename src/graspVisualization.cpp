@@ -217,8 +217,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             q_l<<round( quality_left * 100.0 ) / 100.0;
 
             stringstream right, left;
-            right<<"quality right";
-            left<<"quality left";
+            right<<"cost right";
+            left<<"cost left";
 
             int thickness=2.0;
             int font=cv::FONT_HERSHEY_SIMPLEX;
@@ -230,14 +230,14 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             cv::Scalar iol_green(22,88,248);
             cv::Scalar iol_red(244,16, 46);
 
-            if (quality_right>quality_left)
+            if ((quality_right<quality_left) && (quality_right!=0.0) && (quality_left!=0.0))
             {
                 cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
                 cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
                 cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
                 cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
             }
-            else if (quality_right<quality_left)
+            else if ((quality_right>quality_left) && (quality_right!=0.0) && (quality_left!=0.0))
             {
                 cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
                 cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);

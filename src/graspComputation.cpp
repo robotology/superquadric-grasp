@@ -736,7 +736,7 @@ void GraspComputation::bestPose()
     if (norm(poseR)!=0.0)
     {
         quality_right=w1*final_value_R + w2*cos_zr;
-        quality_right=1.0/quality_right;
+        //quality_right=1.0/quality_right;
     }
     else
         quality_right=0.0;
@@ -744,7 +744,7 @@ void GraspComputation::bestPose()
     if (norm(poseL)!=0.0)
     {
         quality_left=w1*final_value_L + w2*cos_zl;
-        quality_left=1.0/quality_left;
+        //quality_left=1.0/quality_left;
     }
     else
         quality_left=0.0;
@@ -752,15 +752,25 @@ void GraspComputation::bestPose()
     yInfo()<<"[GraspComputation]: quality right "<<quality_right;
     yInfo()<<"[GraspComputation]: quality left "<<quality_left;
 
-    if (quality_right>=quality_left)
+    if ((quality_right<=quality_left) && (quality_right!=0.0) && (quality_left!=0.0))
     {
         yInfo()<<"Best pose for grasping is right hand";
         best_hand="right";
     }
-    else
+    else if ((quality_left<=quality_right) && (quality_right!=0.0) && (quality_left!=0.0))
     {
         yInfo()<<"Best pose for grasping is left hand";
         best_hand="left";
+    }
+    else if ((quality_right!=0.0))
+    {
+        yInfo()<<"Best pose for grasping is left hand";
+        best_hand="left";
+    }
+    else if ((quality_left!=0.0))
+    {
+        yInfo()<<"Best pose for grasping is right hand";
+        best_hand="right";
     }
 }
 
