@@ -99,8 +99,6 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         icart_right->getDOF(curDof);
 
-        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
-
         icart_right->storeContext(&context_right);
 
         icart_right->setTrajTime(traj_time);
@@ -117,6 +115,20 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_right->setDOF(newDof,curDof);
 
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+
+        double min, max;
+
+        //yDebug()<<"Get limit of pitch"<<icart_right->getLimits(0, &min, &max);
+        //yDebug()<<"min "<<min;
+
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+
+        icart_right->setLimits(0, 0.0, 15.0);
+
+        
+        icart_right->getLimits(0, &min, &max);
+        yDebug()<<"Get limit of pitch"<<min<<max;
+
     }
     else if (which_hand=="left")
     {
@@ -565,7 +577,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
 
     if (newOptions.find("torso_pitch_max").isNull() && (first_time==true))
     {
-        torso_pitch_max=30.0;
+        torso_pitch_max=15.0;
     }
     else if (!newOptions.find("torso_pitch_max").isNull())
     {
@@ -579,7 +591,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else if (pitch_max>40.0)
         {
-            torso_pitch_max=40.0;
+            torso_pitch_max=15.0;
         }
     }
 
