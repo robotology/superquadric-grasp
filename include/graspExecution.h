@@ -56,6 +56,12 @@ protected:
     yarp::dev::PolyDriver robotDevice_right;
     yarp::dev::PolyDriver robotDevice_left;
 
+    // driver and interfaces for controlling the torso
+    yarp::dev::PolyDriver             driverTorso;
+    yarp::dev::IControlMode2         *imodTorso;
+    yarp::dev::IEncoders             *iencTorso;
+    yarp::dev::IPositionControl2     *iposTorso;
+
     yarp::dev::IEncoders *enc;
 
     int context_right;
@@ -146,6 +152,12 @@ public:
     */
     /*******************************************************************************/
     bool configGrasp();
+
+    /** Configure torso for returnin it in correct home position
+    *  @return treu/false on success/failure
+    */
+    /*******************************************************************************/
+    bool configTorso();
 
     /** Set all pose parameters for grasp execution
     *  @param newOptions is the property with the new options to be set

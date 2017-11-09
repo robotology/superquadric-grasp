@@ -54,6 +54,7 @@ bool GraspExecution::configure()
     if (visual_serv)
         config=config && configVisualServoing();
 
+    config=config && configTorso();
 
     if (grasp)
     {
@@ -118,12 +119,10 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         double min, max;
 
-        //yDebug()<<"Get limit of pitch"<<icart_right->getLimits(0, &min, &max);
-        //yDebug()<<"min "<<min;
-
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
-        icart_right->setLimits(0, 0.0, 15.0);
+        yDebug()<<"Setting max torso pitch";
+        icart_right->setLimits(0, 0.0, torso_pitch_max);
 
         
         icart_right->getLimits(0, &min, &max);
@@ -173,6 +172,14 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_left->setDOF(newDof,curDof);
 
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+
+        double min, max;
+        yDebug()<<"Setting max torso pitch";
+        icart_left->setLimits(0, 0.0, torso_pitch_max);
+
+
+        icart_left->getLimits(0, &min, &max);
+        yDebug()<<"Get limit of pitch"<<min<<max;
     }
 
     return done;
@@ -251,6 +258,34 @@ bool GraspExecution::configGrasp()
     }
 
     return true;
+}
+
+/*******************************************************************************/
+bool GraspExecution::configTorso()
+{
+    Property option;
+    option.put("device","remote_controlboard");
+    option.put("remote","/"+robot+"/torso");
+    option.put("local","/controller");
+
+    // open the driver
+    if (!driverTorso.open(option))
+    {
+        yError()<<"Unable to open the device driver";
+        return false;
+    }
+
+    // open the views
+    driverTorso.view(imodTorso);
+    driverTorso.view(iencTorso);
+    driverTorso.view(iposTorso);
+
+    // tell the device we aim to control
+    // in position mode all the joints
+    int nAxes;
+    iencTorso->getAxes(&nAxes);
+    vector<int> modes(nAxes,VOCAB_CM_POSITION);
+    imodTorso->setControlModes(modes.data());
 }
 
 /*******************************************************************************/
@@ -908,6 +943,8 @@ bool GraspExecution::release()
     else if (hand_to_move=="left" && left_or_right !="right")
         icart_left->stopControl();
 
+    driverTorso.close();
+
     if (left_or_right=="both" || left_or_right=="right")
     {
         icart_right->restoreContext(context_right);
@@ -944,6 +981,11 @@ bool GraspExecution::goHome(const string &hand)
 
     if (visual_serv)
         visual_servoing_right->stopFacilities();
+
+    //Putting torso in home position
+    iposTorso->positionMove(0, 0.0);
+    iposTorso->positionMove(1, 0.0);
+    iposTorso->positionMove(2, 0.0);
 
     if (hand=="right")
     {
