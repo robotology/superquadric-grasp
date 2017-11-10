@@ -344,7 +344,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
     pixel_tol=rf.check("pixel_tol", Value(15)).asDouble();
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
-    torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
+    torso_pitch_max=rf.check("torso_pitch_max", Value(15.0)).asDouble();
     fing=rf.check("five_fingers", Value("off")).asString();
     lobj=rf.check("lift_object", Value("off")).asString();
 

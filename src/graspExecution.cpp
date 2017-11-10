@@ -985,7 +985,7 @@ bool GraspExecution::goHome(const string &hand)
     //Putting torso in home position
     iposTorso->positionMove(0, 0.0);
     iposTorso->positionMove(1, 0.0);
-    iposTorso->positionMove(2, 0.0);
+    iposTorso->positionMove(2, 1.0);
 
     if (hand=="right")
     {
