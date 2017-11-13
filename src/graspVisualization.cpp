@@ -28,11 +28,9 @@ using namespace yarp::math;
 
 /***********************************************************************/
 GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
-                                       const deque<Property> &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, Vector &_hand, Vector &_hand1, Property &_vis_par , double &_quality_right1, double &_quality_left1,
-                                       double &_quality_right2, double &_quality_left2):
+                                       const deque<Property> &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, Vector &_hand, Vector &_hand1, Property &_vis_par , deque<double> &_cost_vis_r, deque<double> &_cost_vis_l ):
                                        RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
-                                       object(_object), obstacles(_obstacles), hand(_hand), hand1(_hand1), vis_par(_vis_par), quality_right1(_quality_right1), quality_left1(_quality_left1),
-                                       quality_right2(_quality_right2), quality_left2(_quality_left2)
+                                       object(_object), obstacles(_obstacles), hand(_hand), hand1(_hand1), vis_par(_vis_par), cost_vis_r(_cost_vis_r), cost_vis_l(_cost_vis_l)
 {
 
 }
@@ -227,61 +225,45 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
         }
 
-        stringstream q_r, q_l;
-        q_r<<round( quality_right1 * 100.0 ) / 100.0;
-        q_l<<round( quality_left1 * 100.0 ) / 100.0;
-
-        stringstream q_r2, q_l2;
-        q_r2<<round( quality_right2 * 100.0 ) / 100.0;
-        q_l2<<round( quality_left2 * 100.0 ) / 100.0;
-
-        stringstream right1, left1;
-        right1<<"quality right I";
-        left1<<"quality left I";
-
-        stringstream right2, left2;
-        right2<<"quality right II";
-        left2<<"quality left II";
-
-
-        int thickness=2.0;
-        int font=cv::FONT_HERSHEY_SIMPLEX;
-        double fontScale=0.5;
-
-        cv::Scalar red(230,0,0);
-        cv::Scalar blue(0,240,0);
-
-        cv::Scalar iol_green(22,88,248);
-        cv::Scalar iol_red(244,16, 46);
-
-        if (quality_right1>quality_left1)
+        for (size_t k=0; k<cost_vis_r.size(); k++)
         {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,90), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,90), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, right1.str(), cv::Point(200,60), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, left1.str(), cv::Point(50,60), font, fontScale, iol_red, thickness);
-        }
-        else if (quality_right1<quality_left1)
-        {
-            cv::putText(imgOutMat, q_r2.str(), cv::Point(200,90), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, q_l2.str(), cv::Point(50,90), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, right1.str(), cv::Point(200,60), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, left1.str(), cv::Point(50,60), font, fontScale, iol_green, thickness);
-        }
+            stringstream q_r, q_l;
+            q_r<<round( cost_vis_r[k] * 100.0 ) / 100.0;
+            q_l<<round( cost_vis_l[k] * 100.0 ) / 100.0;
 
-        if (quality_right2>quality_left2)
-        {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,35), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,35), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, right2.str(), cv::Point(200,15), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, left2.str(), cv::Point(50,15), font, fontScale, iol_red, thickness);
-        }
-        else if (quality_right2<quality_left2)
-        {
-            cv::putText(imgOutMat, q_r.str(), cv::Point(200,35), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, q_l.str(), cv::Point(50,35), font, fontScale, iol_green, thickness);
-            cv::putText(imgOutMat, right2.str(), cv::Point(200,15), font, fontScale, iol_red, thickness);
-            cv::putText(imgOutMat, left2.str(), cv::Point(50,15), font, fontScale, iol_green, thickness);
+
+
+            stringstream right1, left1;
+            right1<<"cost right "<<k;
+            left1<<"cost left "<<k;
+
+
+            int thickness=2.0;
+            int font=cv::FONT_HERSHEY_SIMPLEX;
+            double fontScale=0.5;
+
+            cv::Scalar red(230,0,0);
+            cv::Scalar blue(0,240,0);
+
+            cv::Scalar iol_green(22,88,248);
+            cv::Scalar iol_red(244,16, 46);
+
+            if (cost_vis_r[k]<cost_vis_l[k])
+            {
+                int value_y=35 + k * 55;
+                int string_y=15 + k * 55;
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_red, thickness);
+            }
+            else if (cost_vis_r[k]>cost_vis_l[k])
+            {
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,35 + k * 55), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,35 + k * 55), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, right1.str(), cv::Point(200,15 + k * 55), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, left1.str(), cv::Point(50,15 + k * 55), font, fontScale, iol_green, thickness);
+            }           
         }
     }
 

@@ -129,8 +129,10 @@ protected:
     yarp::os::Property complete_sol2;
     std::deque<yarp::os::Property> complete_sols;
 
-    double quality_right, quality_left;
-    double quality_right2, quality_left2;
+    double cost_right, cost_left;
+    double cost_right2, cost_left2;
+
+    std::deque<double> cost_vis_r, cost_vis_l;
 
 public:
     /************************************************************************/

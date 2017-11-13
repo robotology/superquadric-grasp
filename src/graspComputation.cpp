@@ -19,10 +19,10 @@ using namespace yarp::math;
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
                                     Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, double &_quality_right, double &_quality_left, bool &_multiple_superq):
+                                   Property &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, double &_cost_right, double &_cost_left, bool &_multiple_superq):
                                    ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
                                    left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), multiple_superq(_multiple_superq),
-                                   complete_sol(_complete_sol), object(_object), obstacles(_obstacles),quality_right(_quality_right), quality_left(_quality_left)
+                                   complete_sol(_complete_sol), object(_object), obstacles(_obstacles),cost_right(_cost_right), cost_left(_cost_left)
 
 {
 
@@ -734,26 +734,47 @@ void GraspComputation::bestPose()
         w2=2.5;
     }
 
-    quality_right=w1*final_value_R + w2*cos_zr;
+    if (norm(poseR)!=0.0)
+    {
+        cost_right=w1*final_value_R + w2*cos_zr;
+    }
+    else
+        cost_right=0.0;
 
-    quality_left=w1*final_value_L + w2*cos_zl;
+    if (norm(poseL)!=0.0)
+    {
+        cost_left=w1*final_value_L + w2*cos_zl;
+    }
+    else
+        cost_left=0.0;
     
-    quality_right=1.0/quality_right;
+    //cost_right=1.0/cost_right;
 
-    quality_left=1.0/quality_left;
+    //cost_left=1.0/cost_left;
 
-    yInfo()<<"[GraspComputation]: quality right "<<quality_right;
-    yInfo()<<"[GraspComputation]: quality left "<<quality_left;
+    yInfo()<<"[GraspComputation]: cost right "<<cost_right;
+    yInfo()<<"[GraspComputation]: cost left "<<cost_left;
 
-    if (quality_right>=quality_left)
+    if ((cost_right<=cost_left) && (cost_right>0.0) && (cost_left>0.))
     {
         yInfo()<<"Best pose for grasping is right hand";
         best_hand="right";
     }
-    else
+    else if ((cost_right>0.0) && (cost_left>0.))
     {
         yInfo()<<"Best pose for grasping is left hand";
         best_hand="left";
     }
+    else if (cost_right>0.0)
+    {
+        yInfo()<<"Best pose for grasping is right hand";
+        best_hand="right";
+    }
+    else if (cost_left>0.0)
+    {
+        yInfo()<<"Best pose for grasping is left hand";
+        best_hand="left";
+    }
+
 }
 

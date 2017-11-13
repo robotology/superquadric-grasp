@@ -199,7 +199,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
     yDebug()<<"Object "<<object.toString();
 
-    deque<double> quality;   
+    deque<double> cost;
 
     Vector obj_aux=object;
     deque<Vector> obs_aux;
@@ -218,10 +218,16 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     best_hands.clear();
     best_hands.push_back(graspComp->best_hand);
 
+    cost_vis_r.clear();
+    cost_vis_l.clear();
+
+    cost_vis_r.push_back(graspComp->cost_right);
+    cost_vis_l.push_back(graspComp->cost_left);
+
     if (graspComp->best_hand=="right")
-        quality.push_back(graspComp->quality_right);
+        cost.push_back(graspComp->cost_right);
     else
-        quality.push_back(graspComp->quality_left);
+        cost.push_back(graspComp->cost_left);
 
     double obst_size=obstacles.size();
 
@@ -248,10 +254,13 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         cout<<endl<<endl;
         solutions.push_back(complete_sol);
 
+        cost_vis_r.push_back(graspComp->cost_right);
+        cost_vis_l.push_back(graspComp->cost_left);
+
         if (graspComp->best_hand=="right")
-            quality.push_back(graspComp->quality_right);
+            cost.push_back(graspComp->cost_right);
         else
-            quality.push_back(graspComp->quality_left);
+            cost.push_back(graspComp->cost_left);
 
         best_hands.push_back(graspComp->best_hand);
     }
@@ -262,26 +271,25 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
     complete_sols=solutions;
 
-    double best_quality;
+    double best_cost;
 
     if (!multiple_superq)
         return complete_sol;
     else
     {
-        best_quality=quality[0];
-        for (size_t i=0; i<quality.size(); i++)
+        best_cost=cost[0];
+        for (size_t i=0; i<cost.size() - 1; i++)
         {
-            if (best_quality <= quality[i+1])
+            if ((best_cost >= cost[i+1]) && (cost[i+1]>0.0))
             {
-                best_quality=quality[i+1];
+                best_cost=cost[i+1];
                 best_scenario=i+1;
             }
-            else if (i==0)
+            else if ((i==0) && (cost[i]>0.0))
                 best_scenario=i;
-
-            yInfo()<<"Quality "<<i<<quality[i];
         }
-        yInfo()<<"Best scenario "<< best_scenario<< "with quality: "<<best_quality;
+
+        yInfo()<<"Best scenario "<< best_scenario<< "with cost: "<<best_cost;
         for (int k=0; k<best_hands.size(); k++)
             yInfo()<<"Best hands "<< best_hands[k];
 
@@ -302,7 +310,6 @@ string GraspingModule::get_visualization()
 /**********************************************************************/
 string GraspingModule::get_best_hand()
 {
-    double quality1, quality2;
     if (!multiple_superq)
         return graspComp->best_hand;
     else
@@ -826,7 +833,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=configPose(rf);
 
-    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacles, quality_right, quality_left, multiple_superq);
+    graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacles, cost_right, cost_left, multiple_superq);
 
     graspComp->init();
 
@@ -835,7 +842,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, quality_right, quality_left, quality_right2, quality_left2);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l);
 
     if (visualization)
     {

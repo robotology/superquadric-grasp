@@ -70,13 +70,13 @@ public:
     yarp::sig::Vector poseR, solR;
     yarp::sig::Vector poseL, solL;
 
-    double &quality_right, &quality_left;
+    double &cost_right, &cost_left;
 
     /*******************************************************************************/
     GraspComputation(const yarp::os::Property &_ipopt_par, const yarp::os::Property &_pose_par,
                      const yarp::os::Property &_trajectory_par, const std::string &_left_or_right,
                      yarp::sig::Vector &_hand, yarp::sig::Vector &_hand1, yarp::os::ResourceFinder *_rf,
-                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, const std::deque<yarp::sig::Vector> &_obstacle, double &_quality_right, double &_quality_left, bool &_multiple_superq);
+                     yarp::os::Property &_complete_sol, const yarp::sig::Vector &_object, const std::deque<yarp::sig::Vector> &_obstacle, double &_cost_right, double &_cost_left, bool &_multiple_superq);
 
     /***********************************************************************/
     void setIpoptPar(const yarp::os::Property &newOptions, bool first_time);
