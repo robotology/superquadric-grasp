@@ -120,7 +120,35 @@ service superquadricGrasp_IDL
     * computed trajectory, in the form center of the end-effector
     * (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5).
     */
-    Property get_grasping_pose(1: Property estimated_superq, 2: Property obstacle , 3:string hand);
+    Property get_grasping_pose(1: Property estimated_superq, 2:string hand);
+
+    /** Return the estimated grasping poses given
+    * an estimated superquadric.
+    *@param estimated_superq is a Property containing
+    * the superquadric.
+    *@param obstacle is a Property containing
+    * the other object superquadrics.
+    *@param hand is the hand for which we want
+    * to solve the grasping problem (right, left or both).
+    *@return a property containing the solution.
+    * Note: the estimated superquadric must be 
+    * provide in the following format:  (dimensions (x0 x1 x2)) 
+    * (exponents (x3 x4)) (center (x5 x6 x7)) (orientation (x8 x9 x10 x11))
+    * where x0, x1,x2 are the semi axes of the superquadric,
+    * x3, x4 are the responsible for the shape, x5 x6 x7 are the coordinates
+    * of the superquadric center and x8 x9 x10 x11
+    * are the axis-angle representation of the superquadric orientation.
+    * The solution is given in the form: (pose_right (h0 h1 h2 h3 h4 h5 h6))
+    * (trajectory_right (t0 t1 t2 t3 t4 t5) ... ) for the right hand,
+    * and the same for the left hand (according to the  value of the
+    * string hand are input parameter. The quantity "pose_right" is the pose
+    * computed for the robot hand (x0,x1,x2,  are the 3D coordinates of the end-effector
+    * and x3,x4,x5 are the Euler angles representing the end-effector orientation)
+    * The quantity "trajectory_right"  includes all the waypoint of the
+    * computed trajectory, in the form center of the end-effector
+    * (t0,t1,t2)+ orientation (Euler angles, t3,t4,t5).
+    */
+    Property get_grasping_pose_multiple(1: Property estimated_superq, 2: Property obstacle , 3:string hand);
 
     /**
     * Set if the visualization has to be enabled.

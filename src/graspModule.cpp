@@ -61,10 +61,78 @@ bool GraspingModule::clear_poses()
 }
 
 /**********************************************************************/
-Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const Property &obstacle_ext, const string &hand)
+Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
+{
+    //LockGuard lg(mutex);   
+
+    Bottle *dim=estimated_superq.find("dimensions").asList();
+
+    if (!estimated_superq.find("dimensions").isNull())
+    {
+        object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
+    }
+
+    Bottle *shape=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
+    }
+
+    Bottle *exp=estimated_superq.find("exponents").asList();
+
+    if (!estimated_superq.find("exponents").isNull())
+    {
+        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
+    }
+
+    Bottle *center=estimated_superq.find("center").asList();
+
+    if (!estimated_superq.find("center").isNull())
+    {
+        object[5]=center->get(0).asDouble(); object[6]=center->get(1).asDouble(); object[7]=center->get(2).asDouble();
+    }
+
+    Bottle *orientation=estimated_superq.find("orientation").asList();
+
+    if (!estimated_superq.find("orientation").isNull())
+    {
+        Vector axis(4,0.0);
+        axis[0]=orientation->get(0).asDouble(); axis[1]=orientation->get(1).asDouble(); axis[2]=orientation->get(2).asDouble(); axis[3]=orientation->get(3).asDouble();
+        object.setSubvector(8,dcm2euler(axis2dcm(axis)));
+    }
+
+    object_vis=object;
+
+    obstacles.clear();
+    obstacles_vis=obstacles;
+
+    multiple_superq=false;
+
+    yDebug()<<"Object "<<object.toString();
+
+    graspComp->setPar("left_or_right", hand);
+    graspComp->run();
+    graspComp->getSolution(hand);
+
+    yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
+
+    t_grasp=graspComp->getTime();
+
+    graspVis->left_or_right=hand;
+
+    complete_sols.clear();
+    complete_sols.push_back(complete_sol);
+
+    return complete_sol;
+}
+
+/**********************************************************************/
+Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_superq, const Property &obstacle_ext, const string &hand)
 {
     //LockGuard lg(mutex);
     Vector obstacle(11,0.0);
+    complete_sols.clear();
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -106,30 +174,38 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     object_vis=object;
 
     Bottle *obs=obstacle_ext.find("obstacles").asList();
-    for (size_t i =0; i<obs->size(); i++)
+    if (obs!=nullptr)
     {
-        Bottle *obstacle_sing=obs->get(i).asList();
+        for (size_t i =0; i<obs->size(); i++)
+        {
+            Bottle *obstacle_sing=obs->get(i).asList();
 
-        obstacle[0]=obstacle_sing->get(0).asDouble(); obstacle[1]=obstacle_sing->get(1).asDouble(); obstacle[2]=obstacle_sing->get(2).asDouble();
-        obstacle[3]=obstacle_sing->get(3).asDouble(); obstacle[4]=obstacle_sing->get(4).asDouble(); obstacle[5]=obstacle_sing->get(5).asDouble();
-        obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble(); obstacle[8]=obstacle_sing->get(8).asDouble();
-        obstacle[9]=obstacle_sing->get(9).asDouble(); obstacle[10]=obstacle_sing->get(10).asDouble();
-        obstacles.push_back(obstacle);
-        obstacles_vis.push_back(obstacle);
-        yDebug()<<"Obstacles "<<obstacles[i].toString();
+            obstacle[0]=obstacle_sing->get(0).asDouble(); obstacle[1]=obstacle_sing->get(1).asDouble(); obstacle[2]=obstacle_sing->get(2).asDouble();
+            obstacle[3]=obstacle_sing->get(3).asDouble(); obstacle[4]=obstacle_sing->get(4).asDouble(); obstacle[5]=obstacle_sing->get(5).asDouble();
+            obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble(); obstacle[8]=obstacle_sing->get(8).asDouble();
+            obstacle[9]=obstacle_sing->get(9).asDouble(); obstacle[10]=obstacle_sing->get(10).asDouble();
+            obstacles.push_back(obstacle);
+            obstacles_vis.push_back(obstacle);
+            yDebug()<<"Obstacles "<<obstacles[i].toString();
+        }
+
+        if (obs->size()>0)
+            multiple_superq=true;
+        else
+            multiple_superq=false;
     }
+    else
+        multiple_superq=false;
 
     yDebug()<<"Object "<<object.toString();
 
-    deque<double> quality;
-
-
-    graspComp->setPar("left_or_right", hand);
+    deque<double> quality;   
 
     Vector obj_aux=object;
     deque<Vector> obs_aux;
     obs_aux=obstacles;
 
+    graspComp->setPar("left_or_right", hand);
     graspComp->run();
     graspComp->getSolution(hand);
 
@@ -184,10 +260,7 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     graspVis->left_or_right=hand;
 
-    //complete_sols=mergeProperties(left_or_right);
     complete_sols=solutions;
-
-    //yDebug()<<"Complete sols "<<complete_sols.toString();
 
     double best_quality;
 
@@ -235,27 +308,7 @@ string GraspingModule::get_best_hand()
     else
     {
         return best_hands[best_scenario];
-//        if (graspComp->best_hand=="right")
-//            quality1=graspComp->quality_right;
-//        if (graspComp2->best_hand=="right")
-//            quality2=graspComp2->quality_right;
-//        if (graspComp->best_hand=="left")
-//            quality1=graspComp->quality_left;
-//        if (graspComp2->best_hand=="left")
-//            quality2=graspComp2->quality_left;
-
-//        if (quality1<quality2)
-//        {
-//            yDebug()<<"Second scenario";
-//            return graspComp2->best_hand;
-//        }
-//        else
-//        {
-//            yDebug()<<"First scenario";
-//            return graspComp->best_hand;
-//        }
     }
-    //return graspComp->best_hand;
 }
 
 /**********************************************************************/
@@ -314,20 +367,14 @@ bool GraspingModule::set_options(const Property &newOptions, const string &field
     if (field=="pose")
     {
         graspComp->setPosePar(newOptions, false);
-        //if (multiple_superq)
-        //    graspComp2->setPosePar(newOptions, false);
     }
     else if (field=="trajectory")
     {
         graspComp->setTrajectoryPar(newOptions, false);
-        //if (multiple_superq)
-        //    graspComp2->setTrajectoryPar(newOptions, false);
     }
     else if (field=="optimization")
     {
         graspComp->setIpoptPar(newOptions, false);
-        //if (multiple_superq)
-        //    graspComp2->setIpoptPar(newOptions, false);
     }
     else if (field=="execution")
     {
@@ -465,7 +512,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
 
-    multiple_superq=(rf.check("multiple_superq", Value("off")).asString()=="on");
+    //multiple_superq=(rf.check("multiple_superq", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -780,13 +827,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
     config=configPose(rf);
 
     graspComp= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol, object,obstacles, quality_right, quality_left, multiple_superq);
-    //if (multiple_superq)
-    //    graspComp2= new GraspComputation(ipopt_par, pose_par, traj_par, left_or_right, hand, hand1, this->rf, complete_sol2, object2, obstacle2, quality_right2, quality_left2, multiple_superq);
 
     graspComp->init();
-
-    //if (multiple_superq)
-    //    graspComp2->init();
 
     config=configViewer(rf);
 

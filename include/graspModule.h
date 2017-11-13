@@ -146,7 +146,10 @@ public:
     std::string get_best_hand();
 
     /************************************************************************/
-    yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric,const yarp::os::Property &obstacle, const std::string &hand);
+    yarp::os::Property get_grasping_pose(const yarp::os::Property &superquadric, const std::string &hand);
+
+    /************************************************************************/
+    yarp::os::Property get_grasping_pose_multiple(const yarp::os::Property &superquadric,const yarp::os::Property &obstacle, const std::string &hand);
 
     /************************************************************************/
     yarp::os::Property get_options(const std::string &field);

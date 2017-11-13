@@ -468,9 +468,10 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Initialize();
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
-    // New constraint
+    //if (multiple_superq)
+    //    obstacles.clear();
     grasp_nlp->init(object, which_hand,obstacles, n_pointshand, l_o_r);
-    //grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
+
     grasp_nlp->configure(this->rf,l_o_r, displacement, plane);
 
     Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));

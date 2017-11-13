@@ -69,7 +69,9 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     Vector z2D(2,0.0);
 
 
-    addSuperq(object,imgOut,255);
+    if (norm(object)>0.0)
+        addSuperq(object,imgOut,255);
+
     for (size_t i=0; i<obstacles.size(); i++)
         addSuperq(obstacles[i],imgOut,255);
 

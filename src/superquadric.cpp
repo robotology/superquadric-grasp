@@ -46,6 +46,7 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
 {
     hand=handext;
     object=objectext;
+
     for (size_t i=0; i<obstacleext.size(); i++)
         obstacles.push_back(obstacleext[i]);
 
@@ -185,7 +186,11 @@ bool grasping_NLP::get_nlp_info(Ipopt::Index &n, Ipopt::Index &m,Ipopt::Index &n
                   Ipopt::Index &nnz_h_lag, Ipopt::TNLP::IndexStyleEnum &index_style)
 {
     n=6;
-    m=6+(num_superq -1);
+    if (num_superq==0)
+        m=6;
+    else
+        m=6+(num_superq -1);
+
     nnz_jac_g=n*m;
     nnz_h_lag=0;
     index_style=TNLP::C_STYLE;
@@ -497,18 +502,20 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      //New constraints
 
-     for (size_t j=0; j<num_superq-1; j++)
+     if (num_superq>0)
      {
-         g[6+j]=0;
+         for (size_t j=0; j<num_superq-1; j++)
+         {
+             g[6+j]=0;
 
-         for(size_t i=0;i<points_on.size();i++)
-            g[6+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+             for(size_t i=0;i<points_on.size();i++)
+                g[6+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
 
-         g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+         }
+
+         //cout<<"g[6]"<<g[6]<<endl;
      }
-
-     //cout<<"g[6]"<<g[6]<<endl;
-
 
      return true;
  }
@@ -570,18 +577,20 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      //New constraint
 
-
-     for (size_t j=0; j<num_superq-1; j++)
+     if (num_superq>0)
      {
-         g[6+j]=0;
+         for (size_t j=0; j<num_superq-1; j++)
+         {
+             g[6+j]=0;
 
-         for(size_t i=0;i<points_on.size();i++)
-            g[6+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+             for(size_t i=0;i<points_on.size();i++)
+                g[6+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
 
-         g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+         }
+
+         //cout<<"g[6]"<<g[6]<<endl;
      }
-
-     //cout<<"g[6]"<<g[6]<<endl;
      return g[i];
  }
 
@@ -618,12 +627,26 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
      else
     {
-        for (size_t j=0; j<m; j++)
+        if (num_superq==0)
         {
-            for (size_t i=0; i<n ; i++)
+            for (size_t j=0; j<m; j++)
             {
-                jCol[j*(m-1) + i]= i;
-                iRow[j*(m-1)+ i] = j;
+                for (size_t i=0; i<n ; i++)
+                {
+                    jCol[j*(m) + i]= i;
+                    iRow[j*(m)+ i] = j;
+                }
+            }
+        }
+        else
+        {
+            for (size_t j=0; j<m; j++)
+            {
+                for (size_t i=0; i<n ; i++)
+                {
+                    jCol[j*(m-1) + i]= i;
+                    iRow[j*(m-1)+ i] = j;
+                }
             }
         }
      }
@@ -642,11 +665,13 @@ void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, co
     for(size_t i=0; i< 6; i++)
         x0[i]=x0_tmp(i,0);
 
-    bounds.resize(6,2);
-    num_superq= rf->check("num_superq", Value(2)).asInt();
+    bounds.resize(6,2);    
     readMatrix("bounds_"+left_or_right,bounds, 6, rf);
-    bounds_constr.resize(6 + num_superq - 1,2);
-    readMatrix("bounds_constr_"+left_or_right,bounds_constr,6 + num_superq - 1 , rf);
+
+    max_superq= rf->check("max_superq", Value(4)).asInt();
+    bounds_constr.resize(6 + max_superq - 1,2);
+    readMatrix("bounds_constr_"+left_or_right,bounds_constr,6 + max_superq - 1 , rf);
+
     plane.resize(4,1);
 
     l_o_r=left_or_right;

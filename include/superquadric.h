@@ -54,6 +54,7 @@ public:
     std::string l_o_r;
     double tmp_value;
     int num_superq;
+    int max_superq;
 
     /****************************************************************/
     void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext,const std::deque<yarp::sig::Vector> &obstacleext, int &n_handpoints, const std::string &str_hand);
