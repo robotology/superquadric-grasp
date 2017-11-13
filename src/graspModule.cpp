@@ -115,6 +115,11 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     graspComp->run();
     graspComp->getSolution(hand);
 
+    cost_vis_r.clear();
+    cost_vis_l.clear();
+    cost_vis_r.push_back(graspComp->cost_right);
+    cost_vis_l.push_back(graspComp->cost_left);
+
     yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
     t_grasp=graspComp->getTime();
@@ -133,6 +138,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     //LockGuard lg(mutex);
     Vector obstacle(11,0.0);
     complete_sols.clear();
+    cost.clear();
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -174,6 +180,8 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     object_vis=object;
 
     Bottle *obs=obstacle_ext.find("obstacles").asList();
+    obstacles.clear();
+    obstacles_vis.clear();
     if (obs!=nullptr)
     {
         for (size_t i =0; i<obs->size(); i++)
@@ -231,11 +239,16 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
     double obst_size=obstacles.size();
 
+    yDebug()<<"0";
     for (size_t i=0; i<obst_size; i++)
     {
+
         object=obs_aux[i];
+        yDebug()<<"1";
         obstacles.clear();
         obstacles.push_back(obj_aux);
+
+        yDebug()<<"2";
 
         yDebug()<<"Obj aux "<<i<<obj_aux.toString();
         yDebug()<<"Object "<<i<<object.toString();
@@ -280,6 +293,8 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         best_cost=cost[0];
         for (size_t i=0; i<cost.size() - 1; i++)
         {
+            yDebug()<<"i "<<i;
+            yDebug()<<"cost "<<cost[i];
             if ((best_cost >= cost[i+1]) && (cost[i+1]>0.0))
             {
                 best_cost=cost[i+1];
@@ -842,7 +857,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l, best_scenario);
 
     if (visualization)
     {

@@ -45,7 +45,7 @@ protected:
     std::deque<yarp::sig::Vector> trajectory;
     yarp::sig::Matrix R;
 
-
+    int &best_scenario;
     std::deque<double> &cost_vis_r, &cost_vis_l;
 
 public:
@@ -71,7 +71,7 @@ public:
     GraspVisualization(int rate, const std::string &_eye, yarp::dev::IGazeControl *_igaze,
                        const yarp::sig::Matrix _K,  std::string left_or_right, const std::deque<yarp::os::Property> &complete_sol,
                        const yarp::sig::Vector &_object, const std::deque<yarp::sig::Vector> &_obstacles, yarp::sig::Vector &hand,
-                       yarp::sig::Vector &hand1, yarp::os::Property &vis_par, std::deque<double> &cost_right, std::deque<double> &cost_left);
+                       yarp::sig::Vector &hand1, yarp::os::Property &vis_par, std::deque<double> &cost_right, std::deque<double> &cost_left, int &best_scenario);
 
     /***********************************************************************/
     void addSuperq(const yarp::sig::Vector &x, yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut,const int &col);

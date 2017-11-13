@@ -189,7 +189,7 @@ bool grasping_NLP::get_nlp_info(Ipopt::Index &n, Ipopt::Index &m,Ipopt::Index &n
     if (num_superq==0)
         m=6;
     else
-        m=6+(num_superq -1);
+        m=6+(num_superq);
 
     nnz_jac_g=n*m;
     nnz_h_lag=0;
@@ -504,7 +504,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      if (num_superq>0)
      {
-         for (size_t j=0; j<num_superq-1; j++)
+         for (size_t j=0; j<num_superq; j++)
          {
              g[6+j]=0;
 
@@ -579,7 +579,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      if (num_superq>0)
      {
-         for (size_t j=0; j<num_superq-1; j++)
+         for (size_t j=0; j<num_superq; j++)
          {
              g[6+j]=0;
 
@@ -644,8 +644,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
             {
                 for (size_t i=0; i<n ; i++)
                 {
-                    jCol[j*(m-1) + i]= i;
-                    iRow[j*(m-1)+ i] = j;
+                    jCol[j*(n) + i]= i;
+                    iRow[j*(n)+ i] = j;
                 }
             }
         }
