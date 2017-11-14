@@ -138,7 +138,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     //LockGuard lg(mutex);
     Vector obstacle(11,0.0);
     complete_sols.clear();
-    cost.clear();
+    solutions.clear();
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -239,16 +239,13 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
     double obst_size=obstacles.size();
 
-    yDebug()<<"0";
     for (size_t i=0; i<obst_size; i++)
     {
 
         object=obs_aux[i];
-        yDebug()<<"1";
         obstacles.clear();
         obstacles.push_back(obj_aux);
 
-        yDebug()<<"2";
 
         yDebug()<<"Obj aux "<<i<<obj_aux.toString();
         yDebug()<<"Object "<<i<<object.toString();
@@ -759,7 +756,6 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
     object.resize(11,0.0);
-    //obstacle.resize(11,0.0);
 
     readSuperq("hand",hand,11,this->rf);
 
@@ -769,7 +765,6 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     }
 
     readSuperq("displacement",displacement,3,this->rf);
-    yDebug()<<"displacement "<<displacement.toString();
     readSuperq("plane",plane,4,this->rf);
 
     if (plane.size()==0 && displacement.size()==0)
@@ -892,7 +887,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
 {
-    x.resize(dimension, 0.0);
+    //x.resize(dimension, 0.0);
 
     if (Bottle *b=rf->find(name_obj.c_str()).asList())
     {
