@@ -200,10 +200,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
             else
             {
-                if (i==0 || i==1 || i==4 || i==5)
-                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
-                else
-                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0), 4.0);
+                cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
             }
 
             if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
@@ -211,7 +208,9 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 count++;
             }
             else
+            {
                 cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+            }
 
             if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
             {
@@ -219,10 +218,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
             else
             {
-                 if (i==0 || i==1 || i==4 || i==5)
-                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
-                else
-                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255), 4.0);
+                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
             }
         }
 
