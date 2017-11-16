@@ -108,8 +108,16 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     obstacles_vis=obstacles;
 
     multiple_superq=false;
+    best_scenario=-1;
 
     yDebug()<<"Object "<<object.toString();
+
+    readSuperq("hand",graspComp->hand,11,this->rf);
+
+    if (left_or_right=="both")
+    {
+        readSuperq("hand1",graspComp->hand1,11,this->rf);
+    }
 
     graspComp->setPar("left_or_right", hand);
     graspComp->run();
@@ -213,6 +221,13 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     deque<Vector> obs_aux;
     obs_aux=obstacles;
 
+    readSuperq("hand",graspComp->hand,11,this->rf);
+
+    if (left_or_right=="both")
+    {
+        readSuperq("hand1",graspComp->hand1,11,this->rf);
+    }
+
     graspComp->setPar("left_or_right", hand);
     graspComp->run();
     graspComp->getSolution(hand);
@@ -241,6 +256,12 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
     for (size_t i=0; i<obst_size; i++)
     {
+        readSuperq("hand",graspComp->hand,11,this->rf);
+
+        if (left_or_right=="both")
+        {
+            readSuperq("hand1",graspComp->hand1,11,this->rf);
+        }
 
         object=obs_aux[i];
         obstacles.clear();
@@ -888,6 +909,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
 {
     //x.resize(dimension, 0.0);
+    x.resize(0);
 
     if (Bottle *b=rf->find(name_obj.c_str()).asList())
     {

@@ -150,6 +150,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
         }
 
+        int half_traj_size=trajectory.size()/2;
+
         for (size_t i=0; i<trajectory.size(); i++)
         {
             waypoint=trajectory[i];
@@ -200,7 +202,16 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
             else
             {
-                cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+                if (best_scenario>=0)
+                {
+                    if (i==best_scenario*2 || i==best_scenario*2 +1 || i==(best_scenario)*2 +half_traj_size || i==(best_scenario)*2 + half_traj_size+1)
+                        cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0), 4);
+                    else
+                        cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+                }
+                else
+                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+
             }
 
             if ((target_pointy.x<0) || (target_pointy.y<0) || (target_pointy.x>=320) || (target_pointy.y>=240))
@@ -209,7 +220,15 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
             else
             {
-                cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+                if (best_scenario>=0)
+                {
+                    if (i==best_scenario*2 || i==best_scenario*2 +1 || i==(best_scenario)*2 +half_traj_size || i==(best_scenario)*2 + half_traj_size+1)
+                        cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0), 4);
+                    else
+                         cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+                }
+                else
+                    cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
             }
 
             if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
@@ -218,7 +237,15 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             }
             else
             {
-                cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                if (best_scenario>=0)
+                {
+                    if (i==best_scenario*2 || i==best_scenario*2 +1 || i==(best_scenario)*2 +half_traj_size || i==(best_scenario)*2 + half_traj_size+1)
+                        cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255),4);
+                    else
+                        cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                }
+                else
+                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
             }
         }
 
