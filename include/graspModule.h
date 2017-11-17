@@ -214,7 +214,10 @@ public:
     bool readSuperq(const std::string &name_obj, yarp::sig::Vector &x, const int &dimension, yarp::os::ResourceFinder *rf);
 
     /************************************************************************/
-    void saveSol(const yarp::os::Property &sol);
+    void saveSol(const yarp::os::Property &sol, int scenario);
+
+    /**********************************************************************/
+    void saveSolMultiple(std::deque<yarp::os::Property> &poses);
 
     /**********************************************************************/
     bool go_home(const std::string &entry);

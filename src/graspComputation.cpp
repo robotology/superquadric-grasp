@@ -732,6 +732,7 @@ void GraspComputation::bestPose()
     {
         w1=1.0;
         w2=2.5;
+        //w2=1.0;
     }
 
     if (norm(poseR)!=0.0)

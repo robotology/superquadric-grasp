@@ -701,7 +701,12 @@ bool GraspingModule::updateModule()
     }
 
     if (save_poses && (graspComp->count_file == graspComp->count_file_old))
-        saveSol(complete_sol);
+    {
+        if (solutions.size()==1)
+            saveSol(complete_sol, 0);
+        else
+            saveSolMultiple(complete_sols);
+    }
 
    return true;
 }
@@ -923,7 +928,7 @@ bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &di
 }
 
 /**********************************************************************/
-void GraspingModule::saveSol(const Property &poses)
+void GraspingModule::saveSol(const Property &poses, int scenario)
 {
     stringstream ss;
     ss << graspComp->count_file;
@@ -1064,6 +1069,15 @@ void GraspingModule::saveSol(const Property &poses)
     }
 
     graspComp->count_file_old++;
+}
+
+/**********************************************************************/
+void GraspingModule::saveSolMultiple(deque<Property> &poses)
+{
+    for (size_t i=0; i<poses.size(); i++)
+    {
+        saveSol(poses[i], i);
+    }
 }
 
 /**********************************************************************/
