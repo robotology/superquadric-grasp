@@ -274,6 +274,12 @@ bool GraspingModule::check_home()
 }
 
 /**********************************************************************/
+bool GraspingModule::check_basket()
+{
+    return reached_basket;
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);
@@ -303,6 +309,38 @@ bool GraspingModule::go_home(const string &entry)
 
     return false;
 }
+
+/**********************************************************************/
+bool GraspingModule::go_to_basket(const string &entry)
+{
+    LockGuard lg(mutex);
+    reached_basket=false;
+
+    if ((entry=="right") || (entry=="left"))
+    {
+        executed=true;
+        graspExec->reached=true;
+        graspExec->reached_tot=true;
+        graspExec->stop();
+        reached_basket=graspExec->goToBasket(entry);
+
+        return true;
+    }
+    else if (entry=="both")
+    {
+        executed=true;
+        graspExec->reached=true;
+        graspExec->reached_tot=true;
+        graspExec->stop();
+        graspExec->goToBasket("right");
+        reached_basket=graspExec->goToBasket("left");
+
+        return true;
+    }
+
+    return false;
+}
+
 
 /****************************************************************/
 bool GraspingModule::configBasics(ResourceFinder &rf)
@@ -352,6 +390,8 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     readSuperq("shift_left",shift_left,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
     readSuperq("home_left",home_left,7,this->rf);
+    readSuperq("basket_right",basket_right,7,this->rf);
+    readSuperq("basket_left",basket_left,7,this->rf);
 
     movement_par.put("robot",robot);
     movement_par.put("hand",left_or_right);
@@ -391,14 +431,30 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2l.addDouble(home_left[6]);
     movement_par.put("home_left", planebl.get(0));
 
+    Bottle planebask_r;
+    Bottle &pk=planebask_r.addList();
+    pk.addDouble(basket_right[0]); pk.addDouble(basket_right[1]);
+    pk.addDouble(basket_right[2]); pk.addDouble(basket_right[3]);
+    pk.addDouble(basket_right[4]); pk.addDouble(basket_right[5]);pk.addDouble(basket_right[6]);
+    movement_par.put("basket_right", planebask_r.get(0));
+
+    Bottle planebask_l;
+    Bottle &pk2=planebask_l.addList();
+    pk2.addDouble(basket_left[0]); pk2.addDouble(basket_left[1]);
+    pk2.addDouble(basket_left[2]); pk2.addDouble(basket_left[3]);
+    pk2.addDouble(basket_left[4]); pk2.addDouble(basket_left[5]);pk2.addDouble(basket_left[6]);
+    movement_par.put("basket_left", planebask_l.get(0));
+
     executed=true;
     hand_to_move="right";
 
-    yInfo()<<"[GraspExecution] lift_z:      "<<lift_z;
-    yInfo()<<"[GraspExecution] shift_right: "<<shift_right.toString(3,3);
-    yInfo()<<"[GraspExecution] shift_left:  "<<shift_left.toString(3,3);
-    yInfo()<<"[GraspExecution] home_right:  "<<home_right.toString(3,3);
-    yInfo()<<"[GraspExecution] home_left:   "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] lift_z:        "<<lift_z;
+    yInfo()<<"[GraspExecution] shift_right:   "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:    "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right:    "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:     "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_right:  "<<basket_right.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_left:   "<<basket_left.toString(3,3);
 
     return true;
 }

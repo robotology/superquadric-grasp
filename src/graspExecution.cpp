@@ -36,6 +36,8 @@ bool GraspExecution::configure()
     home_left.resize(7,0.0);
     shift_right.resize(3,0.0);
     shift_left.resize(3,0.0);
+    basket_right.resize(7,0.0);
+    basket_left.resize(7,0.0);
 
     i=-1;
 
@@ -608,6 +610,62 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
+    Bottle *bask_r=newOptions.find("basket_right").asList();
+    if (newOptions.find("basket_right").isNull() && (first_time==true))
+    {
+        basket_right[0]=-0.30; basket_right[1]=0.21; basket_right[2]=0.15;
+        basket_right[3]=0.113261; basket_right[4]=-0.954747; basket_right[5]=0.275008; basket_right[6]=2.868312;
+    }
+    else if (!newOptions.find("basket_right").isNull())
+    {
+        Vector tmp(7,0.0);
+        tmp[0]=bask_r->get(0).asDouble();
+        tmp[1]=bask_r->get(1).asDouble();
+        tmp[2]=bask_r->get(2).asDouble();
+        tmp[3]=bask_r->get(3).asDouble();
+        tmp[4]=bask_r->get(4).asDouble();
+        tmp[5]=bask_r->get(5).asDouble();
+        tmp[6]=bask_r->get(6).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            basket_right=tmp;
+        }
+        else
+        {
+            basket_right[0]=-0.30; basket_right[1]=0.21; basket_right[2]=0.15;
+            basket_right[3]=0.113261; basket_right[4]=-0.954747; basket_right[5]=0.275008; basket_right[6]=2.868312;
+        }
+    }
+
+    Bottle *bask_l=newOptions.find("basket_left").asList();
+    if (newOptions.find("basket_left").isNull() && (first_time==true))
+    {
+        basket_left[0]=-0.30; basket_left[1]=0.21; basket_left[2]=0.15;
+        basket_left[3]=0.113261; basket_left[4]=-0.954747; basket_left[5]=0.275008; basket_left[6]=2.868312;
+    }
+    else if (!newOptions.find("basket_left").isNull())
+    {
+        Vector tmp(7,0.0);
+        tmp[0]=bask_l->get(0).asDouble();
+        tmp[1]=bask_l->get(1).asDouble();
+        tmp[2]=bask_l->get(2).asDouble();
+        tmp[3]=bask_l->get(3).asDouble();
+        tmp[4]=bask_l->get(4).asDouble();
+        tmp[5]=bask_l->get(5).asDouble();
+        tmp[6]=bask_l->get(6).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            basket_left=tmp;
+        }
+        else
+        {
+            basket_left[0]=-0.30; basket_left[1]=0.21; basket_left[2]=0.15;
+            basket_left[3]=0.113261; basket_left[4]=-0.954747; basket_left[5]=0.275008; basket_left[6]=2.868312;
+        }
+    }
+
     double pitch_max=newOptions.find("torso_pitch_max").asDouble();
 
     if (newOptions.find("torso_pitch_max").isNull() && (first_time==true))
@@ -631,11 +689,13 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     }
 
     yDebug()<<"In execution module ....";
-    yInfo()<<"[GraspExecution] lift_z:     "<<lift_z;
-    yInfo()<<"[GraspExecution] shift_right:"<<shift_right.toString(3,3);
-    yInfo()<<"[GraspExecution] shift_left:"<<shift_left.toString(3,3);
-    yInfo()<<"[GraspExecution] home_right: "<<home_right.toString(3,3);
-    yInfo()<<"[GraspExecution] home_left:  "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] lift_z:       "<<lift_z;
+    yInfo()<<"[GraspExecution] shift_right:  "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:   "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right:   "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:    "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_right: "<<basket_right.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_left:  "<<basket_left.toString(3,3);
 }
 
 /*******************************************************************************/
@@ -687,6 +747,20 @@ Property GraspExecution::getPosePar()
     p2l.addDouble(home_left[2]); p2l.addDouble(home_left[3]);
     p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]); p2l.addDouble(home_left[6]);
     advOptions.put("home_left", planel.get(0));
+
+    Bottle planebask_r;
+    Bottle &pk=planebask_r.addList();
+    pk.addDouble(basket_right[0]); pk.addDouble(basket_right[1]);
+    pk.addDouble(basket_right[2]); pk.addDouble(basket_right[3]);
+    pk.addDouble(basket_right[4]); pk.addDouble(basket_right[5]);pk.addDouble(basket_right[6]);
+    movement_par.put("basket_right", planebask_r.get(0));
+
+    Bottle planebask_l;
+    Bottle &pk2=planebask_l.addList();
+    pk2.addDouble(basket_left[0]); pk2.addDouble(basket_left[1]);
+    pk2.addDouble(basket_left[2]); pk2.addDouble(basket_left[3]);
+    pk2.addDouble(basket_left[4]); pk2.addDouble(basket_left[5]);pk2.addDouble(basket_left[6]);
+    movement_par.put("basket_left", planebask_l.get(0));
 
     return advOptions;
 }
@@ -1018,6 +1092,57 @@ bool GraspExecution::goHome(const string &hand)
              icart_left->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
         }
+    }
+
+    return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::goToBasket(const string &hand)
+{
+    bool done;
+    int context_tmp;
+
+    if (visual_serv)
+        visual_servoing_right->stopFacilities();
+
+    //Putting torso in home position
+    iposTorso->positionMove(0, 0.0);
+    iposTorso->positionMove(1, 0.0);
+    iposTorso->positionMove(2, 1.0);
+
+    if (hand=="right")
+    {
+        yDebug()<<"[GraspExecution]: going to the basket: "<<basket_right.toString(3,3);
+        icart_right->goToPoseSync(basket_right.subVector(0,2),basket_right.subVector(3,6));
+        icart_right->waitMotionDone();
+        icart_right->checkMotionDone(&done);
+        if (done)
+        {
+             Vector x_reached(3,0.0);
+             Vector o_reached(4,0.0);
+             icart_right->getPose(x_reached, o_reached);
+             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(basket_right.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(basket_right.subVector(3,6)-o_reached);
+        }
+        yDebug()<<"[GraspExecution]: opening hand ... ";
+        handContr_right.openHand(true, true);
+
+    }
+    if (hand=="left")
+    {
+        yDebug()<<"[GraspExecution]: going to the basket: "<<basket_left.toString(3,3);
+        icart_left->goToPoseSync(basket_left.subVector(0,2),basket_left.subVector(3,6));
+        icart_left->waitMotionDone();
+        icart_left->checkMotionDone(&done);
+        if (done)
+        {
+             Vector x_reached(3,0.0);
+             Vector o_reached(4,0.0);
+             icart_left->getPose(x_reached, o_reached);
+             yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(basket_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(basket_left.subVector(3,6)-o_reached);
+        }
+        yDebug()<<"[GraspExecution]: opening hand ... ";
+        handContr_left.openHand(true, true);
     }
 
     return done;

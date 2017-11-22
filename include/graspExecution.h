@@ -46,6 +46,7 @@ protected:
     std::deque<yarp::sig::Vector> trajectory;
     yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right, home_left;
+    yarp::sig::Vector basket_right, basket_left;
 
     yarp::os::Mutex mutex;
 
@@ -139,6 +140,13 @@ public:
      */
     /*******************************************************************************/
     bool goHome(const std::string &hand);
+
+    /** Ask the robot arm to go to the basket on its side
+     * @param hand is the name of the selected hand
+     * @return true/false on success/failure
+     */
+    /*******************************************************************************/
+    bool goToBasket(const std::string &hand);
 
     /** Configure Cartesian controller for moving the selected arm
     *  @param which_hand is the hand for which we want to open the cartesian

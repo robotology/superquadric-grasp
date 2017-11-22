@@ -97,6 +97,7 @@ protected:
     bool executed;
     bool executed_var;
     bool reached_home;
+    bool reached_basket;
     std::string show_hand;
     std::string show_only_pose;
     std::string look_object;
@@ -114,6 +115,8 @@ protected:
     yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right;
     yarp::sig::Vector home_left;
+    yarp::sig::Vector basket_right;
+    yarp::sig::Vector basket_left;
     std::string hand_to_move;
 
     // Information for saving results
@@ -315,6 +318,13 @@ public:
     /**********************************************************************/
     bool go_home(const std::string &entry);
 
+    /** Go back to the basket on the robot side
+    * @param entry is the name of the hand that is moving
+    * @return true/false on success/failure
+    */
+    /**********************************************************************/
+    bool go_to_basket(const std::string &entry);
+
     /**
     * Check if the motion has been completed
     *@return true/false on success/failure
@@ -328,6 +338,13 @@ public:
     */
     /**********************************************************************/
     bool check_home();
+
+    /**
+    * Check if the motion to the basket has been completed
+    *@return true/false on success/failure
+    */
+    /**********************************************************************/
+    bool check_basket();
 
 
 };
