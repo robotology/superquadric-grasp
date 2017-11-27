@@ -765,12 +765,12 @@ void GraspComputation::bestPose()
     else if ((quality_right!=0.0))
     {
         yInfo()<<"Best pose for grasping is left hand";
-        best_hand="left";
+        best_hand="right";
     }
     else if ((quality_left!=0.0))
     {
         yInfo()<<"Best pose for grasping is right hand";
-        best_hand="right";
+        best_hand="left";
     }
 }
 

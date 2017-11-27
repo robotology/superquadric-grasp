@@ -149,6 +149,14 @@ service superquadricGrasp_IDL
     bool go_home(1: string e)
 
     /**
+    * Move the right or the left arm  to the basket (according to the
+    * string e).
+    *@return "on" or "off" if e is right or left.
+    */
+    bool go_to_basket(1: string e)
+
+
+    /**
     * Get the name of the best hand for grasping the object
     *@return right or left
     */

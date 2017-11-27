@@ -43,9 +43,11 @@ bool GraspExecution::configure()
 
     setPosePar(movement_par, true);
 
+    config=configTorso();
+
     if (left_or_right!="both")
     {
-        config=configCartesian(left_or_right);
+        config=config && configCartesian(left_or_right);
     }
     else
     {
@@ -55,8 +57,6 @@ bool GraspExecution::configure()
 
     if (visual_serv)
         config=config && configVisualServoing();
-
-    config=config && configTorso();
 
     if (grasp)
     {
@@ -99,13 +99,10 @@ bool GraspExecution::configCartesian(const string &which_hand)
         newDof[1]=0;
         newDof[2]=0;
         icart_right->setDOF(newDof,curDof);
-
         icart_right->getDOF(curDof);
-
-        icart_right->storeContext(&context_right);
+        yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         icart_right->setTrajTime(traj_time);
-
         icart_right->setInTargetTol(traj_tol);
 
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
@@ -124,11 +121,11 @@ bool GraspExecution::configCartesian(const string &which_hand)
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         yDebug()<<"Setting max torso pitch";
-        icart_right->setLimits(0, 0.0, torso_pitch_max);
-
-        
+        icart_right->setLimits(0, 0.0, torso_pitch_max);     
         icart_right->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
+
+        icart_right->storeContext(&context_right);
 
     }
     else if (which_hand=="left")
@@ -157,11 +154,9 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         icart_left->getDOF(curDof);
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
-
-        icart_left->storeContext(&context_left);
+ 
 
         icart_left->setTrajTime(traj_time);
-
         icart_left->setInTargetTol(traj_tol);
 
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
@@ -182,6 +177,8 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         icart_left->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
+
+        icart_left->storeContext(&context_left);
     }
 
     return done;
@@ -288,6 +285,11 @@ bool GraspExecution::configTorso()
     iencTorso->getAxes(&nAxes);
     vector<int> modes(nAxes,VOCAB_CM_POSITION);
     imodTorso->setControlModes(modes.data());
+
+    //Putting torso in home position
+    iposTorso->positionMove(0, 0.0);
+    iposTorso->positionMove(1, 0.0);
+    iposTorso->positionMove(2, 1.0);
 }
 
 /*******************************************************************************/
@@ -1053,16 +1055,23 @@ bool GraspExecution::goHome(const string &hand)
     bool done;
     int context_tmp;
 
+
     if (visual_serv)
         visual_servoing_right->stopFacilities();
 
-    //Putting torso in home position
-    iposTorso->positionMove(0, 0.0);
-    iposTorso->positionMove(1, 0.0);
-    iposTorso->positionMove(2, 1.0);
-
     if (hand=="right")
     {
+        icart_right->storeContext(&context_tmp);
+        double min, max;
+        yDebug()<<"Setting torso to 0";
+        icart_right->setLimits(0, 0.0, 0.0);
+        icart_right->setLimits(1, 0.0, 0.0);
+        icart_right->setLimits(2, 0.0, 0.0);
+
+        icart_right->getLimits(0, &min, &max);
+        yDebug()<<"Get limit of pitch"<<min<<max;
+        icart_right->restoreContext(context_tmp);
+
         yDebug()<<"[GraspExecution]: opening hand ... ";
         handContr_right.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
@@ -1079,6 +1088,17 @@ bool GraspExecution::goHome(const string &hand)
     }
     if (hand=="left")
     {
+        icart_left->storeContext(&context_tmp);
+        double min, max;
+        yDebug()<<"Setting torso to 0";
+        icart_left->setLimits(0, 0.0, 0.0);
+        icart_left->setLimits(1, 0.0, 0.0);
+        icart_left->setLimits(2, 0.0, 0.0);
+
+        icart_left->getLimits(0, &min, &max);
+        yDebug()<<"Get limit of pitch"<<min<<max;
+        icart_left->restoreContext(context_tmp);
+
         yDebug()<<"[GraspExecution]: opening hand ... ";
         handContr_left.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
@@ -1162,7 +1182,7 @@ void GraspExecution::liftObject(deque<Vector> &traj, int index)
     waypoint_lift[2]+=lift_z;
 
     traj.push_back(waypoint_lift);
-    traj.push_back(trajectory[index-1]);
+    //traj.push_back(trajectory[index-1]);
 }
 
 /*******************************************************************************/
