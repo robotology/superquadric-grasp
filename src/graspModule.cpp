@@ -456,28 +456,28 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     Bottle &ps=planestiff_r.addList();
     ps.addDouble(stiff_right[0]); ps.addDouble(stiff_right[1]);
     ps.addDouble(stiff_right[2]); ps.addDouble(stiff_right[3]);
-    ps.addDouble(stiff_right[4]); ps.addDouble(stiff_right[5]);ps.addDouble(stiff_right[6]);
+    ps.addDouble(stiff_right[4]);
     movement_par.put("stiff_right", planestiff_r.get(0));
 
     Bottle planestiff_l;
     Bottle &ps2=planestiff_l.addList();
     ps2.addDouble(stiff_left[0]); ps2.addDouble(stiff_left[1]);
     ps2.addDouble(stiff_left[2]); ps2.addDouble(stiff_left[3]);
-    ps2.addDouble(stiff_left[4]); ps2.addDouble(stiff_left[5]);ps2.addDouble(stiff_left[6]);
+    ps2.addDouble(stiff_left[4]);
     movement_par.put("stiff_left", planestiff_l.get(0));
 
     Bottle planedamp_r;
     Bottle &pdamp=planedamp_r.addList();
     pdamp.addDouble(damp_right[0]); pdamp.addDouble(damp_right[1]);
     pdamp.addDouble(damp_right[2]); pdamp.addDouble(damp_right[3]);
-    pdamp.addDouble(damp_right[4]); pdamp.addDouble(damp_right[5]);pdamp.addDouble(damp_right[6]);
+    pdamp.addDouble(damp_right[4]);
     movement_par.put("damp_right", planedamp_r.get(0));
 
     Bottle planedamp_l;
     Bottle &pdamp2=planedamp_l.addList();
     pdamp2.addDouble(damp_left[0]); pdamp2.addDouble(damp_left[1]);
     pdamp2.addDouble(damp_left[2]); pdamp2.addDouble(damp_left[3]);
-    pdamp2.addDouble(damp_left[4]); pdamp2.addDouble(damp_left[5]);pdamp2.addDouble(damp_left[6]);
+    pdamp2.addDouble(damp_left[4]);
     movement_par.put("stiff_left", planedamp_l.get(0));
 
     executed=true;

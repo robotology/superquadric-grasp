@@ -38,8 +38,10 @@ bool GraspExecution::configure()
     shift_left.resize(3,0.0);
     basket_right.resize(7,0.0);
     basket_left.resize(7,0.0);
-    stiff_right.resize(7,0.0);
-    stiff_left.resize(7,0.0);
+    stiff_right.resize(5,0.0);
+    stiff_left.resize(5,0.0);
+    damp_right.resize(5,0.0);
+    damp_left.resize(5,0.0);
 
     i=-1;
 
@@ -738,8 +740,6 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         tmp[2]=stiff_r->get(2).asDouble();
         tmp[3]=stiff_r->get(3).asDouble();
         tmp[4]=stiff_r->get(4).asDouble();
-        tmp[5]=stiff_r->get(5).asDouble();
-        tmp[6]=stiff_r->get(6).asDouble();
 
         if (norm(tmp)>0.0)
         {
@@ -766,8 +766,6 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         tmp[2]=stiff_l->get(2).asDouble();
         tmp[3]=stiff_l->get(3).asDouble();
         tmp[4]=stiff_l->get(4).asDouble();
-        tmp[5]=stiff_l->get(5).asDouble();
-        tmp[6]=stiff_l->get(6).asDouble();
 
         if (norm(tmp)>0.0)
         {
@@ -794,8 +792,6 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         tmp[2]=damp_r->get(2).asDouble();
         tmp[3]=damp_r->get(3).asDouble();
         tmp[4]=damp_r->get(4).asDouble();
-        tmp[5]=damp_r->get(5).asDouble();
-        tmp[6]=damp_r->get(6).asDouble();
 
         if (norm(tmp)>0.0)
         {
@@ -822,8 +818,6 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         tmp[2]=damp_l->get(2).asDouble();
         tmp[3]=damp_l->get(3).asDouble();
         tmp[4]=damp_l->get(4).asDouble();
-        tmp[5]=damp_l->get(5).asDouble();
-        tmp[6]=damp_l->get(6).asDouble();
 
         if (norm(tmp)>0.0)
         {
@@ -945,28 +939,28 @@ Property GraspExecution::getPosePar()
     Bottle &pkr=planestiff_r.addList();
     pkr.addDouble(stiff_right[0]); pkr.addDouble(stiff_right[1]);
     pkr.addDouble(stiff_right[2]); pkr.addDouble(stiff_right[3]);
-    pkr.addDouble(stiff_right[4]); pkr.addDouble(stiff_right[5]);pkr.addDouble(stiff_right[6]);
+    pkr.addDouble(stiff_right[4]);
     movement_par.put("stiff_right", planestiff_r.get(0));
 
     Bottle planestiff_l;
     Bottle &pk2l=planestiff_l.addList();
     pk2l.addDouble(stiff_left[0]); pk2l.addDouble(stiff_left[1]);
     pk2l.addDouble(stiff_left[2]); pk2l.addDouble(stiff_left[3]);
-    pk2l.addDouble(stiff_left[4]); pk2l.addDouble(stiff_left[5]);pk2l.addDouble(stiff_left[6]);
+    pk2l.addDouble(stiff_left[4]);
     movement_par.put("stiff_left", planestiff_l.get(0));
 
     Bottle planedamp_r;
     Bottle &pkl=planedamp_r.addList();
     pkl.addDouble(damp_right[0]); pkl.addDouble(damp_right[1]);
     pkl.addDouble(damp_right[2]); pkl.addDouble(damp_right[3]);
-    pkl.addDouble(damp_right[4]); pkl.addDouble(damp_right[5]);pkl.addDouble(damp_right[6]);
+    pkl.addDouble(damp_right[4]);
     movement_par.put("damp_right", planedamp_r.get(0));
 
     Bottle planedamp_l;
     Bottle &pk2=planedamp_l.addList();
     pk2.addDouble(damp_left[0]); pk2.addDouble(damp_left[1]);
     pk2.addDouble(damp_left[2]); pk2.addDouble(damp_left[3]);
-    pk2.addDouble(damp_left[4]); pk2.addDouble(damp_left[5]);pk2.addDouble(damp_left[6]);
+    pk2.addDouble(damp_left[4]);
     movement_par.put("damp_left", planedamp_l.get(0));
 
     return advOptions;
