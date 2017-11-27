@@ -366,7 +366,8 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     also_traj=(rf.check("also_traj", Value("off")).asString()=="on");
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
-    visual_servoing=rf.check("visual_servoing", Value("off")).asString();
+    visual_servoing=rf.check("visual_servoing", Value("off")).asString();   
+    compliant=rf.check("compliant", Value("off")).asString();
     use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
 
@@ -392,6 +393,11 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     readSuperq("home_left",home_left,7,this->rf);
     readSuperq("basket_right",basket_right,7,this->rf);
     readSuperq("basket_left",basket_left,7,this->rf);
+    readSuperq("stiff_right",stiff_right,5,this->rf);
+    readSuperq("stiff_left",stiff_left,5,this->rf);
+    readSuperq("damp_right",damp_right,5,this->rf);
+    readSuperq("damp_left",damp_left,5,this->rf);
+
 
     movement_par.put("robot",robot);
     movement_par.put("hand",left_or_right);
@@ -404,6 +410,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("lift_z", lift_z);
     movement_par.put("torso_pitch_max", torso_pitch_max);
     movement_par.put("visual_servoing", visual_servoing);
+    movement_par.put("compliant", compliant);
     movement_par.put("use_direct_kin", use_direct_kin);
     movement_par.put("pixel_tol", pixel_tol);
 
@@ -445,6 +452,34 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     pk2.addDouble(basket_left[4]); pk2.addDouble(basket_left[5]);pk2.addDouble(basket_left[6]);
     movement_par.put("basket_left", planebask_l.get(0));
 
+    Bottle planestiff_r;
+    Bottle &ps=planestiff_r.addList();
+    ps.addDouble(stiff_right[0]); ps.addDouble(stiff_right[1]);
+    ps.addDouble(stiff_right[2]); ps.addDouble(stiff_right[3]);
+    ps.addDouble(stiff_right[4]); ps.addDouble(stiff_right[5]);ps.addDouble(stiff_right[6]);
+    movement_par.put("stiff_right", planestiff_r.get(0));
+
+    Bottle planestiff_l;
+    Bottle &ps2=planestiff_l.addList();
+    ps2.addDouble(stiff_left[0]); ps2.addDouble(stiff_left[1]);
+    ps2.addDouble(stiff_left[2]); ps2.addDouble(stiff_left[3]);
+    ps2.addDouble(stiff_left[4]); ps2.addDouble(stiff_left[5]);ps2.addDouble(stiff_left[6]);
+    movement_par.put("stiff_left", planestiff_l.get(0));
+
+    Bottle planedamp_r;
+    Bottle &pdamp=planedamp_r.addList();
+    pdamp.addDouble(damp_right[0]); pdamp.addDouble(damp_right[1]);
+    pdamp.addDouble(damp_right[2]); pdamp.addDouble(damp_right[3]);
+    pdamp.addDouble(damp_right[4]); pdamp.addDouble(damp_right[5]);pdamp.addDouble(damp_right[6]);
+    movement_par.put("damp_right", planedamp_r.get(0));
+
+    Bottle planedamp_l;
+    Bottle &pdamp2=planedamp_l.addList();
+    pdamp2.addDouble(damp_left[0]); pdamp2.addDouble(damp_left[1]);
+    pdamp2.addDouble(damp_left[2]); pdamp2.addDouble(damp_left[3]);
+    pdamp2.addDouble(damp_left[4]); pdamp2.addDouble(damp_left[5]);pdamp2.addDouble(damp_left[6]);
+    movement_par.put("stiff_left", planedamp_l.get(0));
+
     executed=true;
     hand_to_move="right";
 
@@ -455,6 +490,10 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     yInfo()<<"[GraspExecution] home_left:     "<<home_left.toString(3,3);
     yInfo()<<"[GraspExecution] basket_right:  "<<basket_right.toString(3,3);
     yInfo()<<"[GraspExecution] basket_left:   "<<basket_left.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_right:   "<<stiff_right.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_left:    "<<stiff_left.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_right:    "<<damp_right.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_left:     "<<damp_left.toString(3,3);
 
     return true;
 }

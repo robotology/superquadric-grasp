@@ -47,6 +47,9 @@ protected:
     yarp::sig::Vector shift_right, shift_left;
     yarp::sig::Vector home_right, home_left;
     yarp::sig::Vector basket_right, basket_left;
+    yarp::sig::Vector stiff_right, damp_right;
+    yarp::sig::Vector stiff_left, damp_left;
+
 
     yarp::os::Mutex mutex;
 
@@ -55,13 +58,16 @@ protected:
     yarp::dev::ICartesianControl *icart_left;
 
     yarp::dev::PolyDriver robotDevice_right;
-    yarp::dev::PolyDriver robotDevice_left;
+    yarp::dev::PolyDriver  robotDevice_left;
+    yarp::dev::PolyDriver driverImped_right;
+    yarp::dev::PolyDriver  driverImped_left;
 
     // driver and interfaces for controlling the torso
     yarp::dev::PolyDriver             driverTorso;
     yarp::dev::IControlMode2         *imodTorso;
     yarp::dev::IEncoders             *iencTorso;
     yarp::dev::IPositionControl2     *iposTorso;
+
 
     yarp::dev::IEncoders *enc;
 
@@ -74,6 +80,7 @@ protected:
     double lift_z;
     bool lift_object;
     bool visual_serv;
+    bool compliant;
     bool use_direct_kin;
     std::string five_fingers;
     double torso_pitch_max;
@@ -154,6 +161,13 @@ public:
     */
     /*******************************************************************************/
     bool configCartesian(const std::string &which_hand);
+
+    /** Configure compliant mode for safe interaction with the table
+    *  @param which_hand is the hand for which we want to set the compliant mode
+    *  @return true/false on success/failure
+    */
+    /*******************************************************************************/
+    bool configCompliant(const std::string &which_hand);
 
     /** Configure tactile control library for grasping the object
     *  @return treu/false on success/failure

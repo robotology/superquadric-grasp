@@ -105,6 +105,7 @@ protected:
     bool mode_online;
     bool save_poses;
     bool also_traj;
+    std::string compliant;
     std::string visual_servoing;
     std::string use_direct_kin;
 
@@ -117,6 +118,10 @@ protected:
     yarp::sig::Vector home_left;
     yarp::sig::Vector basket_right;
     yarp::sig::Vector basket_left;
+    yarp::sig::Vector stiff_right;
+    yarp::sig::Vector stiff_left;
+    yarp::sig::Vector damp_right;
+    yarp::sig::Vector damp_left;
     std::string hand_to_move;
 
     // Information for saving results

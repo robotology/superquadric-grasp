@@ -38,6 +38,8 @@ bool GraspExecution::configure()
     shift_left.resize(3,0.0);
     basket_right.resize(7,0.0);
     basket_left.resize(7,0.0);
+    stiff_right.resize(7,0.0);
+    stiff_left.resize(7,0.0);
 
     i=-1;
 
@@ -54,6 +56,17 @@ bool GraspExecution::configure()
         config=configCartesian("right");
         config=config && configCartesian("left");
     }
+
+    if ((left_or_right!="both") && (compliant==true))
+    {
+        config=config && configCompliant(left_or_right);
+    }
+    else if (compliant==true)
+    {
+        config=configCompliant("right");
+        config=config && configCompliant("left");
+    }
+
 
     if (visual_serv)
         config=config && configVisualServoing();
@@ -92,6 +105,8 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         robotDevice_right.view(icart_right);
 
+        icart_right->storeContext(&context_right);
+
         Vector curDof;
         icart_right->getDOF(curDof);
         Vector newDof(3);
@@ -124,9 +139,6 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_right->setLimits(0, 0.0, torso_pitch_max);     
         icart_right->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
-
-        icart_right->storeContext(&context_right);
-
     }
     else if (which_hand=="left")
     {
@@ -144,6 +156,8 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         robotDevice_left.view(icart_left);
 
+        icart_left->storeContext(&context_left);
+
         Vector curDof;
         icart_left->getDOF(curDof);
         Vector newDof(3);
@@ -154,7 +168,6 @@ bool GraspExecution::configCartesian(const string &which_hand)
 
         icart_left->getDOF(curDof);
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
- 
 
         icart_left->setTrajTime(traj_time);
         icart_left->setInTargetTol(traj_tol);
@@ -173,15 +186,44 @@ bool GraspExecution::configCartesian(const string &which_hand)
         double min, max;
         yDebug()<<"Setting max torso pitch";
         icart_left->setLimits(0, 0.0, torso_pitch_max);
-
-
         icart_left->getLimits(0, &min, &max);
-        yDebug()<<"Get limit of pitch"<<min<<max;
-
-        icart_left->storeContext(&context_left);
+        yDebug()<<"Get limit of pitch"<<min<<max;     
     }
 
     return done;
+}
+
+/*******************************************************************************/
+bool GraspExecution::configCompliant(const string &which_hand)
+{
+    if (which_hand=="right")
+    {
+        IInteractionMode  *imode_right;
+        IImpedanceControl *iimp_right;
+
+        driverImped_right.view(imode_right);
+        driverImped_right.view(iimp_right);
+
+        for (int j=0; j<5; j++)
+        {
+            iimp_right->setImpedance(j,stiff_right[j],damp_right[j]);
+            imode_right->setInteractionMode(j,VOCAB_IM_COMPLIANT);
+        }
+    }
+    else
+    {
+        IInteractionMode  *imode_left;
+        IImpedanceControl *iimp_left;
+
+        driverImped_right.view(imode_left);
+        driverImped_right.view(iimp_left);
+
+        for (int j=0; j<5; j++)
+        {
+            iimp_left->setImpedance(j,stiff_left[j],damp_left[j]);
+            imode_left->setInteractionMode(j,VOCAB_IM_COMPLIANT);
+        }
+    }
 }
 
 /*******************************************************************************/
@@ -380,6 +422,20 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
             visual_serv=true;
         else
             visual_serv=false;
+    }
+
+    string cm=newOptions.find("compliant").asString();
+
+    if (newOptions.find("compliant").isNull() && (first_time==true))
+    {
+        compliant=false;
+    }
+    else if (!newOptions.find("compliant").isNull())
+    {
+        if (cm=="on")
+            compliant=true;
+        else
+            compliant=false;
     }
 
     string direct_kin=newOptions.find("use_direct_kin").asString();
@@ -668,6 +724,119 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
+    Bottle *stiff_r=newOptions.find("stiff_right").asList();
+    if (newOptions.find("stiff_right").isNull() && (first_time==true))
+    {
+        stiff_right[0]=0.5; stiff_right[1]=0.5; stiff_right[2]=0.5;
+        stiff_right[3]=0.2; stiff_right[4]=0.1;
+    }
+    else if (!newOptions.find("stiff_right").isNull())
+    {
+        Vector tmp(7,0.0);
+        tmp[0]=stiff_r->get(0).asDouble();
+        tmp[1]=stiff_r->get(1).asDouble();
+        tmp[2]=stiff_r->get(2).asDouble();
+        tmp[3]=stiff_r->get(3).asDouble();
+        tmp[4]=stiff_r->get(4).asDouble();
+        tmp[5]=stiff_r->get(5).asDouble();
+        tmp[6]=stiff_r->get(6).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            stiff_right=tmp;
+        }
+        else
+        {
+            stiff_right[0]=0.5; stiff_right[1]=0.5; stiff_right[2]=0.5;
+            stiff_right[3]=0.2; stiff_right[4]=0.1;
+        }
+    }
+
+    Bottle *stiff_l=newOptions.find("stiff_left").asList();
+    if (newOptions.find("stiff_left").isNull() && (first_time==true))
+    {
+        stiff_left[0]=0.5; stiff_left[1]=0.5; stiff_left[2]=0.5;
+        stiff_left[3]=0.2; stiff_left[4]=0.1;
+    }
+    else if (!newOptions.find("stiff_left").isNull())
+    {
+        Vector tmp(7,0.0);
+        tmp[0]=stiff_l->get(0).asDouble();
+        tmp[1]=stiff_l->get(1).asDouble();
+        tmp[2]=stiff_l->get(2).asDouble();
+        tmp[3]=stiff_l->get(3).asDouble();
+        tmp[4]=stiff_l->get(4).asDouble();
+        tmp[5]=stiff_l->get(5).asDouble();
+        tmp[6]=stiff_l->get(6).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            stiff_left=tmp;
+        }
+        else
+        {
+            stiff_left[0]=0.5; stiff_left[1]=0.5; stiff_left[2]=0.5;
+            stiff_left[3]=0.2; stiff_left[4]=0.1;
+        }
+    }
+
+    Bottle *damp_r=newOptions.find("damp_right").asList();
+    if (newOptions.find("damp_right").isNull() && (first_time==true))
+    {
+        damp_right[0]=60.0; damp_right[1]=60.0; damp_right[2]=60.0;
+        damp_right[3]=20.0; damp_right[4]=20.0;
+    }
+    else if (!newOptions.find("damp_right").isNull())
+    {
+        Vector tmp(7,0.0);
+        tmp[0]=damp_r->get(0).asDouble();
+        tmp[1]=damp_r->get(1).asDouble();
+        tmp[2]=damp_r->get(2).asDouble();
+        tmp[3]=damp_r->get(3).asDouble();
+        tmp[4]=damp_r->get(4).asDouble();
+        tmp[5]=damp_r->get(5).asDouble();
+        tmp[6]=damp_r->get(6).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            damp_right=tmp;
+        }
+        else
+        {
+            damp_right[0]=60.0; damp_right[1]=60.0; damp_right[2]=60.0;
+            damp_right[3]=20.0; damp_right[4]=20.0;
+        }
+    }
+
+    Bottle *damp_l=newOptions.find("damp_left").asList();
+    if (newOptions.find("damp_left").isNull() && (first_time==true))
+    {
+        damp_left[0]=60.0; damp_left[1]=60.0; damp_left[2]=60.0;
+        damp_left[3]=20.0; damp_left[4]=0.0;
+    }
+    else if (!newOptions.find("damp_left").isNull())
+    {
+        Vector tmp(7,0.0);
+        tmp[0]=damp_l->get(0).asDouble();
+        tmp[1]=damp_l->get(1).asDouble();
+        tmp[2]=damp_l->get(2).asDouble();
+        tmp[3]=damp_l->get(3).asDouble();
+        tmp[4]=damp_l->get(4).asDouble();
+        tmp[5]=damp_l->get(5).asDouble();
+        tmp[6]=damp_l->get(6).asDouble();
+
+        if (norm(tmp)>0.0)
+        {
+            damp_left=tmp;
+        }
+        else
+        {
+            damp_left[0]=-0.30; damp_left[1]=0.21; damp_left[2]=0.15;
+            damp_left[3]=0.113261; damp_left[4]=-0.954747; damp_left[5]=0.275008; damp_left[6]=2.868312;
+        }
+    }
+
+
     double pitch_max=newOptions.find("torso_pitch_max").asDouble();
 
     if (newOptions.find("torso_pitch_max").isNull() && (first_time==true))
@@ -698,6 +867,10 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     yInfo()<<"[GraspExecution] home_left:    "<<home_left.toString(3,3);
     yInfo()<<"[GraspExecution] basket_right: "<<basket_right.toString(3,3);
     yInfo()<<"[GraspExecution] basket_left:  "<<basket_left.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_right: "<<stiff_right.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_left:  "<<stiff_left.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_right: "<<damp_right.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_left:  "<<damp_left.toString(3,3);
 }
 
 /*******************************************************************************/
@@ -722,6 +895,10 @@ Property GraspExecution::getPosePar()
         advOptions.put("use_direct_kin","on");
     else
         advOptions.put("use_direct_kin","off");
+    if (compliant)
+        advOptions.put("compliant","on");
+    else
+        advOptions.put("compliant","off");
     advOptions.put("traj_time",traj_time);
     advOptions.put("pixel_tol",pixel_tol);
     advOptions.put("traj_tol",traj_tol);
@@ -751,18 +928,46 @@ Property GraspExecution::getPosePar()
     advOptions.put("home_left", planel.get(0));
 
     Bottle planebask_r;
-    Bottle &pk=planebask_r.addList();
-    pk.addDouble(basket_right[0]); pk.addDouble(basket_right[1]);
-    pk.addDouble(basket_right[2]); pk.addDouble(basket_right[3]);
-    pk.addDouble(basket_right[4]); pk.addDouble(basket_right[5]);pk.addDouble(basket_right[6]);
+    Bottle &pk_r=planebask_r.addList();
+    pk_r.addDouble(basket_right[0]); pk_r.addDouble(basket_right[1]);
+    pk_r.addDouble(basket_right[2]); pk_r.addDouble(basket_right[3]);
+    pk_r.addDouble(basket_right[4]); pk_r.addDouble(basket_right[5]);pk_r.addDouble(basket_right[6]);
     movement_par.put("basket_right", planebask_r.get(0));
 
     Bottle planebask_l;
-    Bottle &pk2=planebask_l.addList();
-    pk2.addDouble(basket_left[0]); pk2.addDouble(basket_left[1]);
-    pk2.addDouble(basket_left[2]); pk2.addDouble(basket_left[3]);
-    pk2.addDouble(basket_left[4]); pk2.addDouble(basket_left[5]);pk2.addDouble(basket_left[6]);
+    Bottle &pk2_l=planebask_l.addList();
+    pk2_l.addDouble(basket_left[0]); pk2_l.addDouble(basket_left[1]);
+    pk2_l.addDouble(basket_left[2]); pk2_l.addDouble(basket_left[3]);
+    pk2_l.addDouble(basket_left[4]); pk2_l.addDouble(basket_left[5]);pk2_l.addDouble(basket_left[6]);
     movement_par.put("basket_left", planebask_l.get(0));
+
+    Bottle planestiff_r;
+    Bottle &pkr=planestiff_r.addList();
+    pkr.addDouble(stiff_right[0]); pkr.addDouble(stiff_right[1]);
+    pkr.addDouble(stiff_right[2]); pkr.addDouble(stiff_right[3]);
+    pkr.addDouble(stiff_right[4]); pkr.addDouble(stiff_right[5]);pkr.addDouble(stiff_right[6]);
+    movement_par.put("stiff_right", planestiff_r.get(0));
+
+    Bottle planestiff_l;
+    Bottle &pk2l=planestiff_l.addList();
+    pk2l.addDouble(stiff_left[0]); pk2l.addDouble(stiff_left[1]);
+    pk2l.addDouble(stiff_left[2]); pk2l.addDouble(stiff_left[3]);
+    pk2l.addDouble(stiff_left[4]); pk2l.addDouble(stiff_left[5]);pk2l.addDouble(stiff_left[6]);
+    movement_par.put("stiff_left", planestiff_l.get(0));
+
+    Bottle planedamp_r;
+    Bottle &pkl=planedamp_r.addList();
+    pkl.addDouble(damp_right[0]); pkl.addDouble(damp_right[1]);
+    pkl.addDouble(damp_right[2]); pkl.addDouble(damp_right[3]);
+    pkl.addDouble(damp_right[4]); pkl.addDouble(damp_right[5]);pkl.addDouble(damp_right[6]);
+    movement_par.put("damp_right", planedamp_r.get(0));
+
+    Bottle planedamp_l;
+    Bottle &pk2=planedamp_l.addList();
+    pk2.addDouble(damp_left[0]); pk2.addDouble(damp_left[1]);
+    pk2.addDouble(damp_left[2]); pk2.addDouble(damp_left[3]);
+    pk2.addDouble(damp_left[4]); pk2.addDouble(damp_left[5]);pk2.addDouble(damp_left[6]);
+    movement_par.put("damp_left", planedamp_l.get(0));
 
     return advOptions;
 }
@@ -1024,12 +1229,40 @@ bool GraspExecution::release()
     if (left_or_right=="both" || left_or_right=="right")
     {
         icart_right->restoreContext(context_right);
-        robotDevice_right.close();        
+        robotDevice_right.close();
+
+        if (compliant)
+        {
+            IInteractionMode  *imode_right;
+            IImpedanceControl *iimp_right;
+
+            driverImped_right.view(imode_right);
+            driverImped_right.view(iimp_right);
+
+            for (int j=0; j<5; j++)
+            {
+                imode_right->setInteractionMode(j,VOCAB_IM_STIFF);
+            }
+        }
     }
     if (left_or_right=="both" || left_or_right=="left")
     {
         icart_left->restoreContext(context_left);
         robotDevice_left.close();
+
+        if (compliant)
+        {
+            IInteractionMode  *imode_left;
+            IImpedanceControl *iimp_left;
+
+            driverImped_right.view(imode_left);
+            driverImped_right.view(iimp_left);
+
+            for (int j=0; j<5; j++)
+            {
+                imode_left->setInteractionMode(j,VOCAB_IM_STIFF);
+            }
+        }
     }
 
     if (visual_serv==true)
@@ -1070,7 +1303,11 @@ bool GraspExecution::goHome(const string &hand)
 
         icart_right->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
+
         icart_right->restoreContext(context_tmp);
+
+        icart_right->getLimits(0, &min, &max);
+        yDebug()<<"Get limits os pitch restored"<<min<<max;
 
         yDebug()<<"[GraspExecution]: opening hand ... ";
         handContr_right.openHand(true, true);
@@ -1125,11 +1362,6 @@ bool GraspExecution::goToBasket(const string &hand)
 
     if (visual_serv)
         visual_servoing_right->stopFacilities();
-
-    //Putting torso in home position
-    iposTorso->positionMove(0, 0.0);
-    iposTorso->positionMove(1, 0.0);
-    iposTorso->positionMove(2, 1.0);
 
     if (hand=="right")
     {
