@@ -1149,7 +1149,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         force=portForces_right.read(false);
 
-        yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
+        if (force!=NULL)
+            yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
 
         if (i==0)
         {
@@ -1175,7 +1176,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         force=portForces_left.read(false);
 
-        yInfo()<<"Forces of left arm detected while moving     "<<force->toString();
+        if (force!=NULL)
+            yInfo()<<"Forces of left arm detected while moving     "<<force->toString();
 
         if (i==0)
         {
@@ -1285,8 +1287,10 @@ bool GraspExecution::release()
             handContr_left.close();
     }
 
-    portForces_right.close();
-    portForces_left.close();
+    if (!portForces_right.isClosed())
+        portForces_right.close();
+    if (!portForces_left.isClosed())
+        portForces_left.close();
 
     return true;
 }
