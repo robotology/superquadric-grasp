@@ -173,5 +173,11 @@ service superquadricGrasp_IDL
     *@return true/false on success/failure
     */
     bool check_home();
+
+    /**
+    * Calibrate plane height via superquadric computation
+    * @return true/false on success/failure.
+    */
+    bool calibrate();
 }
     

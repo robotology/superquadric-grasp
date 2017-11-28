@@ -43,6 +43,8 @@ bool GraspExecution::configure()
     damp_right.resize(5,0.0);
     damp_left.resize(5,0.0);
 
+    portForces.open("superquadric-grasp/forces:i");
+
     i=-1;
 
     setPosePar(movement_par, true);
@@ -1120,6 +1122,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 {
     bool done;
     int context_tmp;
+    Vector *force;
 
     double min, max;
 
@@ -1142,6 +1145,10 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     if (hand=="right")
     {        
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
+
+        force=portForces.read(false);
+
+        yInfo()<<"Forces detected while moving     "<<force->toString();
 
         if (i==0)
         {
@@ -1272,6 +1279,8 @@ bool GraspExecution::release()
         if (left_or_right != "right") 
             handContr_left.close();
     }
+
+    portForces.close();
 
     return true;
 }

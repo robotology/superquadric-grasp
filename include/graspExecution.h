@@ -86,6 +86,9 @@ protected:
     double torso_pitch_max;
     double traj_time,traj_tol;
 
+    // Port for reading forces from wholeBodyDynamics
+    yarp::os::BufferedPort<yarp::sig::Vector> portForces;
+
 public:
 
     /** Boolean variable for movements*/
