@@ -87,7 +87,8 @@ protected:
     double traj_time,traj_tol;
 
     // Port for reading forces from wholeBodyDynamics
-    yarp::os::BufferedPort<yarp::sig::Vector> portForces;
+    yarp::os::BufferedPort<yarp::sig::Vector> portForces_right;
+    yarp::os::BufferedPort<yarp::sig::Vector> portForces_left;
 
 public:
 
