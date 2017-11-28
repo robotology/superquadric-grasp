@@ -316,6 +316,12 @@ public:
     /************************************************************************/
     void saveSol(const yarp::os::Property &sol);
 
+    /* Ask the robot to look in the center
+    * @return true/false on success/failure
+`   */
+    /**********************************************************************/
+    bool look_center();
+
     /** Go back to home position
     * @param entry is the name of the hand that is moving
     * @return true/false on success/failure

@@ -39,7 +39,7 @@ protected:
     // Gaze variables
     std::string eye;
     yarp::dev::PolyDriver GazeCtrl;
-    yarp::dev::IGazeControl *igaze;
+    
     yarp::sig::Matrix K,H;
 
     // pose and trajectory variables
@@ -54,6 +54,8 @@ protected:
     double &quality_right, &quality_left;
 
 public:
+
+    yarp::dev::IGazeControl *igaze;
 
     /** Visualization time*/
     double t_vis;

@@ -43,24 +43,14 @@ bool GraspExecution::configure()
     damp_right.resize(5,0.0);
     damp_left.resize(5,0.0);
 
-    portForces_right.open("superquadric-grasp/forces_right:i");
-    portForces_left.open("superquadric-grasp/forces_left:i");
+    portForces_right.open("/superquadric-grasp/forces_right:i");
+    portForces_left.open("/superquadric-grasp/forces_left:i");
 
     i=-1;
 
     setPosePar(movement_par, true);
 
     config=configTorso();
-
-    if (left_or_right!="both")
-    {
-        config=config && configCartesian(left_or_right);
-    }
-    else
-    {
-        config=configCartesian("right");
-        config=config && configCartesian("left");
-    }
 
     if ((left_or_right!="both") && (compliant==true))
     {
@@ -72,6 +62,15 @@ bool GraspExecution::configure()
         config=config && configCompliant("left");
     }
 
+    if (left_or_right!="both")
+    {
+        config=config && configCartesian(left_or_right);
+    }
+    else
+    {
+        config=configCartesian("right");
+        config=config && configCartesian("left");
+    }
 
     if (visual_serv)
         config=config && configVisualServoing();
@@ -91,7 +90,7 @@ bool GraspExecution::configure()
 /*******************************************************************************/
 bool GraspExecution::configCartesian(const string &which_hand)
 {
-    bool done;
+    bool done=true;
     int context_tmp;
 
     if (which_hand=="right")
@@ -125,9 +124,15 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_right->setTrajTime(traj_time);
         icart_right->setInTargetTol(traj_tol);
 
+        //icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
+        //icart_right->waitMotionDone();
+        //icart_right->checkMotionDone(&done);
+
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
+        if (compliant)
+            icart_right->waitMotionDone(0.1, 2.0);
+        else
+            icart_right->waitMotionDone();
 
         newDof[0]=1;
         newDof[1]=0;
@@ -177,9 +182,16 @@ bool GraspExecution::configCartesian(const string &which_hand)
         icart_left->setTrajTime(traj_time);
         icart_left->setInTargetTol(traj_tol);
 
+        //icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
+        //icart_left->waitMotionDone();
+        //icart_left->checkMotionDone(&done);
+
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
+        if (compliant)
+            icart_left->waitMotionDone(0.1, 2.0);
+        else
+            icart_left->waitMotionDone();
+
 
         newDof[0]=1;
         newDof[1]=0;
@@ -203,11 +215,24 @@ bool GraspExecution::configCompliant(const string &which_hand)
 {
     if (which_hand=="right")
     {
+        Property opt_rightArm("(device remote_controlboard)");
+        opt_rightArm.put("remote",("/"+robot+"/right_arm").c_str());
+        opt_rightArm.put("local",("/compliantControl/right_arm"));
+
+        if (!driverImped_right.open(opt_rightArm))
+        {
+            yError()<<"Problem in opening driver for impedance right";
+            return false;
+        }
+
         IInteractionMode  *imode_right;
         IImpedanceControl *iimp_right;
 
         driverImped_right.view(imode_right);
         driverImped_right.view(iimp_right);
+
+        yDebug()<<"stiff r"<<stiff_right.toString();
+        yDebug()<<"damp r"<<damp_right.toString();
 
         for (int j=0; j<5; j++)
         {
@@ -217,11 +242,25 @@ bool GraspExecution::configCompliant(const string &which_hand)
     }
     else
     {
+        Property opt_leftArm("(device remote_controlboard)");
+        opt_leftArm.put("remote",("/"+robot+"/left_arm").c_str());
+        opt_leftArm.put("local",("/compliantControl/left_arm"));
+    
+        
+        if (!driverImped_left.open(opt_leftArm))
+        {
+            yError()<<"Problem in opening driver for impedance left";
+            return false;
+        }
+
         IInteractionMode  *imode_left;
         IImpedanceControl *iimp_left;
 
-        driverImped_right.view(imode_left);
-        driverImped_right.view(iimp_left);
+        driverImped_left.view(imode_left);
+        driverImped_left.view(iimp_left);
+
+        yDebug()<<"stiff l"<<stiff_left.toString();
+        yDebug()<<"damp l"<<damp_left.toString();
 
         for (int j=0; j<5; j++)
         {
@@ -312,7 +351,7 @@ bool GraspExecution::configTorso()
     Property option;
     option.put("device","remote_controlboard");
     option.put("remote","/"+robot+"/torso");
-    option.put("local","/controller");
+    option.put("local","/controllerTorso");
 
     // open the driver
     if (!driverTorso.open(option))
@@ -732,12 +771,12 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     Bottle *stiff_r=newOptions.find("stiff_right").asList();
     if (newOptions.find("stiff_right").isNull() && (first_time==true))
     {
-        stiff_right[0]=0.5; stiff_right[1]=0.5; stiff_right[2]=0.5;
-        stiff_right[3]=0.2; stiff_right[4]=0.1;
+        stiff_right[0]=0.4; stiff_right[1]=0.4; stiff_right[2]=0.4;
+        stiff_right[3]=0.2; stiff_right[4]=0.2;
     }
     else if (!newOptions.find("stiff_right").isNull())
     {
-        Vector tmp(7,0.0);
+        Vector tmp(5,0.0);
         tmp[0]=stiff_r->get(0).asDouble();
         tmp[1]=stiff_r->get(1).asDouble();
         tmp[2]=stiff_r->get(2).asDouble();
@@ -750,20 +789,20 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            stiff_right[0]=0.5; stiff_right[1]=0.5; stiff_right[2]=0.5;
-            stiff_right[3]=0.2; stiff_right[4]=0.1;
+            stiff_right[0]=0.4; stiff_right[1]=0.4; stiff_right[2]=0.4;
+            stiff_right[3]=0.2; stiff_right[4]=0.2;
         }
     }
 
     Bottle *stiff_l=newOptions.find("stiff_left").asList();
     if (newOptions.find("stiff_left").isNull() && (first_time==true))
     {
-        stiff_left[0]=0.5; stiff_left[1]=0.5; stiff_left[2]=0.5;
-        stiff_left[3]=0.2; stiff_left[4]=0.1;
+        stiff_left[0]=0.4; stiff_left[1]=0.4; stiff_left[2]=0.4;
+        stiff_left[3]=0.2; stiff_left[4]=0.2;
     }
     else if (!newOptions.find("stiff_left").isNull())
     {
-        Vector tmp(7,0.0);
+        Vector tmp(5,0.0);
         tmp[0]=stiff_l->get(0).asDouble();
         tmp[1]=stiff_l->get(1).asDouble();
         tmp[2]=stiff_l->get(2).asDouble();
@@ -776,20 +815,20 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            stiff_left[0]=0.5; stiff_left[1]=0.5; stiff_left[2]=0.5;
-            stiff_left[3]=0.2; stiff_left[4]=0.1;
+            stiff_left[0]=0.4; stiff_left[1]=0.4; stiff_left[2]=0.4;
+            stiff_left[3]=0.2; stiff_left[4]=0.2;
         }
     }
 
     Bottle *damp_r=newOptions.find("damp_right").asList();
     if (newOptions.find("damp_right").isNull() && (first_time==true))
     {
-        damp_right[0]=60.0; damp_right[1]=60.0; damp_right[2]=60.0;
-        damp_right[3]=20.0; damp_right[4]=20.0;
+        damp_right[0]=0.002; damp_right[1]=0.002; damp_right[2]=0.002;
+        damp_right[3]=0.002; damp_right[4]=0.0;
     }
     else if (!newOptions.find("damp_right").isNull())
     {
-        Vector tmp(7,0.0);
+        Vector tmp(5,0.0);
         tmp[0]=damp_r->get(0).asDouble();
         tmp[1]=damp_r->get(1).asDouble();
         tmp[2]=damp_r->get(2).asDouble();
@@ -802,20 +841,20 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            damp_right[0]=60.0; damp_right[1]=60.0; damp_right[2]=60.0;
-            damp_right[3]=20.0; damp_right[4]=20.0;
+            damp_right[0]=0.002; damp_right[1]=0.002; damp_right[2]=0.002;
+            damp_right[3]=0.002; damp_right[4]=0.0;
         }
     }
 
     Bottle *damp_l=newOptions.find("damp_left").asList();
     if (newOptions.find("damp_left").isNull() && (first_time==true))
     {
-        damp_left[0]=60.0; damp_left[1]=60.0; damp_left[2]=60.0;
-        damp_left[3]=20.0; damp_left[4]=0.0;
+        damp_left[0]=0.002; damp_left[1]=0.002; damp_left[2]=0.002;
+        damp_left[3]=0.002; damp_left[4]=0.0;
     }
     else if (!newOptions.find("damp_left").isNull())
     {
-        Vector tmp(7,0.0);
+        Vector tmp(5,0.0);
         tmp[0]=damp_l->get(0).asDouble();
         tmp[1]=damp_l->get(1).asDouble();
         tmp[2]=damp_l->get(2).asDouble();
@@ -828,8 +867,8 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
         else
         {
-            damp_left[0]=-0.30; damp_left[1]=0.21; damp_left[2]=0.15;
-            damp_left[3]=0.113261; damp_left[4]=-0.954747; damp_left[5]=0.275008; damp_left[6]=2.868312;
+            damp_left[0]=0.002; damp_left[1]=0.002; damp_left[2]=0.002;
+            damp_left[3]=0.002; damp_left[4]=0.0; 
         }
     }
 
@@ -1151,6 +1190,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         if (force!=NULL)
             yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
+        else
+            yDebug()<<"No forces received";
 
         if (i==0)
         {
@@ -1159,8 +1200,16 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
 
         icart_right->goToPoseSync(x,o);
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
+        if (compliant)
+        {
+            icart_right->waitMotionDone(0.1, 2.0);
+            done=true;
+        }
+        else
+        {
+            icart_right->waitMotionDone();
+            icart_right->checkMotionDone(&done);
+        }
 
         if (done)
         {
@@ -1186,8 +1235,16 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
 
         icart_left->goToPoseSync(x,o);
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
+        if (compliant)
+        {
+            icart_left->waitMotionDone(0.1, 2.0);
+            done=true;
+        }
+        else
+        {
+            icart_left->waitMotionDone();
+            icart_left->checkMotionDone(&done);
+        }
 
         if (done)
         {
@@ -1263,8 +1320,8 @@ bool GraspExecution::release()
             IInteractionMode  *imode_left;
             IImpedanceControl *iimp_left;
 
-            driverImped_right.view(imode_left);
-            driverImped_right.view(iimp_left);
+            driverImped_left.view(imode_left);
+            driverImped_left.view(iimp_left);
 
             for (int j=0; j<5; j++)
             {
@@ -1317,23 +1374,31 @@ bool GraspExecution::goHome(const string &hand)
         icart_right->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
 
-        icart_right->restoreContext(context_tmp);
-
-        icart_right->getLimits(0, &min, &max);
-        yDebug()<<"Get limits os pitch restored"<<min<<max;
-
         yDebug()<<"[GraspExecution]: opening hand ... ";
         handContr_right.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_right.toString(3,3);
         icart_right->goToPoseSync(home_right.subVector(0,2),home_right.subVector(3,6));
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
+        if (compliant)
+        {
+            icart_right->waitMotionDone(0.1, 2.0);
+            done=true;
+        }
+        else
+        {
+            icart_right->waitMotionDone();
+            icart_right->checkMotionDone(&done);
+        }
+
         if (done)
         {
              Vector x_reached(3,0.0);
              Vector o_reached(4,0.0);
              icart_right->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_right.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_right.subVector(3,6)-o_reached);
+             icart_right->restoreContext(context_tmp);
+
+             icart_right->getLimits(0, &min, &max);
+             yDebug()<<"Get limits os pitch restored"<<min<<max;
         }
     }
     if (hand=="left")
@@ -1347,20 +1412,30 @@ bool GraspExecution::goHome(const string &hand)
 
         icart_left->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
-        icart_left->restoreContext(context_tmp);
+        
 
         yDebug()<<"[GraspExecution]: opening hand ... ";
         handContr_left.openHand(true, true);
         yDebug()<<"[GraspExecution]: going back home: "<<home_left.toString(3,3);
         icart_left->goToPoseSync(home_left.subVector(0,2),home_left.subVector(3,6));
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
+        if (compliant)
+        {
+            icart_left->waitMotionDone(0.1, 2.0);
+            done=true;
+        }
+        else
+        {
+            icart_left->waitMotionDone();
+            icart_left->checkMotionDone(&done);
+        }
+
         if (done)
         {
              Vector x_reached(3,0.0);
              Vector o_reached(4,0.0);
              icart_left->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
+             icart_left->restoreContext(context_tmp);        
         }
     }
 
@@ -1380,8 +1455,17 @@ bool GraspExecution::goToBasket(const string &hand)
     {
         yDebug()<<"[GraspExecution]: going to the basket: "<<basket_right.toString(3,3);
         icart_right->goToPoseSync(basket_right.subVector(0,2),basket_right.subVector(3,6));
-        icart_right->waitMotionDone();
-        icart_right->checkMotionDone(&done);
+        if (compliant)
+        {
+            icart_right->waitMotionDone(0.1, 2.0);
+            done=true;
+        }
+        else
+        {
+            icart_right->waitMotionDone();
+            icart_right->checkMotionDone(&done);
+        }
+
         if (done)
         {
              Vector x_reached(3,0.0);
@@ -1397,8 +1481,17 @@ bool GraspExecution::goToBasket(const string &hand)
     {
         yDebug()<<"[GraspExecution]: going to the basket: "<<basket_left.toString(3,3);
         icart_left->goToPoseSync(basket_left.subVector(0,2),basket_left.subVector(3,6));
-        icart_left->waitMotionDone();
-        icart_left->checkMotionDone(&done);
+        if (compliant)
+        {
+            icart_left->waitMotionDone(0.1, 2.0);
+            done=true;
+        }
+        else
+        {
+            icart_left->waitMotionDone();
+            icart_left->checkMotionDone(&done);
+        }
+
         if (done)
         {
              Vector x_reached(3,0.0);

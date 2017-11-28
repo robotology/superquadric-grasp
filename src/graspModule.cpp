@@ -280,6 +280,15 @@ bool GraspingModule::check_basket()
 }
 
 /**********************************************************************/
+bool GraspingModule::look_center()
+{
+    Vector center(3,0.0);
+    center[0]=-0.35;
+
+    return graspVis->igaze->lookAtFixationPoint(center);
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);
@@ -478,7 +487,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     pdamp2.addDouble(damp_left[0]); pdamp2.addDouble(damp_left[1]);
     pdamp2.addDouble(damp_left[2]); pdamp2.addDouble(damp_left[3]);
     pdamp2.addDouble(damp_left[4]);
-    movement_par.put("stiff_left", planedamp_l.get(0));
+    movement_par.put("damp_left", planedamp_l.get(0));
 
     executed=true;
     hand_to_move="right";

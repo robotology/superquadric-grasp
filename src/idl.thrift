@@ -141,6 +141,11 @@ service superquadricGrasp_IDL
     */
     bool move(1: string e)
 
+    /* Ask the robot to look in the center
+    * @return true/false on success/failure
+`   */
+    bool look_center()
+
     /**
     * Move the right or the left arm  back to home position (according to the
     * string e).
