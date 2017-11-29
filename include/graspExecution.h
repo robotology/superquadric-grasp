@@ -88,6 +88,7 @@ protected:
 
     // Port for reading forces from wholeBodyDynamics
     double force_threshold;
+    yarp::os::RpcClient portWholeBodyRpc;
     yarp::os::BufferedPort<yarp::os::Bottle> portForces_right;
     yarp::os::BufferedPort<yarp::os::Bottle> portForces_left;
 
@@ -247,6 +248,12 @@ public:
     */
     /*******************************************************************************/
     bool configVisualServoing();
+
+    /** Calibrate WholeBodyDynamics before executing trajectory
+    * @return true/false on success/failure
+    */
+    /*******************************************************************************/
+    bool calibrateWholeBody();
 };
 
 #endif

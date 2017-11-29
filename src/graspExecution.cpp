@@ -46,6 +46,8 @@ bool GraspExecution::configure()
     portForces_right.open("/superquadric-grasp/forces_right:i");
     portForces_left.open("/superquadric-grasp/forces_left:i");
 
+    portWholeBodyRpc.open("/superquadric-grasp/wb:rpc");
+
     i=-1;
 
     setPosePar(movement_par, true);
@@ -1101,6 +1103,20 @@ void GraspExecution::getPoses(const Property &poses)
 }
 
 /*******************************************************************************/
+bool GraspExecution::calibrateWholeBody()
+{
+    Bottle cmd, reply;
+    cmd.addString("calib");
+    cmd.addString("all");
+
+    portWholeBodyRpc.write(cmd, reply);
+
+    yDebug()<<reply.get(0).asString();
+
+    return (reply.get(0).asString()=="Recalibrated");
+}
+
+/*******************************************************************************/
 bool GraspExecution::executeTrajectory(string &hand)
 {
     trajectory.clear();
@@ -1139,6 +1155,9 @@ bool GraspExecution::executeTrajectory(string &hand)
             reached_tot=false;
             i++;
         }
+
+        if (i == trajectory_right.size()-1)
+            yInfo()<<"Whole body calibration completed "<<calibrateWholeBody();
 
         if ((reached==false) && (i<=trajectory.size()) && (i>=0))
         {
@@ -1392,6 +1411,9 @@ bool GraspExecution::release()
         portForces_right.close();
     if (!portForces_left.isClosed())
         portForces_left.close();
+
+    if (portWholeBodyRpc.asPort().isOpen())
+        portWholeBodyRpc.close();
 
     return true;
 }
