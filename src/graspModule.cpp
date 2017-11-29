@@ -391,6 +391,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
     traj_tol=rf.check("trajectory_tol", Value(0.01)).asDouble();
     pixel_tol=rf.check("pixel_tol", Value(15)).asDouble();
+    force_threshold=rf.check("force_threshold", Value(6.0)).asDouble();
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
     torso_pitch_max=rf.check("torso_pitch_max", Value(15.0)).asDouble();
     fing=rf.check("five_fingers", Value("off")).asString();
@@ -415,6 +416,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("lift_object",lobj);
 
     movement_par.put("traj_time",traj_time);
+    movement_par.put("force_threshold",force_threshold);
     movement_par.put("traj_tol",traj_tol);
     movement_par.put("lift_z", lift_z);
     movement_par.put("torso_pitch_max", torso_pitch_max);
@@ -493,6 +495,7 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     hand_to_move="right";
 
     yInfo()<<"[GraspExecution] lift_z:        "<<lift_z;
+    yInfo()<<"[GraspExecution] force_threshold: "<<force_threshold;
     yInfo()<<"[GraspExecution] shift_right:   "<<shift_right.toString(3,3);
     yInfo()<<"[GraspExecution] shift_left:    "<<shift_left.toString(3,3);
     yInfo()<<"[GraspExecution] home_right:    "<<home_right.toString(3,3);

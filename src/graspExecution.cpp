@@ -605,6 +605,29 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         }
     }
 
+    double fthres=newOptions.find("force_threshold").asDouble();
+
+    if (newOptions.find("force_threshold").isNull() && (first_time==true))
+    {
+        force_threshold=6.0;
+    }
+    else if (!newOptions.find("force_threshold").isNull())
+    {
+        if ((fthres>=1.5) && (fthres<=10.0))
+        {
+            force_threshold=fthres;
+        }
+        else if (fthres<1.5)
+        {
+            force_threshold=1.5;
+        }
+        else if (fthres>10.0)
+        {
+            force_threshold=10.0;
+        }
+
+    }
+
     Bottle *sh=newOptions.find("shift_right").asList();
     if (newOptions.find("shift_right").isNull() && (first_time==true))
     {
@@ -896,17 +919,18 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     }
 
     yDebug()<<"In execution module ....";
-    yInfo()<<"[GraspExecution] lift_z:       "<<lift_z;
-    yInfo()<<"[GraspExecution] shift_right:  "<<shift_right.toString(3,3);
-    yInfo()<<"[GraspExecution] shift_left:   "<<shift_left.toString(3,3);
-    yInfo()<<"[GraspExecution] home_right:   "<<home_right.toString(3,3);
-    yInfo()<<"[GraspExecution] home_left:    "<<home_left.toString(3,3);
-    yInfo()<<"[GraspExecution] basket_right: "<<basket_right.toString(3,3);
-    yInfo()<<"[GraspExecution] basket_left:  "<<basket_left.toString(3,3);
-    yInfo()<<"[GraspExecution] stiff_right: "<<stiff_right.toString(3,3);
-    yInfo()<<"[GraspExecution] stiff_left:  "<<stiff_left.toString(3,3);
-    yInfo()<<"[GraspExecution] damp_right: "<<damp_right.toString(3,3);
-    yInfo()<<"[GraspExecution] damp_left:  "<<damp_left.toString(3,3);
+    yInfo()<<"[GraspExecution] lift_z:          "<<lift_z;
+    yInfo()<<"[GraspExecution] force_threshold: "<<force_threshold;
+    yInfo()<<"[GraspExecution] shift_right:     "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:      "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right:      "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:       "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_right:    "<<basket_right.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_left:     "<<basket_left.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_right:     "<<stiff_right.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_left:      "<<stiff_left.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_right:      "<<damp_right.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_left:       "<<damp_left.toString(3,3);
 }
 
 /*******************************************************************************/
@@ -1162,7 +1186,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 {
     bool done;
     int context_tmp;
-    Vector *force;
+    Bottle *force;
+    Vector forceThre(3,0.0);
 
     double min, max;
 
@@ -1186,13 +1211,6 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     {        
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
-        force=portForces_right.read(false);
-
-        if (force!=NULL)
-            yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
-        else
-            yDebug()<<"No forces received";
-
         if (i==0)
         {
             yDebug()<<"[GraspExecution]: opening hand ... ";
@@ -1200,6 +1218,22 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
 
         icart_right->goToPoseSync(x,o);
+
+        force=portForces_right.read(false);
+
+        if (force!=NULL)
+        {
+            yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
+            forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
+            yDebug()<<"forces 3 "<<forceThre.toString();  
+            yDebug()<<"Norm forces "<<norm(forceThre);  
+
+            if (norm(forceThre)>=force_threshold)
+                return true;
+        }
+        else
+            yDebug()<<"No forces received";
+
         if (compliant)
         {
             icart_right->waitMotionDone(0.1, 2.0);
@@ -1223,11 +1257,6 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     {
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
-        force=portForces_left.read(false);
-
-        if (force!=NULL)
-            yInfo()<<"Forces of left arm detected while moving     "<<force->toString();
-
         if (i==0)
         {
             yDebug()<<"[GraspExecution]: opening hand ... ";
@@ -1235,6 +1264,21 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
 
         icart_left->goToPoseSync(x,o);
+
+        force=portForces_left.read(false);
+        if (force!=NULL)
+        {
+            yInfo()<<"Forces of left arm detected while moving     "<<force->toString();
+            forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
+            yDebug()<<"forces 3 "<<forceThre.toString();  
+            yDebug()<<"Norm forces "<<norm(forceThre);  
+
+            if (norm(forceThre)>=force_threshold)
+                return true;
+        }
+        else
+            yDebug()<<"No forces received"; 
+
         if (compliant)
         {
             icart_left->waitMotionDone(0.1, 2.0);

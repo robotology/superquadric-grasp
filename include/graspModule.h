@@ -105,6 +105,7 @@ protected:
     bool mode_online;
     bool save_poses;
     bool also_traj;
+    double force_threshold;
     std::string compliant;
     std::string visual_servoing;
     std::string use_direct_kin;
