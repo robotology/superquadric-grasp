@@ -1240,7 +1240,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         icart_right->goToPoseSync(x,o);
 
-        if (i == trajectory_right.size()-1)
+        if ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
         {  
             force=portForces_right.read(false);          
             while (!done)
@@ -1303,7 +1303,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         icart_left->goToPoseSync(x,o);
 
-        if (i == trajectory_left.size()-1)
+        if ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
         {
             force=portForces_left.read(false);
             while (!done)
@@ -1363,7 +1363,9 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
 {
     Vector x(3,0.0);
     Vector o(4,0.0);
-    bool done;
+    bool done=false;
+    Bottle *force;
+    Vector forceThre(3,0.0);
 
     x=trajectory[i].subVector(0,2);
     if (trajectory[i].size()==6)
@@ -1374,7 +1376,32 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     visual_servoing_right->initFacilities(use_direct_kin);
 
     visual_servoing_right->goToGoal(x,o);
-    done=visual_servoing_right->waitVisualServoingDone();
+    
+    while (!done)
+    {
+        done=!visual_servoing_right->checkVisualServoingController();
+
+        force=portForces_right.read(false);
+        if (force!=NULL)
+        {
+            yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
+            forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
+            yDebug()<<"forces 3 "<<forceThre.toString();  
+            yDebug()<<"Norm forces "<<norm(forceThre);  
+
+            if (norm(forceThre)>=force_threshold)
+            {
+                 visual_servoing_right->stopController();
+                 done=true;
+                 return true;
+            }
+            
+        }
+        else
+            yDebug()<<"No forces received";
+
+        Time::delay(0.01);
+    }
 
     visual_servoing_right->stopFacilities();
 

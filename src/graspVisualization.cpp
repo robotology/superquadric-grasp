@@ -371,6 +371,8 @@ bool GraspVisualization::threadInit()
     center[0]= -0.35;
     igaze->lookAtFixationPoint(center);
 
+    //igaze->setTrackingMode(true);
+
     stop_fixate=false;
 
     return true;
@@ -399,10 +401,7 @@ void GraspVisualization::run()
     showTrajectory(left_or_right);
 
     Vector shift_rot(3,0.0);
-    shift_rot[1]=0.1;
-
-    Vector center(3,0.0);
-    center[0]= -0.35;
+    shift_rot[1]=0.2;
     
 
     if ((norm(object)>0.0) && (look_object==true) && (executed==false))
@@ -411,6 +410,7 @@ void GraspVisualization::run()
         obj_shift=object.subVector(5,7)+shift_rot;
         look_object=!igaze->lookAtFixationPoint(obj_shift);
         //igaze->lookAtFixationPoint(obj_shift);
+        igaze->setTrackingMode(true);
 
         stop_fixate=false;       
     }

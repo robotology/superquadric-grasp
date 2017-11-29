@@ -624,7 +624,6 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
 
     igaze->storeContext(&context_gaze);
 
-    igaze->setTrackingMode(true);
     igaze->setSaccadesMode(false);
 
     yDebug()<<"Blocking eyes..."<<block_eye;
