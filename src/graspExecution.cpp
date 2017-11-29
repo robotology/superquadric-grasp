@@ -1156,9 +1156,6 @@ bool GraspExecution::executeTrajectory(string &hand)
             i++;
         }
 
-        if (i == trajectory_right.size()-1)
-            yInfo()<<"Whole body calibration completed "<<calibrateWholeBody();
-
         if ((reached==false) && (i<=trajectory.size()) && (i>=0))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
@@ -1208,6 +1205,8 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     Bottle *force;
     Vector forceThre(3,0.0);
 
+    //done_force=false;
+
     double min, max;
 
     Vector x(3,0.0);
@@ -1226,6 +1225,9 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
     else
         o=trajectory[i].subVector(3,6);
 
+    if (i == 0)
+            yInfo()<<"Whole body calibration completed "<<calibrateWholeBody();
+
     if (hand=="right")
     {        
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
@@ -1238,30 +1240,47 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         icart_right->goToPoseSync(x,o);
 
-        force=portForces_right.read(false);
+        if (i == trajectory_right.size()-1)
+        {  
+            force=portForces_right.read(false);          
+            while (!done)
+            {
+                force=portForces_right.read(false);
+                if (force!=NULL)
+                {
+                    yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
+                    forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
+                    yDebug()<<"forces 3 "<<forceThre.toString();  
+                    yDebug()<<"Norm forces "<<norm(forceThre);  
 
-        if (force!=NULL)
-        {
-            yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
-            forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
-            yDebug()<<"forces 3 "<<forceThre.toString();  
-            yDebug()<<"Norm forces "<<norm(forceThre);  
+                    if (norm(forceThre)>=force_threshold)
+                    {
+                         return true;
+                    }
+                    
+                }
+                else
+                    yDebug()<<"No forces received";
 
-            if (norm(forceThre)>=force_threshold)
-                return true;
+                Time::delay(0.01);
+
+                icart_right->checkMotionDone(&done);
+                
+            }
         }
         else
-            yDebug()<<"No forces received";
+        {
 
-        if (compliant)
-        {
-            icart_right->waitMotionDone(0.1, 2.0);
-            done=true;
-        }
-        else
-        {
-            icart_right->waitMotionDone();
-            icart_right->checkMotionDone(&done);
+            if (compliant)
+            {
+                icart_right->waitMotionDone(0.1, 2.0);
+                done=true;
+            }
+            else
+            {
+                icart_right->waitMotionDone();
+                icart_right->checkMotionDone(&done);
+            }
         }
 
         if (done)
@@ -1284,29 +1303,47 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         icart_left->goToPoseSync(x,o);
 
-        force=portForces_left.read(false);
-        if (force!=NULL)
+        if (i == trajectory_left.size()-1)
         {
-            yInfo()<<"Forces of left arm detected while moving     "<<force->toString();
-            forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
-            yDebug()<<"forces 3 "<<forceThre.toString();  
-            yDebug()<<"Norm forces "<<norm(forceThre);  
+            force=portForces_left.read(false);
+            while (!done)
+            {
+                force=portForces_left.read(false);
+                if (force!=NULL)
+                { 
+                    yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
+                    forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
+                    yDebug()<<"forces 3 "<<forceThre.toString();  
+                    yDebug()<<"Norm forces "<<norm(forceThre);  
 
-            if (norm(forceThre)>=force_threshold)
-                return true;
+                    if (norm(forceThre)>=force_threshold)
+                    {
+                         return true;
+                    }
+                    
+                }
+                else
+                    yDebug()<<"No forces received";
+
+                Time::delay(0.01);
+
+                icart_left->checkMotionDone(&done);
+                
+            }
         }
         else
-            yDebug()<<"No forces received"; 
+        {
 
-        if (compliant)
-        {
-            icart_left->waitMotionDone(0.1, 2.0);
-            done=true;
-        }
-        else
-        {
-            icart_left->waitMotionDone();
-            icart_left->checkMotionDone(&done);
+            if (compliant)
+            {
+                icart_left->waitMotionDone(0.1, 2.0);
+                done=true;
+            }
+            else
+            {
+                icart_left->waitMotionDone();
+                icart_left->checkMotionDone(&done);
+            }
         }
 
         if (done)

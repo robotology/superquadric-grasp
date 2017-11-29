@@ -409,8 +409,9 @@ void GraspVisualization::run()
     {
         Vector obj_shift(3,0.0);
         obj_shift=object.subVector(5,7)+shift_rot;
-        //look_object=!igaze->lookAtFixationPoint(obj_shift);
-        igaze->lookAtFixationPoint(obj_shift);
+        look_object=!igaze->lookAtFixationPoint(obj_shift);
+        //igaze->lookAtFixationPoint(obj_shift);
+
         stop_fixate=false;       
     }
 

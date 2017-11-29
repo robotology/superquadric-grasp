@@ -288,6 +288,8 @@ bool GraspingModule::look_center()
     Vector center(3,0.0);
     center[0]=-0.35;
 
+    graspVis->igaze->setTrackingMode(false);
+
     return graspVis->igaze->lookAtFixationPoint(center);
 }
 
@@ -622,7 +624,7 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
 
     igaze->storeContext(&context_gaze);
 
-    igaze->setTrackingMode(false);
+    igaze->setTrackingMode(true);
     igaze->setSaccadesMode(false);
 
     yDebug()<<"Blocking eyes..."<<block_eye;
