@@ -408,23 +408,9 @@ void GraspVisualization::run()
     if ((norm(object)>0.0) && (look_object==true) && (executed==false))
     {
         igaze->lookAtFixationPoint(object.subVector(5,7));
-        //igaze->waitMotionDone(0.25);
         stop_fixate=false;
-        yDebug()<<"fixing object";
         
     }
-    /*else if ((executed==true) && (stop_fixate==false) && (look_object==true))
-    {
-        yDebug()<<"fixing center";
-
-        yDebug()<<"fixating ,, "<<igaze->lookAtFixationPoint(center);
-        if(!igaze->lookAtFixationPoint(center))
-        {
-            stop_fixate=false;
-        }
-        else
-            stop_fixate=true;
-    }*/
 
     t_vis=Time::now()-t0;
 }

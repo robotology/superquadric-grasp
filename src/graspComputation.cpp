@@ -255,7 +255,10 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         displacement=tmp;
 
     }
+
     Bottle *pl=newOptions.find("plane").asList();
+
+    yDebug()<<"PLANE "<<pl->toString();
 
     if (newOptions.find("plane").isNull() && (first_time==true))
     {
