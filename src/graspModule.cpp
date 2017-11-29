@@ -109,6 +109,9 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     executed_var=false;
 
+    if (look_object=="on")
+        graspVis->look_object=true;
+
     return complete_sol;
 }
 
