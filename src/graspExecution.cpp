@@ -1200,7 +1200,7 @@ bool GraspExecution::executeTrajectory(string &hand)
 /*******************************************************************************/
 bool GraspExecution::reachWaypoint(int i, string &hand)
 {
-    bool done;
+    bool done=false;
     int context_tmp;
     Bottle *force;
     Vector forceThre(3,0.0);
@@ -1242,9 +1242,12 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
 
         if ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
         {  
-            force=portForces_right.read(false);          
+            force=portForces_right.read(false);    
+
+            yDebug()<<"1";     
             while (!done)
             {
+                 yDebug()<<"2";    
                 force=portForces_right.read(false);
                 if (force!=NULL)
                 {
