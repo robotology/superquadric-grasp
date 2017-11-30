@@ -56,7 +56,7 @@ bool GraspingModule::clear_poses()
 }
 
 /**********************************************************************/
-Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
+Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand_str)
 {
     //LockGuard lg(mutex);
 
@@ -97,15 +97,24 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
         object.setSubvector(8,dcm2euler(axis2dcm(axis)));
     }
 
-    graspComp->setPar("left_or_right", hand);
+    readSuperq("hand",hand,11,this->rf);
+
+    if (left_or_right=="both")
+    {
+        readSuperq("hand1",hand1,11,this->rf);
+    }
+
+    graspComp->setPar("left_or_right", hand_str);
     graspComp->run();
-    graspComp->getSolution(hand);
+    graspComp->getSolution(hand_str);
 
     yInfo()<<" [GraspingModule]: Complete solution "<<complete_sol.toString();
 
     t_grasp=graspComp->getTime();
 
-    graspVis->left_or_right=hand;
+    graspVis->left_or_right=hand_str;
+
+    readSuperq("hand",graspVis->hand,11,this->rf);
 
     executed_var=false;
 
@@ -813,6 +822,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
 {
+    x.clear();
     if (Bottle *b=rf->find(name_obj.c_str()).asList())
     {
         if (b->size()>=dimension)

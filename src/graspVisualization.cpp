@@ -68,6 +68,10 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
 
     addSuperq(object,imgOut,255);
 
+     //if (show_hand)
+    //yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
+    //        addSuperq(hand_in_poseR,imgOut,0);
+
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
         trajectory.clear();
@@ -76,6 +80,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {
             hand_in_poseR.setSubvector(0,hand);
             hand_in_poseR.setSubvector(5,solR);
+
+            yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
             if (show_hand)
                 addSuperq(hand_in_poseR,imgOut,0);
 
@@ -245,6 +251,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
             }
         }
+            
     }
 
     portImgOut.write();
