@@ -453,7 +453,9 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
             handContr_right.set("useRingLittleFingers", Value(five_fingers));
         }
         else if ((left_or_right=="left") || ("left_or_right"=="both"))
+        {
             handContr_left.set("useRingLittleFingers", Value(five_fingers));
+        }
     }
 
     string vs=newOptions.find("visual_servoing").asString();

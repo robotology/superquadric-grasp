@@ -24,7 +24,15 @@ include(ICUBcontribOptions)
 icubcontrib_set_default_prefix()
 
 find_package(IPOPT REQUIRED)
-find_package(TactileControl REQUIRED)
+
+option(USE_FINGERS_POSITION_CONTROL "Use FingersPositionControl instead of TactileControl" OFF)
+if(USE_FINGERS_POSITION_CONTROL)
+  set(fingers_library FingersPositionControl)
+else()
+  set(fingers_library TactileControl)
+endif()
+
+find_package(${fingers_library} REQUIRED)
 
 set(sources src/superquadric.cpp src/main.cpp src/graspModule.cpp src/graspComputation.cpp src/graspVisualization.cpp src/graspExecution.cpp)
 set(headers include/superquadric.h include/graspModule.h include/graspComputation.h include/graspVisualization.h include/graspExecution.h)
@@ -38,7 +46,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/include ${YARP_INCLUDE_DIRS} ${ICUB_I
 add_definitions(${YARP_DEFINES} ${IPOPT_DEFINITIONS} -D_USE_MATH_DEFINES) 
 
 add_executable(${PROJECT_NAME} ${sources} ${headers} src/idl.thrift  ${IDL_GEN_FILES})
-target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib TactileControl::TactileControl)
+target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${IPOPT_LIBRARIES} iKin ctrlLib ${fingers_library}::${fingers_library})
 set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${IPOPT_LINK_FLAGS}")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
