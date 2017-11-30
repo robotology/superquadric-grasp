@@ -51,7 +51,6 @@ bool GraspExecution::configure()
     i=-1;
 
     setPosePar(movement_par, true);
-
     config=configTorso();
 
     if ((left_or_right!="both") && (compliant==true))
@@ -63,6 +62,7 @@ bool GraspExecution::configure()
         config=configCompliant("right");
         config=config && configCompliant("left");
     }
+
 
     if (left_or_right!="both")
     {
@@ -378,6 +378,8 @@ bool GraspExecution::configTorso()
     iposTorso->positionMove(0, 0.0);
     iposTorso->positionMove(1, 0.0);
     iposTorso->positionMove(2, 1.0);
+
+    return true;
 }
 
 /*******************************************************************************/
