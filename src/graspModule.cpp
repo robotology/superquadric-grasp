@@ -294,6 +294,14 @@ bool GraspingModule::look_center()
 }
 
 /**********************************************************************/
+bool GraspingModule::look_obj()
+{
+    graspVis->look_object=true;
+
+    return true;
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);

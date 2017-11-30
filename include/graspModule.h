@@ -323,6 +323,12 @@ public:
     /**********************************************************************/
     bool look_center();
 
+    /* Ask the robot to look the object again
+    * @return true/false on success/failure
+`   */
+    /**********************************************************************/
+    bool look_obj();
+
     /** Go back to home position
     * @param entry is the name of the hand that is moving
     * @return true/false on success/failure
