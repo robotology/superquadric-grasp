@@ -23,7 +23,11 @@
 #include <yarp/dev/all.h>
 #include <yarp/dev/IVisualServoing.h>
 
-#include "TactileControl/HandController.h"
+#ifdef USE_FINGERS_POSITION_CONTROL
+    #include "FingersPositionControl/HandController.h"
+#else
+    #include "TactileControl/HandController.h"
+#endif
 
 /**
   * This class implements the arm movements for reaching
@@ -116,11 +120,14 @@ public:
     /** Property with options */
     yarp::os::Property movement_par;
 
-    /** Tactile control library for right hand */
-    tactileControl:: HandController handContr_right;
-    /** Tactile control library for right hand */
-    tactileControl:: HandController handContr_left;
-
+    /** Tactile control library for right/left hands */
+#ifdef USE_FINGERS_POSITION_CONTROL
+    fingersPositionControl::HandController handContr_right;
+    fingersPositionControl::HandController handContr_left;
+#else
+    tactileControl::HandController handContr_right;
+    tactileControl::HandController handContr_left;
+#endif
 
     /*******************************************************************************/
     GraspExecution(yarp::os::Property &movement_par, const yarp::os::Property &complete_sol,
