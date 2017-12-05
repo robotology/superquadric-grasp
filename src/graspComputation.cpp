@@ -255,7 +255,10 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         displacement=tmp;
 
     }
+
     Bottle *pl=newOptions.find("plane").asList();
+
+    yDebug()<<"PLANE "<<pl->toString();
 
     if (newOptions.find("plane").isNull() && (first_time==true))
     {
@@ -459,7 +462,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetStringValue("nlp_scaling_method",nlp_scaling_method);
     app->Options()->SetStringValue("hessian_approximation","limited-memory");
     app->Options()->SetStringValue("derivative_test","first-order");
-    app->Options()->SetStringValue("derivative_test_print_all","yes");    
+    app->Options()->SetStringValue("derivative_test_print_all","yes");
     app->Options()->SetIntegerValue("print_level",print_level);
 
     if (print_level > 0)
@@ -521,15 +524,17 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         {
             solR.resize(6,0.0);
             poseR.resize(6,0.0);
+            cost_right=0.0;
         }
 
         if (l_o_r=="left")
         {
             solL.resize(6,0.0);
             poseL.resize(6,0.0);
+            cost_left=0.0;
         }
-        
-        
+
+
         return false;
     }
 }
@@ -609,7 +614,7 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
 double GraspComputation::getTime()
 {
     LockGuard lg(mutex);
-    
+
     return t_grasp;
 }
 
@@ -748,7 +753,7 @@ void GraspComputation::bestPose()
     }
     else
         cost_left=0.0;
-    
+
     //cost_right=1.0/cost_right;
 
     //cost_left=1.0/cost_left;
@@ -761,7 +766,7 @@ void GraspComputation::bestPose()
         yInfo()<<"Best pose for grasping is right hand";
         best_hand="right";
     }
-    else if ((cost_right>0.0) && (cost_left>0.))
+    else if ((cost_left<=cost_right) && (cost_right!=0.0) && (cost_left!=0.0))
     {
         yInfo()<<"Best pose for grasping is left hand";
         best_hand="left";
@@ -778,4 +783,3 @@ void GraspComputation::bestPose()
     }
 
 }
-

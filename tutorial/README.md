@@ -1,11 +1,21 @@
 # superquadric-grasp tutorial
+#### Overview
+
+- [ How to compile](#how-to-compile)
+- [ How to communicate with the module](#how-to-communicate-with-the-superquadric-grasp)
+- [ How to run the `superquadric-grasp` + `tutorial`](#how-to-run-the-superquadric-grasp--tutorial)
+- [Setting up before running on the robot](#setting-up-before-running-on-the-robot)
+- [Fine pose reaching with visual servoing](#fine-pose-reaching-with-visual-servoing)
+- [How to run the overall pipeline](#how-to-run-the-overall-pipeline)
 
 ## How to compile
-```
+```sh
 mkdir build; cd build
 ccmake ..
 make install
 ```
+
+[`Go to the top`](#superquadric-grasp-tutorial)
 ## How to communicate with the superquadric-grasp 
 Once the user has a superquadric modeling the object as a `yarp::Vector sol` (for example, by querying the [superquadric-model](https://github.com/robotology/superquadric-model)), he can query the superquadric-grasp for
 getting a suitable grasping pose for the hand `std::string hand` through the `thrift services`:
@@ -42,7 +52,7 @@ cmd.addString(hand);
 graspRpc.write(cmd, reply);
 ```
 connecting to the corresponding port:
-```
+```sh
 yarp connect /testing-graspmodule/superq:rpc /superquadric-grasp/rpc
 ```
 For instance, in case `hand=right` solution of the grasping pose computation will be received in the format:
@@ -71,16 +81,18 @@ graspRpc.write(cmd, reply);
 ```
 where `hand_to_move` can be `left` or `right`.
 
+[`Go to the top`](#superquadric-grasp-tutorial)
 ## How to run the `superquadric-grasp` + `tutorial`
 This tutorial is designed to be tested on the `simulator`, since a fake superquadric is used (the tutorial upload an example of superquadric from a configuration file).
 In order to run the tutorial:
 1. Launch a yarpserver on your computer:
-```
+```sh
 yarpserver --write
 ```
 2. Launch the [`iCub_SIM`](http://wiki.icub.org/wiki/Simulator_README).
 3. Launch the basic modules  for the simulator (`yarprobotinterface`, `iKinGazeCtrl`, `iKinCartsianSolver`- for both right and left arm-).
-4. Launch the `superquadric-grasp` and a `yarpviewer`, using [this xml]().
+4. Launch the `superquadric-grasp` and a `yarpviewer`, using [this xml](https://github.com/robotology/superquadric-grasp/blob/master/app/scripts/superquadric-grasp.xml.template).
+**Note** The _Tactile Control Library_ cannot be executed on the simulator, since it communicates with low level ports of the robot. For this reason, pay attention to specify `grasp   off` in the [configuration file](https://github.com/robotology/superquadric-grasp/blob/master/app/conf/config.ini#L30). In this scenario, the robot will only reach the pose without closing the fingers.
 5. Launch the tutorial with [this xml](https://github.com/robotology/superquadric-grasp/blob/master/tutorial/app/script/testing-graspmodule.xml.template).
 6. Connect everything.
 
@@ -88,3 +100,34 @@ The simulator will perform a fake grasping pose computation and execution.
 
 
 Enjoy! :smiley:
+
+[`Go to the top`](#superquadric-grasp-tutorial)
+## Setting up before running on the robot
+
+In order to achieve the desired performance when running the module on the robot, it is strongly recommended to perform the following steps:
+#### Calibrate the robot following the `fine calibration` procedure:
+- for the [arms](http://wiki.icub.org/wiki/ArmFineCalibration);
+- for the [head](http://wiki.icub.org/wiki/HeadFineCalibration);
+- for the [torso](http://wiki.icub.org/wiki/TorsoFineCalibration).
+
+#### Check the hand-eye calibration 
+Our approach is an open loop approach. For this reason, the grasping goal can be properly reached if the stereo-vision system (see [here](https://github.com/robotology/superquadric-model/tree/master/tutorial#calibrate-the-stereo-vision-through-the-sfm-module) for information on how to calibrate it) and robot kinematics are properly calibrated (previous section). If the offsets between the two hinder the robot from correctly reaching for the desired pose even after the calibration, the superquadric-grasp module allows the definition of some empirical offsets, in order to compensate for that: `shift_right` and `shift_left`. They are 3D Vectors representing the required offsets for correctly reaching the pose along the *x,y,z* axes of the robot reference frame.
+
+In order to overcome the need for a fine hand-eye calibration, we are integrated our work with the visual servoing approach described [here](https://github.com/robotology/visual-tracking-control). More information are available in the following section.
+
+[`Go to the top`](#superquadric-grasp-tutorial)
+
+## Fine pose reaching with visual servoing
+The approaching trajectory is identified by two waypoints: **w1** and **w2**. The latter **w2** is the desired pose computed by our approach, while the first **w1** is an intermediate waypoint, obtained by shifing the first one along the _x_ and _z_ axes of the hand reference frame. Waypoint **w1** is reached by the robot in open-loop. Instead, **w2** can be reached in open-loop or with a visual servoing controller.  The user can enable or disable the visual-servoing step with the parameter:
+```
+visual_servoing
+```
+which can be set equal to `"on"` or `"off"`.
+In case `visual_servoing="on"`, the robot reaches waypoint **w1**. Then, the particle filter implemented in [this library](https://github.com/robotology/bayes-filters-lib) estimates an accurate hand pose with the use of the hand CAD model and HOG features. This estimates is exploited by the visual servoing controller for reaching for the desired pose for grasping the object. This way, we compensate for the offsets between the kinematics and the stereo vision chains.
+
+[`Go to the top`](#superquadric-grasp-tutorial)
+
+## How to run the overall pipeline
+This module is designed in order to be executed together the [`superquadric-model module`](https://github.com/robotology/superquadric-model). A **complete tutorial** on how to execute them together and perform on the robot a **complete modeling and grasping task** is provided in [`this repository`](https://github.com/robotology/superquadric-grasp-example).
+
+[`Go to the top`](#superquadric-grasp-tutorial)

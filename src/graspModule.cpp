@@ -61,9 +61,9 @@ bool GraspingModule::clear_poses()
 }
 
 /**********************************************************************/
-Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand)
+Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand_str)
 {
-    //LockGuard lg(mutex);   
+    //LockGuard lg(mutex);
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -111,17 +111,16 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     best_scenario=-1;
 
     yDebug()<<"Object "<<object.toString();
-
-    readSuperq("hand",graspComp->hand,11,this->rf);
+    readSuperq("hand",hand,11,this->rf);
 
     if (left_or_right=="both")
     {
-        readSuperq("hand1",graspComp->hand1,11,this->rf);
+        readSuperq("hand1",hand1,11,this->rf);
     }
 
-    graspComp->setPar("left_or_right", hand);
+    graspComp->setPar("left_or_right", hand_str);
     graspComp->run();
-    graspComp->getSolution(hand);
+    graspComp->getSolution(hand_str);
 
     cost_vis_r.clear();
     cost_vis_l.clear();
@@ -132,7 +131,14 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     t_grasp=graspComp->getTime();
 
-    graspVis->left_or_right=hand;
+    graspVis->left_or_right=hand_str;
+
+    readSuperq("hand",graspVis->hand,11,this->rf);
+
+    executed_var=false;
+
+    if (look_object=="on")
+        graspVis->look_object=true;
 
     complete_sols.clear();
     complete_sols.push_back(complete_sol);
@@ -483,10 +489,13 @@ bool GraspingModule::move(const string &entry)
 {
     LockGuard lg(mutex);
 
+    yDebug()<<"command received";
+
     if ((entry=="right") || (entry=="left"))
     {
         hand_to_move=entry;
         executed=false;
+        executed_var=false;
 
         return true;
     }
@@ -495,9 +504,47 @@ bool GraspingModule::move(const string &entry)
 }
 
 /**********************************************************************/
+bool GraspingModule::check_motion()
+{
+    return executed_var;
+}
+
+/**********************************************************************/
+bool GraspingModule::check_home()
+{
+    return reached_home;
+}
+
+/**********************************************************************/
+bool GraspingModule::check_basket()
+{
+    return reached_basket;
+}
+
+/**********************************************************************/
+bool GraspingModule::look_center()
+{
+    Vector center(3,0.0);
+    center[0]=-0.35;
+
+    graspVis->igaze->setTrackingMode(false);
+
+    return graspVis->igaze->lookAtFixationPoint(center);
+}
+
+/**********************************************************************/
+bool GraspingModule::look_obj()
+{
+    graspVis->look_object=true;
+
+    return true;
+}
+
+/**********************************************************************/
 bool GraspingModule::go_home(const string &entry)
 {
     LockGuard lg(mutex);
+    reached_home=false;
 
     if ((entry=="right") || (entry=="left"))
     {
@@ -505,7 +552,7 @@ bool GraspingModule::go_home(const string &entry)
         graspExec->reached=true;
         graspExec->reached_tot=true;
         graspExec->stop();
-        graspExec->goHome(entry);
+        reached_home=graspExec->goHome(entry);
 
         return true;
     }
@@ -516,13 +563,45 @@ bool GraspingModule::go_home(const string &entry)
         graspExec->reached_tot=true;
         graspExec->stop();
         graspExec->goHome("right");
-        graspExec->goHome("left");
+        reached_home=graspExec->goHome("left");
 
         return true;
     }
 
     return false;
 }
+
+/**********************************************************************/
+bool GraspingModule::go_to_basket(const string &entry)
+{
+    LockGuard lg(mutex);
+    reached_basket=false;
+
+    if ((entry=="right") || (entry=="left"))
+    {
+        executed=true;
+        graspExec->reached=true;
+        graspExec->reached_tot=true;
+        graspExec->stop();
+        reached_basket=graspExec->goToBasket(entry);
+
+        return true;
+    }
+    else if (entry=="both")
+    {
+        executed=true;
+        graspExec->reached=true;
+        graspExec->reached_tot=true;
+        graspExec->stop();
+        graspExec->goToBasket("right");
+        reached_basket=graspExec->goToBasket("left");
+
+        return true;
+    }
+
+    return false;
+}
+
 
 /****************************************************************/
 bool GraspingModule::configBasics(ResourceFinder &rf)
@@ -549,6 +628,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     visualization=(rf.check("visualization", Value("off")).asString()=="on");
     grasp=(rf.check("grasp", Value("off")).asString()=="on");
     visual_servoing=rf.check("visual_servoing", Value("off")).asString();
+    compliant=rf.check("compliant", Value("off")).asString();
     use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
 
@@ -563,27 +643,39 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
 bool GraspingModule::configMovements(ResourceFinder &rf)
 {
     traj_time=rf.check("trajectory_time", Value(1.0)).asDouble();
-    traj_tol=rf.check("trajectory_tol", Value(0.001)).asDouble();
+    traj_tol=rf.check("trajectory_tol", Value(0.01)).asDouble();
     pixel_tol=rf.check("pixel_tol", Value(15)).asDouble();
+    force_threshold=rf.check("force_threshold", Value(6.0)).asDouble();
     lift_z=rf.check("lift_z", Value(0.15)).asDouble();
-    torso_pitch_max=rf.check("torso_pitch_max", Value(30.0)).asDouble();
+    torso_pitch_max=rf.check("torso_pitch_max", Value(15.0)).asDouble();
     fing=rf.check("five_fingers", Value("off")).asString();
+    lobj=rf.check("lift_object", Value("off")).asString();
 
     readSuperq("shift_right",shift_right,3,this->rf);
     readSuperq("shift_left",shift_left,3,this->rf);
     readSuperq("home_right",home_right,7,this->rf);
     readSuperq("home_left",home_left,7,this->rf);
+    readSuperq("basket_right",basket_right,7,this->rf);
+    readSuperq("basket_left",basket_left,7,this->rf);
+    readSuperq("stiff_right",stiff_right,5,this->rf);
+    readSuperq("stiff_left",stiff_left,5,this->rf);
+    readSuperq("damp_right",damp_right,5,this->rf);
+    readSuperq("damp_left",damp_left,5,this->rf);
+
 
     movement_par.put("robot",robot);
     movement_par.put("hand",left_or_right);
     movement_par.put("five_fingers",fing);
     movement_par.put("five_fingers",fing);
+    movement_par.put("lift_object",lobj);
 
     movement_par.put("traj_time",traj_time);
+    movement_par.put("force_threshold",force_threshold);
     movement_par.put("traj_tol",traj_tol);
     movement_par.put("lift_z", lift_z);
     movement_par.put("torso_pitch_max", torso_pitch_max);
     movement_par.put("visual_servoing", visual_servoing);
+    movement_par.put("compliant", compliant);
     movement_par.put("use_direct_kin", use_direct_kin);
     movement_par.put("pixel_tol", pixel_tol);
 
@@ -611,14 +703,63 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2l.addDouble(home_left[6]);
     movement_par.put("home_left", planebl.get(0));
 
+    Bottle planebask_r;
+    Bottle &pk=planebask_r.addList();
+    pk.addDouble(basket_right[0]); pk.addDouble(basket_right[1]);
+    pk.addDouble(basket_right[2]); pk.addDouble(basket_right[3]);
+    pk.addDouble(basket_right[4]); pk.addDouble(basket_right[5]);pk.addDouble(basket_right[6]);
+    movement_par.put("basket_right", planebask_r.get(0));
+
+    Bottle planebask_l;
+    Bottle &pk2=planebask_l.addList();
+    pk2.addDouble(basket_left[0]); pk2.addDouble(basket_left[1]);
+    pk2.addDouble(basket_left[2]); pk2.addDouble(basket_left[3]);
+    pk2.addDouble(basket_left[4]); pk2.addDouble(basket_left[5]);pk2.addDouble(basket_left[6]);
+    movement_par.put("basket_left", planebask_l.get(0));
+
+    Bottle planestiff_r;
+    Bottle &ps=planestiff_r.addList();
+    ps.addDouble(stiff_right[0]); ps.addDouble(stiff_right[1]);
+    ps.addDouble(stiff_right[2]); ps.addDouble(stiff_right[3]);
+    ps.addDouble(stiff_right[4]);
+    movement_par.put("stiff_right", planestiff_r.get(0));
+
+    Bottle planestiff_l;
+    Bottle &ps2=planestiff_l.addList();
+    ps2.addDouble(stiff_left[0]); ps2.addDouble(stiff_left[1]);
+    ps2.addDouble(stiff_left[2]); ps2.addDouble(stiff_left[3]);
+    ps2.addDouble(stiff_left[4]);
+    movement_par.put("stiff_left", planestiff_l.get(0));
+
+    Bottle planedamp_r;
+    Bottle &pdamp=planedamp_r.addList();
+    pdamp.addDouble(damp_right[0]); pdamp.addDouble(damp_right[1]);
+    pdamp.addDouble(damp_right[2]); pdamp.addDouble(damp_right[3]);
+    pdamp.addDouble(damp_right[4]);
+    movement_par.put("damp_right", planedamp_r.get(0));
+
+    Bottle planedamp_l;
+    Bottle &pdamp2=planedamp_l.addList();
+    pdamp2.addDouble(damp_left[0]); pdamp2.addDouble(damp_left[1]);
+    pdamp2.addDouble(damp_left[2]); pdamp2.addDouble(damp_left[3]);
+    pdamp2.addDouble(damp_left[4]);
+    movement_par.put("damp_left", planedamp_l.get(0));
+
     executed=true;
     hand_to_move="right";
 
-    yInfo()<<"[GraspExecution] lift_z:      "<<lift_z;
-    yInfo()<<"[GraspExecution] shift_right: "<<shift_right.toString(3,3);
-    yInfo()<<"[GraspExecution] shift_left:  "<<shift_left.toString(3,3);
-    yInfo()<<"[GraspExecution] home_right:  "<<home_right.toString(3,3);
-    yInfo()<<"[GraspExecution] home_left:   "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] lift_z:        "<<lift_z;
+    yInfo()<<"[GraspExecution] force_threshold: "<<force_threshold;
+    yInfo()<<"[GraspExecution] shift_right:   "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspExecution] shift_left:    "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspExecution] home_right:    "<<home_right.toString(3,3);
+    yInfo()<<"[GraspExecution] home_left:     "<<home_left.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_right:  "<<basket_right.toString(3,3);
+    yInfo()<<"[GraspExecution] basket_left:   "<<basket_left.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_right:   "<<stiff_right.toString(3,3);
+    yInfo()<<"[GraspExecution] stiff_left:    "<<stiff_left.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_right:    "<<damp_right.toString(3,3);
+    yInfo()<<"[GraspExecution] damp_left:     "<<damp_left.toString(3,3);
 
     return true;
 }
@@ -656,6 +797,8 @@ bool GraspingModule::close()
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
+    igaze->stopControl();
+
     igaze->restoreContext(context_gaze);
 
     GazeCtrl.close();
@@ -671,7 +814,7 @@ bool GraspingModule::interruptModule()
 
 /****************************************************************/
 bool GraspingModule::updateModule()
-{    
+{
     //LockGuard lg(mutex);
 
     if (visualization)
@@ -697,7 +840,8 @@ bool GraspingModule::updateModule()
             graspExec->getPoses(complete_sol);
         else
             graspExec->getPoses(solutions[best_scenario]);
-        executed=graspExec->executeTrajectory(hand_to_move);
+        executed_var=executed=graspExec->executeTrajectory(hand_to_move);
+        yDebug()<<"executed_var"<<executed_var;
     }
 
     if (save_poses && (graspComp->count_file == graspComp->count_file_old))
@@ -720,6 +864,8 @@ double GraspingModule::getPeriod()
 /***********************************************************************/
 bool GraspingModule::configViewer(ResourceFinder &rf)
 {
+    block_eye=rf.check("block_eye", Value(5.0)).asDouble();
+    block_neck=rf.check("block_neck", Value(0.0)).asDouble();
     eye=rf.check("eye", Value("left")).asString();
     show_hand=rf.check("show_hand", Value("on")).asString();
     look_object=rf.check("look_object", Value("on")).asString();
@@ -742,8 +888,15 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
 
     igaze->storeContext(&context_gaze);
 
-    igaze->setTrackingMode(false);
     igaze->setSaccadesMode(false);
+
+    yDebug()<<"Blocking eyes..."<<block_eye;
+    igaze->blockEyes(block_eye);
+    yDebug()<<"Done: "<<igaze->waitMotionDone(2.0);
+
+    yDebug()<<"Blocking roll..."<<block_neck;
+    igaze->blockNeckRoll(block_neck);
+    yDebug()<<"Done: "<<igaze->waitMotionDone(2.0);
 
     Bottle info;
     igaze->getInfo(info);
@@ -878,7 +1031,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
     if (config==false)
         return false;
 
-    graspVis= new GraspVisualization(rate_vis,eye,igaze, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l, best_scenario);
+    graspVis= new GraspVisualization(rate_vis,eye,igaze,executed_var, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l, best_scenario);
 
     if (visualization)
     {
@@ -903,6 +1056,8 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     config=graspExec->configure();
 
+    executed_var=false;
+
 
     if (config==false)
         return false;
@@ -913,9 +1068,7 @@ bool GraspingModule::configure(ResourceFinder &rf)
 /****************************************************************/
 bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &dimension, ResourceFinder *rf)
 {
-    //x.resize(dimension, 0.0);
-    x.resize(0);
-
+    x.clear();
     if (Bottle *b=rf->find(name_obj.c_str()).asList())
     {
         if (b->size()>=dimension)
@@ -971,7 +1124,7 @@ void GraspingModule::saveSol(const Property &poses, int scenario)
             fout<<"Average time for computation: "<<endl<<t_grasp<<endl<<endl;
 
             fout<<"object: "<<endl<<"["<<object.toString(3,3)<<"]"<<endl<<endl;
-        }  
+        }
     }
 
     if ((left_or_right=="left" || left_or_right=="both") && (norm(poseL)!=0.0))
@@ -1245,15 +1398,3 @@ Property GraspingModule::mergeProperties(string l_o_r)
 
     return poses;
 }
-
-
-
-
-
-
-
-
-
-
-
-

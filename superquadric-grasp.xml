@@ -21,21 +21,25 @@ The modules parameters are labeled as standard and advanced. Note: change the ad
     <param default="right" desc="Hand used (standard parameter).">left_or_right</param>
  <param default="z" desc="Appraching direction in hand frame.Possible values: z or xz (standard parameter).">dir</param>
  <param default="left" desc="Eyes used to get image (standard parameter).">eye</param>
+ <param default="5.0" desc="Value used for blocking the eyes vergence (standard parameter).">block_eye</param>
  <param default="true" desc="Acquire an external point cloud or not (standard parameter).">mode_online</param>
  <param default="0.05" desc="Distance used for approach on x axis (standard parameter).">distance</param>
  <param default="0.05" desc="Distance used for approach on z axis (standard parameter).">distance1</param>
  <param default="false" desc="Save or not the results (standard parameter).">save_poses</param>
  <param default="true" desc="Visualize or not the computed pose (standard parameter).">visualization</param>
+  <param default="off" desc="Enable or not fine pose reaching with visual servoing controller (standard parameter).">visuali_servoing</param>
  <param default="false" desc="Grasp or not the object once the final pose is reached (standard parameter).">grasp</param>
+ <param default="false" desc="Use five fingers or not for grasping the object once the final pose is reached (standard parameter).">five_finger</param>
  <param default="true" desc="Show the hand ellipsoid or not (standard parameter).">show_hand</param>
  <param default="true" desc="Look the object or not (standard parameter).">look_object</param>
+  <param default="true" desc="Lift the object or not (standard parameter).">lift_object</param>
  <param default="true" desc="If on, only the pose is shown, without the trajectory (standard parameter).">show_only_pose</param>
  <param default="1.0" desc="Trajectory time for each waypoint (standard parameter).">traj_time</param>
  <param default="0.001" desc="Trajectory tolerance (standard parameter).">traj_tol</param>
 <param default="0.15" desc="Quantity on z axis for object lifting (standard parameter).">lift_z</param>
  <param default="(0.0 0.0 1.0 0.18)" desc="Plane representing the table (advanced parameter).">plane</param>
  <param default="(0.05 0.0 0.0)" desc="Ellipsoid displacement with respect to hand reference frame (advanced parameter).">displacement</param>
- <param default="1e-3" desc="Tolerance for Ipopt solver (advanced parameter).">tol</param>
+ <param default="1e-3" desc="Tolerance in pixel for visual servoing controller (advanced parameter).">pixel_tol</param>
  <param default="1e-2" desc="Tolerance of constraints in Ipopt solver (advanced parameter).">constr_viol_tol</param>
  <param default="0" desc="Acceptable iter in Ipopt solver (advanced parameter).">acceptable_iter</param>
  <param default="1e8" desc="Maximum number of iterations in Ipopt solver (advanced parameter).">max_iter</param>

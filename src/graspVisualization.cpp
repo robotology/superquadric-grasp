@@ -28,9 +28,9 @@ using namespace yarp::math;
 
 
 /***********************************************************************/
-GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze, const Matrix _K, const string _left_or_right,
+GraspVisualization::GraspVisualization(int _rate,const string &_eye,IGazeControl *_igaze,bool &_executed, const Matrix _K, const string _left_or_right,
                                        const deque<Property> &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, Vector &_hand, Vector &_hand1, Property &_vis_par , deque<double> &_cost_vis_r, deque<double> &_cost_vis_l, int &_best_scenario):
-                                       RateThread(_rate), eye(_eye), igaze(_igaze), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
+                                       RateThread(_rate), eye(_eye), igaze(_igaze),executed(_executed), K(_K), left_or_right(_left_or_right), complete_sol(_complete_sol),
                                        object(_object), obstacles(_obstacles), hand(_hand), hand1(_hand1), vis_par(_vis_par), cost_vis_r(_cost_vis_r), cost_vis_l(_cost_vis_l), best_scenario(_best_scenario)
 {
 
@@ -74,6 +74,10 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     for (size_t i=0; i<obstacles.size(); i++)
         addSuperq(obstacles[i],imgOut,255);
 
+     //if (show_hand)
+    //yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
+    //        addSuperq(hand_in_poseR,imgOut,0);
+
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
         trajectory.clear();
@@ -82,6 +86,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         {
             hand_in_poseR.setSubvector(0,hand);
             hand_in_poseR.setSubvector(5,solR);
+
+            yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
             if (show_hand)
                 addSuperq(hand_in_poseR,imgOut,0);
 
@@ -333,7 +339,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                         cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_green, thickness);
                     }
                 }
-            }           
+            }
         }
 
         if (cost_vis_r.size()>1)
@@ -347,6 +353,7 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             final_sol<<"Best scenario:  "<<best_scenario;
             cv::putText(imgOutMat, final_sol.str(), cv::Point(20,200), font, fontScale, iol_green, thickness);
         }
+
     }
 
     portImgOut.write();
@@ -468,6 +475,15 @@ bool GraspVisualization::threadInit()
 
     setPar(vis_par, true);
 
+    yDebug()<<"Initial gaze";
+    Vector center(3,0.0);
+    center[0]= -0.35;
+    igaze->lookAtFixationPoint(center);
+
+    //igaze->setTrackingMode(true);
+
+    stop_fixate=false;
+
     return true;
 }
 
@@ -494,10 +510,19 @@ void GraspVisualization::run()
     showTrajectory(left_or_right);
 
     Vector shift_rot(3,0.0);
-    shift_rot[1]=0.1;
+    shift_rot[1]=0.2;
 
-    if ((norm(object)>0.0) && (look_object==true))
-        igaze->lookAtFixationPoint(object.subVector(5,7));
+
+    if ((norm(object)>0.0) && (look_object==true) && (executed==false))
+    {
+        Vector obj_shift(3,0.0);
+        obj_shift=object.subVector(5,7)+shift_rot;
+        look_object=!igaze->lookAtFixationPoint(obj_shift);
+        //igaze->lookAtFixationPoint(obj_shift);
+        igaze->setTrackingMode(true);
+
+        stop_fixate=false;
+    }
 
     t_vis=Time::now()-t0;
 }
@@ -660,5 +685,3 @@ Property GraspVisualization::getPar()
 
     return advOptions;
 }
-
-

@@ -169,6 +169,16 @@ service superquadricGrasp_IDL
     */
     bool move(1: string e)
 
+    /* Ask the robot to look in the center
+    * @return true/false on success/failure
+`   */
+    bool look_center()
+
+    /* Ask the robot to the object again
+    * @return true/false on success/failure
+`   */
+    bool look_obj()
+
     /**
     * Move the right or the left arm  back to home position (according to the
     * string e).
@@ -177,9 +187,35 @@ service superquadricGrasp_IDL
     bool go_home(1: string e)
 
     /**
+    * Move the right or the left arm  to the basket (according to the
+    * string e).
+    *@return "on" or "off" if e is right or left.
+    */
+    bool go_to_basket(1: string e)
+
+
+    /**
     * Get the name of the best hand for grasping the object
     *@return right or left
     */
     string get_best_hand()
+
+    /**
+    * Check if the motion has been completed
+    *@return true/false on success/failure
+    */
+    bool check_motion();
+
+    /**
+    * Check if the motion back to home has been completed
+    *@return true/false on success/failure
+    */
+    bool check_home();
+
+    /**
+    * Calibrate plane height via superquadric computation
+    * @return true/false on success/failure.
+    */
+    bool calibrate();
 }
     
