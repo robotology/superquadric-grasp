@@ -354,6 +354,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             cv::putText(imgOutMat, final_sol.str(), cv::Point(20,200), font, fontScale, iol_green, thickness);
         }
 
+        showHistogram(imgOut);
+
     }
 
     portImgOut.write();
@@ -438,6 +440,66 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
     }
 }
 
+/***********************************************************************/
+void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
+{
+    int widthHist=imgOut.width()/(4*cost_vis_r.size());
+    int maxHeight=(int)(imgOut.height()*0.4);
+    int minHeight=imgOut.height()-imgOut.height()/2 -30;
+
+    stringstream q_r, q_l;
+    int classHeight;
+    int j=0;
+
+    cv::Mat imgConfMat=cv::cvarrToMat(imgOut.getIplImage());
+
+    for (size_t k=0; k<cost_vis_r.size(); k++)
+    {
+        yDebug()<<"min hegiht "<<minHeight;
+        cout<<endl;
+        //yDebug()<<"k "<<k;
+        //yDebug()<<"max hegiht "<<maxHeight;
+        //yDebug()<<"round cost "<<cost_vis_r[k]/100;
+        yDebug()<<"max h right "<<imgOut.height()/2-(int)(maxHeight*cost_vis_r[k]/30);
+        classHeight=std::min(minHeight-10,imgOut.height()/2-(int)(maxHeight*cost_vis_r[k]/30));
+        yDebug()<<"classHeight right"<<classHeight;
+
+        //if (abs(classHeight)>=minHeight)
+        //    classHeight=minHeight-10;
+
+        //yDebug()<<"classHeight right"<<classHeight;
+        yDebug()<<"POINT r"<<j*widthHist<<(j+1)*widthHist;
+        cv::rectangle(imgConfMat,cv::Point(j*widthHist,classHeight),cv::Point((j+1)*widthHist,minHeight),
+        histColorsCode[j%(int)histColorsCode.size()],CV_FILLED);
+
+        cv::Mat textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
+
+        q_r<<cost_vis_r[k];
+        cv::putText(textImg,"cost right "+q_r.str(),cv::Point(imgOut.width()-580,(j+1)*widthHist-10),
+        cv::FONT_HERSHEY_SIMPLEX,0.8,cv::Scalar(255,255,255),2);
+
+        j++;
+        yDebug()<<"POINT L"<<(j)*widthHist<<(j+1)*widthHist;
+        classHeight=std::min(minHeight-10,imgOut.height()/2-(int)(maxHeight*cost_vis_l[k]/50));
+
+        //if (abs(classHeight)>=minHeight)
+        //    classHeight=minHeight-10;
+
+        cv::rectangle(imgConfMat,cv::Point((j)*widthHist,classHeight),cv::Point((j+1)*widthHist,minHeight),
+        histColorsCode[(j)%(int)histColorsCode.size()],CV_FILLED);
+
+        textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
+
+        q_l<<cost_vis_l[k];
+        cv::putText(textImg,"cost right "+q_l.str(),cv::Point(imgOut.width()-580,(j+1)*widthHist-10),
+        cv::FONT_HERSHEY_SIMPLEX,0.8,cv::Scalar(255,255,255),2);
+        j++;
+        //k=2;
+
+    }
+
+}
+
 /*******************************************************************************/
 Vector GraspVisualization::from3Dto2D(const Vector &point3D)
 {
@@ -483,6 +545,13 @@ bool GraspVisualization::threadInit()
     //igaze->setTrackingMode(true);
 
     stop_fixate=false;
+
+    histColorsCode.push_back(cv::Scalar( 65, 47,213));
+    histColorsCode.push_back(cv::Scalar(122, 79, 58));
+    histColorsCode.push_back(cv::Scalar(154,208, 72));
+    histColorsCode.push_back(cv::Scalar( 71,196,249));
+    histColorsCode.push_back(cv::Scalar(224,176, 96));
+    histColorsCode.push_back(cv::Scalar( 22,118,238));
 
     return true;
 }

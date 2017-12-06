@@ -54,6 +54,8 @@ protected:
     int &best_scenario;
     std::deque<double> &cost_vis_r, &cost_vis_l;
 
+    std::deque<cv::Scalar> histColorsCode;
+
 public:
 
     yarp::dev::IGazeControl *igaze;
@@ -153,6 +155,12 @@ public:
     */
     /***********************************************************************/
     yarp::os::Property getPar();
+
+    /** Overlap the histogram with the costs for all the poses
+    * @param imgOut is the image on which to overlpa the superquadroc
+    */
+    /***********************************************************************/
+    void showHistogram( yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut);
 };
 
 #endif
