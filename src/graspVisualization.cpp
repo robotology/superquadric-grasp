@@ -211,12 +211,12 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 if (best_scenario>=0)
                 {
                     if (i==best_scenario*2 || i==best_scenario*2 +1 || i==(best_scenario)*2 +half_traj_size || i==(best_scenario)*2 + half_traj_size+1)
-                        cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0), 4);
+                        cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0), 2, cv::LINE_AA);
                     else
-                        cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+                        cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0),1, cv::LINE_AA);
                 }
                 else
-                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0));
+                    cv::line(imgOutMat,target_point,target_pointx,cv::Scalar(255,0,0),1, cv::LINE_AA);
 
             }
 
@@ -229,12 +229,12 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 if (best_scenario>=0)
                 {
                     if (i==best_scenario*2 || i==best_scenario*2 +1 || i==(best_scenario)*2 +half_traj_size || i==(best_scenario)*2 + half_traj_size+1)
-                        cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0), 4);
+                        cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0), 2, cv::LINE_AA);
                     else
-                         cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+                         cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0),1 , cv::LINE_AA);
                 }
                 else
-                    cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0));
+                    cv::line(imgOutMat,target_point,target_pointy,cv::Scalar(0,255,0), 1,  cv::LINE_AA);
             }
 
             if ((target_pointz.x<0) || (target_pointz.y<0) || (target_pointz.x>=320) || (target_pointz.y>=240))
@@ -246,113 +246,113 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
                 if (best_scenario>=0)
                 {
                     if (i==best_scenario*2 || i==best_scenario*2 +1 || i==(best_scenario)*2 +half_traj_size || i==(best_scenario)*2 + half_traj_size+1)
-                        cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255),4);
+                        cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255),2, cv::LINE_AA);
                     else
-                        cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                        cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255),1 , cv::LINE_AA);
                 }
                 else
-                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255));
+                    cv::line(imgOutMat,target_point,target_pointz,cv::Scalar(0,0,255), 1, cv::LINE_AA);
             }
         }
 
-        for (size_t k=0; k<cost_vis_r.size(); k++)
-        {
-            stringstream q_r, q_l;
-            q_r<<round( cost_vis_r[k] * 100.0 ) / 100.0;
-            q_l<<round( cost_vis_l[k] * 100.0 ) / 100.0;
+//        for (size_t k=0; k<cost_vis_r.size(); k++)
+//        {
+//            stringstream q_r, q_l;
+//            q_r<<round( cost_vis_r[k] * 100.0 ) / 100.0;
+//            q_l<<round( cost_vis_l[k] * 100.0 ) / 100.0;
 
-            stringstream right1, left1;
-            right1<<"cost right "<<k;
-            left1<<"cost left "<<k;
+//            stringstream right1, left1;
+//            right1<<"cost right "<<k;
+//            left1<<"cost left "<<k;
 
-            int thickness=2.0;
-            int font=cv::FONT_HERSHEY_SIMPLEX;
-            double fontScale=0.5;
+//            int thickness=2.0;
+//            int font=cv::FONT_HERSHEY_SIMPLEX;
+//            double fontScale=0.5;
 
-            cv::Scalar red(230,0,0);
-            cv::Scalar blue(0,240,0);
+//            cv::Scalar red(230,0,0);
+//            cv::Scalar blue(0,240,0);
 
-            cv::Scalar iol_green(22,88,248);
-            cv::Scalar iol_red(244,16, 46);
+//            cv::Scalar iol_green(22,88,248);
+//            cv::Scalar iol_red(244,16, 46);
 
-            if ((cost_vis_r[k]<cost_vis_l[k]))
-            {
-                int value_y=35 + k * 45;
-                int string_y=15 + k * 45;
+//            if ((cost_vis_r[k]<cost_vis_l[k]))
+//            {
+//                int value_y=35 + k * 45;
+//                int string_y=15 + k * 45;
 
-                if ((cost_vis_r.size()==0) && (cost_vis_r[k]>0.0) && (cost_vis_l[k]>0.0))
-                {
-                    if (cost_vis_r[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_green, thickness);
-                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_green, thickness);
-                    }
-                    if (cost_vis_l[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_red, thickness);
-                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_red, thickness);
-                    }
-                }
-                else if (cost_vis_r.size()>0)
-                {
-                    if (cost_vis_r[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_green, thickness);
-                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_green, thickness);
-                    }
-                    if (cost_vis_l[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_red, thickness);
-                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_red, thickness);
-                    }
-                }
+//                if ((cost_vis_r.size()==0) && (cost_vis_r[k]>0.0) && (cost_vis_l[k]>0.0))
+//                {
+//                    if (cost_vis_r[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_green, thickness);
+//                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_green, thickness);
+//                    }
+//                    if (cost_vis_l[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_red, thickness);
+//                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_red, thickness);
+//                    }
+//                }
+//                else if (cost_vis_r.size()>0)
+//                {
+//                    if (cost_vis_r[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_green, thickness);
+//                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_green, thickness);
+//                    }
+//                    if (cost_vis_l[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_red, thickness);
+//                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_red, thickness);
+//                    }
+//                }
 
-            }
-            else if ((cost_vis_r[k]>cost_vis_l[k]))
-            {
-                int value_y=35 + k * 45;
-                int string_y=15 + k * 45;
+//            }
+//            else if ((cost_vis_r[k]>cost_vis_l[k]))
+//            {
+//                int value_y=35 + k * 45;
+//                int string_y=15 + k * 45;
 
-                if ((cost_vis_r.size()==0) && (cost_vis_r[k]>0.0) && (cost_vis_l[k]>0.0))
-                {
-                    if (cost_vis_r[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_red, thickness);
-                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_red, thickness);
-                    }
-                    if (cost_vis_l[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_green, thickness);
-                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_green, thickness);
-                    }
-                }
-                else if (cost_vis_r.size()>0)
-                {
-                    if (cost_vis_r[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_red, thickness);
-                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_red, thickness);
-                    }
-                    if (cost_vis_l[k]>0.0)
-                    {
-                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_green, thickness);
-                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_green, thickness);
-                    }
-                }
-            }
-        }
+//                if ((cost_vis_r.size()==0) && (cost_vis_r[k]>0.0) && (cost_vis_l[k]>0.0))
+//                {
+//                    if (cost_vis_r[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_red, thickness);
+//                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_red, thickness);
+//                    }
+//                    if (cost_vis_l[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_green, thickness);
+//                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_green, thickness);
+//                    }
+//                }
+//                else if (cost_vis_r.size()>0)
+//                {
+//                    if (cost_vis_r[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_r.str(), cv::Point(200,value_y), font, fontScale, iol_red, thickness);
+//                        cv::putText(imgOutMat, right1.str(), cv::Point(200,string_y), font, fontScale, iol_red, thickness);
+//                    }
+//                    if (cost_vis_l[k]>0.0)
+//                    {
+//                        cv::putText(imgOutMat, q_l.str(), cv::Point(50,value_y), font, fontScale, iol_green, thickness);
+//                        cv::putText(imgOutMat, left1.str(), cv::Point(50,string_y), font, fontScale, iol_green, thickness);
+//                    }
+//                }
+//            }
+//        }
 
-        if (cost_vis_r.size()>1)
-        {
-            cv::Scalar iol_green(22,88,248);
-            int thickness=2.0;
-            int font=cv::FONT_HERSHEY_SIMPLEX;
-            double fontScale=0.5;
+//        if (cost_vis_r.size()>1)
+//        {
+//            cv::Scalar iol_green(22,88,248);
+//            int thickness=1.0;
+//            int font=cv::FONT_HERSHEY_SIMPLEX;
+//            double fontScale=0.5;
 
-            stringstream final_sol;
-            final_sol<<"Best scenario:  "<<best_scenario;
-            cv::putText(imgOutMat, final_sol.str(), cv::Point(20,200), font, fontScale, iol_green, thickness);
-        }
+//            stringstream final_sol;
+//            final_sol<<"Best scenario:  "<<best_scenario;
+//            cv::putText(imgOutMat, final_sol.str(), cv::Point(20,200), font, fontScale, iol_green, thickness, cv::LINE_AA);
+//        }
 
         showHistogram(imgOut);
 
@@ -443,60 +443,91 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 /***********************************************************************/
 void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
 {
-    int widthHist=imgOut.width()/(4*cost_vis_r.size());
-    int maxHeight=(int)(imgOut.height()*0.4);
-    int minHeight=imgOut.height()-imgOut.height()/2 -30;
+    cv::Scalar iol_green(22,88,248);
+    cv::Scalar iol_red(244,16, 46);
 
-    stringstream q_r, q_l;
+    cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
+    //imgInMat.copyTo(imgOutMat);
+
+    int widthHist=imgOut.height()/(6*cost_vis_r.size());
+    int maxHeight=(int)(imgOut.width()*0.7);
+    //int minHeight=imgOut.width()-imgOut.width()/2 -30;
+    int minHeight=0;
+
+
     int classHeight;
     int j=0;
+    double max_cost=0.0;
 
     cv::Mat imgConfMat=cv::cvarrToMat(imgOut.getIplImage());
 
     for (size_t k=0; k<cost_vis_r.size(); k++)
     {
-        yDebug()<<"min hegiht "<<minHeight;
-        cout<<endl;
-        //yDebug()<<"k "<<k;
-        //yDebug()<<"max hegiht "<<maxHeight;
-        //yDebug()<<"round cost "<<cost_vis_r[k]/100;
-        yDebug()<<"max h right "<<imgOut.height()/2-(int)(maxHeight*cost_vis_r[k]/30);
-        classHeight=std::min(minHeight-10,imgOut.height()/2-(int)(maxHeight*cost_vis_r[k]/30));
-        yDebug()<<"classHeight right"<<classHeight;
+        if (cost_vis_r[k]>max_cost)
+        {
+            max_cost=cost_vis_r[k];
+        }
 
-        //if (abs(classHeight)>=minHeight)
-        //    classHeight=minHeight-10;
-
-        //yDebug()<<"classHeight right"<<classHeight;
-        yDebug()<<"POINT r"<<j*widthHist<<(j+1)*widthHist;
-        cv::rectangle(imgConfMat,cv::Point(j*widthHist,classHeight),cv::Point((j+1)*widthHist,minHeight),
-        histColorsCode[j%(int)histColorsCode.size()],CV_FILLED);
-
-        cv::Mat textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
-
-        q_r<<cost_vis_r[k];
-        cv::putText(textImg,"cost right "+q_r.str(),cv::Point(imgOut.width()-580,(j+1)*widthHist-10),
-        cv::FONT_HERSHEY_SIMPLEX,0.8,cv::Scalar(255,255,255),2);
-
-        j++;
-        yDebug()<<"POINT L"<<(j)*widthHist<<(j+1)*widthHist;
-        classHeight=std::min(minHeight-10,imgOut.height()/2-(int)(maxHeight*cost_vis_l[k]/50));
-
-        //if (abs(classHeight)>=minHeight)
-        //    classHeight=minHeight-10;
-
-        cv::rectangle(imgConfMat,cv::Point((j)*widthHist,classHeight),cv::Point((j+1)*widthHist,minHeight),
-        histColorsCode[(j)%(int)histColorsCode.size()],CV_FILLED);
-
-        textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
-
-        q_l<<cost_vis_l[k];
-        cv::putText(textImg,"cost right "+q_l.str(),cv::Point(imgOut.width()-580,(j+1)*widthHist-10),
-        cv::FONT_HERSHEY_SIMPLEX,0.8,cv::Scalar(255,255,255),2);
-        j++;
-        //k=2;
-
+        if (cost_vis_l[k]>max_cost)
+        {
+            max_cost=cost_vis_l[k];
+        }
     }
+
+    for (size_t k=0; k<cost_vis_r.size(); k++)
+    {
+        stringstream kss;
+        stringstream q_r, q_l;
+        kss<<k;
+        classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_r[k]/max_cost));
+
+        cv::Scalar iol_green_right(255*cost_vis_r[k]/max_cost,230*(1-cost_vis_r[k]/max_cost), 0);
+
+        cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
+        iol_green_right,CV_FILLED);
+
+        cv::Mat textImg=cv::Mat::zeros(imgOut.width(),imgOut.height(),CV_8UC3);
+
+        q_r<<round(cost_vis_r[k]*100)/100;
+        cv::putText(imgOutMat,"R-"+kss.str(),cv::Point(3,(j+1)*widthHist-widthHist/3),
+        cv::FONT_HERSHEY_SIMPLEX,0.35,cv::Scalar(255,255,255),1, cv::LINE_AA);
+
+        cv::putText(imgOutMat,q_r.str(),cv::Point(classHeight+3,(j+1)*widthHist-widthHist/3),
+        cv::FONT_HERSHEY_SIMPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
+
+        j++;
+        classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_l[k]/max_cost));
+
+        cv::Scalar iol_green_left(255*cost_vis_r[k]/max_cost,230*(1-cost_vis_l[k]/max_cost), 0);
+        cv::rectangle(imgConfMat,cv::Point(classHeight,j*widthHist),cv::Point(minHeight,(j+1)*widthHist),
+        iol_green_left,CV_FILLED);
+
+        //textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
+
+        q_l<<round(cost_vis_l[k]*100)/100;
+        cv::putText(imgOutMat,"L-"+kss.str(),cv::Point(3,(j+1)*widthHist-widthHist/3),
+        cv::FONT_HERSHEY_SIMPLEX,0.35,cv::Scalar(255,255,255),1, cv::LINE_AA);
+
+        cv::putText(imgOutMat,q_l.str(),cv::Point(classHeight+3,(j+1)*widthHist-widthHist/3),
+        cv::FONT_HERSHEY_SIMPLEX,0.35,cv::Scalar(0,0,0),1, cv::LINE_AA);
+        j++;
+
+        if (k==best_scenario)
+        {
+            if (cost_vis_r[k]< cost_vis_l[k])
+            {
+                cv::rectangle(imgConfMat, cv::Point(classHeight,(j-1)*widthHist), cv::Point(minHeight,(j)*widthHist),
+                           cv::Scalar(255,255,255),2, cv::LINE_AA);
+            }
+            else
+            {
+                cv::rectangle(imgConfMat, cv::Point(classHeight,(j-1)*widthHist), cv::Point(minHeight,(j)*widthHist),
+                           cv::Scalar(255,255,255),2, cv::LINE_AA);
+            }
+        }
+    }
+
+
 
 }
 
@@ -547,7 +578,6 @@ bool GraspVisualization::threadInit()
     stop_fixate=false;
 
     histColorsCode.push_back(cv::Scalar( 65, 47,213));
-    histColorsCode.push_back(cv::Scalar(122, 79, 58));
     histColorsCode.push_back(cv::Scalar(154,208, 72));
     histColorsCode.push_back(cv::Scalar( 71,196,249));
     histColorsCode.push_back(cv::Scalar(224,176, 96));
