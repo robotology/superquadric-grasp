@@ -448,8 +448,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[5]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
-     //New constraints
-
      if (num_superq>0)
      {
          for (size_t j=0; j<num_superq; j++)
@@ -461,8 +459,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
              g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
          }
-
-         //cout<<"g[6]"<<g[6]<<endl;
      }
 
      return true;
