@@ -51,7 +51,6 @@ bool GraspingModule::clear_poses()
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     object.resize(11,0.0);
-    //obstacle.resize(11,0.0);
     complete_sol.clear();
     complete_sol2.clear();
     complete_sols.clear();
@@ -63,8 +62,6 @@ bool GraspingModule::clear_poses()
 /**********************************************************************/
 Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand_str)
 {
-    //LockGuard lg(mutex);
-
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
     if (!estimated_superq.find("dimensions").isNull())
@@ -110,7 +107,6 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
     multiple_superq=false;
     best_scenario=-1;
 
-    yDebug()<<"Object "<<object.toString();
     readSuperq("hand",hand,11,this->rf);
 
     if (left_or_right=="both")
@@ -149,7 +145,6 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 /**********************************************************************/
 Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_superq, const Property &obstacle_ext, const string &hand)
 {
-    //LockGuard lg(mutex);
     Vector obstacle(11,0.0);
     complete_sols.clear();
     solutions.clear();
@@ -160,8 +155,6 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     {
         object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
     }
-
-yDebug()<<"Object "<<object.toString();
 
     Bottle *shape=estimated_superq.find("exponents").asList();
 
@@ -228,11 +221,6 @@ yDebug()<<"Object "<<object.toString();
     deque<Vector> obs_aux;
     obs_aux=obstacles;
 
-    yDebug()<<"Obj aux "<<obj_aux.toString();
-
-    
-    
-
     readSuperq("hand",graspComp->hand,11,this->rf);
 
     if (left_or_right=="both")
@@ -278,7 +266,6 @@ yDebug()<<"Object "<<object.toString();
         object=obs_aux[i];
         obstacles.clear();
         obstacles.push_back(obj_aux);
-
 
         yDebug()<<"Obj aux "<<i<<obj_aux.toString();
         yDebug()<<"Object "<<i<<object.toString();
@@ -784,29 +771,21 @@ bool GraspingModule::close()
 {
     delete graspComp;
 
-    //if (multiple_superq)
-     //   delete graspComp2;
-
     graspExec->release();
     delete graspExec;
 
     if (visualization)
     {
         graspVis->stop();
-        //if (multiple_superq)
-        //    graspVis->stop();
     }
 
     delete graspVis;
-
 
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
     igaze->stopControl();
-
     igaze->restoreContext(context_gaze);
-
     GazeCtrl.close();
 
     return true;
@@ -821,8 +800,6 @@ bool GraspingModule::interruptModule()
 /****************************************************************/
 bool GraspingModule::updateModule()
 {
-    //LockGuard lg(mutex);
-
     if (visualization)
     {
         if (times_vis.size()<10)
@@ -847,7 +824,6 @@ bool GraspingModule::updateModule()
         else
             graspExec->getPoses(solutions[best_scenario]);
         executed_var=executed=graspExec->executeTrajectory(hand_to_move);
-        yDebug()<<"executed_var"<<executed_var;
     }
 
     if (save_poses && (graspComp->count_file == graspComp->count_file_old))

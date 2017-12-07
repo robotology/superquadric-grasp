@@ -163,12 +163,12 @@ public:
     void showHistogram( yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut);
     
     /** This is a lookup table for the colors of the histograms according to the cost of the pose
-    * @param iol_green_right is the color as cv::Scalar
+    * @param color is the color as cv::Scalar
     * @param cost_vis is the double of the costs of a pose
     * @param max_cost is the maximum cost among the poses
     */
     /*******************************************************************************/
-void colorMap(cv::Scalar &iol_green_right, double &cost_vis, double &max_cost);
+void colorMap(cv::Scalar &color, double &cost_vis, double &max_cost);
 };
 
 #endif

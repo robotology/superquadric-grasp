@@ -311,7 +311,6 @@ void GraspComputation::setTrajectoryPar(const Property &newOptions, bool first_t
 
     double dist=newOptions.find("distance_on_x").asDouble();
 
-
     if (newOptions.find("distance_on_x").isNull() && (first_time==true))
     {
         distance=0.13;
@@ -410,7 +409,6 @@ bool GraspComputation::init()
 void GraspComputation::run()
 {
     t0=Time::now();
-    //LockGuard lg(mutex);
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
     {
@@ -471,8 +469,6 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Initialize();
 
     Ipopt::SmartPtr<grasping_NLP>  grasp_nlp= new grasping_NLP;
-    //if (multiple_superq)
-    //    obstacles.clear();
     grasp_nlp->init(object, which_hand,obstacles, n_pointshand, l_o_r);
 
     grasp_nlp->configure(this->rf,l_o_r, displacement, plane);
@@ -505,8 +501,6 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
-
-            /****************************/
             Matrix H=euler2dcm(poseL.subVector(3,5));
             cos_zl=abs(H(2,2));
 
@@ -533,7 +527,6 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             poseL.resize(6,0.0);
             cost_left=0.0;
         }
-
 
         return false;
     }
@@ -715,7 +708,6 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 /***********************************************************************/
 void GraspComputation::setPar(const string &par_name, const string &value)
 {
-    //LockGuard lg(mutex);
     if (par_name=="left_or_right")
         left_right=value;
 }
@@ -737,7 +729,6 @@ void GraspComputation::bestPose()
     {
         w1=1.0;
         w2=2.5;
-        //w2=1.0;
     }
 
     if (norm(poseR)!=0.0)
@@ -753,10 +744,6 @@ void GraspComputation::bestPose()
     }
     else
         cost_left=0.0;
-
-    //cost_right=1.0/cost_right;
-
-    //cost_left=1.0/cost_left;
 
     yInfo()<<"[GraspComputation]: cost right "<<cost_right;
     yInfo()<<"[GraspComputation]: cost left "<<cost_left;

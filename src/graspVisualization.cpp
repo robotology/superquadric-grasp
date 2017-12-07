@@ -67,16 +67,11 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     Vector y2D(2,0.0);
     Vector z2D(2,0.0);
 
-
     if (norm(object)>0.0)
         addSuperq(object,imgOut,255);
 
     for (size_t i=0; i<obstacles.size(); i++)
         addSuperq(obstacles[i],imgOut,255);
-
-     //if (show_hand)
-    //yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
-    //        addSuperq(hand_in_poseR,imgOut,0);
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
@@ -87,7 +82,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             hand_in_poseR.setSubvector(0,hand);
             hand_in_poseR.setSubvector(5,solR);
 
-            yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
             if (show_hand)
                 addSuperq(hand_in_poseR,imgOut,0);
 
@@ -256,7 +250,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
         }
 
         showHistogram(imgOut);
-
     }
 
     portImgOut.write();
@@ -344,11 +337,10 @@ void GraspVisualization::addSuperq(const Vector &x, ImageOf<PixelRgb> &imgOut,co
 /***********************************************************************/
 void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
 {
-    cv::Scalar iol_green_right, iol_green_left;
-    
+    cv::Scalar color_right, color_left;
 
     cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
-    //imgInMat.copyTo(imgOutMat);
+
     int widthHist;
     if (best_scenario!=-1)
         widthHist=imgOut.height()/(6*cost_vis_r.size());
@@ -387,20 +379,18 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         {           
             classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_r[k]/max_cost)+30);
 
-            //cv::Scalar iol_green_right(255*cost_vis_r[k]/max_cost,230*(1-cost_vis_r[k]/max_cost), 0);
-
             if (best_scenario != -1)
-                colorMap(iol_green_right, cost_vis_r[k], max_cost);
+                colorMap(color_right, cost_vis_r[k], max_cost);
             else
             {
                 if (cost_vis_r[k]<cost_vis_l[k])
-                    iol_green_right=histColorsCode[7];
+                    color_right=histColorsCode[7];
                 else
-                    iol_green_right=histColorsCode[0];
+                    color_right=histColorsCode[0];
             }
 
             cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
-            iol_green_right,CV_FILLED);
+            color_right,CV_FILLED);
 
             cv::Mat textImg=cv::Mat::zeros(imgOut.width(),imgOut.height(),CV_8UC3);
 
@@ -414,8 +404,6 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         else
         {
             classHeight=maxHeight;
-
-            //cv::Scalar iol_green_right(255*cost_vis_r[k]/max_cost,230*(1-cost_vis_r[k]/max_cost), 0);
 
             cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
             cv::Scalar(235,0,0),CV_FILLED);
@@ -438,16 +426,16 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
             classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_l[k]/max_cost)+30);
 
             if (best_scenario != -1)
-                colorMap(iol_green_left, cost_vis_l[k], max_cost);
+                colorMap(color_left, cost_vis_l[k], max_cost);
             else
             {
                 if (cost_vis_l[k]<cost_vis_r[k])
-                    iol_green_left=histColorsCode[7];
+                    color_left=histColorsCode[7];
                 else
-                    iol_green_left=histColorsCode[0];
+                    color_left=histColorsCode[0];
             }
             cv::rectangle(imgConfMat,cv::Point(classHeight,j*widthHist),cv::Point(minHeight,(j+1)*widthHist),
-            iol_green_left,CV_FILLED);
+            color_left,CV_FILLED);
 
             //textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
 
@@ -461,9 +449,6 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         else
         {
             classHeight=maxHeight;
-
-            //cv::Scalar iol_green_right(255*cost_vis_r[k]/max_cost,230*(1-cost_vis_r[k]/max_cost), 0);
-
             cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
             cv::Scalar(235,0,0),CV_FILLED);
 
@@ -476,6 +461,7 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
             cv::putText(imgOutMat,"Not solved!",cv::Point(classHeight+3,(j+1)*widthHist-widthHist/3),
             cv::FONT_HERSHEY_DUPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
         }
+
         j++;
 
         if (k==best_scenario)
@@ -512,24 +498,24 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
 }
 
 /*******************************************************************************/
-void GraspVisualization::colorMap(cv::Scalar &iol_green_right, double &cost_vis, double &max_cost)
+void GraspVisualization::colorMap(cv::Scalar &color, double &cost_vis, double &max_cost)
 {
     if (cost_vis/max_cost==1)
-        iol_green_right=histColorsCode[0];
+        color=histColorsCode[0];
     else if ((cost_vis/max_cost<1) && (cost_vis/max_cost>0.7))
-        iol_green_right=histColorsCode[1];
+        color=histColorsCode[1];
     else if ((cost_vis/max_cost<1) && (cost_vis/max_cost>=0.7))
-        iol_green_right=histColorsCode[2];
+        color=histColorsCode[2];
     else if ((cost_vis/max_cost<0.7) && (cost_vis/max_cost>=0.5))
-        iol_green_right=histColorsCode[3];
+        color=histColorsCode[3];
     else if ((cost_vis/max_cost<0.7) && (cost_vis/max_cost>=0.5))
-        iol_green_right=histColorsCode[4];
+        color=histColorsCode[4];
     else if ((cost_vis/max_cost<0.5) && (cost_vis/max_cost>=0.3))
-        iol_green_right=histColorsCode[5];
+        color=histColorsCode[5];
     else if ((cost_vis/max_cost<0.3) && (cost_vis/max_cost>=0.15))
-        iol_green_right=histColorsCode[6];
+        color=histColorsCode[6];
     else if ((cost_vis/max_cost<0.15) && (cost_vis/max_cost>=0.0))
-        iol_green_right=histColorsCode[7];
+        color=histColorsCode[7];
 }
 
 /*******************************************************************************/
@@ -569,22 +555,19 @@ bool GraspVisualization::threadInit()
 
     setPar(vis_par, true);
 
-    yDebug()<<"Initial gaze";
     Vector center(3,0.0);
     center[0]= -0.35;
     igaze->lookAtFixationPoint(center);
 
-    //igaze->setTrackingMode(true);
-
     stop_fixate=false;
 
-    histColorsCode.push_back(cv::Scalar( 235, 0,0));    
+    histColorsCode.push_back(cv::Scalar(235,  0, 0));
     histColorsCode.push_back(cv::Scalar(255,131, 0));
     histColorsCode.push_back(cv::Scalar(255,157, 0));
-    histColorsCode.push_back(cv::Scalar( 255,212,0));
-    histColorsCode.push_back(cv::Scalar( 255,223,76));
-    histColorsCode.push_back(cv::Scalar(166,223, 76));
-    histColorsCode.push_back(cv::Scalar(100,223, 76));
+    histColorsCode.push_back(cv::Scalar(255,212, 0));
+    histColorsCode.push_back(cv::Scalar(255,223,76));
+    histColorsCode.push_back(cv::Scalar(166,223,76));
+    histColorsCode.push_back(cv::Scalar(100,223,76));
     histColorsCode.push_back(cv::Scalar( 69,223,76));
 
     return true;
@@ -621,7 +604,6 @@ void GraspVisualization::run()
         Vector obj_shift(3,0.0);
         obj_shift=object.subVector(5,7)+shift_rot;
         look_object=!igaze->lookAtFixationPoint(obj_shift);
-        //igaze->lookAtFixationPoint(obj_shift);
         igaze->setTrackingMode(true);
 
         stop_fixate=false;
