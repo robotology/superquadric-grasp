@@ -382,7 +382,7 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         stringstream kss;
         stringstream q_r, q_l;
         kss<<k;
-        classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_r[k]/max_cost));
+        classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_r[k]/max_cost)+30);
 
         //cv::Scalar iol_green_right(255*cost_vis_r[k]/max_cost,230*(1-cost_vis_r[k]/max_cost), 0);
 
@@ -409,7 +409,7 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         cv::FONT_HERSHEY_DUPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
 
         j++;
-        classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_l[k]/max_cost));
+        classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_l[k]/max_cost)+30);
 
         if (best_scenario != -1)
             colorMap(iol_green_left, cost_vis_l[k], max_cost);
@@ -437,13 +437,13 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         {
             if (cost_vis_r[k]< cost_vis_l[k])
             {
-                classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_r[k]/max_cost));
+                classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_r[k]/max_cost)+30);
                 cv::rectangle(imgConfMat, cv::Point(classHeight,(j-2)*widthHist), cv::Point(minHeight,(j-1)*widthHist),
                            cv::Scalar(81,121,233),2, cv::LINE_AA);
             }
             else
             {
-                classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_l[k]/max_cost));
+                classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_l[k]/max_cost)+30);
                 cv::rectangle(imgConfMat, cv::Point(classHeight,(j-1)*widthHist), cv::Point(minHeight,(j)*widthHist),
                            cv::Scalar(81,121,233),2, cv::LINE_AA);
             }
@@ -452,13 +452,13 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         {
             if (cost_vis_r[0]< cost_vis_l[0])
             {
-                classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_r[k]/max_cost));
+                classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_r[k]/max_cost)+30);
                 cv::rectangle(imgConfMat, cv::Point(classHeight,(0)*widthHist), cv::Point(minHeight,(1)*widthHist),
                            cv::Scalar(81,121,233),2, cv::LINE_AA);
             }
             else
             {
-                classHeight=std::max(minHeight+5,(int)(maxHeight*cost_vis_l[k]/max_cost));
+                classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_l[k]/max_cost)+30);
                 cv::rectangle(imgConfMat, cv::Point(classHeight,(1)*widthHist), cv::Point(minHeight,(2)*widthHist),
                            cv::Scalar(81,121,233),2, cv::LINE_AA);
             }

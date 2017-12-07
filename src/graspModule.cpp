@@ -161,6 +161,8 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         object[0]=dim->get(0).asDouble(); object[1]=dim->get(1).asDouble(); object[2]=dim->get(2).asDouble();
     }
 
+yDebug()<<"Object "<<object.toString();
+
     Bottle *shape=estimated_superq.find("exponents").asList();
 
     if (!estimated_superq.find("exponents").isNull())
@@ -168,12 +170,6 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         object[3]=shape->get(0).asDouble(); object[4]=shape->get(1).asDouble();
     }
 
-    Bottle *exp=estimated_superq.find("exponents").asList();
-
-    if (!estimated_superq.find("exponents").isNull())
-    {
-        object[3]=exp->get(0).asDouble(); object[4]=exp->get(1).asDouble();
-    }
 
     Bottle *center=estimated_superq.find("center").asList();
 
@@ -202,10 +198,15 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         {
             Bottle *obstacle_sing=obs->get(i).asList();
 
+            yDebug()<<"obstacles "<<obstacle_sing->toString();
+
             obstacle[0]=obstacle_sing->get(0).asDouble(); obstacle[1]=obstacle_sing->get(1).asDouble(); obstacle[2]=obstacle_sing->get(2).asDouble();
             obstacle[3]=obstacle_sing->get(3).asDouble(); obstacle[4]=obstacle_sing->get(4).asDouble(); obstacle[5]=obstacle_sing->get(5).asDouble();
-            obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble(); obstacle[8]=obstacle_sing->get(8).asDouble();
-            obstacle[9]=obstacle_sing->get(9).asDouble(); obstacle[10]=obstacle_sing->get(10).asDouble();
+            obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble(); 
+            Vector axis(4,0.0);
+            axis[0]=obstacle_sing->get(8).asDouble(); axis[1]=obstacle_sing->get(9).asDouble(); axis[2]=obstacle_sing->get(10).asDouble(); axis[3]=obstacle_sing->get(11).asDouble();
+            obstacle.setSubvector(8,dcm2euler(axis2dcm(axis)));
+            
             obstacles.push_back(obstacle);
             obstacles_vis.push_back(obstacle);
             yDebug()<<"Obstacles "<<obstacles[i].toString();
@@ -226,6 +227,11 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     Vector obj_aux=object;
     deque<Vector> obs_aux;
     obs_aux=obstacles;
+
+    yDebug()<<"Obj aux "<<obj_aux.toString();
+
+    
+    
 
     readSuperq("hand",graspComp->hand,11,this->rf);
 
