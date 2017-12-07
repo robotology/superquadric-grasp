@@ -129,7 +129,8 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     graspVis->left_or_right=hand_str;
 
-    readSuperq("hand",graspVis->hand,11,this->rf);
+    //readSuperq("hand",graspVis->hand,11,this->rf);
+    //readSuperq("hand1",graspVis->hand1,11,this->rf);
 
     executed_var=false;
 

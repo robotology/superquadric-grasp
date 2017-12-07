@@ -722,14 +722,19 @@ void GraspComputation::bestPose()
 
     if (cos_zr <=0.85 && cos_zl<=0.85)
     {
-        w1=2.0;
+        //w1=2.0;
+        w1=1.0;
         w2=0.5;
     }
     else
     {
         w1=1.0;
         w2=2.5;
+        //w2=1.5;
     }
+
+yDebug()<<"final value r"<<final_value_R;
+yDebug()<<"cos nr"<<cos_zr;
 
     if (norm(poseR)!=0.0)
     {
