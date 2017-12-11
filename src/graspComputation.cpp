@@ -722,20 +722,41 @@ void GraspComputation::bestPose()
 
     double w1, w2, w3;
 
-    if (cos_zr <=0.8 && cos_zl<=0.85)
+    if (!multiple_superq)
     {
-        w1=2.0;
-        //w1=1.0;
-        //w1=0.01;
-        w2=0.5;
-        w3=1.0;
+        if (cos_zr <=0.8 && cos_zl<=0.85)
+        {
+            w1=2.0;
+            //w1=1.0;
+            //w1=0.01;
+            w2=0.5;
+            w3=1.0;
+        }
+        else
+        {
+            w1=1.0;
+            w2=2.5;
+            w3=2.5;
+            //w2=1.5;
+        }
     }
     else
     {
-        w1=1.0;
-        w2=2.5;
-        w3=2.5;
-        //w2=1.5;
+        if (cos_zr <=0.8 && cos_zl<=0.85)
+        {
+            //w1=2.0;
+            //w1=1.0;
+            w1=0.1;
+            w2=0.5;
+            w3=1.0;
+        }
+        else
+        {
+            w1=1.0;
+            w2=2.5;
+            w3=2.5;
+            //w2=1.5;
+        }
     }
 
 yDebug()<<"final value r"<<final_value_R;
