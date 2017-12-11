@@ -730,6 +730,7 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
     for(size_t i=0;i<points_on.size();i++)
     {
+
         Vector point(3,0.0);
         point=points_on[i];
 

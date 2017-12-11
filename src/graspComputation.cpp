@@ -489,6 +489,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 
             Matrix H=euler2dcm(poseR.subVector(3,5));
             cos_zr=abs(H(2,2));
+            cos_xr=1- abs(H(0,2)) * abs(H(0,2));
 
             yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
 
@@ -503,6 +504,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
             Matrix H=euler2dcm(poseL.subVector(3,5));
             cos_zl=abs(H(2,2));
+            cos_xl=1- abs(H(0,2)) * abs(H(0,2));
 
             yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
 
@@ -718,34 +720,41 @@ void GraspComputation::bestPose()
     double q_r=0.0;
     double q_l=0.0;
 
-    double w1, w2;
+    double w1, w2, w3;
 
-    if (cos_zr <=0.85 && cos_zl<=0.85)
+    if (cos_zr <=0.8 && cos_zl<=0.85)
     {
-        //w1=2.0;
-        w1=1.0;
+        w1=2.0;
+        //w1=1.0;
+        //w1=0.01;
         w2=0.5;
+        w3=1.0;
     }
     else
     {
         w1=1.0;
         w2=2.5;
+        w3=2.5;
         //w2=1.5;
     }
 
 yDebug()<<"final value r"<<final_value_R;
-yDebug()<<"cos nr"<<cos_zr;
+yDebug()<<"cos zr"<<cos_zr;
+yDebug()<<"cos xr"<<cos_xr;
+yDebug()<<"final value r"<<final_value_L;
+yDebug()<<"cos zr"<<cos_zl;
+yDebug()<<"cos xl"<<cos_xl;
 
     if (norm(poseR)!=0.0)
     {
-        cost_right=w1*final_value_R + w2*cos_zr;
+        cost_right=w1*final_value_R + w2*cos_zr + w3*cos_xr;
     }
     else
         cost_right=0.0;
 
     if (norm(poseL)!=0.0)
     {
-        cost_left=w1*final_value_L + w2*cos_zl;
+        cost_left=w1*final_value_L + w2*cos_zl + w3*cos_xl;
     }
     else
         cost_left=0.0;
