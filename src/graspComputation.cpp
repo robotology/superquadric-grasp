@@ -18,14 +18,13 @@ using namespace yarp::math;
 /***********************************************************************/
 GraspComputation::GraspComputation(const Property &_ipopt_par, const Property &_pose_par,
                                    const Property &_trajectory_par, const string &_left_or_right,
-                                    Vector &_hand, Vector &_hand1, ResourceFinder *_rf,
-                                   Property &_complete_sol, const Vector &_object, const deque<Vector> &_obstacles, double &_cost_right, double &_cost_left, bool &_multiple_superq):
-                                   ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par),
-                                   left_right(_left_or_right), hand(_hand), hand1(_hand1), rf(_rf), multiple_superq(_multiple_superq),
-                                   complete_sol(_complete_sol), object(_object), obstacles(_obstacles),cost_right(_cost_right), cost_left(_cost_left)
+                                   Vector &_hand, Vector &_hand1, ResourceFinder *_rf,Property &_complete_sol,
+                                   const Vector &_object, const deque<Vector> &_obstacles, double &_cost_right, double &_cost_left, bool &_multiple_superq):
+                                   ipopt_par(_ipopt_par), pose_par(_pose_par), trajectory_par(_trajectory_par), left_right(_left_or_right), hand(_hand),
+                                   hand1(_hand1), rf(_rf), multiple_superq(_multiple_superq), complete_sol(_complete_sol), object(_object), obstacles(_obstacles),
+                                   cost_right(_cost_right), cost_left(_cost_left)
 
 {
-
 }
 
 /***********************************************************************/
@@ -217,7 +216,6 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
     }
 
     int points=newOptions.find("n_pointshand").asInt();
-
     if (newOptions.find("n_pointshand").isNull() && (first_time==true))
     {
         n_pointshand=46;
@@ -253,13 +251,9 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
         tmp[2]=disp->get(2).asDouble();
 
         displacement=tmp;
-
     }
 
     Bottle *pl=newOptions.find("plane").asList();
-
-    yDebug()<<"PLANE "<<pl->toString();
-
     if (newOptions.find("plane").isNull() && (first_time==true))
     {
         plane[0]=0.0; plane[1]=0.0; plane[2]=1.0; plane[3]=0.3;
@@ -289,17 +283,17 @@ Property GraspComputation::getPosePar()
 
     Property advOptions;
     advOptions.put("n_pointshand",n_pointshand);
-    Bottle planed;
-    Bottle &pd=planed.addList();
-    pd.addDouble(displacement[0]); pd.addDouble(displacement[1]);
-    pd.addDouble(displacement[2]);
-    advOptions.put("hand_displacement",planed.get(0));
+    Bottle displValue;
+    Bottle &disp_bottle=displValue.addList();
+    disp_bottle.addDouble(displacement[0]); disp_bottle.addDouble(displacement[1]);
+    disp_bottle.addDouble(displacement[2]);
+    advOptions.put("hand_displacement",displValue.get(0));
 
-    Bottle planeb;
-    Bottle &p2=planeb.addList();
-    p2.addDouble(plane[0]); p2.addDouble(plane[1]);
-    p2.addDouble(plane[2]); p2.addDouble(plane[3]);
-    advOptions.put("plane", planeb.get(0));
+    Bottle planeValue;
+    Bottle &plane_bottle=planeValue.addList();
+    plane_bottle.addDouble(plane[0]); plane_bottle.addDouble(plane[1]);
+    plane_bottle.addDouble(plane[2]); plane_bottle.addDouble(plane[3]);
+    advOptions.put("plane", planeValue.get(0));
 
     return advOptions;
 }
@@ -310,7 +304,6 @@ void GraspComputation::setTrajectoryPar(const Property &newOptions, bool first_t
     LockGuard lg(mutex);
 
     double dist=newOptions.find("distance_on_x").asDouble();
-
     if (newOptions.find("distance_on_x").isNull() && (first_time==true))
     {
         distance=0.13;
@@ -332,7 +325,6 @@ void GraspComputation::setTrajectoryPar(const Property &newOptions, bool first_t
     }
 
     dist=newOptions.find("distance_on_z").asDouble();
-
     if (newOptions.find("distance_on_z").isNull() && (first_time==true))
     {
         distance1=0.05;
@@ -546,7 +538,7 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
     else
         pose=poseL;
 
-    Vector pose1(6,0.0);
+    Vector pose_rot(6,0.0);
     Vector euler(3,0.0);
     euler[0]=pose[3];
     euler[1]=pose[4];
@@ -558,30 +550,30 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
     euler[2]=pose[2];
     H.setSubcol(euler,0,3);
 
-    pose1=pose;
+    pose_rot=pose;
 
     if (direction=="z")
     {
         if (chosen_hand=="right")
         {
-            pose1.setSubvector(0,pose.subVector(0,2)-distance*(H.getCol(2).subVector(0,2)));
+            pose_rot.setSubvector(0,pose.subVector(0,2)-distance*(H.getCol(2).subVector(0,2)));
         }
         else
         {
-            pose1.setSubvector(0,pose.subVector(0,2)+distance*(H.getCol(2).subVector(0,2)));
+            pose_rot.setSubvector(0,pose.subVector(0,2)+distance*(H.getCol(2).subVector(0,2)));
         }
     }
     else if (direction=="xz")
     {
         if (chosen_hand=="right")
         {
-            pose1.setSubvector(0,pose.subVector(0,2)-distance1*(H.getCol(2).subVector(0,2)));
-            pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
+            pose_rot.setSubvector(0,pose.subVector(0,2)-distance1*(H.getCol(2).subVector(0,2)));
+            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
         }
         else
         {
-            pose1.setSubvector(0,pose.subVector(0,2)+distance1*(H.getCol(2).subVector(0,2)));
-            pose1.setSubvector(0,pose1.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
+            pose_rot.setSubvector(0,pose.subVector(0,2)+distance1*(H.getCol(2).subVector(0,2)));
+            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
         }
     }
 
@@ -590,7 +582,7 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
         trajectory_right.clear();
 
         pose.setSubvector(0,pose.subVector(0,2));
-        trajectory_right.push_back(pose1);
+        trajectory_right.push_back(pose_rot);
         trajectory_right.push_back(pose);
     }
     else
@@ -598,7 +590,7 @@ bool GraspComputation::computeTrajectory(const string &chosen_hand, const string
         trajectory_left.clear();
 
         pose.setSubvector(0,pose.subVector(0,2));
-        trajectory_left.push_back(pose1);
+        trajectory_left.push_back(pose_rot);
         trajectory_left.push_back(pose);
     }
 
@@ -629,24 +621,24 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 
     if ((l_o_r=="right") || (l_o_r=="both"))
     {
-        Bottle &bright2=bottle.addList();
+        Bottle &bottle_right_pose=bottle.addList();
         for (size_t i=0; i<poseR.size(); i++)
         {
-            bright2.addDouble(poseR[i]);
+            bottle_right_pose.addDouble(poseR[i]);
         }
         poses.put("pose_right", bottle.get(0));
 
-        Bottle &bright1=bottle.addList();
+        Bottle &bottle_right_sol=bottle.addList();
         for (size_t i=0; i<solR.size(); i++)
         {
-            bright1.addDouble(solR[i]);
+            bottle_right_sol.addDouble(solR[i]);
         }
         poses.put("solution_right", bottle.get(1));
 
-        Bottle &bright3=bottle.addList();
+        Bottle &bottle_right_traj=bottle.addList();
         for (size_t i=0; i<trajectory_right.size(); i++)
         {
-            Bottle &bb=bright3.addList();
+            Bottle &bb=bottle_right_traj.addList();
             for (size_t j=0; j<trajectory_right[i].size();j++)
                 bb.addDouble(trajectory_right[i][j]);
         }
@@ -655,24 +647,24 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 
     if (l_o_r=="both")
     {
-        Bottle &bleft2=bottle.addList();
+        Bottle &bottle_left_pose=bottle.addList();
         for (size_t i=0; i<poseL.size(); i++)
         {
-            bleft2.addDouble(poseL[i]);
+            bottle_left_pose.addDouble(poseL[i]);
         }
         poses.put("pose_left", bottle.get(3));
 
-        Bottle &bleft1=bottle.addList();
+        Bottle &bottle_left_sol=bottle.addList();
         for (size_t i=0; i<solL.size(); i++)
         {
-            bleft1.addDouble(solL[i]);
+            bottle_left_sol.addDouble(solL[i]);
         }
         poses.put("solution_left", bottle.get(4));
 
-        Bottle &bright3=bottle.addList();
+        Bottle &bottle_left_traj=bottle.addList();
         for (size_t i=0; i<trajectory_left.size(); i++)
         {
-            Bottle &bb=bright3.addList();
+            Bottle &bb=bottle_left_traj.addList();
             for (size_t j=0; j<trajectory_left[i].size();j++)
                 bb.addDouble(trajectory_left[i][j]);
         }
@@ -680,24 +672,24 @@ Property GraspComputation::fillProperty(const string &l_o_r)
     }
     if (l_o_r=="left")
     {
-        Bottle &bleft2=bottle.addList();
+        Bottle &bottle_left_pose=bottle.addList();
         for (size_t i=0; i<poseL.size(); i++)
         {
-            bleft2.addDouble(poseL[i]);
+            bottle_left_pose.addDouble(poseL[i]);
         }
         poses.put("pose_left", bottle.get(0));
 
-        Bottle &bleft1=bottle.addList();
+        Bottle &bottle_left_sol=bottle.addList();
         for (size_t i=0; i<solL.size(); i++)
         {
-            bleft1.addDouble(solL[i]);
+            bottle_left_sol.addDouble(solL[i]);
         }
         poses.put("solution_left", bottle.get(1));
 
-        Bottle &bright3=bottle.addList();
+        Bottle &bottle_left_traj=bottle.addList();
         for (size_t i=0; i<trajectory_left.size(); i++)
         {
-            Bottle &bb=bright3.addList();
+            Bottle &bb=bottle_left_traj.addList();
             for (size_t j=0; j<trajectory_left[i].size();j++)
                 bb.addDouble(trajectory_left[i][j]);
         }
@@ -724,7 +716,7 @@ void GraspComputation::bestPose()
 
     if (!multiple_superq)
     {
-        if (cos_zr <=0.8 && cos_zl<=0.85)
+        if ((cos_zr <=0.8) && (cos_zl<=0.85))
         {
             w1=2.0;
             //w1=1.0;
@@ -742,7 +734,7 @@ void GraspComputation::bestPose()
     }
     else
     {
-        if (cos_zr <=0.8 && cos_zl<=0.85)
+        if ((cos_zr <=0.8) && (cos_zl<=0.85))
         {
             //w1=2.0;
             //w1=1.0;
@@ -759,12 +751,12 @@ void GraspComputation::bestPose()
         }
     }
 
-yDebug()<<"final value r"<<final_value_R;
-yDebug()<<"cos zr"<<cos_zr;
-yDebug()<<"cos xr"<<cos_xr;
-yDebug()<<"final value r"<<final_value_L;
-yDebug()<<"cos zr"<<cos_zl;
-yDebug()<<"cos xl"<<cos_xl;
+    yDebug()<<"final value r"<<final_value_R;
+    yDebug()<<"cos zr"<<cos_zr;
+    yDebug()<<"cos xr"<<cos_xr;
+    yDebug()<<"final value r"<<final_value_L;
+    yDebug()<<"cos zr"<<cos_zl;
+    yDebug()<<"cos xl"<<cos_xl;
 
     if (norm(poseR)!=0.0)
     {

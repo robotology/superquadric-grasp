@@ -155,7 +155,6 @@ protected:
     yarp::os::Property ipopt_par;
     yarp::os::Property movement_par;
     yarp::os::Property complete_sol;
-    yarp::os::Property complete_sol2;
     std::deque<yarp::os::Property> complete_sols;
 
     double cost_right, cost_left;

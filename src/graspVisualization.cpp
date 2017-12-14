@@ -51,21 +51,21 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
     imgInMat.copyTo(imgOutMat);
 
-    PixelRgb color(255,255,0);
+    double length=0.04;
 
-    Vector waypoint(6,0.0);
-    Vector waypoint2D(2,0.0);
+    PixelRgb color(255,255,0);
 
     Vector x(3,0.0);
     Vector y(3,0.0);
-    Vector z(3,0.0);
-    double length=0.04;
-    Vector dir_x(3,0.0);
-    Vector dir_y(3,0.0);
-    Vector dir_z(3,0.0);
+    Vector z(3,0.0);   
     Vector x2D(2,0.0);
     Vector y2D(2,0.0);
     Vector z2D(2,0.0);
+    Vector dir_x(3,0.0);
+    Vector dir_y(3,0.0);
+    Vector dir_z(3,0.0);
+    Vector waypoint(6,0.0);
+    Vector waypoint2D(2,0.0);
 
     if (norm(object)>0.0)
         addSuperq(object,imgOut,255);
@@ -342,16 +342,17 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
     cv::Mat imgOutMat=cv::cvarrToMat((IplImage*)imgOut.getIplImage());
 
     int widthHist;
+
     if (best_scenario!=-1)
         widthHist=imgOut.height()/(6*cost_vis_r.size());
     else
         widthHist=imgOut.height()/(10*cost_vis_r.size());
-    int maxHeight=(int)(imgOut.width()*0.7);
-    int minHeight=0;
 
-
-    int classHeight;
     int j=0;
+    int minHeight=0;
+    int classHeight;
+    int maxHeight=(int)(imgOut.width()*0.7);
+
     double max_cost=0.0;
 
     cv::Mat imgConfMat=cv::cvarrToMat(imgOut.getIplImage());
@@ -392,8 +393,6 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
             cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
             color_right,CV_FILLED);
 
-            cv::Mat textImg=cv::Mat::zeros(imgOut.width(),imgOut.height(),CV_8UC3);
-
             q_r<<round(cost_vis_r[k]*100)/100;
             cv::putText(imgOutMat,"R-"+kss.str(),cv::Point(3,(j+1)*widthHist-widthHist/3),
             cv::FONT_HERSHEY_DUPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
@@ -408,8 +407,6 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
             cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
             cv::Scalar(235,0,0),CV_FILLED);
 
-            cv::Mat textImg=cv::Mat::zeros(imgOut.width(),imgOut.height(),CV_8UC3);
-
             q_r<<round(cost_vis_r[k]*100)/100;
             cv::putText(imgOutMat,"R-"+kss.str(),cv::Point(3,(j+1)*widthHist-widthHist/3),
             cv::FONT_HERSHEY_DUPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
@@ -421,8 +418,7 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
         j++;
 
         if (cost_vis_l[k]>0.0)
-        {
-        
+        {       
             classHeight=std::max(minHeight+30,(int)(maxHeight*cost_vis_l[k]/max_cost)+30);
 
             if (best_scenario != -1)
@@ -437,8 +433,6 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
             cv::rectangle(imgConfMat,cv::Point(classHeight,j*widthHist),cv::Point(minHeight,(j+1)*widthHist),
             color_left,CV_FILLED);
 
-            //textImg=cv::Mat::zeros(imgOut.height(),imgOut.width(),CV_8UC3);
-
             q_l<<round(cost_vis_l[k]*100)/100;
             cv::putText(imgOutMat,"L-"+kss.str(),cv::Point(3,(j+1)*widthHist-widthHist/3),
             cv::FONT_HERSHEY_DUPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
@@ -452,9 +446,6 @@ void GraspVisualization::showHistogram( ImageOf<PixelRgb> &imgOut)
             cv::rectangle(imgConfMat, cv::Point(classHeight,j*widthHist), cv::Point(minHeight,(j+1)*widthHist),
             cv::Scalar(235,0,0),CV_FILLED);
 
-            cv::Mat textImg=cv::Mat::zeros(imgOut.width(),imgOut.height(),CV_8UC3);
-
-            
             cv::putText(imgOutMat,"L-"+kss.str(),cv::Point(3,(j+1)*widthHist-widthHist/3),
             cv::FONT_HERSHEY_DUPLEX,0.35,cv::Scalar(0,20,0),1, cv::LINE_AA);
 
@@ -542,12 +533,10 @@ bool GraspVisualization::threadInit()
     point.resize(3,0.0);
     point1.resize(3,0.0);
     superq.resize(11,0.0);
-
     poseR.resize(6,0.0);
     poseL.resize(6,0.0);
     solR.resize(6,0.0);
     solL.resize(6,0.0);
-
     hand_in_poseR.resize(11,0.0);
     hand_in_poseL.resize(11,0.0);
 
@@ -598,7 +587,6 @@ void GraspVisualization::run()
     Vector shift_rot(3,0.0);
     shift_rot[1]=0.2;
 
-
     if ((norm(object)>0.0) && (look_object==true) && (executed==false))
     {
         Vector obj_shift(3,0.0);
@@ -623,63 +611,60 @@ void GraspVisualization::getPoses(const deque<Property> &p)
     for (size_t i=0; i<p.size(); i++)
     {
         Property poses=p[i];
-        Bottle &pose2=poses.findGroup("trajectory_right");
+        Bottle &bottle_right_poses=poses.findGroup("trajectory_right");
 
-        if (!pose2.isNull())
+        if (!bottle_right_poses.isNull())
         {
-            Bottle *p=pose2.get(1).asList();
+            Bottle *p=bottle_right_poses.get(1).asList();
             for (size_t i=0; i<p->size(); i++)
             {
-                Bottle *p1=p->get(i).asList();
+                Bottle *bottle_right_pose=p->get(i).asList();
 
 
-                for (size_t j=0; j<p1->size(); j++)
+                for (size_t j=0; j<bottle_right_pose->size(); j++)
                 {
-                    tmp[j]=p1->get(j).asDouble();
+                    tmp[j]=bottle_right_pose->get(j).asDouble();
                 }
 
                 trajectory_right.push_back(tmp);
             }
         }
 
-        Bottle &pose3=poses.findGroup("trajectory_left");
+        Bottle &bottle_left_poses=poses.findGroup("trajectory_left");
 
-        if (!pose3.isNull())
+        if (!bottle_left_poses.isNull())
         {
-            Bottle *p=pose3.get(1).asList();
+            Bottle *p=bottle_left_poses.get(1).asList();
             for (size_t i=0; i<p->size(); i++)
             {
-                Bottle *p1=p->get(i).asList();
+                Bottle *bottle_left_pose=p->get(i).asList();
 
-
-                for (size_t j=0; j<p1->size(); j++)
+                for (size_t j=0; j<bottle_left_pose->size(); j++)
                 {
-                    tmp[j]=p1->get(j).asDouble();
+                    tmp[j]=bottle_left_pose->get(j).asDouble();
                 }
                 trajectory_left.push_back(tmp);
             }
         }
 
-        Bottle &pose=poses.findGroup("solution_right");
-        if (!pose.isNull())
+        Bottle &bottle_sol_right=poses.findGroup("solution_right");
+        if (!bottle_sol_right.isNull())
         {
-            Bottle *p=pose.get(1).asList();
+            Bottle *p=bottle_sol_right.get(1).asList();
 
             for (size_t i=0; i<p->size(); i++)
                 solR[i]=p->get(i).asDouble();
         }
 
-        Bottle &pose1=poses.findGroup("solution_left");
-        if (!pose1.isNull())
+        Bottle &bottle_sol_left=poses.findGroup("solution_left");
+        if (!bottle_sol_left.isNull())
         {
-            Bottle *p=pose1.get(1).asList();
+            Bottle *p=bottle_sol_left.get(1).asList();
 
             for (size_t i=0; i<p->size(); i++)
                 solL[i]=p->get(i).asDouble();
         }
     }
-
-
 }
 
 /***********************************************************************/

@@ -63,7 +63,7 @@ public:
     yarp::sig::Vector robot_pose;
     /** Variable for setting hand of interest */
     std::string l_o_r;
-    double tmp_value;
+    double final_F_value;
     int num_superq;
     int max_superq;
 
@@ -270,32 +270,22 @@ public:
                           Ipopt::IpoptCalculatedQuantities *ip_cq);
 
    /** Extract the solution
-    * @return the superquadric as a Vector
-    */
+   * @return the superquadric as a Vector
+   */
    /****************************************************************/
    yarp::sig::Vector get_result() const;
 
    /** Get the hand ellipsoid pose
-    * @return the hand ellipsoid in the final pose
-    */
+   * @return the hand ellipsoid in the final pose
+   */
    /****************************************************************/
    yarp::sig::Vector get_hand() const;
 
+   /** Return the final cost function of the solution
+   *@return a double value of the final cost function
+   */
    /****************************************************************/
    double get_final_F() const;
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
 
 
