@@ -51,26 +51,21 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
     imgInMat.copyTo(imgOutMat);
 
     PixelRgb color(255,255,0);
-
-    Vector waypoint(6,0.0);
-    Vector waypoint2D(2,0.0);
+    double length=0.04;
 
     Vector x(3,0.0);
     Vector y(3,0.0);
-    Vector z(3,0.0);
-    double length=0.04;
-    Vector dir_x(3,0.0);
-    Vector dir_y(3,0.0);
-    Vector dir_z(3,0.0);
+    Vector z(3,0.0);  
     Vector x2D(2,0.0);
     Vector y2D(2,0.0);
     Vector z2D(2,0.0);  
+    Vector dir_x(3,0.0);
+    Vector dir_y(3,0.0);
+    Vector dir_z(3,0.0);
+    Vector waypoint(6,0.0);
+    Vector waypoint2D(2,0.0);
 
     addSuperq(object,imgOut,255);
-
-     //if (show_hand)
-    //yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
-    //        addSuperq(hand_in_poseR,imgOut,0);
 
     if (trajectory_right.size()>0 || trajectory_left.size()>0)
     {
@@ -81,7 +76,6 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             hand_in_poseR.setSubvector(0,hand);
             hand_in_poseR.setSubvector(5,solR);
 
-            yDebug()<<"Hand in pose R"<<hand_in_poseR.toString();
             if (show_hand)
                 addSuperq(hand_in_poseR,imgOut,0);
 
@@ -223,35 +217,29 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             q_l<<round( quality_left * 100.0 ) / 100.0;
 
             stringstream right, left;
-            right<<"cost right";
-            left<<"cost left";
 
             int thickness=2.0;
             int font=cv::FONT_HERSHEY_SIMPLEX;
             double fontScale=0.5;
 
-            cv::Scalar red(230,0,0);
-            cv::Scalar blue(0,240,0);
-
-            cv::Scalar iol_green(22,88,248);
-            cv::Scalar iol_red(244,16, 46);
+            cv::Scalar green(22,88,248);
+            cv::Scalar red(244,16, 46);
 
             if ((quality_right<quality_left) && (quality_right!=0.0) && (quality_left!=0.0))
             {
-                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_green, thickness);
-                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_red, thickness);
-                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_green, thickness);
-                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_red, thickness);
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, green, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, red, thickness);
+                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, green, thickness);
+                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, red, thickness);
             }
             else if ((quality_right>quality_left) && (quality_right!=0.0) && (quality_left!=0.0))
             {
-                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, iol_red, thickness);
-                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, iol_green, thickness);
-                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, iol_red, thickness);
-                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, iol_green, thickness);
+                cv::putText(imgOutMat, q_r.str(), cv::Point(200,85), font, fontScale, red, thickness);
+                cv::putText(imgOutMat, q_l.str(), cv::Point(50,85), font, fontScale, green, thickness);
+                cv::putText(imgOutMat, right.str(), cv::Point(200,55), font, fontScale, red, thickness);
+                cv::putText(imgOutMat, left.str(), cv::Point(50,55), font, fontScale, green, thickness);
             }
-        }
-            
+        }            
     }
 
     portImgOut.write();
@@ -373,12 +361,9 @@ bool GraspVisualization::threadInit()
 
     setPar(vis_par, true);
 
-    yDebug()<<"Initial gaze";
     Vector center(3,0.0);
     center[0]= -0.35;
     igaze->lookAtFixationPoint(center);
-
-    //igaze->setTrackingMode(true);
 
     stop_fixate=false;
 
@@ -416,7 +401,6 @@ void GraspVisualization::run()
         Vector obj_shift(3,0.0);
         obj_shift=object.subVector(5,7)+shift_rot;
         look_object=!igaze->lookAtFixationPoint(obj_shift);
-        //igaze->lookAtFixationPoint(obj_shift);
         igaze->setTrackingMode(true);
 
         stop_fixate=false;       
@@ -433,59 +417,59 @@ void GraspVisualization::getPoses(const yarp::os::Property &poses)
     trajectory_right.clear();
     trajectory_left.clear();
 
-    Bottle &pose2=poses.findGroup("trajectory_right");
+    Bottle &bottle_right_poses=poses.findGroup("trajectory_right");
 
-    if (!pose2.isNull())
+    if (!bottle_right_poses.isNull())
     {
-        Bottle *p=pose2.get(1).asList();
-        for (size_t i=0; i<p->size(); i++)
+        Bottle *bottle_right_pose=bottle_right_poses.get(1).asList();
+        for (size_t i=0; i<bottle_right_pose->size(); i++)
         {
-            Bottle *p1=p->get(i).asList();
+            Bottle *bottle_right=bottle_right_pose->get(i).asList();
 
 
-            for (size_t j=0; j<p1->size(); j++)
+            for (size_t j=0; j<bottle_right->size(); j++)
             {
-                tmp[j]=p1->get(j).asDouble();
+                tmp[j]=bottle_right->get(j).asDouble();
             }
 
             trajectory_right.push_back(tmp);
         }
     }
 
-    Bottle &pose3=poses.findGroup("trajectory_left");
+    Bottle &bottle_left_poses=poses.findGroup("trajectory_left");
 
-    if (!pose3.isNull())
+    if (!bottle_left_poses.isNull())
     {
-        Bottle *p=pose3.get(1).asList();
-        for (size_t i=0; i<p->size(); i++)
+        Bottle *bottle_left_pose=bottle_left_poses.get(1).asList();
+        for (size_t i=0; i<bottle_left_pose->size(); i++)
         {
-            Bottle *p1=p->get(i).asList();
+            Bottle *bottle_left=bottle_left_pose->get(i).asList();
 
 
-            for (size_t j=0; j<p1->size(); j++)
+            for (size_t j=0; j<bottle_left->size(); j++)
             {
-                tmp[j]=p1->get(j).asDouble();
+                tmp[j]=bottle_left->get(j).asDouble();
             }
             trajectory_left.push_back(tmp);
         }
     }
 
-    Bottle &pose=poses.findGroup("solution_right");
-    if (!pose.isNull())
+    Bottle &bottle_right_sol=poses.findGroup("solution_right");
+    if (!bottle_right_sol.isNull())
     {
-        Bottle *p=pose.get(1).asList();
+        Bottle *right_sol=bottle_right_sol.get(1).asList();
 
-        for (size_t i=0; i<p->size(); i++)
-            solR[i]=p->get(i).asDouble();
+        for (size_t i=0; i<right_sol->size(); i++)
+            solR[i]=right_sol->get(i).asDouble();
     }
 
-    Bottle &pose1=poses.findGroup("solution_left");
-    if (!pose1.isNull())
+    Bottle &bottle_left_sol=poses.findGroup("solution_left");
+    if (!bottle_left_sol.isNull())
     {
-        Bottle *p=pose1.get(1).asList();
+        Bottle *left_sol=bottle_left_sol.get(1).asList();
 
-        for (size_t i=0; i<p->size(); i++)
-            solL[i]=p->get(i).asDouble();
+        for (size_t i=0; i<left_sol->size(); i++)
+            solL[i]=left_sol->get(i).asDouble();
     }
 }
 

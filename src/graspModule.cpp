@@ -58,8 +58,6 @@ bool GraspingModule::clear_poses()
 /**********************************************************************/
 Property GraspingModule::get_grasping_pose(const Property &estimated_superq, const string &hand_str)
 {
-    //LockGuard lg(mutex);
-
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
     if (!estimated_superq.find("dimensions").isNull())
@@ -447,87 +445,89 @@ bool GraspingModule::configMovements(ResourceFinder &rf)
     movement_par.put("use_direct_kin", use_direct_kin);
     movement_par.put("pixel_tol", pixel_tol);
 
-    Bottle planed;
-    Bottle &pd=planed.addList();
-    pd.addDouble(shift_right[0]); pd.addDouble(shift_right[1]);
-    pd.addDouble(shift_right[2]);
-    movement_par.put("shift_right",planed.get(0));
-    Bottle planed2;
-    Bottle &pd2=planed2.addList();
-    pd2.addDouble(shift_left[0]); pd2.addDouble(shift_left[1]);
-    pd2.addDouble(shift_left[2]);
-    movement_par.put("shift_left",planed2.get(0));
-    Bottle planeb;
-    Bottle &p2=planeb.addList();
-    p2.addDouble(home_right[0]); p2.addDouble(home_right[1]);
-    p2.addDouble(home_right[2]); p2.addDouble(home_right[3]);
-    p2.addDouble(home_right[4]); p2.addDouble(home_right[5]);p2.addDouble(home_right[6]);
-    movement_par.put("home_right", planeb.get(0));
+    Bottle shift_r;
+    Bottle &bottle_shift_r=shift_r.addList();
+    bottle_shift_r.addDouble(shift_right[0]); bottle_shift_r.addDouble(shift_right[1]);
+    bottle_shift_r.addDouble(shift_right[2]);
+    movement_par.put("shift_right",shift_r.get(0));
 
-    Bottle planebl;
-    Bottle &p2l=planebl.addList();
-    p2l.addDouble(home_left[0]); p2l.addDouble(home_left[1]);
-    p2l.addDouble(home_left[2]); p2l.addDouble(home_left[3]);
-    p2l.addDouble(home_left[4]); p2l.addDouble(home_left[5]);p2l.addDouble(home_left[6]);
-    movement_par.put("home_left", planebl.get(0));
+    Bottle shift_l;
+    Bottle &bottle_shift_l=shift_l.addList();
+    bottle_shift_l.addDouble(shift_left[0]); bottle_shift_l.addDouble(shift_left[1]);
+    bottle_shift_l.addDouble(shift_left[2]);
+    movement_par.put("shift_left",shift_l.get(0));
 
-    Bottle planebask_r;
-    Bottle &pk=planebask_r.addList();
-    pk.addDouble(basket_right[0]); pk.addDouble(basket_right[1]);
-    pk.addDouble(basket_right[2]); pk.addDouble(basket_right[3]);
-    pk.addDouble(basket_right[4]); pk.addDouble(basket_right[5]);pk.addDouble(basket_right[6]);
-    movement_par.put("basket_right", planebask_r.get(0));
+    Bottle home_r;
+    Bottle &bottle_home_r=home_r.addList();
+    bottle_home_r.addDouble(home_right[0]); bottle_home_r.addDouble(home_right[1]);
+    bottle_home_r.addDouble(home_right[2]); bottle_home_r.addDouble(home_right[3]);
+    bottle_home_r.addDouble(home_right[4]); bottle_home_r.addDouble(home_right[5]);bottle_home_r.addDouble(home_right[6]);
+    movement_par.put("home_right", home_r.get(0));
 
-    Bottle planebask_l;
-    Bottle &pk2=planebask_l.addList();
-    pk2.addDouble(basket_left[0]); pk2.addDouble(basket_left[1]);
-    pk2.addDouble(basket_left[2]); pk2.addDouble(basket_left[3]);
-    pk2.addDouble(basket_left[4]); pk2.addDouble(basket_left[5]);pk2.addDouble(basket_left[6]);
-    movement_par.put("basket_left", planebask_l.get(0));
+    Bottle home_l;
+    Bottle &bottle_home_l=home_l.addList();
+    bottle_home_l.addDouble(home_left[0]); bottle_home_l.addDouble(home_left[1]);
+    bottle_home_l.addDouble(home_left[2]); bottle_home_l.addDouble(home_left[3]);
+    bottle_home_l.addDouble(home_left[4]); bottle_home_l.addDouble(home_left[5]);bottle_home_l.addDouble(home_left[6]);
+    movement_par.put("home_left", home_l.get(0));
 
-    Bottle planestiff_r;
-    Bottle &ps=planestiff_r.addList();
-    ps.addDouble(stiff_right[0]); ps.addDouble(stiff_right[1]);
-    ps.addDouble(stiff_right[2]); ps.addDouble(stiff_right[3]);
-    ps.addDouble(stiff_right[4]);
-    movement_par.put("stiff_right", planestiff_r.get(0));
+    Bottle bask_r;
+    Bottle &bottle_bask_r=bask_r.addList();
+    bottle_bask_r.addDouble(basket_right[0]); bottle_bask_r.addDouble(basket_right[1]);
+    bottle_bask_r.addDouble(basket_right[2]); bottle_bask_r.addDouble(basket_right[3]);
+    bottle_bask_r.addDouble(basket_right[4]); bottle_bask_r.addDouble(basket_right[5]);bottle_bask_r.addDouble(basket_right[6]);
+    movement_par.put("basket_right", bask_r.get(0));
 
-    Bottle planestiff_l;
-    Bottle &ps2=planestiff_l.addList();
-    ps2.addDouble(stiff_left[0]); ps2.addDouble(stiff_left[1]);
-    ps2.addDouble(stiff_left[2]); ps2.addDouble(stiff_left[3]);
-    ps2.addDouble(stiff_left[4]);
-    movement_par.put("stiff_left", planestiff_l.get(0));
+    Bottle bask_l;
+    Bottle &bottle_bask_l=bask_l.addList();
+    bottle_bask_l.addDouble(basket_left[0]); bottle_bask_l.addDouble(basket_left[1]);
+    bottle_bask_l.addDouble(basket_left[2]); bottle_bask_l.addDouble(basket_left[3]);
+    bottle_bask_l.addDouble(basket_left[4]); bottle_bask_l.addDouble(basket_left[5]);bottle_bask_l.addDouble(basket_left[6]);
+    movement_par.put("basket_left", bask_l.get(0));
 
-    Bottle planedamp_r;
-    Bottle &pdamp=planedamp_r.addList();
-    pdamp.addDouble(damp_right[0]); pdamp.addDouble(damp_right[1]);
-    pdamp.addDouble(damp_right[2]); pdamp.addDouble(damp_right[3]);
-    pdamp.addDouble(damp_right[4]);
-    movement_par.put("damp_right", planedamp_r.get(0));
+    Bottle stiff_r;
+    Bottle &bottle_stiff_r=stiff_r.addList();
+    bottle_stiff_r.addDouble(stiff_right[0]); bottle_stiff_r.addDouble(stiff_right[1]);
+    bottle_stiff_r.addDouble(stiff_right[2]); bottle_stiff_r.addDouble(stiff_right[3]);
+    bottle_stiff_r.addDouble(stiff_right[4]);
+    movement_par.put("stiff_right", stiff_r.get(0));
 
-    Bottle planedamp_l;
-    Bottle &pdamp2=planedamp_l.addList();
-    pdamp2.addDouble(damp_left[0]); pdamp2.addDouble(damp_left[1]);
-    pdamp2.addDouble(damp_left[2]); pdamp2.addDouble(damp_left[3]);
-    pdamp2.addDouble(damp_left[4]);
-    movement_par.put("damp_left", planedamp_l.get(0));
+    Bottle stiff_l;
+    Bottle &bottle_stiff_l=stiff_l.addList();
+    bottle_stiff_l.addDouble(stiff_left[0]); bottle_stiff_l.addDouble(stiff_left[1]);
+    bottle_stiff_l.addDouble(stiff_left[2]); bottle_stiff_l.addDouble(stiff_left[3]);
+    bottle_stiff_l.addDouble(stiff_left[4]);
+    movement_par.put("stiff_left", stiff_l.get(0));
+
+    Bottle damp_r;
+    Bottle &bottle_damp_r=damp_r.addList();
+    bottle_damp_r.addDouble(damp_right[0]); bottle_damp_r.addDouble(damp_right[1]);
+    bottle_damp_r.addDouble(damp_right[2]); bottle_damp_r.addDouble(damp_right[3]);
+    bottle_damp_r.addDouble(damp_right[4]);
+    movement_par.put("damp_right", damp_r.get(0));
+
+    Bottle damp_l;
+    Bottle &bottle_damp_l=damp_l.addList();
+    bottle_damp_l.addDouble(damp_left[0]); bottle_damp_l.addDouble(damp_left[1]);
+    bottle_damp_l.addDouble(damp_left[2]); bottle_damp_l.addDouble(damp_left[3]);
+    bottle_damp_l.addDouble(damp_left[4]);
+    movement_par.put("damp_left", damp_l.get(0));
 
     executed=true;
     hand_to_move="right";
 
-    yInfo()<<"[GraspExecution] lift_z:        "<<lift_z;
-    yInfo()<<"[GraspExecution] force_threshold: "<<force_threshold;
-    yInfo()<<"[GraspExecution] shift_right:   "<<shift_right.toString(3,3);
-    yInfo()<<"[GraspExecution] shift_left:    "<<shift_left.toString(3,3);
-    yInfo()<<"[GraspExecution] home_right:    "<<home_right.toString(3,3);
-    yInfo()<<"[GraspExecution] home_left:     "<<home_left.toString(3,3);
-    yInfo()<<"[GraspExecution] basket_right:  "<<basket_right.toString(3,3);
-    yInfo()<<"[GraspExecution] basket_left:   "<<basket_left.toString(3,3);
-    yInfo()<<"[GraspExecution] stiff_right:   "<<stiff_right.toString(3,3);
-    yInfo()<<"[GraspExecution] stiff_left:    "<<stiff_left.toString(3,3);
-    yInfo()<<"[GraspExecution] damp_right:    "<<damp_right.toString(3,3);
-    yInfo()<<"[GraspExecution] damp_left:     "<<damp_left.toString(3,3);
+    yInfo()<<"[GraspingModule] lift_z:        "<<lift_z;
+    yInfo()<<"[GraspingModule] force_threshold: "<<force_threshold;
+    yInfo()<<"[GraspingModule] shift_right:   "<<shift_right.toString(3,3);
+    yInfo()<<"[GraspingModule] shift_left:    "<<shift_left.toString(3,3);
+    yInfo()<<"[GraspingModule] home_right:    "<<home_right.toString(3,3);
+    yInfo()<<"[GraspingModule] home_left:     "<<home_left.toString(3,3);
+    yInfo()<<"[GraspingModule] basket_right:  "<<basket_right.toString(3,3);
+    yInfo()<<"[GraspingModule] basket_left:   "<<basket_left.toString(3,3);
+    yInfo()<<"[GraspingModule] stiff_right:   "<<stiff_right.toString(3,3);
+    yInfo()<<"[GraspingModule] stiff_left:    "<<stiff_left.toString(3,3);
+    yInfo()<<"[GraspingModule] damp_right:    "<<damp_right.toString(3,3);
+    yInfo()<<"[GraspingModule] damp_left:     "<<damp_left.toString(3,3);
 
     return true;
 }
@@ -574,9 +574,7 @@ bool GraspingModule::interruptModule()
 
 /****************************************************************/
 bool GraspingModule::updateModule()
-{    
-    //LockGuard lg(mutex);
-
+{
     if (visualization)
     {
         if (times_vis.size()<10)
@@ -599,7 +597,7 @@ bool GraspingModule::updateModule()
         graspExec->getPoses(complete_sol);
         executed_var=executed=graspExec->executeTrajectory(hand_to_move);
 
-        yDebug()<<"executed_var"<<executed_var;
+        yDebug()<<"[GraspingModule] Movement executed :"<<executed_var;
     }
 
     if (save_poses && (graspComp->count_file == graspComp->count_file_old))
@@ -643,13 +641,13 @@ bool GraspingModule::configViewer(ResourceFinder &rf)
 
     igaze->setSaccadesMode(false);
 
-    yDebug()<<"Blocking eyes..."<<block_eye;
+    yDebug()<<"[GraspingModule]: Blocking eyes..."<<block_eye;
     igaze->blockEyes(block_eye);
-    yDebug()<<"Done: "<<igaze->waitMotionDone(2.0);
+    yDebug()<<"[GraspingModule]: Done: "<<igaze->waitMotionDone(2.0);
 
-    yDebug()<<"Blocking roll..."<<block_neck;
+    yDebug()<<"[GraspingModule]: Blocking roll..."<<block_neck;
     igaze->blockNeckRoll(block_neck);
-    yDebug()<<"Done: "<<igaze->waitMotionDone(2.0);
+    yDebug()<<"[GraspingModule]: Done: "<<igaze->waitMotionDone(2.0);
 
     Bottle info;
     igaze->getInfo(info);
@@ -697,12 +695,11 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     }
 
     readSuperq("displacement",displacement,3,this->rf);
-    yDebug()<<"displacement "<<displacement.toString(3,3);
     readSuperq("plane",plane,4,this->rf);
 
     if (plane.size()==0 && displacement.size()==0)
     {
-        yError()<<"No plane and displacement provided!";
+        yError()<<"[GraspingModule]: No plane and displacement provided!";
         return false;
     }
 
@@ -792,9 +789,9 @@ bool GraspingModule::configure(ResourceFinder &rf)
         bool thread_started=graspVis->start();
 
         if (thread_started)
-            yInfo()<<"[GraspVisualization]: Thread started!";
+            yInfo()<<"[GraspingModule]: Visualization hread started!";
         else
-            yError()<<"[GraspVisualization]: Problems in starting the thread!";
+            yError()<<"[GraspingModule]: Problems in starting the visualization thread!";
     }
     else
     {

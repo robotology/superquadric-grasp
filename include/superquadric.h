@@ -63,7 +63,7 @@ public:
     yarp::sig::Vector robot_pose;
     /** Variable for setting hand of interest */
     std::string l_o_r;
-    double tmp_value;
+    double final_F_value;
 
     /** Initialization function
     * @param objectext is the object superquadric
