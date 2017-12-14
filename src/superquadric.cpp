@@ -88,41 +88,6 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
 }
 
 /****************************************************************/
-void grasping_NLP::checkZbound()
-{
-    Vector obj_rot(3,0.0);
-    Vector aux(4,0.0);
-    Vector aux2(4,0.0);
-
-    aux2[0]=object[0];
-    aux2[3]=1;
-    aux=H_o2w*aux2;
-    obj_rot[0]=norm(aux.subVector(0,2)-object.subVector(5,7));
-
-    aux2[0]=0;
-    aux2[1]=object[1];
-    aux2[3]=1;
-    aux=H_o2w*aux2;
-    obj_rot[1]=norm(aux.subVector(0,2)-object.subVector(5,7));
-
-    aux2[1]=0;
-    aux2[2]=object[2];
-    aux2[3]=1;
-    aux=H_o2w*aux2;
-    obj_rot[2]=norm(aux.subVector(0,2)-object.subVector(5,7));
-
-    if(hand[1]<obj_rot[2])
-        bounds(2,0)=object[7];
-    else
-    {
-        if (findMax(obj_rot)==obj_rot[2])
-            bounds(2,0)=object[7]+hand[1]-obj_rot[2];
-        else
-            bounds(2,0)=object[7]+hand[0]-obj_rot[2];
-    }
-}
-
-/****************************************************************/
 Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string &str_hand, double &theta)
 {
     Vector point(3,0.0);
