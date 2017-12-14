@@ -74,10 +74,6 @@ public:
     /****************************************************************/
     void init(const yarp::sig::Vector &objectext, yarp::sig::Vector &handext, int &n_handpoints, const std::string &str_hand);
 
-    /**  Check if z axis has the maximum dimension for adjusting superquadric representation */
-    /****************************************************************/
-    void checkZbound();
-
     /** Samples points on the hand ellipsoid
     * @param hand is the hand ellipsoid
     * @param j is an index
