@@ -217,6 +217,8 @@ bool GraspVisualization::showTrajectory(const string &hand_str)
             q_l<<round( quality_left * 100.0 ) / 100.0;
 
             stringstream right, left;
+            right<<"cost right";
+            left<<"cost left";
 
             int thickness=2.0;
             int font=cv::FONT_HERSHEY_SIMPLEX;
