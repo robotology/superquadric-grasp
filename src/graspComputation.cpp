@@ -718,6 +718,24 @@ void GraspComputation::bestPose()
 
     double w1, w2, w3, w4;
 
+    if (final_obstacles_value_R.size()>0)
+    {
+        for (size_t i=0; i<final_obstacles_value_R.size(); i++)
+        {
+            average_obstacle_value_r += final_obstacles_value_R[i];
+        }
+        average_obstacle_value_r /= final_obstacles_value_R.size();
+    }
+
+    if (final_obstacles_value_L.size()>0)
+    {
+        for (size_t i=0; i<final_obstacles_value_L.size(); i++)
+        {
+            average_obstacle_value_l += final_obstacles_value_L[i];
+        }
+        average_obstacle_value_l /= final_obstacles_value_L.size();
+    }
+
     if (!multiple_superq)
     {
         if ((cos_zr <=0.8) && (cos_zl<=0.85))
@@ -747,45 +765,23 @@ void GraspComputation::bestPose()
             w1=0.1;
             w2=0.5;
             w3=1.0;
-            w4=1.0;
+            if (average_obstacle_value_l>50  || average_obstacle_value_r>50)
+                w4=0.0;
+            else
+                w4=5.0;
         }
         else
         {
             w1=1.0;
             w2=2.5;
             w3=2.5;
-            w4=1.0;
+            if (average_obstacle_value_l>50  || average_obstacle_value_r>50)
+                w4=0.0;
+            else
+                w4=5.0;
             //w2=1.5;
         }
     }
-
-    yDebug()<<"final value r"<<final_value_R;
-    yDebug()<<"cos zr"<<cos_zr;
-    yDebug()<<"cos xr"<<cos_xr;
-    yDebug()<<"final value r"<<final_value_L;
-    yDebug()<<"cos zr"<<cos_zl;
-    yDebug()<<"cos xl"<<cos_xl;
-
-    if (final_obstacles_value_R.size()>0)
-    {
-        for (size_t i=0; i<final_obstacles_value_R.size(); i++)
-        {
-            average_obstacle_value_r += final_obstacles_value_R[i];
-        }
-        average_obstacle_value_r /= final_obstacles_value_R.size();
-    }
-
-    if (final_obstacles_value_L.size()>0)
-    {
-        for (size_t i=0; i<final_obstacles_value_L.size(); i++)
-        {
-            average_obstacle_value_l += final_obstacles_value_L[i];
-        }
-        average_obstacle_value_l /= final_obstacles_value_L.size();
-    }
-
-    yDebug()<<"acerage obst r"<< average_obstacle_value_r;
-    yDebug()<<"acerage obst l"<< average_obstacle_value_l;
 
     if (norm(poseR)!=0.0)
     {
@@ -801,8 +797,31 @@ void GraspComputation::bestPose()
     else
         cost_left=0.0;
 
-    yInfo()<<"[GraspComputation]: cost right "<<cost_right;
-    yInfo()<<"[GraspComputation]: cost left "<<cost_left;
+    cout<<endl;
+    yDebug()<<"Final value r:      "<<final_value_R;
+    yDebug()<<"w1 * final value r: "<<w1*final_value_R;
+    yDebug()<<"cos zr:             "<<cos_zr;
+    yDebug()<<"w2 * cos zr:        "<<w2*cos_zr;
+    yDebug()<<"cos xr:             "<<cos_xr;
+    yDebug()<<"w3 * cos xr:        "<<w3*cos_xr;
+    yDebug()<<"obstacle r:         "<<average_obstacle_value_r;
+    yDebug()<<"w4 / obstacle r:    "<<w4 / average_obstacle_value_r;
+    yInfo()<<"cost right:          "<<cost_right;
+
+    cout<<endl;
+    cout<<endl;
+    yDebug()<<"Final value l:      "<<final_value_L;
+    yDebug()<<"w1 * final value l: "<<w1*final_value_L;
+    yDebug()<<"cos zl:             "<<cos_zl;
+    yDebug()<<"w2 * cos zl:        "<<w2*cos_zl;
+    yDebug()<<"cos xl:             "<<cos_xl;
+    yDebug()<<"w3 * cos xl:        "<<w3*cos_xl;
+    yDebug()<<"obstacle l:         "<<average_obstacle_value_l;
+    yDebug()<<"w4 / obstacle l:    "<<w4 / average_obstacle_value_l;
+    yInfo()<<"cost left:           "<<cost_left;
+    cout<<endl;
+    cout<<endl;
+
 
     if ((cost_right<=cost_left) && (cost_right>0.0) && (cost_left>0.))
     {

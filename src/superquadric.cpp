@@ -375,6 +375,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[1]=H(0,0);
      g[2]=H(1,2);
      g[3]=H(1,0);
+     
 
      Vector x_min;
      double minz=10.0;
@@ -745,12 +746,9 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &x_aux)
             constr_value+= pow( pow(f_v(obstacle,x_aux,points_on[i]),obstacle[3])-1,2 );
         }
         constr_value/=points_on.size();
-        
-        yInfo()<<"Constr values "<<constr_value;
 
-        yDebug()<<"ratio hand/obstacle"<<obstacle[0]*obstacle[1]*obstacle[2]/(hand[0]* hand[1]*hand[2]);
-        constr_value*= obstacle[0]*obstacle[1]*obstacle[2]*constr_value/(hand[0]* hand[1]*hand[2]);
-        yInfo()<<"Constr values "<<constr_value;
+        //yDebug()<<"ratio hand/obstacle"<<obstacle[0]*obstacle[1]*obstacle[2]/(hand[0]* hand[1]*hand[2]);
+        //constr_value*= obstacle[0]*obstacle[1]*obstacle[2]*constr_value/(hand[0]* hand[1]*hand[2]);
 
         values.push_back(constr_value);
     }
