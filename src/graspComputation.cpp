@@ -473,6 +473,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         {
             solR=grasp_nlp->get_result();
             final_value_R=grasp_nlp->get_final_F();
+            final_obstacles_value_R=grasp_nlp->get_final_constr_values();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
 
@@ -491,6 +492,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         {
             solL=grasp_nlp->get_result();
             final_value_L=grasp_nlp->get_final_F();
+            final_obstacles_value_L=grasp_nlp->get_final_constr_values();
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
@@ -711,8 +713,10 @@ void GraspComputation::bestPose()
 {
     double q_r=0.0;
     double q_l=0.0;
+    double average_obstacle_value_r=0.0;
+    double average_obstacle_value_l=0.0;
 
-    double w1, w2, w3;
+    double w1, w2, w3, w4;
 
     if (!multiple_superq)
     {
@@ -722,13 +726,15 @@ void GraspComputation::bestPose()
             //w1=1.0;
             //w1=0.01;
             w2=0.5;
-            w3=1.0;
+            w3=0.0;
+            w4=0.0;
         }
         else
         {
             w1=1.0;
             w2=2.5;
-            w3=2.5;
+            w3=0.0;
+            w4=0.0;
             //w2=1.5;
         }
     }
@@ -741,12 +747,14 @@ void GraspComputation::bestPose()
             w1=0.1;
             w2=0.5;
             w3=1.0;
+            w4=1.0;
         }
         else
         {
             w1=1.0;
             w2=2.5;
             w3=2.5;
+            w4=1.0;
             //w2=1.5;
         }
     }
@@ -758,16 +766,37 @@ void GraspComputation::bestPose()
     yDebug()<<"cos zr"<<cos_zl;
     yDebug()<<"cos xl"<<cos_xl;
 
+    if (final_obstacles_value_R.size()>0)
+    {
+        for (size_t i=0; i<final_obstacles_value_R.size(); i++)
+        {
+            average_obstacle_value_r += final_obstacles_value_R[i];
+        }
+        average_obstacle_value_r /= final_obstacles_value_R.size();
+    }
+
+    if (final_obstacles_value_L.size()>0)
+    {
+        for (size_t i=0; i<final_obstacles_value_L.size(); i++)
+        {
+            average_obstacle_value_l += final_obstacles_value_L[i];
+        }
+        average_obstacle_value_l /= final_obstacles_value_L.size();
+    }
+
+    yDebug()<<"acerage obst r"<< average_obstacle_value_r;
+    yDebug()<<"acerage obst l"<< average_obstacle_value_l;
+
     if (norm(poseR)!=0.0)
     {
-        cost_right=w1*final_value_R + w2*cos_zr + w3*cos_xr;
+        cost_right=w1*final_value_R + w2*cos_zr + w3*cos_xr + w4 /average_obstacle_value_r;
     }
     else
         cost_right=0.0;
 
     if (norm(poseL)!=0.0)
     {
-        cost_left=w1*final_value_L + w2*cos_zl + w3*cos_xl;
+        cost_left=w1*final_value_L + w2*cos_zl + w3*cos_xl + w4 / average_obstacle_value_l;
     }
     else
         cost_left=0.0;

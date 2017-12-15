@@ -75,6 +75,7 @@ public:
     bool multiple_superq;
     std::string best_hand;
     double final_value_R, final_value_L, cos_zr, cos_zl, cos_xr, cos_xl;
+    std::deque<double> final_obstacles_value_R, final_obstacles_value_L;
 
     std::deque<yarp::sig::Vector> trajectory_right;
     std::deque<yarp::sig::Vector> trajectory_left;

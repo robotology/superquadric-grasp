@@ -690,28 +690,18 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
     for(size_t i=0;i<points_on.size();i++)
     {
-        Vector point(3,0.0);
-        point=points_on[i];
-
-        Vector point_tr(4,0.0);
-        Vector point_tmp(4,1.0);
-        point_tmp.setSubvector(0,point);
-
-        euler[0]=x[3];
-        euler[1]=x[4];
-        euler[2]=x[5];
-        H_x=euler2dcm(euler);
-        euler[0]=x[0];
-        euler[1]=x[1];
-        euler[2]=x[2];
-        H_x.setSubcol(euler,0,3);
-
-        point_tr=H_x*point_tmp;
-
         final_F_value+= pow( pow(f(object,x,points_on[i]),object[3])-1,2 );
     }
 
     final_F_value/=points_on.size();
+
+    Vector x_aux(11,0.0);
+
+    for (size_t i=0; i<11; i++)
+        x_aux[i]=x[i];
+
+    final_obstacles_value=computeFinalObstacleValues(x_aux);
+
 }
 
 /****************************************************************/
@@ -730,6 +720,45 @@ Vector grasping_NLP::get_hand() const
 double grasping_NLP::get_final_F() const
 {
    return final_F_value;
+}
+
+/****************************************************************/
+deque<double> grasping_NLP::get_final_constr_values() const
+{
+   return final_obstacles_value;
+}
+
+/****************************************************************/
+deque<double> grasping_NLP::computeFinalObstacleValues(Vector &x_aux) 
+{
+    deque<double> values;
+    double constr_value=0.0;
+
+    for (size_t i=0; i<obstacles.size(); i++)
+    {
+        constr_value=0.0;
+
+        Vector obstacle=obstacles[i];
+
+        for (size_t j=0; j<points_on.size(); j++)
+        {           
+            constr_value+= pow( pow(f_v(obstacle,x_aux,points_on[i]),obstacle[3])-1,2 );
+        }
+        constr_value/=points_on.size();
+        
+        yInfo()<<"Constr values "<<constr_value;
+
+        yDebug()<<"ratio hand/obstacle"<<obstacle[0]*obstacle[1]*obstacle[2]/(hand[0]* hand[1]*hand[2]);
+        constr_value*= obstacle[0]*obstacle[1]*obstacle[2]*constr_value/(hand[0]* hand[1]*hand[2]);
+        yInfo()<<"Constr values "<<constr_value;
+
+        values.push_back(constr_value);
+    }
+
+    
+
+    return values;
+
 }
 
 

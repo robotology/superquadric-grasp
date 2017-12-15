@@ -64,6 +64,7 @@ public:
     /** Variable for setting hand of interest */
     std::string l_o_r;
     double final_F_value;
+    std::deque<double> final_obstacles_value;
     int num_superq;
     int max_superq;
 
@@ -282,6 +283,12 @@ public:
    */
    /****************************************************************/
    double get_final_F() const;
+
+   /****************************************************************/
+   std::deque<double> computeFinalObstacleValues(yarp::sig::Vector &x_aux);
+
+   /****************************************************************/
+   std::deque<double> get_final_constr_values() const;
 };
 
 
