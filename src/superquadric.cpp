@@ -264,8 +264,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      euler[1]=x[1];
      euler[2]=x[2];
      H_x.setSubcol(euler,0,3);
-     Matrix H;
-     H.resize(4,4);
 
      point_tr=H_x*point_tmp;
 
@@ -614,24 +612,6 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
     for(size_t i=0;i<points_on.size();i++)
     {
-        Vector point(3,0.0);
-        point=points_on[i];
-
-        Vector point_tr(4,0.0);
-        Vector point_tmp(4,1.0);
-        point_tmp.setSubvector(0,point);
-
-        euler[0]=x[3];
-        euler[1]=x[4];
-        euler[2]=x[5];
-        H_x=euler2dcm(euler);
-        euler[0]=x[0];
-        euler[1]=x[1];
-        euler[2]=x[2];
-        H_x.setSubcol(euler,0,3);
-
-        point_tr=H_x*point_tmp;
-
         final_F_value+= pow( pow(f(object,x,points_on[i]),object[3])-1,2 );
     }
 
