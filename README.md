@@ -77,7 +77,7 @@ The execution time for pose computation is nealy 2.0 s. Hereafter, you can find 
 [<img src="https://github.com/robotology/superquadric-grasp/blob/master/misc/new-video-grasp.png" width=1000>](https://www.youtube.com/watch?v=dfYdBQ-mBJQ&feature=youtu.be)
 [`Go to the top`](#superquadric-grasp)
 ## Documentation
-Online code documentation is available [here](https://robotology.github.io/superquadric-grasp).
+Online code documentation is available [here](http://robotology.github.com/superquadric-model/superquadric-grasp).
 
 ## Going beyod
 The method and the code we developed has been tested on the iCub humanoid robot in case one object is in the robot field of view. However, this approach can be extended to other robotic hands and to work with multiple objects scenario.
