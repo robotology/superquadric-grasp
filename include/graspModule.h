@@ -44,45 +44,81 @@ protected:
     yarp::os::ResourceFinder *rf;
 
     // Strings for setting the experiment scenario
+	/** Robot name: icub or icubSim**/
     std::string robot;
+	/** Hand to be enabled with the code**/
     std::string left_or_right;
+	/** Path where the context is imported**/
     std::string homeContextPath;
 
     // Pose and trajectory computed for the arms
-    yarp::sig::Vector poseL, solL;
-    yarp::sig::Vector poseR, solR;
+	/** Robot hand pose computed by the solver for the left hand**/
+    yarp::sig::Vector poseL;
+	/** Hand ellipsoid pose computed by the solver for the left hand**/
+	yarp::sig::Vector solL;
+	/** Robot hand pose computed by the solver for the right hand**/
+    yarp::sig::Vector poseR;
+	/** Hand ellipsoid pose computed by the solver for the right hand**/
+	yarp::sig::Vector solR;
+	/** Entire trajectory (final pose and waypoint) for the right hand**/
     std::deque<yarp::sig::Vector> trajectory_right;
+	/** Entire trajectory (final pose and waypoint) for the left hand**/
     std::deque<yarp::sig::Vector> trajectory_left;
 
+	/** Variable for saving gaze context**/
     int context_gaze;
+	/** Rate of the visualization thread **/
     int rate_vis;
+	/** Print level for the Ipopt optimization problem**/
     int print_level;
     double t,t0, t_grasp, t_vis;
     std::deque<double> times_vis;
 
     // Optimization parameters
+	/** Tolerance of the Ipopt optimization problem**/
     double tol;
+	/** Maximum iteration allowed for the Ipopt optimization problem**/
     int max_iter;
+	/** Number of points sampled on the hand ellipsoid for the Ipopt optimization problem**/
     int n_pointshand;
+	/** Acceptable iter of the Ipopt optimization problem**/
     int acceptable_iter;
+	/** Constraint tolerance of the Ipopt optimization problem**/
     double constr_viol_tol;
+	/** Mu strategy of the Ipopt optimization problem**/
     std::string mu_strategy;
+	/** NLP scaling method of the Ipopt optimization problem**/
     std::string nlp_scaling_method;
+	/** Max cpu time allowed for the Ipopt optimization problem**/
     double max_cpu_time;
 
     // Geometric parameters for pose computation
+	/** Direction for generating the waypoint for the approach: it could be on x and z axes ("xz") or only z axis ("z") of the hand reference frame.**/
     std::string dir;
+	/** Object superquadric **/
     yarp::sig::Vector object;
-    yarp::sig::Vector hand, hand1;
-    double distance, distance1;
+	/** Hand ellipsoid for the first hand enabled**/
+    yarp::sig::Vector hand;
+	/** Hand ellipsoid for the second hand enabled**/
+	yarp::sig::Vector hand1;
+	/** Distance for shifting the waypoint along x axis of the hand reference frame**/
+    double distance;
+	/** Distance for shifting the waypoint along z axis of the hand reference frame**/
+	double distance1;
+	/** Distance of the robot pose with respect to the hand ellipsoid along x axis of the hand reference frame**/
     yarp::sig::Vector displacement;
+	/** Parameters of the implicit function describing the plane on which the object is located in the root reference frame**/
     yarp::sig::Vector plane;
 
+	/** Rpc port for services**/
     yarp::os::RpcServer portRpc;
 
     // Gaze parameters
+	/** Eye camera selected for visualization**/
     std::string eye;
+	/** Vergence value for blocking the eyes**/
     double block_eye;
+	/** Neck joint value for looking to the table**/
     double block_neck;
     yarp::sig::Matrix K,H;
     yarp::dev::PolyDriver GazeCtrl;
@@ -90,64 +126,121 @@ protected:
 
     // Variables for state machine and enabling/disabling options
     std::string fing;
+	/** Boolean variable to lift or not the object**/
     bool lift_object;
     std::string lobj;
+	/** Boolean variable used for going to the next step of the state machine**/
     bool go_on;
+	/** Boolean variable to grasp or not the object**/
     bool grasp;
+	/** Boolean variable taking into account if the movement has been executed**/
     bool executed;
+	/** Boolean variable taking into account if the movement has been executed (for different checks)**/
     bool executed_var;
+	/** Boolean variable taking into account if the home pose has been reached**/
     bool reached_home;
+	/** Boolean variable taking into account if the basket pose has been reached**/
     bool reached_basket;
+	/** String variable for showing (on) or not (off) the hand ellipsoid on the viewer**/
     std::string show_hand;
+	/** String variable for showing only the final pose(on) or also the trajectory (off) on the viewer**/
     std::string show_only_pose;
+	/** String variable for fixating at the object (on) or not (off) during movements**/
     std::string look_object;
+	/** Boolean variable for enabling visualization**/
     bool visualization;
+	/** Boolean variable for switching between online and offline mode**/
     bool mode_online;
+	/** String variable for saving the solutions**/
     bool save_poses;
     bool also_traj;
+	/** Threshold of the maximum allowed force measured at the endeffector. If the measured value is larger, the movement stops.**/
     double force_threshold;
+	/** String variable for enabling the compliant mode**/
     std::string compliant;
+	/** String variable for the visual servoing controller during the final pose reaching**/
     std::string visual_servoing;
+	/** String variable for using visual servoing with direct kinematics, instead of hand pose estimate**/
     std::string use_direct_kin;
 
+	/** Pixel tolerance for visual servoing**/
     double pixel_tol;
+	/** How much the robot should lift the object **/
     double lift_z;
+	/** Maximum pitch value for avoiding movements to close to the table while reaching some particular poses**/
     double torso_pitch_max;
-    double traj_time, traj_tol;
-    yarp::sig::Vector shift_right, shift_left;
+	/** Time for reaching each waypoint of the trajectory**/
+    double traj_time;
+	/** Reaching tolerance for the cartesian**/
+	double traj_tol;
+	/** 3D shift for the final right pose along x, y, and z axes of the right hand reference frame for compensating with eye-kinematics offsets**/
+    yarp::sig::Vector shift_right;
+	/** 3D shift for the final left pose along x, y, and z axes of the left hand reference frame for compensating with eye-kinematics offsets**/
+	yarp::sig::Vector shift_left;
+	/** Home pose (7D) for the right hand**/
     yarp::sig::Vector home_right;
+	/** Home pose (7D) for the left hand**/
     yarp::sig::Vector home_left;
+	/** Basket pose (7D) for the right hand**/
     yarp::sig::Vector basket_right;
+	/** Basket pose (7D) for the left hand**/
     yarp::sig::Vector basket_left;
+	/** Stiff values for the right hand**/
     yarp::sig::Vector stiff_right;
+	/** Stiff values for the left hand**/
     yarp::sig::Vector stiff_left;
+	/** Damp values for the right hand**/
     yarp::sig::Vector damp_right;
+	/** Damp values for the left hand**/
     yarp::sig::Vector damp_left;
+	/** Hand selected for grasping the object**/
     std::string hand_to_move;
 
     // Information for saving results
-    std::string nameFileOut_right, nameFileTrajectory_right;
-    std::string nameFileOut_left, nameFileTrajectory_left;
+	/** File name of Ipopt output for right hand**/
+    std::string nameFileOut_right;
+	/** File name containing trajectory for right hand**/
+	std::string nameFileTrajectory_right;
+	/** File name of Ipopt output for left hand**/
+    std::string nameFileOut_left;
+	/** File name containing trajectory for left hand**/
+	std::string nameFileTrajectory_left;
 
-    std::string lib_context, lib_filename;
+	/** Context name for the module for closing the fingers**/
+    std::string lib_context;
+	/** File name of the module used for closing the fingers**/
+	std::string lib_filename;
 
     yarp::os::Mutex mutex;
 
     // Different threads
+	/** Class computing the grasping pose**/
     GraspComputation *graspComp;
+	/** Class showing the grasping pose on the viewer**/
     GraspVisualization *graspVis;
+	/** Class executing the trajectory**/
     GraspExecution *graspExec;
 
     // Properties with all the class parameters
+	/** Parameters of the visualization class**/
     yarp::os::Property vis_par;
+	/** Parameters for pose computation**/
     yarp::os::Property pose_par;
+	/** Parameters for trajectory computation**/
     yarp::os::Property traj_par;
+	/** Parameters for grasping the object**/
     yarp::os::Property grasp_par;
+	/** Parameters for the Ipopt optimization problem**/
     yarp::os::Property ipopt_par;
+	/** Parameters for executing the movement**/
     yarp::os::Property movement_par;
+	/** Complete solution computed**/
     yarp::os::Property complete_sol;
 
-    double quality_right, quality_left;
+	/** Quality of pose right**/
+    double quality_right;
+	/** Quality of pose left**/
+	double quality_left;
 
 public:
     /************************************************************************/

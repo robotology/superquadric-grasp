@@ -40,19 +40,40 @@ class GraspExecution
 protected:
 
     // Parameters for setting up the experiment
+	/** Robot name: icub or icubSim**/
     std::string robot;
+	/** Hand to be moved for grasping the object**/
     std::string hand_to_move;
+	/** Hand to be enabled with the code**/
     std::string left_or_right;
 
     // Trajectories and home positions
+	/** Entire trajectory (final pose and waypoint) for the right hand**/
     std::deque<yarp::sig::Vector> trajectory_right;
+	/** Entire trajectory (final pose and waypoint) for the left hand**/
     std::deque<yarp::sig::Vector> trajectory_left;
+	/** Entire trajectory selected for the execution**/
     std::deque<yarp::sig::Vector> trajectory;
-    yarp::sig::Vector shift_right, shift_left;
-    yarp::sig::Vector home_right, home_left;
-    yarp::sig::Vector basket_right, basket_left;
-    yarp::sig::Vector stiff_right, damp_right;
-    yarp::sig::Vector stiff_left, damp_left;
+    /** 3D shift for the final right pose along x, y, and z axes of the right hand reference frame for compensating with eye-kinematics offsets**/
+    yarp::sig::Vector shift_right;
+	/** 3D shift for the final left pose along x, y, and z axes of the left hand reference frame for compensating with eye-kinematics offsets**/
+	yarp::sig::Vector shift_left;
+	/** Home pose (7D) for the right hand**/
+    yarp::sig::Vector home_right;
+	/** Home pose (7D) for the left hand**/
+    yarp::sig::Vector home_left;
+	/** Basket pose (7D) for the right hand**/
+    yarp::sig::Vector basket_right;
+	/** Basket pose (7D) for the left hand**/
+    yarp::sig::Vector basket_left;
+	/** Stiff values for the right hand**/
+    yarp::sig::Vector stiff_right;
+	/** Stiff values for the left hand**/
+    yarp::sig::Vector stiff_left;
+	/** Damp values for the right hand**/
+    yarp::sig::Vector damp_right;
+	/** Damp values for the left hand**/
+    yarp::sig::Vector damp_left;
 
 
     yarp::os::Mutex mutex;
@@ -75,25 +96,41 @@ protected:
 
     yarp::dev::IEncoders *enc;
 
+	/** Backup context for right cartesian**/
     int context_right;
+	/** Backup context for left cartesian**/
     int context_left;
 
     int i;
+	/** Boolean variable to grasp or not the object**/
     bool grasp;
     std::string lobj;
+	/** How much the robot should lift the object **/
     double lift_z;
+	/** Boolean variable to lift or not the object**/
     bool lift_object;
+	/** String variable for the visual servoing controller during the final pose reaching**/
     bool visual_serv;
+	/** String variable for enabling the compliant mode**/
     bool compliant;
+	/** String variable for using visual servoing with direct kinematics, instead of hand pose estimate**/
     bool use_direct_kin;
     std::string five_fingers;
+	/** Maximum pitch value for avoiding movements to close to the table while reaching some particular poses**/
     double torso_pitch_max;
-    double traj_time,traj_tol;
+    /** Time for reaching each waypoint of the trajectory**/
+    double traj_time;
+	/** Reaching tolerance for the cartesian**/
+	double traj_tol;
 
     // Port for reading forces from wholeBodyDynamics
+	/** Threshold of the maximum allowed force measured at the endeffector. If the measured value is larger, the movement stops.**/
     double force_threshold;
+	/** Port connected to wholeBodyDynamics module in order to receive force estimates**/
     yarp::os::RpcClient portWholeBodyRpc;
+	/** Bottle containg force estimate for the right hand**/
     yarp::os::BufferedPort<yarp::os::Bottle> portForces_right;
+	/** Bottle containg force estimate for the left hand**/
     yarp::os::BufferedPort<yarp::os::Bottle> portForces_left;
 
 public:

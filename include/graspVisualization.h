@@ -37,21 +37,38 @@ class GraspVisualization : public yarp::os::RateThread
 {
 protected:
     // Gaze variables
+	/** Eye camera selected for visualization**/
     std::string eye;
     yarp::dev::PolyDriver GazeCtrl;
     
     yarp::sig::Matrix K,H;
 
     // pose and trajectory variables
-    yarp::sig::Vector poseR, poseL, solR, solL;
-    yarp::sig::Vector hand_in_poseL, hand_in_poseR;
+    /** Robot hand pose computed by the solver for the left hand**/
+    yarp::sig::Vector poseL;
+	/** Hand ellipsoid pose computed by the solver for the left hand**/
+	yarp::sig::Vector solL;
+	/** Robot hand pose computed by the solver for the right hand**/
+    yarp::sig::Vector poseR;
+	/** Hand ellipsoid pose computed by the solver for the right hand**/
+	yarp::sig::Vector solR;
+	/** Left hand ellipsoid in the computed pose for visualization**/
+    yarp::sig::Vector hand_in_poseL;
+	/** Left hand ellipsoid in the computed pose for visualization**/
+	yarp::sig::Vector hand_in_poseR;
+    /** Entire trajectory (final pose and waypoint) for the right hand**/
     std::deque<yarp::sig::Vector> trajectory_right;
+	/** Entire trajectory (final pose and waypoint) for the left hand**/
     std::deque<yarp::sig::Vector> trajectory_left;
     yarp::sig::Vector point2D, point, point1, superq;
+	/** Entire trajectory (final pose and waypoint) selected for grasping the object**/
     std::deque<yarp::sig::Vector> trajectory;
     yarp::sig::Matrix R;
 
-    double &quality_right, &quality_left;
+	/** Quality of pose right**/
+    double &quality_right;
+	/** Quality of pose left**/
+	double &quality_left;
 
 public:
 
@@ -83,7 +100,9 @@ public:
     /** Complete solution */
     const yarp::os::Property &complete_sol;
 
+	/** Boolean variable taking into account if the movement has been accomplished**/
     bool &executed;
+	/** Boolean variable for stopping fixating the object **/
     bool stop_fixate;
 
     /** Buffered port of input image*/

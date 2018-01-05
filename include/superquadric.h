@@ -37,17 +37,29 @@
 class grasping_NLP : public Ipopt::TNLP
 {
     /** Quantities for computing the solution */
+	/** Auxiliary variable for Ipopt implementation **/
     double aux_objvalue;
+	/** Object to be grasped, represented as a superquadric**/
     yarp::sig::Vector obj;
+	/** Auxiliary variable for computing the gradients**/
     yarp::sig::Vector x_v;
+	/** Variable bounds (lower and upper)**/
     yarp::sig::Matrix bounds;
+	/** Constraints bounds (lower and upper)**/
     yarp::sig::Matrix bounds_constr;
+	/** Starting point for the Ipopt solver**/
     yarp::sig::Vector x0;
+	/** Points of the ellipsoid on the current hand pose estimate**/
     std::deque<yarp::sig::Vector> points_on;
+	/** Homogeneous matrix from object to world reference frame**/
     yarp::sig::Matrix H_o2w;
+	/** Homogeneous matrix from hand to world reference frame**/
     yarp::sig::Matrix H_h2w;
+	/** Homogeneous matrix for the solution**/
     yarp::sig::Matrix H_x;
+	/** Euler angles**/
     yarp::sig::Vector euler;
+	/** Displacement to be applied on the robot hand pose with respect tot he ellipsoid reference frame**/
     yarp::sig::Vector displacement;
 
 public:
@@ -63,6 +75,7 @@ public:
     yarp::sig::Vector robot_pose;
     /** Variable for setting hand of interest */
     std::string l_o_r;
+	/** Final cost function value **/
     double final_F_value;
 
     /** Initialization function
