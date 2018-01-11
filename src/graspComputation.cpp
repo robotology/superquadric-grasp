@@ -533,67 +533,39 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 /***********************************************************************/
 bool GraspComputation::computeTrajectory(const string &chosen_hand, const string &direction)
 {
-    Vector pose(6,0.0);
+    Vector pose=(chosen_hand=="right")?poseR:poseL;
+    Matrix H=euler2dcm(pose.subVector(3,5));
+    H(0,3)=pose[0];
+    H(1,3)=pose[1];
+    H(2,3)=pose[2];
 
-    if (chosen_hand=="right")
-    {
-        pose=poseR;
-    }
-    else
-        pose=poseL;
-
-    Vector pose_rot(6,0.0);
-    Vector euler(3,0.0);
-    euler[0]=pose[3];
-    euler[1]=pose[4];
-    euler[2]=pose[5];
-    Matrix H(4,4);
-    H=euler2dcm(euler);
-    euler[0]=pose[0];
-    euler[1]=pose[1];
-    euler[2]=pose[2];
-    H.setSubcol(euler,0,3);
-
-    pose_rot=pose;
-
+    Vector pose_rot=pose;
     if (direction=="z")
     {
         if (chosen_hand=="right")
-        {
-            pose_rot.setSubvector(0,pose.subVector(0,2)-distance*(H.getCol(2).subVector(0,2)));
-        }
+            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*H.getCol(2).subVector(0,2));
         else
-        {
-            pose_rot.setSubvector(0,pose.subVector(0,2)+distance*(H.getCol(2).subVector(0,2)));
-        }
+            pose_rot.setSubvector(0,pose_rot.subVector(0,2)+distance*H.getCol(2).subVector(0,2));
     }
     else if (direction=="xz")
     {
         if (chosen_hand=="right")
-        {
-            pose_rot.setSubvector(0,pose.subVector(0,2)-distance1*(H.getCol(2).subVector(0,2)));
-            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
-        }
+            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*H.getCol(0).subVector(0,2)
+                                                           -distance1*H.getCol(2).subVector(0,2));
         else
-        {
-            pose_rot.setSubvector(0,pose.subVector(0,2)+distance1*(H.getCol(2).subVector(0,2)));
-            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*(H.getCol(0).subVector(0,2)));
-        }
+            pose_rot.setSubvector(0,pose_rot.subVector(0,2)-distance*H.getCol(0).subVector(0,2)
+                                                           +distance1*H.getCol(2).subVector(0,2));
     }
 
     if (chosen_hand=="right")
     {
         trajectory_right.clear();
-
-        pose.setSubvector(0,pose.subVector(0,2));
         trajectory_right.push_back(pose_rot);
         trajectory_right.push_back(pose);
     }
     else
     {
         trajectory_left.clear();
-
-        pose.setSubvector(0,pose.subVector(0,2));
         trajectory_left.push_back(pose_rot);
         trajectory_left.push_back(pose);
     }

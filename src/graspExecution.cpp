@@ -21,7 +21,6 @@ GraspExecution::GraspExecution(Property &_movement_par, const Property &_complet
                                bool _grasp, string _lib_context, string _lib_filename):
                                 movement_par(_movement_par), complete_sol(_complete_sol),
                                 grasp(_grasp), lib_context(_lib_context), lib_filename(_lib_filename)
-
 {
 
 }
@@ -1127,30 +1126,22 @@ bool GraspExecution::executeTrajectory(string &hand)
     {
         if (hand=="right")
         {
-            for (size_t i=0; i<trajectory_right.size(); i++)
-            {               
-                trajectory.push_back(trajectory_right[i]);
-            }
-
-            if (lift_object==true)
-                liftObject(trajectory, trajectory_right.size());
+            for (size_t k=0; k<trajectory_right.size(); k++)
+                trajectory.push_back(trajectory_right[k]);
+            if (lift_object)
+                liftObject(trajectory);
         }
         else
         {
-            for (size_t i=0; i<trajectory_left.size(); i++)
-            {
-                trajectory.push_back(trajectory_left[i]);
-            }
-
-            if (lift_object==true)
-                liftObject(trajectory, trajectory_left.size());
+            for (size_t k=0; k<trajectory_left.size(); k++)
+                trajectory.push_back(trajectory_left[k]);
+            if (lift_object)
+                liftObject(trajectory);
         }
 
         yDebug()<<"[GraspExecution]: Complete trajectory ";
         for (size_t k=0; k<trajectory.size(); k++)
-        {
             yDebug()<<"[GraspExecution]: Waypoint "<<k<<trajectory[k].toString(3,3);
-        }
 
         if (i==-1)
         {
@@ -1159,16 +1150,20 @@ bool GraspExecution::executeTrajectory(string &hand)
             i++;
         }
 
-        if ((reached==false) && (i<=trajectory.size()) && (i>=0))
+        if (!reached && (i<=trajectory.size()) && (i>=0))
         {
             yDebug()<<"[GraspExecution]: Waypoint: "<<i<<" : "<<trajectory[i].toString(3,3);
+            if (hand=="left")
+                reached=reachWaypoint(i,hand);
+            else
+            {
+                if (visual_serv && (i == trajectory_right.size()-1))
+                    reached=reachWithVisual(i,hand);
+                else
+                    reached=reachWaypoint(i,hand);
+            }
 
-            if ((visual_serv==false) || (hand=="left") || (i != trajectory_right.size()-1))
-                reached=reachWaypoint(i, hand);
-            else if ((visual_serv==true) && (hand=="right") && (i == trajectory_right.size()-1))
-                reached=reachWithVisual(i,hand);
-
-            if (grasp==true && reached==true)
+            if (grasp && reached)
             {
                 if (((i==trajectory_right.size()-1) && (hand=="right")) || ((i==trajectory_left.size()-1) && (hand=="left")))
                     reached=graspObject(hand);
@@ -1178,19 +1173,18 @@ bool GraspExecution::executeTrajectory(string &hand)
             }
         }
 
-        if (reached==true)
+        if (reached)
         {
             i++;
         }
 
-        if ((i==trajectory.size()) && (reached==true))
+        if ((i==trajectory.size()) && reached)
             reached_tot=true;
 
         if (reached_tot==true)
             i=-1;
 
         reached=false;
-
         return reached_tot;
     }
     else
@@ -1203,12 +1197,9 @@ bool GraspExecution::executeTrajectory(string &hand)
 /*******************************************************************************/
 bool GraspExecution::reachWaypoint(int i, string &hand)
 {
-    bool done=false;
+    bool done;
     int context_tmp;
-    Bottle *force;
     Vector forceThre(3,0.0);
-
-    //done_force=false;
 
     double min, max;
 
@@ -1229,10 +1220,10 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         o=trajectory[i].subVector(3,6);
 
     if (i == 0)
-            yInfo()<<"Whole body calibration completed "<<calibrateWholeBody();
+        yInfo()<<"Whole body calibration completed "<<calibrateWholeBody();
 
     if (hand=="right")
-    {        
+    {
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         if (i==0)
@@ -1242,41 +1233,31 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
 
         icart_right->goToPoseSync(x,o);
+        done=false;
 
         if ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
         {  
-            force=portForces_right.read(false);    
-
-            yDebug()<<"1";     
             while (!done)
             {
-                 yDebug()<<"2";    
-                force=portForces_right.read(false);
-                if (force!=NULL)
+                if (Bottle *force=portForces_right.read(false))
                 {
-                    yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
-                    forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
-                    yDebug()<<"forces 3 "<<forceThre.toString();  
-                    yDebug()<<"Norm forces "<<norm(forceThre);  
-
+                    yInfo()<<"Forces of right arm detected while moving"<<force->toString();
+                    forceThre[0]=force->get(0).asDouble();
+                    forceThre[1]=force->get(1).asDouble();
+                    forceThre[2]=force->get(2).asDouble();
                     if (norm(forceThre)>=force_threshold)
                     {
-                         return true;
+                        icart_right->stopControl();
+                        return true;
                     }
-                    
                 }
-                else
-                    yDebug()<<"No forces received";
 
                 Time::delay(0.01);
-
                 icart_right->checkMotionDone(&done);
-                
             }
         }
         else
         {
-
             if (compliant)
             {
                 icart_right->waitMotionDone(0.1, 2.0);
@@ -1308,38 +1289,31 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         }
 
         icart_left->goToPoseSync(x,o);
+        done=false;
 
-        if ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
+        if ((i == trajectory_left.size()-1) || (i == trajectory_left.size()-2))
         {
-            force=portForces_left.read(false);
             while (!done)
             {
-                force=portForces_left.read(false);
-                if (force!=NULL)
+                if (Bottle *force=portForces_left.read(false))
                 { 
-                    yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
-                    forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
-                    yDebug()<<"forces 3 "<<forceThre.toString();  
-                    yDebug()<<"Norm forces "<<norm(forceThre);  
-
+                    yInfo()<<"Forces of left arm detected while moving"<<force->toString();
+                    forceThre[0]=force->get(0).asDouble();
+                    forceThre[1]=force->get(1).asDouble();
+                    forceThre[2]=force->get(2).asDouble();
                     if (norm(forceThre)>=force_threshold)
                     {
-                         return true;
+                        icart_left->stopControl();
+                        return true;
                     }
-                    
                 }
-                else
-                    yDebug()<<"No forces received";
 
                 Time::delay(0.01);
-
                 icart_left->checkMotionDone(&done);
-                
             }
         }
         else
         {
-
             if (compliant)
             {
                 icart_left->waitMotionDone(0.1, 2.0);
@@ -1370,7 +1344,6 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
     Vector x(3,0.0);
     Vector o(4,0.0);
     bool done=false;
-    Bottle *force;
     Vector forceThre(3,0.0);
 
     x=trajectory[i].subVector(0,2);
@@ -1380,37 +1353,29 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
         o=trajectory[i].subVector(3,6);
 
     visual_servoing_right->initFacilities(use_direct_kin);
-
     visual_servoing_right->goToGoal(x,o);
     
     while (!done)
     {
         done=!visual_servoing_right->checkVisualServoingController();
-
-        force=portForces_right.read(false);
-        if (force!=NULL)
+        if (Bottle *force=portForces_right.read(false))
         {
-            yInfo()<<"Forces of right arm detected while moving     "<<force->toString();
-            forceThre[0]=force->get(0).asDouble();  forceThre[1]=force->get(1).asDouble();  forceThre[2]=force->get(2).asDouble();       
-            yDebug()<<"forces 3 "<<forceThre.toString();  
-            yDebug()<<"Norm forces "<<norm(forceThre);  
-
+            yInfo()<<"Forces of right arm detected while moving"<<force->toString();
+            forceThre[0]=force->get(0).asDouble();
+            forceThre[1]=force->get(1).asDouble();
+            forceThre[2]=force->get(2).asDouble();
             if (norm(forceThre)>=force_threshold)
             {
                  visual_servoing_right->stopController();
                  done=true;
-                 return true;
+                 break;
             }
-            
         }
-        else
-            yDebug()<<"No forces received";
 
         Time::delay(0.01);
     }
 
     visual_servoing_right->stopFacilities();
-
     return done;
 }
 
@@ -1649,14 +1614,11 @@ bool GraspExecution::stop()
 }
 
 /*******************************************************************************/
-void GraspExecution::liftObject(deque<Vector> &traj, int index)
+void GraspExecution::liftObject(deque<Vector> &traj)
 {
-    Vector waypoint_lift(6,0.0);
-    waypoint_lift=trajectory[index-1];
+    Vector waypoint_lift=trajectory.back();
     waypoint_lift[2]+=lift_z;
-
     traj.push_back(waypoint_lift);
-    //traj.push_back(trajectory[index-1]);
 }
 
 /*******************************************************************************/
