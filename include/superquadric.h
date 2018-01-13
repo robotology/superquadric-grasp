@@ -57,8 +57,6 @@ class grasping_NLP : public Ipopt::TNLP
     yarp::sig::Matrix H_h2w;
 	/** Homogeneous matrix for the solution**/
     yarp::sig::Matrix H_x;
-	/** Euler angles**/
-    yarp::sig::Vector euler;
 	/** Displacement to be applied on the robot hand pose with respect tot he ellipsoid reference frame**/
     yarp::sig::Vector displacement;
 
