@@ -50,25 +50,23 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoi
     H_o2w.resize(4,4);
     H_h2w.resize(4,4);
     H_x.resize(4,4);
-    euler.resize(3,0.0);
 
+    Vector euler(3);
     euler[0]=object[8];
     euler[1]=object[9];
     euler[2]=object[10];
     H_o2w=euler2dcm(euler);
-    euler[0]=object[5];
-    euler[1]=object[6];
-    euler[2]=object[7];
-    H_o2w.setSubcol(euler,0,3);
+    H_o2w(0,3)=object[5];
+    H_o2w(1,3)=object[6];
+    H_o2w(2,3)=object[7];
 
     euler[0]=hand[8];
     euler[1]=hand[9];
     euler[2]=hand[10];
     H_h2w=euler2dcm(euler);
-    euler[0]=hand[5];
-    euler[1]=hand[6];
-    euler[2]=hand[7];
-    H_h2w.setSubcol(euler,0,3);
+    H_h2w(0,3)=hand[5];
+    H_h2w(1,3)=hand[6];
+    H_h2w(2,3)=hand[7];
 
     for(int i=0; i<(int)sqrt(n_handpoints); i++)
     {
@@ -120,14 +118,14 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
 
     Vector point_tr(4,0.0);
 
+    Vector euler(3);
     euler[0]=hand[8];
     euler[1]=hand[9];
     euler[2]=hand[10];
     H_h2w=euler2dcm(euler);
-    euler[0]=hand[5];
-    euler[1]=hand[6];
-    euler[2]=hand[7];
-    H_h2w.setSubcol(euler,0,3);
+    H_h2w(0,3)=hand[5];
+    H_h2w(1,3)=hand[6];
+    H_h2w(2,3)=hand[7];
 
     Vector point_tmp(4,1.0);
     point_tmp.setSubvector(0,point);
@@ -217,14 +215,14 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      Vector point_tmp(4,1.0);
      point_tmp.setSubvector(0,point);
 
+     Vector euler(3);
      euler[0]=x[3];
      euler[1]=x[4];
      euler[2]=x[5];
      H_x=euler2dcm(euler);
-     euler[0]=x[0];
-     euler[1]=x[1];
-     euler[2]=x[2];
-     H_x.setSubcol(euler,0,3);
+     H_x(0,3)=x[0];
+     H_x(1,3)=x[1];
+     H_x(2,3)=x[2];
 
      point_tr=H_x*point_tmp;
 
@@ -256,14 +254,15 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      Vector point_tr(4,0.0);
      Vector point_tmp(4,1.0);
      point_tmp.setSubvector(0,point);
+
+     Vector euler(3);
      euler[0]=x[3];
      euler[1]=x[4];
      euler[2]=x[5];
      H_x=euler2dcm(euler);
-     euler[0]=x[0];
-     euler[1]=x[1];
-     euler[2]=x[2];
-     H_x.setSubcol(euler,0,3);
+     H_x(0,3)=x[0];
+     H_x(1,3)=x[1];
+     H_x(2,3)=x[2];
 
      point_tr=H_x*point_tmp;
 
@@ -309,7 +308,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
          grad_n=F_v(x_tmp,points_on);
 
-         grad_f[j]=(grad_p-grad_n)/eps;
+         grad_f[j]=(grad_p-grad_n)/(2.0*eps);
      }
 
      return true;
@@ -319,14 +318,14 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  bool grasping_NLP::eval_g(Ipopt::Index n, const Ipopt::Number *x, bool new_x,
              Ipopt::Index m, Ipopt::Number *g)
  {
+     Vector euler(3);
      euler[0]=x[3];
      euler[1]=x[4];
      euler[2]=x[5];
      H_x=euler2dcm(euler);
-     euler[0]=x[0];
-     euler[1]=x[1];
-     euler[2]=x[2];
-     H_x.setSubcol(euler,0,3);
+     H_x(0,3)=x[0];
+     H_x(1,3)=x[1];
+     H_x(2,3)=x[2];
 
      Matrix H(4,4);
      H=H_x*H_h2w;
@@ -381,14 +380,15 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      Matrix H_x,H;
      H_x.resize(4,4);
      H.resize(4,4);
+
+     Vector euler(3);
      euler[0]=x[3];
      euler[1]=x[4];
      euler[2]=x[5];
      H_x=euler2dcm(euler);
-     euler[0]=x[0];
-     euler[1]=x[1];
-     euler[2]=x[2];
-     H_x.setSubcol(euler,0,3);
+     H_x(0,3)=x[0];
+     H_x(1,3)=x[1];
+     H_x(2,3)=x[2];
 
      H=H_x*H_h2w;
 
@@ -424,7 +424,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      if (l_o_r=="right")
         robotPose=x_tmp-hand[0]*(H.getCol(2).subVector(0,2));
      else
-         robotPose=x_tmp+hand[0]*(H.getCol(2).subVector(0,2));
+        robotPose=x_tmp+hand[0]*(H.getCol(2).subVector(0,2));
 
      g[5]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
@@ -457,7 +457,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
                  grad_n=G_v(x_tmp,i);
 
-                 values[count]=(grad_p-grad_n)/(eps);
+                 values[count]=(grad_p-grad_n)/(2.0*eps);
                  count++;
              }
          }
@@ -574,19 +574,16 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 {
    solution.resize(n);
 
+   Vector euler(3);
    euler[0]=x[3];
    euler[1]=x[4];
    euler[2]=x[5];
    H_x=euler2dcm(euler);
-   euler[0]=x[0];
-   euler[1]=x[1];
-   euler[2]=x[2];
-   H_x.setSubcol(euler,0,3);
+   H_x(0,3)=x[0];
+   H_x(1,3)=x[1];
+   H_x(2,3)=x[2];
 
-   Matrix H;
-   H.resize(4,4);
-   H=H_x*H_h2w;
-
+   Matrix H=H_x*H_h2w;
    solution.setSubvector(3,dcm2euler(H.transposed()));
 
    for (Ipopt::Index i=0; i<3; i++)
@@ -635,31 +632,3 @@ double grasping_NLP::get_final_F() const
 {
    return final_F_value;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
