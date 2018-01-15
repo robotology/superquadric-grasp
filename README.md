@@ -79,7 +79,7 @@ The execution time for pose computation is nealy 2.0 s. Hereafter, you can find 
 ## Documentation
 Online code documentation is available [here](http://robotology.github.com/superquadric-grasp).
 
-## Going beyod
+## Going beyond
 The method and the code we developed has been tested on the iCub humanoid robot in case one object is in the robot field of view. However, this approach can be extended to other robotic hands and to work with multiple objects scenario.
 #### Porting the approach to other robots
 Our grasping approach is based on modeling the volume graspable by the robot hand instead of using a detailed representation of the hand itself. For this reason, our method can be ported to other robots, just **changing the dimensions and the shape  of the superquadric modeling the volume graspable by the hand**. At this regard, we already managed to performed autonomous grasps with our approach with the R1 robot [2].
