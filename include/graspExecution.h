@@ -89,9 +89,9 @@ protected:
 
     // driver and interfaces for controlling the torso
     yarp::dev::PolyDriver             driverTorso;
-    yarp::dev::IControlMode2         *imodTorso;
+    yarp::dev::IControlMode          *imodTorso;
     yarp::dev::IEncoders             *iencTorso;
-    yarp::dev::IPositionControl2     *iposTorso;
+    yarp::dev::IPositionControl      *iposTorso;
 
 
     yarp::dev::IEncoders *enc;
