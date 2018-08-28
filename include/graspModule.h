@@ -106,6 +106,7 @@ protected:
     std::string show_only_pose;
     std::string look_object;
     bool visualization;
+    bool demo;
     bool mode_online;
     bool save_poses;
     bool also_traj;

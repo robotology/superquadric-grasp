@@ -437,7 +437,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[2]=H(1,2);
      g[3]=H(1,0);
 
-     Vector x_min;
+     Vector x_min(3,0.0);
      double minz=10.0;
 
      for (size_t i1=0; i1<points_on.size(); i1++)

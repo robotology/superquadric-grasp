@@ -609,6 +609,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     compliant=rf.check("compliant", Value("off")).asString();
     use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
+    demo=(rf.check("demo", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -990,15 +991,17 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     graspComp->init();
 
-    config=configViewer(rf);
-
-    if (config==false)
-        return false;
-
-    graspVis= new GraspVisualization(rate_vis,eye,igaze,executed_var, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l, best_scenario);
 
     if (visualization)
     {
+        config=configViewer(rf);
+
+        if (config==false)
+            return false;
+
+        graspVis= new GraspVisualization(rate_vis,eye,igaze,executed_var, K, left_or_right, complete_sols, object_vis,obstacles_vis, hand, hand1, vis_par, cost_vis_r, cost_vis_l, best_scenario);
+
+
         bool thread_started=graspVis->start();
 
         if (thread_started)
@@ -1006,21 +1009,24 @@ bool GraspingModule::configure(ResourceFinder &rf)
         else
             yError()<<"[GraspVisualization]: Problems in starting the thread!";
     }
-    else
+    //else
+    //{
+    //    graspVis->start();
+    //    graspVis->suspend();
+    //}
+
+    if (demo)
     {
-        graspVis->start();
-        graspVis->suspend();
+        configMovements(rf);
+
+        configGrasp(rf);
+
+        graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
+
+        config=graspExec->configure();
+
+        executed_var=false;
     }
-
-    configMovements(rf);
-
-    configGrasp(rf);
-
-    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
-
-    config=graspExec->configure();
-
-    executed_var=false;
 
     if (config==false)
         return false;
