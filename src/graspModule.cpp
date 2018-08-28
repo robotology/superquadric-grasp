@@ -110,13 +110,16 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     t_grasp=graspComp->getTime();
 
-    graspVis->left_or_right=hand_str;
+    if (visualization)
+    {
+        graspVis->left_or_right=hand_str;
 
-    readSuperq("hand",graspVis->hand,11,this->rf);
+        readSuperq("hand",graspVis->hand,11,this->rf);
+    }
 
     executed_var=false;
 
-    if (look_object=="on")
+    if (look_object=="on" && visualization==true)
         graspVis->look_object=true;
 
     return complete_sol;
@@ -295,17 +298,25 @@ bool GraspingModule::look_center()
     Vector center(3,0.0);
     center[0]=-0.35;
 
-    graspVis->igaze->setTrackingMode(false);
+    if (visualization)
+    {
+        graspVis->igaze->setTrackingMode(false);
 
-    return graspVis->igaze->lookAtFixationPoint(center);
+        return graspVis->igaze->lookAtFixationPoint(center);
+    }
+    else
+        return false;
 }
 
 /**********************************************************************/
 bool GraspingModule::look_obj()
 {
-    graspVis->look_object=true;
-
-    return true;
+    if (visualization)
+    {
+        graspVis->look_object=true;
+    }
+    else
+        return true;
 }
 
 /**********************************************************************/
@@ -399,6 +410,7 @@ bool GraspingModule::configBasics(ResourceFinder &rf)
     compliant=rf.check("compliant", Value("off")).asString();
     use_direct_kin=rf.check("use_direct_kin", Value("off")).asString();
     print_level=rf.check("print_level", Value(0)).asInt();
+    demo=(rf.check("demo", Value("off")).asString()=="on");
 
     go_on=false;
 
@@ -546,22 +558,30 @@ bool GraspingModule::close()
 {
     delete graspComp;
 
-    graspExec->release();
-    delete graspExec;
+    if (demo)
+    {
+        graspExec->release();
+        delete graspExec;
+    }
 
     if (visualization)
+    {
         graspVis->stop();
 
-    delete graspVis;
+        delete graspVis;
+    }
 
     if (portRpc.asPort().isOpen())
         portRpc.close();
 
-    igaze->stopControl();
+    if (visualization)
+    {
+        igaze->stopControl();
 
-    igaze->restoreContext(context_gaze);
+        igaze->restoreContext(context_gaze);
 
-    GazeCtrl.close();
+        GazeCtrl.close();
+    }
 
     return true;
 }
@@ -592,7 +612,7 @@ bool GraspingModule::updateModule()
             times_vis.clear();
     }
 
-    if (executed==false)
+    if (executed==false && demo==true)
     {
         graspExec->getPoses(complete_sol);
         executed_var=executed=graspExec->executeTrajectory(hand_to_move);
@@ -777,15 +797,16 @@ bool GraspingModule::configure(ResourceFinder &rf)
 
     graspComp->init();
 
-    config=configViewer(rf);
-
-    if (config==false)
-        return false;
-
-    graspVis= new GraspVisualization(rate_vis,eye,igaze,executed_var, K, left_or_right, complete_sol, object, hand, hand1, vis_par, quality_right, quality_left);
-
     if (visualization)
     {
+        config=configViewer(rf);
+
+        if (config==false)
+            return false;
+
+        graspVis= new GraspVisualization(rate_vis,eye,igaze,executed_var, K, left_or_right, complete_sol, object, hand, hand1, vis_par, quality_right, quality_left);
+
+
         bool thread_started=graspVis->start();
 
         if (thread_started)
@@ -793,21 +814,24 @@ bool GraspingModule::configure(ResourceFinder &rf)
         else
             yError()<<"[GraspingModule]: Problems in starting the visualization thread!";
     }
-    else
+    //else
+    //{
+    //    graspVis->start();
+    //    graspVis->suspend();
+    //}
+
+    if (demo)
     {
-        graspVis->start();
-        graspVis->suspend();
+        configMovements(rf);
+
+        configGrasp(rf);
+
+        graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
+
+        config=graspExec->configure();
+
+        executed_var=false;
     }
-
-    configMovements(rf);
-
-    configGrasp(rf);
-
-    graspExec= new GraspExecution(movement_par, complete_sol, grasp, lib_context, lib_filename);
-
-    config=graspExec->configure();
-
-    executed_var=false;
 
 
     if (config==false)
@@ -829,6 +853,8 @@ bool GraspingModule::readSuperq(const string &name_obj, Vector &x, const int &di
         }
         return true;
     }
+
+    yDebug()<<"hand "<<x.toString();
 }
 
 /**********************************************************************/

@@ -149,6 +149,8 @@ protected:
     std::string look_object;
 	/** Boolean variable for enabling visualization**/
     bool visualization;
+    /** Boolean variable for enabling movements**/
+    bool demo;
 	/** Boolean variable for switching between online and offline mode**/
     bool mode_online;
 	/** String variable for saving the solutions**/

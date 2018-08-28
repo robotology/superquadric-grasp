@@ -335,7 +335,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[2]=H(1,2);
      g[3]=H(1,0);
 
-     Vector x_min;
+     Vector x_min(3,0.0);
      double minz=10.0;
 
      for (size_t i=0; i<points_on.size(); i++)
@@ -375,7 +375,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  /****************************************************************/
  double grasping_NLP::G_v(Vector &x, int i)
  {
-     Vector g(3,0.0);
+     Vector g(6,0.0);
 
      Matrix H_x,H;
      H_x.resize(4,4);
@@ -397,7 +397,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[2]=H(1,2);
      g[3]=H(1,0);
 
-     Vector x_min;
+     Vector x_min(3,0.0);
      double minz=10.0;
 
      for (size_t i1=0; i1<points_on.size(); i1++)
