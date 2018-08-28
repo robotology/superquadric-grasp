@@ -586,11 +586,14 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    Matrix H=H_x*H_h2w;
    solution.setSubvector(3,dcm2euler(H.transposed()));
 
+
    for (Ipopt::Index i=0; i<3; i++)
        solution[i]=H(i,3);
 
     robot_pose.resize(6,0.0);
-    robot_pose.setSubvector(3,dcm2euler(H));
+    // Correction
+    robot_pose.setSubvector(3,dcm2euler(H.transposed()));
+
 
     if (l_o_r=="right")
     {
