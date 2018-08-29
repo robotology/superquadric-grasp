@@ -645,6 +645,9 @@ Property GraspComputation::fillProperty(const string &l_o_r)
                 bb.addDouble(trajectory_right[i][j]);
         }
         poses.put("trajectory_0_right", bottle.get(2));
+
+        poses.put("cost_0_right", cost_right);
+
     }
 
     if (l_o_r=="both")
@@ -671,6 +674,8 @@ Property GraspComputation::fillProperty(const string &l_o_r)
                 bb.addDouble(trajectory_left[i][j]);
         }
         poses.put("trajectory_0_left", bottle.get(5));
+
+        poses.put("cost_0_left", cost_left);
     }
     if (l_o_r=="left")
     {
@@ -696,6 +701,8 @@ Property GraspComputation::fillProperty(const string &l_o_r)
                 bb.addDouble(trajectory_left[i][j]);
         }
         poses.put("trajectory_0_left", bottle.get(2));
+
+        poses.put("cost_0_left", cost_left);
     }
 
     return poses;

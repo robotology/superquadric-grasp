@@ -244,6 +244,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     cost_vis_r.push_back(graspComp->cost_right);
     cost_vis_l.push_back(graspComp->cost_left);
 
+
     if (graspComp->best_hand=="right")
         cost.push_back(graspComp->cost_right);
     else
@@ -321,7 +322,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         for (int k=0; k<best_hands.size(); k++)
             yInfo()<<"Best hands "<< best_hands[k];
 
-        Property all_sol=putPropertiesTogether(solutions, "pose", "solution");
+        Property all_sol=putPropertiesTogether(solutions);
 
         //if (best_scenario>0)
         //    return solutions[best_scenario];
@@ -332,7 +333,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     }
 }
 /**********************************************************************/
-Property GraspingModule::putPropertiesTogether(deque<Property> &solutions, const string &tag1, const string &tag2)
+Property GraspingModule::putPropertiesTogether(deque<Property> &solutions)
 {
     Property all_sols;
 
@@ -342,18 +343,23 @@ Property GraspingModule::putPropertiesTogether(deque<Property> &solutions, const
         ss<<i;
 
         Bottle all_list;
+        yDebug()<<"sol size "<<solutions.size();
         yDebug()<<"sol "<<solutions[i].toString();
 
-        Bottle *content_list1=solutions[i].find(tag1+"_0_"+graspComp->left_right).asList();
-        Bottle *content_list2=solutions[i].find(tag2+"_0_"+graspComp->left_right).asList();
+        Bottle *content_list1=solutions[i].find("pose_0_"+graspComp->left_right).asList();
+        Bottle *content_list2=solutions[i].find("solution_0_"+graspComp->left_right).asList();
+        double cost=solutions[i].find("cost_0_"+graspComp->left_right).asDouble();
         Bottle &content_list_sup1=all_list.addList();
         Bottle &content_list_sup2=all_list.addList();
 
         content_list_sup1=*content_list1;
         content_list_sup2=*content_list2;
 
-        all_sols.put(tag1+"_"+ss.str()+"_"+graspComp->left_right, all_list.get(0));
-        all_sols.put(tag2+"_"+ss.str()+"_"+graspComp->left_right, all_list.get(1));
+        yDebug()<<"all_list "<<all_list.toString();
+
+        all_sols.put("pose_"+ss.str()+"_"+graspComp->left_right, all_list.get(0));
+        all_sols.put("solution_"+ss.str()+"_"+graspComp->left_right, all_list.get(1));
+        all_sols.put("cost_"+ss.str()+"_"+graspComp->left_right, cost);
 
     }
 
