@@ -60,6 +60,8 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, int &n_handpoi
     H_o2w(1,3)=object[6];
     H_o2w(2,3)=object[7];
 
+    H_o2w=H_o2w.transposed();
+
     euler[0]=hand[8];
     euler[1]=hand[9];
     euler[2]=hand[10];
@@ -584,15 +586,14 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    H_x(2,3)=x[2];
 
    Matrix H=H_x*H_h2w;
-   solution.setSubvector(3,dcm2euler(H.transposed()));
+   solution.setSubvector(3,dcm2euler(H));
 
 
    for (Ipopt::Index i=0; i<3; i++)
        solution[i]=H(i,3);
 
     robot_pose.resize(6,0.0);
-    // Correction
-    robot_pose.setSubvector(3,dcm2euler(H.transposed()));
+    robot_pose.setSubvector(3,dcm2euler(H));
 
 
     if (l_o_r=="right")
