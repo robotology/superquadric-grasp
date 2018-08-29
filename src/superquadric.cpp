@@ -67,6 +67,8 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
     euler[2]=object[7];
     H_o2w.setSubcol(euler,0,3);
 
+    H_o2w=H_o2w.transposed();
+
     euler[0]=hand[8];
     euler[1]=hand[9];
     euler[2]=hand[10];

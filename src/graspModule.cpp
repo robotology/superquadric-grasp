@@ -125,11 +125,12 @@ Property GraspingModule::get_grasping_pose(const Property &estimated_superq, con
 
     t_grasp=graspComp->getTime();
 
-    graspVis->left_or_right=hand_str;
+    if (visualization)
+        graspVis->left_or_right=hand_str;
 
     executed_var=false;
 
-    if (look_object=="on")
+    if (look_object=="on" && visualization==true)
         graspVis->look_object=true;
 
     complete_sols.clear();
@@ -144,6 +145,8 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     Vector obstacle(11,0.0);
     complete_sols.clear();
     solutions.clear();
+
+    best_scenario=-1;
 
     Bottle *dim=estimated_superq.find("dimensions").asList();
 
@@ -205,6 +208,9 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     }
     else
         multiple_superq=false;
+
+    yDebug()<<"object "<<object.toString();
+    yDebug()<<"obstacle "<<obstacles[0].toString();
 
     deque<double> cost;
 
@@ -284,7 +290,8 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
     t_grasp=graspComp->getTime();
 
-    graspVis->left_or_right=hand;
+    if (visualization)
+        graspVis->left_or_right=hand;
 
     complete_sols=solutions;
 
@@ -306,15 +313,53 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
             }
             else if ((i==0) && (cost[i]>0.0))
                 best_scenario=i;
+
+            yDebug()<<"best scenerio "<<best_scenario;
         }
 
         yInfo()<<"Best scenario "<< best_scenario<< "with cost: "<<best_cost;
         for (int k=0; k<best_hands.size(); k++)
             yInfo()<<"Best hands "<< best_hands[k];
 
+        Property all_sol=putPropertiesTogether(solutions, "pose", "solution");
 
-        return solutions[best_scenario];
+        //if (best_scenario>0)
+        //    return solutions[best_scenario];
+        //else
+        //    return solutions[0];
+
+        return all_sol;
     }
+}
+/**********************************************************************/
+Property GraspingModule::putPropertiesTogether(deque<Property> &solutions, const string &tag1, const string &tag2)
+{
+    Property all_sols;
+
+    for (size_t i=0; i<solutions.size(); i++)
+    {
+        stringstream ss;
+        ss<<i;
+
+        Bottle all_list;
+        yDebug()<<"sol "<<solutions[i].toString();
+
+        Bottle *content_list1=solutions[i].find(tag1+"_0_"+graspComp->left_right).asList();
+        Bottle *content_list2=solutions[i].find(tag2+"_0_"+graspComp->left_right).asList();
+        Bottle &content_list_sup1=all_list.addList();
+        Bottle &content_list_sup2=all_list.addList();
+
+        content_list_sup1=*content_list1;
+        content_list_sup2=*content_list2;
+
+        all_sols.put(tag1+"_"+ss.str()+"_"+graspComp->left_right, all_list.get(0));
+        all_sols.put(tag2+"_"+ss.str()+"_"+graspComp->left_right, all_list.get(1));
+
+    }
+
+    yDebug()<<"all sols "<<all_sols.toString();
+
+    return all_sols;
 }
 
 /**********************************************************************/
@@ -502,20 +547,30 @@ bool GraspingModule::check_basket()
 /**********************************************************************/
 bool GraspingModule::look_center()
 {
-    Vector center(3,0.0);
-    center[0]=-0.35;
+    if (visualization)
+    {
+        Vector center(3,0.0);
+        center[0]=-0.35;
 
-    graspVis->igaze->setTrackingMode(false);
+        graspVis->igaze->setTrackingMode(false);
 
-    return graspVis->igaze->lookAtFixationPoint(center);
+        return graspVis->igaze->lookAtFixationPoint(center);
+    }
+    else
+        return false;
 }
 
 /**********************************************************************/
 bool GraspingModule::look_obj()
 {
-    graspVis->look_object=true;
+    if (visualization)
+    {
+        graspVis->look_object=true;
 
-    return true;
+        return true;
+    }
+    else
+        return false;
 }
 
 /**********************************************************************/
@@ -761,16 +816,14 @@ bool GraspingModule::close()
     if (visualization)
     {
         graspVis->stop();
+        delete graspVis;
+        igaze->stopControl();
+        igaze->restoreContext(context_gaze);
+        GazeCtrl.close();
     }
-
-    delete graspVis;
 
     if (portRpc.asPort().isOpen())
         portRpc.close();
-
-    igaze->stopControl();
-    igaze->restoreContext(context_gaze);
-    GazeCtrl.close();
 
     return true;
 }
@@ -801,7 +854,7 @@ bool GraspingModule::updateModule()
             times_vis.clear();
     }
 
-    if (executed==false)
+    if (executed==false && demo==true)
     {
         if (!multiple_superq)
             graspExec->getPoses(complete_sol);

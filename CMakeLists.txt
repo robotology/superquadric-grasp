@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(superquadric-grasp)
 
-find_package(YARP REQUIRED)
+find_package(YARP COMPONENTS OS sig dev math gsl)
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 include(YarpIDL)
 include(YarpInstallationHelpers)
@@ -25,7 +25,7 @@ icubcontrib_set_default_prefix()
 
 find_package(IPOPT REQUIRED)
 
-option(USE_FINGERS_POSITION_CONTROL "Use FingersPositionControl instead of TactileControl" OFF)
+option(USE_FINGERS_POSITION_CONTROL "Use FingersPositionControl instead of TactileControl" ON)
 if(USE_FINGERS_POSITION_CONTROL)
   set(fingers_library FingersPositionControl)
   add_definitions(-DUSE_FINGERS_POSITION_CONTROL)

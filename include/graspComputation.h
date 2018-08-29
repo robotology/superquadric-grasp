@@ -33,8 +33,6 @@ class GraspComputation
 {
 protected:
 
-    std::string left_right;
-
     double tol, constr_viol_tol;
     int max_iter, acceptable_iter, object_provided;
     std::string mu_strategy,nlp_scaling_method;
@@ -60,6 +58,8 @@ protected:
     int print_level;
 
 public:
+
+    std::string left_right;
     
     /** Vector for representing one hand ellipsoid*/
     yarp::sig::Vector &hand;
