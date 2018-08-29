@@ -388,7 +388,7 @@ public:
     bool check_basket();
 
     /**********************************************************************/
-    yarp::os::Property putPropertiesTogether(std::deque<yarp::os::Property> &solutions);
+    void putPropertiesTogether(std::deque<yarp::os::Property> &solutions, const std::string &hand, yarp::os::Property &all_sols);
 
 };
 
