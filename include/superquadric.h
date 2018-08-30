@@ -289,6 +289,12 @@ public:
 
    /****************************************************************/
    std::deque<double> get_final_constr_values() const;
+
+   /****************************************************************/
+   bool notAlignedPose(yarp::sig::Matrix &final_H);
+
+   /****************************************************************/
+   void alignPose(yarp::sig::Matrix &final_H);
 };
 
 

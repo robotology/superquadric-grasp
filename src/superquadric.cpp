@@ -654,6 +654,10 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    H.resize(4,4);
    H=H_x*H_h2w;
 
+   yDebug()<<"H(2,1) "<<H(2,1);
+   if (notAlignedPose(H))
+       alignPose(H);
+
    solution.setSubvector(3,dcm2euler(H));
 
    for (Ipopt::Index i=0; i<3; i++)
@@ -741,6 +745,40 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &x_aux)
     
 
     return values;
+
+}
+
+/****************************************************************/
+bool grasping_NLP::notAlignedPose(Matrix &final_H)
+{
+    if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.3) ||  (final_H(2,1) < -0.6 && final_H(2,1) > -1.0))
+    {
+        yInfo()<<"Not aligned pose ";
+
+        return true;
+    }
+    else
+        return false;
+
+}
+
+/****************************************************************/
+void grasping_NLP::alignPose(Matrix &final_H)
+{
+
+    double theta=acos(final_H(2,1));
+
+    yDebug()<<"theta "<<theta;
+
+    Matrix rot_x(3,3);
+    rot_x.eye();
+    rot_x(1,1)=rot_x(2,2)=final_H(2,1);
+    rot_x(2,1)=sin(theta);
+    rot_x(1,2) = rot_x(2,1)
+;
+    yDebug()<<"H x "<<rot_x.toString();
+
+    final_H.setSubmatrix(rot_x.transposed() * final_H.submatrix(0,2,0,2), 0, 0);
 
 }
 
