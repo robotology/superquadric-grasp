@@ -753,6 +753,8 @@ void GraspComputation::bestPose()
             w2=0.5;
             w3=0.0;
             w4=0.0;
+            average_obstacle_value_l=1;
+            average_obstacle_value_r=1;
         }
         else
         {
@@ -761,6 +763,8 @@ void GraspComputation::bestPose()
             w3=0.0;
             w4=0.0;
             //w2=1.5;
+            average_obstacle_value_l=1;
+            average_obstacle_value_r=1;
         }
     }
     else

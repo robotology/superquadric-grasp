@@ -654,7 +654,7 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    H.resize(4,4);
    H=H_x*H_h2w;
 
-   solution.setSubvector(3,dcm2euler(H.transposed()));
+   solution.setSubvector(3,dcm2euler(H));
 
    for (Ipopt::Index i=0; i<3; i++)
        solution[i]=H(i,3);

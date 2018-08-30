@@ -331,6 +331,7 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
             putPropertiesTogether(solutions, "right", all_sol);
         }
 
+        //Temporary
         //if (best_scenario>0)
         //    return solutions[best_scenario];
         //else
