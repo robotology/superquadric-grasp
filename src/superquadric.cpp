@@ -654,6 +654,7 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    H.resize(4,4);
    H=H_x*H_h2w;
 
+   cout<<endl;
    yDebug()<<"H(2,1) "<<H(2,1);
    if (notAlignedPose(H))
        alignPose(H);
@@ -742,8 +743,6 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &x_aux)
         values.push_back(constr_value);
     }
 
-    
-
     return values;
 
 }
@@ -754,31 +753,65 @@ bool grasping_NLP::notAlignedPose(Matrix &final_H)
     if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.3) ||  (final_H(2,1) < -0.6 && final_H(2,1) > -1.0))
     {
         yInfo()<<"Not aligned pose ";
+        cout<<endl;
+
+        if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.3))
+            top_grasp=true;
+        else
+            top_grasp=false;
 
         return true;
     }
     else
-        return false;
-
+         return false;
 }
 
 /****************************************************************/
 void grasping_NLP::alignPose(Matrix &final_H)
 {
-
-    double theta=acos(final_H(2,1));
-
-    yDebug()<<"theta "<<theta;
-
     Matrix rot_x(3,3);
     rot_x.eye();
-    rot_x(1,1)=rot_x(2,2)=final_H(2,1);
-    rot_x(2,1)=sin(theta);
-    rot_x(1,2) = rot_x(2,1)
-;
-    yDebug()<<"H x "<<rot_x.toString();
 
-    final_H.setSubmatrix(rot_x.transposed() * final_H.submatrix(0,2,0,2), 0, 0);
+    Vector axis(4,0.0);
+    double theta;
+
+    cout<<endl;
+    yDebug()<<"H_final before ";
+    yDebug()<<final_H.toString();
+
+    if (top_grasp)
+    {
+        if (l_o_r=="right")
+            theta=M_PI/2 - acos(-final_H(2,1));
+        else
+            theta=-(M_PI/2 - acos(-final_H(2,1)));
+
+        yDebug()<<"theta "<<theta;
+        rot_x(1,1)=rot_x(2,2)=cos(theta);
+        rot_x(2,1)=sin(theta);
+        rot_x(1,2) = -rot_x(2,1);
+
+    }
+    else
+    {
+        Vector z_axis(3,0.0);
+        z_axis(2)=-1;
+
+        Vector cross_prod=cross(final_H.getCol(1).subVector(0,2), z_axis);
+
+        axis.setSubvector(0,cross_prod/norm(cross_prod));
+
+        axis(3)=acos(dot(final_H.getCol(1).subVector(0,2), z_axis)/(norm(final_H.getCol(1).subVector(0,2))));
+
+        rot_x=axis2dcm(axis).submatrix(0,2,0,2);
+    }
+
+    cout<<endl;
+    yDebug()<<"H final later ";
+    yDebug()<<(rot_x * final_H.submatrix(0,2,0,2)).toString();
+    cout<<endl;
+
+    final_H.setSubmatrix(rot_x * final_H.submatrix(0,2,0,2), 0, 0);
 
 }
 

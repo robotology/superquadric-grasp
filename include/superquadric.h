@@ -68,6 +68,8 @@ public:
     int num_superq;
     int max_superq;
 
+    bool top_grasp;
+
     /** Initialization function
     * @param objectext is the object superquadric
     * @param handext is the hand ellipsoid
