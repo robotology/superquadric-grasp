@@ -82,6 +82,19 @@ public:
     yarp::sig::Vector poseR, solR;
     yarp::sig::Vector poseL, solL;
 
+    // For selecting the best hand
+    std::string robot;
+    double torso_pitch_max;
+    int context_right;
+    int context_left;
+
+
+    yarp::dev::ICartesianControl *icart_right;
+    yarp::dev::ICartesianControl *icart_left;
+
+    yarp::dev::PolyDriver robotDevice_right;
+    yarp::dev::PolyDriver  robotDevice_left;
+
     double &cost_right, &cost_left;
 
     /*******************************************************************************/
@@ -183,6 +196,12 @@ public:
 
     /***********************************************************************/
     void bestPose();
+
+    /***********************************************************************/
+    bool setCartesianRight();
+
+    /***********************************************************************/
+    bool setCartesianLeft();
 };
 
 #endif

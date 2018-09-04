@@ -963,6 +963,11 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     distance1=rf.check("distance_on_z", Value(0.05)).asDouble();
     max_cpu_time=rf.check("max_cpu_time", Value(5.0)).asDouble();
 
+    torso_pitch_max=rf.check("torso_pitch_max", Value(15.0)).asDouble();
+    robot=rf.find("robot").asString().c_str();
+    if(rf.find("robot").isNull())
+        robot="icubSim";
+
     object.resize(11,0.0);
 
     readSuperq("hand",hand,11,this->rf);
@@ -1030,6 +1035,10 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     p2.addDouble(plane[0]); p2.addDouble(plane[1]);
     p2.addDouble(plane[2]); p2.addDouble(plane[3]);
     pose_par.put("plane", plane_bottle.get(0));
+
+    // For selecting the best pose
+    pose_par.put("robot", robot);
+    pose_par.put("torso_pitch_max", torso_pitch_max);
 
     traj_par.put("distance_on_x",distance);
     traj_par.put("distance_on_z",distance1);
