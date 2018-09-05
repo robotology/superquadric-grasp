@@ -139,7 +139,8 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
 
     if (str_hand=="right")
     {
-        if (point[0]< 0 || point[2] < 0)
+        if ((point[0]< sqrt(2.0)/2.0 && point[2] < 0) && (point[2]< sqrt(2.0)/2.0 && point[0] < 0))
+        //if (point[0]< 0 || point[2] < 0)
         {
             yDebug()<<"point added";
             Vector point_tmp(4,1.0);
@@ -152,7 +153,8 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     }
     else
     {
-        if (point[0]< 0 || point[2] > 0)
+        if ((point[0]< sqrt(2.0)/2.0 && point[2] >0) && (point[2]>- sqrt(2.0)/2.0 && point[0] < 0))
+        //if (point[0]< 0 || point[2] > 0)
         {
             Vector point_tmp(4,1.0);
             point_tmp.setSubvector(0,point);
@@ -683,8 +685,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    //H=H_x*H_h2w;  // H_h2w is the identity
 
    cout<<endl;
-   if (notAlignedPose(H_x))
-       alignPose(H_x);
+   //if (notAlignedPose(H_x))
+   //    alignPose(H_x);
 
    solution.setSubvector(3,dcm2euler(H_x));
 
