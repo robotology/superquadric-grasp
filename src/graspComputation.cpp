@@ -606,6 +606,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             final_obstacles_value_R=grasp_nlp->get_final_constr_values();
             poseR=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
+            hand_length_right=grasp_nlp->hand[1];
 
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
@@ -625,6 +626,7 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             final_obstacles_value_L=grasp_nlp->get_final_constr_values();
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
+            hand_length_left=grasp_nlp->hand[1];
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
             Matrix H=euler2dcm(poseL.subVector(3,5));
             cos_zl=abs(H(2,2));
@@ -778,6 +780,8 @@ Property GraspComputation::fillProperty(const string &l_o_r)
 
         poses.put("cost_0_right", cost_right);
 
+        poses.put("hand_length_0_right", hand_length_right);
+
     }
 
     if (l_o_r=="both")
@@ -806,6 +810,8 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         poses.put("trajectory_0_left", bottle.get(5));
 
         poses.put("cost_0_left", cost_left);
+
+        poses.put("hand_length_0_left", hand_length_left);
     }
     if (l_o_r=="left")
     {
@@ -833,6 +839,8 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         poses.put("trajectory_0_left", bottle.get(2));
 
         poses.put("cost_0_left", cost_left);
+
+        poses.put("hand_length_0_left", hand_length_left);
     }
 
     return poses;

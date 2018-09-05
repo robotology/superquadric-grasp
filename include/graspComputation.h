@@ -60,6 +60,8 @@ protected:
 public:
 
     std::string left_right;
+    double hand_length_right;
+    double hand_length_left;
     
     /** Vector for representing one hand ellipsoid*/
     yarp::sig::Vector &hand;

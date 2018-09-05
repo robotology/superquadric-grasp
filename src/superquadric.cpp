@@ -80,7 +80,7 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
 
     for(int i=0; i<(int)sqrt(n_handpoints); i++)
     {
-        for (double theta=-M_PI; theta<=0; theta+=M_PI/((int)sqrt(n_handpoints)))
+        for (double theta=0; theta<=2*M_PI; theta+=M_PI/((int)sqrt(n_handpoints)))
         {
             points_on.push_back(computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta));
         }
@@ -101,29 +101,29 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
 
     if (str_hand=="right")
     {
-        omega=j*2*M_PI/(l);
+        omega=j*M_PI/(l);
 
-        ce=cos(theta);
-        se=sin(theta);
+        ce=cos(-theta - M_PI/4.0);
+        se=sin(-theta - M_PI/4.0);
         co=cos(omega);
         so=sin(omega);
 
         point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
-        point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
-        point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+        point[1]=hand[1] * sign(se)*(pow(abs(se),hand[3]));
+        point[2]=hand[2] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
     }
     else
     {
-        omega=j*2*M_PI/(l);
+        omega=j*M_PI/(l);
 
-        ce=cos(theta+M_PI);
-        se=sin(theta+M_PI/2);
+        ce=cos(theta + 1.0/4.0*M_PI + M_PI);
+        se=sin(theta + 1.0/4.0*M_PI + M_PI);
         co=cos(omega);
         so=sin(omega);
 
         point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
-        point[1]=hand[1] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
-        point[2]=hand[2] * sign(se)*(pow(abs(se),hand[3]));
+        point[1]=hand[1] * sign(se)*(pow(abs(se),hand[3]));
+        point[2]=hand[2] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
     }
 
     Vector point_tr(4,0.0);
@@ -137,12 +137,32 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     euler[2]=hand[7];
     H_h2w.setSubcol(euler,0,3);
 
-    Vector point_tmp(4,1.0);
-    point_tmp.setSubvector(0,point);
-    point_tr=H_h2w*point_tmp;
-    point=point_tr.subVector(0,2);
+    if (str_hand=="right")
+    {
+        if (point[0]< 0 || point[2] < 0)
+        {
+            yDebug()<<"point added";
+            Vector point_tmp(4,1.0);
+            point_tmp.setSubvector(0,point);
+            point_tr=H_h2w*point_tmp;
+            point=point_tr.subVector(0,2);
+            return point;
+        }
+        yDebug()<<"point NOT added";
+    }
+    else
+    {
+        if (point[0]< 0 || point[2] > 0)
+        {
+            Vector point_tmp(4,1.0);
+            point_tmp.setSubvector(0,point);
+            point_tr=H_h2w*point_tmp;
+            point=point_tr.subVector(0,2);
+            return point;
+        }
+    }
 
-    return point;
+
 }
 
 /****************************************************************/
@@ -361,11 +381,11 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[0]=H(2,2);
      g[1]=H(0,0);
-     g[2]=H(1,2);
+     g[2]=H(2,1);
      g[3]=H(1,0);
      g[4]=H(0,2);
 
-     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
+     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
      
 
      Vector x_min;
@@ -414,6 +434,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
              g[7+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
          }
      }
+
+     //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
 
      return true;
  }
@@ -528,8 +550,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
             {
                 for (size_t i=0; i<n ; i++)
                 {
-                    jCol[j*(m) + i]= i;
-                    iRow[j*(m)+ i] = j;
+                    jCol[j*(n) + i]= i;
+                    iRow[j*(n)+ i] = j;
                 }
             }
         }
