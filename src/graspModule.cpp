@@ -358,6 +358,7 @@ void GraspingModule::putPropertiesTogether(deque<Property> &solutions, const str
         double cost=solutions[i].find("cost_0_"+hand).asDouble();
         Bottle &content_list_sup1=all_list.addList();
         Bottle &content_list_sup2=all_list.addList();
+        double dim=solutions[i].find("hand_length_0_"+hand).asDouble();
 
         content_list_sup1=*content_list1;
         content_list_sup2=*content_list2;
@@ -367,6 +368,7 @@ void GraspingModule::putPropertiesTogether(deque<Property> &solutions, const str
         all_sols.put("pose_"+ss.str()+"_"+hand, all_list.get(0));
         all_sols.put("solution_"+ss.str()+"_"+hand, all_list.get(1));
         all_sols.put("cost_"+ss.str()+"_"+hand, cost);
+        all_sols.put("hand_length_"+ss.str()+"_"+hand, dim);
 
     }
 
