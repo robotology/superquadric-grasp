@@ -137,6 +137,7 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
 
     omega=j*M_PI/(l);
 
+    se=sin(theta);
     ce=cos(theta);
     co=cos(omega);
     so=sin(omega);
@@ -444,7 +445,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[0]=H(2,2);
      g[1]=H(0,0);
-     g[2]=H(1,2);
+     g[2]=H(2,1);
      g[3]=H(1,0);
      g[4]=H(0,2);
 
