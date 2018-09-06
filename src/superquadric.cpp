@@ -82,9 +82,45 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
     {
         for (double theta=0; theta<=2*M_PI; theta+=M_PI/((int)sqrt(n_handpoints)))
         {
-            points_on.push_back(computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta));
+            Vector point=computePointsHand(hand,i, (int)sqrt(n_handpoints), str_hand, theta);
+            Vector point_tr(4,0.0);
+
+            euler[0]=hand[8];
+            euler[1]=hand[9];
+            euler[2]=hand[10];
+            H_h2w=euler2dcm(euler);
+            euler[0]=hand[5];
+            euler[1]=hand[6];
+            euler[2]=hand[7];
+            H_h2w.setSubcol(euler,0,3);
+
+            if (str_hand=="right")
+            {
+                if (point[0] + point[2] < 0)
+                {
+                    Vector point_tmp(4,1.0);
+                    point_tmp.setSubvector(0,point);
+                    point_tr=H_h2w*point_tmp;
+                    point=point_tr.subVector(0,2);
+                    points_on.push_back(point);
+                }
+            }
+            else
+            {
+                if (point[0] - point[2] < 0)
+                {
+                    Vector point_tmp(4,1.0);
+                    point_tmp.setSubvector(0,point);
+                    point_tr=H_h2w*point_tmp;
+                    point=point_tr.subVector(0,2);
+                    points_on.push_back(point);
+                }
+            }
+
         }
     }
+
+    yDebug()<<"Points on hand size "<<points_on.size();
 
     aux_objvalue=0.0;
 }
@@ -99,72 +135,17 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
     if (findMax(object.subVector(0,2))> findMax(hand.subVector(0,2)))
         hand[1]=findMax(object.subVector(0,2));
 
-    if (str_hand=="right")
-    {
-        omega=j*M_PI/(l);
+    omega=j*M_PI/(l);
 
-        ce=cos(-theta - M_PI/4.0);
-        se=sin(-theta - M_PI/4.0);
-        co=cos(omega);
-        so=sin(omega);
+    ce=cos(theta);
+    co=cos(omega);
+    so=sin(omega);
 
-        point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
-        point[1]=hand[1] * sign(se)*(pow(abs(se),hand[3]));
-        point[2]=hand[2] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
-    }
-    else
-    {
-        omega=j*M_PI/(l);
+    point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
+    point[1]=hand[1] * sign(se)*(pow(abs(se),hand[3]));
+    point[2]=hand[2] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
 
-        ce=cos(theta + 1.0/4.0*M_PI + M_PI);
-        se=sin(theta + 1.0/4.0*M_PI + M_PI);
-        co=cos(omega);
-        so=sin(omega);
-
-        point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
-        point[1]=hand[1] * sign(se)*(pow(abs(se),hand[3]));
-        point[2]=hand[2] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
-    }
-
-    Vector point_tr(4,0.0);
-
-    euler[0]=hand[8];
-    euler[1]=hand[9];
-    euler[2]=hand[10];
-    H_h2w=euler2dcm(euler);
-    euler[0]=hand[5];
-    euler[1]=hand[6];
-    euler[2]=hand[7];
-    H_h2w.setSubcol(euler,0,3);
-
-    if (str_hand=="right")
-    {
-        if ((point[0]< sqrt(2.0)/2.0 && point[2] < 0) && (point[2]< sqrt(2.0)/2.0 && point[0] < 0))
-        //if (point[0]< 0 || point[2] < 0)
-        {
-            yDebug()<<"point added";
-            Vector point_tmp(4,1.0);
-            point_tmp.setSubvector(0,point);
-            point_tr=H_h2w*point_tmp;
-            point=point_tr.subVector(0,2);
-            return point;
-        }
-        yDebug()<<"point NOT added";
-    }
-    else
-    {
-        if ((point[0]< sqrt(2.0)/2.0 && point[2] >0) && (point[2]>- sqrt(2.0)/2.0 && point[0] < 0))
-        //if (point[0]< 0 || point[2] > 0)
-        {
-            Vector point_tmp(4,1.0);
-            point_tmp.setSubvector(0,point);
-            point_tr=H_h2w*point_tmp;
-            point=point_tr.subVector(0,2);
-            return point;
-        }
-    }
-
-
+    return point;
 }
 
 /****************************************************************/

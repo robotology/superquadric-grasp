@@ -218,7 +218,7 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
     int points=newOptions.find("n_pointshand").asInt();
     if (newOptions.find("n_pointshand").isNull() && (first_time==true))
     {
-        n_pointshand=46;
+        n_pointshand=49;
     }
     else if (!newOptions.find("n_pointshand").isNull())
     {
