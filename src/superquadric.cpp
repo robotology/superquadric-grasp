@@ -420,7 +420,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
-     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
+     //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
 
      return true;
  }

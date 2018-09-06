@@ -875,11 +875,7 @@ void GraspComputation::bestPose()
         average_obstacle_value_l /= final_obstacles_value_L.size();
     }
 
-    w1=0.1;
-    w2=0.1;
-    w3=1.0;
-
-    if (multiple_superq==false)
+    if (final_obstacles_value_L.size()== 0 || final_obstacles_value_R.size()==0)
     {
         w4=0.0;
         average_obstacle_value_l=1;
@@ -893,6 +889,7 @@ void GraspComputation::bestPose()
         else
             w4=5.0;
     }
+
 
     if (norm(poseR)!=0.0)
     {
