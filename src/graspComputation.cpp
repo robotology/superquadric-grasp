@@ -921,6 +921,12 @@ void GraspComputation::bestPose()
         yDebug()<<"|| Pos error right       :"<<error_position_r;
         yDebug()<<"|| Orient error right    :"<<error_orientation_r;
 
+        if (error_position_r > 0.01)
+        {
+            w3=0.01;
+            w2=10;
+        }
+
         cost_right=w1*final_value_R + w2*error_position_r + w3*error_orientation_r + w4 /average_obstacle_value_r;
     }
     else
@@ -946,6 +952,12 @@ void GraspComputation::bestPose()
         Vector orientation_error_vector = dcm2axis(orientation_error_matrix);
 
         error_orientation_l=norm(orientation_error_vector.subVector(0,2))* fabs(sin(orientation_error_vector(3)));
+
+        if (error_position_l > 0.01)
+        {
+            w3=0.01;
+            w2=10;
+        }
 
         cost_left=w1*final_value_L + w2*error_position_l + w3*error_orientation_l + w4 / average_obstacle_value_l;
 

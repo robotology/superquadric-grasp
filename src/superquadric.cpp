@@ -96,12 +96,13 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
 
             if (str_hand=="right")
             {
-                if (point[0] + point[2] < 0)
+                if (point[0] + point[2] <= 0)
                 {
                     Vector point_tmp(4,1.0);
                     point_tmp.setSubvector(0,point);
                     point_tr=H_h2w*point_tmp;
                     point=point_tr.subVector(0,2);
+                    yDebug()<<point.toString();
                     points_on.push_back(point);
                 }
             }
@@ -113,6 +114,8 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
                     point_tmp.setSubvector(0,point);
                     point_tr=H_h2w*point_tmp;
                     point=point_tr.subVector(0,2);
+
+                    yDebug()<<point.toString();
                     points_on.push_back(point);
                 }
             }
@@ -120,7 +123,7 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
         }
     }
 
-    //yDebug()<<"Points on hand size "<<points_on.size();
+    yDebug()<<"Points on hand size "<<points_on.size();
 
     aux_objvalue=0.0;
 }
@@ -417,7 +420,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
-     //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
+     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
 
      return true;
  }
