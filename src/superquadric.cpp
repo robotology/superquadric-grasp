@@ -120,7 +120,7 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
         }
     }
 
-    yDebug()<<"Points on hand size "<<points_on.size();
+    //yDebug()<<"Points on hand size "<<points_on.size();
 
     aux_objvalue=0.0;
 }
@@ -368,8 +368,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[2]=H(2,1);
      g[3]=H(1,0);
      g[4]=H(0,2);
-
-     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4]<<g[5];
      
 
      Vector x_min;
@@ -575,8 +573,6 @@ void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, co
     bounds_constr.resize(7 + max_superq - 1,2);
     readMatrix("bounds_constr_"+left_or_right,bounds_constr,7 + max_superq - 1 , rf);
 
-    yDebug()<<">>>>>>>>>>>>>>>>>> BOUNDS CONSTR "<<bounds_constr.toString();
-
     plane.resize(4,1);
 
     l_o_r=left_or_right;
@@ -661,10 +657,6 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    euler[1]=x[1];
    euler[2]=x[2];
    H_x.setSubcol(euler,0,3);
-
-   //Matrix H;
-   //H.resize(4,4);
-   //H=H_x*H_h2w;  // H_h2w is the identity
 
    cout<<endl;
    //if (notAlignedPose(H_x))

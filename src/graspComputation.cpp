@@ -608,16 +608,10 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             which_hand=grasp_nlp->get_hand();
             hand_length_right=grasp_nlp->hand[1];
 
-            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseR.toString(3,3).c_str();
-            yInfo()<<"[GraspComputation]: Stretched hand is: "<<which_hand.toString(3,3).c_str();
-
-            Matrix H=euler2dcm(poseR.subVector(3,5));
-            cos_zr=abs(H(2,2));
-            cos_xr=1- abs(H(0,2)) * abs(H(0,2));
-
-            yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
-
-            yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_R;
+            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: ";
+            yInfo()<<"|| "<<poseR.toString(3,3).c_str();
+            yInfo()<<"[GraspComputation]: Stretched hand is: ";
+            yInfo()<<"|| "<<which_hand.toString(3,3).c_str();
         }
         else
         {
@@ -627,14 +621,11 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             poseL=grasp_nlp->robot_pose;
             which_hand=grasp_nlp->get_hand();
             hand_length_left=grasp_nlp->hand[1];
-            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: "<<poseL.toString(3,3).c_str();
-            Matrix H=euler2dcm(poseL.subVector(3,5));
-            cos_zl=abs(H(2,2));
-            cos_xl=1- abs(H(0,2)) * abs(H(0,2));
+            yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: ";
+            yInfo()<<"|| "<<poseL.toString(3,3).c_str();
+            yInfo()<<"[GraspComputation]: Stretched hand is: ";
+            yInfo()<<"|| "<<which_hand.toString(3,3).c_str();
 
-            yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
-
-            yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_L;
         }
 
         return true;
@@ -884,72 +875,24 @@ void GraspComputation::bestPose()
         average_obstacle_value_l /= final_obstacles_value_L.size();
     }
 
-    yDebug()<<"Multiple superq "<<multiple_superq;
+    w1=0.1;
+    w2=0.1;
+    w3=1.0;
 
-    if (!multiple_superq)
+    if (multiple_superq==false)
     {
-        if ((cos_zr <=0.8) && (cos_zl<=0.85))
-        {
-            w1=2.0;
-            //w1=1.0;
-            //w1=0.01;
-            w2=0.5;
-            w3=0.0;
-            w4=0.0;
-            average_obstacle_value_l=1;
-            average_obstacle_value_r=1;
-        }
-        else
-        {
-            w1=1.0;
-            w2=2.5;
-            w3=0.0;
-            w4=0.0;
-            //w2=1.5;
-            average_obstacle_value_l=1;
-            average_obstacle_value_r=1;
-        }
+        w4=0.0;
+        average_obstacle_value_l=1;
+        average_obstacle_value_r=1;
     }
     else
     {
-        //if ((cos_zr <=0.8) && (cos_zl<=0.85))
-        //{
-            //w1=2.0;
-            //w1=1.0;
-        w1=0.1;
-        w2=0.1;
-        w3=1.0;
         if (average_obstacle_value_l>50  || average_obstacle_value_r>50)
             w4=0.0;
+
         else
             w4=5.0;
-        /*}
-        else
-        {
-            w1=1.0;
-            w2=2.5;
-            w3=2.5;
-            if (average_obstacle_value_l>50  || average_obstacle_value_r>50)
-                w4=0.0;
-            else
-                w4=5.0;
-            //w2=1.5;
-        }*/
     }
-
-    /*if (norm(poseR)!=0.0)
-    {
-        cost_right=w1*final_value_R + w2*cos_zr + w3*cos_xr + w4 /average_obstacle_value_r;
-    }
-    else
-        cost_right=0.0;
-
-    if (norm(poseL)!=0.0)
-    {
-        cost_left=w1*final_value_L + w2*cos_zl + w3*cos_xl + w4 / average_obstacle_value_l;
-    }
-    else
-        cost_left=0.0;*/
 
     if (norm(poseR)!=0.0)
     {
@@ -959,34 +902,24 @@ void GraspComputation::bestPose()
         w4=1.0;
 
         Vector x_d = poseR.subVector(0,2);
-        yDebug()<<"poseR "<<poseR.toString();
         Vector o_d = dcm2axis(euler2dcm(poseR.subVector(3,5)));
         Vector x_d_hat, o_d_hat, q_d_hat;
 
-
-
         icart_right->askForPose(x_d, o_d, x_d_hat, o_d_hat, q_d_hat);
-
-        yDebug()<<"x_d_hat "<<x_d_hat.toString();
-        yDebug()<<"o_d_hat "<<o_d_hat.toString();
-
 
 
         error_position_r=norm(x_d - x_d_hat);
 
         Matrix tmp = axis2dcm(o_d_hat).submatrix(0,2, 0,2);
 
-        yDebug()<<"x_d "<<x_d.toString();
-        yDebug()<<"o_d "<<o_d.toString();
-        yDebug()<<"tmp "<<tmp.toString();
-
         Matrix orientation_error_matrix =  euler2dcm(poseR.subVector(3,5)).submatrix(0,2, 0,2) * tmp.transposed();
         Vector orientation_error_vector = dcm2axis(orientation_error_matrix);
 
         error_orientation_r=norm(orientation_error_vector.subVector(0,2))* fabs(sin(orientation_error_vector(3)));
 
-        yDebug()<<"Pos error right "<<error_position_r;
-        yDebug()<<"Orient error right "<<error_orientation_r;
+        cout<<endl;
+        yDebug()<<"|| Pos error right       :"<<error_position_r;
+        yDebug()<<"|| Orient error right    :"<<error_orientation_r;
 
         cost_right=w1*final_value_R + w2*error_position_r + w3*error_orientation_r + w4 /average_obstacle_value_r;
     }
@@ -1000,7 +933,6 @@ void GraspComputation::bestPose()
         w3=1.0;
         w4=1.0;
 
-        yDebug()<<"w3 "<<w3;
         Vector x_d=poseL.subVector(0,2);
         Vector o_d=dcm2axis(euler2dcm(poseL.subVector(3,5)));
         Vector x_d_hat, o_d_hat, q_d_hat;
@@ -1017,60 +949,53 @@ void GraspComputation::bestPose()
 
         cost_left=w1*final_value_L + w2*error_position_l + w3*error_orientation_l + w4 / average_obstacle_value_l;
 
-        yDebug()<<"Pos error left "<<error_position_l;
-        yDebug()<<"Orient error left "<<error_orientation_l;
+        cout<<endl;
+        yDebug()<<"|| Pos error left        :"<<error_position_l;
+        yDebug()<<"|| Orient error left     :"<<error_orientation_l;
     }
     else
         cost_left=0.0;
 
     cout<<endl;
-    yDebug()<<"Final value r:              "<<final_value_R;
-    yDebug()<<"w1 * final value r:         "<<w1*final_value_R;
-    yDebug()<<"cos zr:                     "<<cos_zr;
-    yDebug()<<"w2 * cos zr:                "<<w2*cos_zr;
-    yDebug()<<"cos xr:                     "<<cos_xr;
-    yDebug()<<"w3 * cos xr:                "<<w3*cos_xr;
-    yDebug()<<"obstacle r:                 "<<average_obstacle_value_r;
-    yDebug()<<"w4 / obstacle r:            "<<w4 / average_obstacle_value_r;
-    yDebug()<<"w2 * error_posit  r:        "<<w2*error_position_r;
-    yDebug()<<"w3 * error_orient r:        "<<w3*error_orientation_r;
-    yInfo()<<"cost right:                  "<<cost_right;
+    yInfo()<<"|| Final value r              :"<<final_value_R;
+    yInfo()<<"|| w1 * final value r         :"<<w1*final_value_R;
+    yInfo()<<"|| obstacle r                 :"<<average_obstacle_value_r;
+    yInfo()<<"|| w4 / obstacle r            :"<<w4 / average_obstacle_value_r;
+    yInfo()<<"|| w2 * error_posit  r        :"<<w2*error_position_r;
+    yInfo()<<"|| w3 * error_orient r        :"<<w3*error_orientation_r;
+    yInfo()<<"|| cost right                 :"<<cost_right;
 
     cout<<endl;
     cout<<endl;
-    yDebug()<<"Final value l:              "<<final_value_L;
-    yDebug()<<"w1 * final value l:         "<<w1*final_value_L;
-    yDebug()<<"cos zl:                     "<<cos_zl;
-    yDebug()<<"w2 * cos zl:                "<<w2*cos_zl;
-    yDebug()<<"cos xl:                     "<<cos_xl;
-    yDebug()<<"w3 * cos xl:                "<<w3*cos_xl;
-    yDebug()<<"obstacle l:                 "<<average_obstacle_value_l;
-    yDebug()<<"w4 / obstacle l:            "<<w4 / average_obstacle_value_l;
-    yDebug()<<"w2 * error_posit  l:        "<<w2*error_position_l;
-    yDebug()<<"w3 * error_orient l:        "<<w3*error_orientation_l;
-    yInfo()<<"cost left:                   "<<cost_left;
+    yInfo()<<"|| Final value l              :"<<final_value_L;
+    yInfo()<<"|| w1 * final value l         :"<<w1*final_value_L;
+    yInfo()<<"|| obstacle l                 :"<<average_obstacle_value_l;
+    yInfo()<<"|| w4 / obstacle l            :"<<w4 / average_obstacle_value_l;
+    yInfo()<<"|| w2 * error_posit  l        :"<<w2*error_position_l;
+    yInfo()<<"|| w3 * error_orient l        :"<<w3*error_orientation_l;
+    yInfo()<<"|| cost left                  :"<<cost_left;
     cout<<endl;
     cout<<endl;
 
 
     if ((cost_right<=cost_left) && (cost_right>0.0) && (cost_left>0.))
     {
-        yInfo()<<"Best pose for grasping is right hand";
+        yInfo()<<"||  Best pose for grasping is right hand";
         best_hand="right";
     }
     else if ((cost_left<=cost_right) && (cost_right!=0.0) && (cost_left!=0.0))
     {
-        yInfo()<<"Best pose for grasping is left hand";
+        yInfo()<<"||  Best pose for grasping is left hand";
         best_hand="left";
     }
     else if (cost_right>0.0)
     {
-        yInfo()<<"Best pose for grasping is right hand";
+        yInfo()<<"||  Best pose for grasping is right hand";
         best_hand="right";
     }
     else if (cost_left>0.0)
     {
-        yInfo()<<"Best pose for grasping is left hand";
+        yInfo()<<"||  Best pose for grasping is left hand";
         best_hand="left";
     }
 
