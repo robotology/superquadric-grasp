@@ -356,7 +356,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
     double p_dot_p=dot(point, point);
     double p_dot_d=dot(point, d);
 
-    yDebug()<<"Point "<<point.toString();
+    /*yDebug()<<"Point "<<point.toString();
     yDebug()<<"D "<<d.toString();
 
     yDebug()<<"d_dot_d   :"<<d_dot_d;
@@ -364,14 +364,14 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
     yDebug()<<"p_dot_p   :"<<d_dot_d;
 
     yDebug()<<"theta            :"<<theta;
-    yDebug()<<"abs(acos(p_dot_d))  :"<<abs(acos(p_dot_d));
+    yDebug()<<"abs(acos(p_dot_d))  :"<<abs(acos(p_dot_d));*/
 
     // Nb the extra multiplication is for selecting only half cone
     if (p_dot_d > 0)
     {
         //if (abs(acos(p_dot_d))<=theta)
         //{
-            yDebug()<<"value "<<(p_dot_d  - (d_dot_d) * (p_dot_p) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
+            //yDebug()<<"value "<<(p_dot_d  - (d_dot_d) * (p_dot_p) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
             return  ((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
         //}
         //else
@@ -479,22 +479,22 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      yDebug()<<z_hand.toString();
      yDebug()<<"norm x hand "<<norm(z_hand);*/
 
-     cout<<endl;
+     //cout<<endl;
 
      yDebug()<<"F_side_x   "<<F_side_x;
      yDebug()<<"F_top_x    "<<F_top_x;
 
-     yDebug()<<"F_side_y   "<<F_side_y;
-     yDebug()<<"F_top_y    "<<F_top_y;
+     //yDebug()<<"F_side_y   "<<F_side_y;
+     //yDebug()<<"F_top_y    "<<F_top_y;
 
-     yDebug()<<"F_side_z   "<<F_side_z;
-     yDebug()<<"F_top_z    "<<F_top_z;
+     //yDebug()<<"F_side_z   "<<F_side_z;
+     //yDebug()<<"F_top_z    "<<F_top_z;
 
 
 
-     g[0]= F_top_x; // * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
-     g[1]= F_top_y; // * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
-     g[2]= F_top_z; // * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
+     g[0]= F_side_x * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[1]= F_side_y * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
+     g[2]= F_side_z * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
      
 
@@ -640,7 +640,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      F_top_y=coneImplicitFunction(y_hand, d_top_y, theta_top_y);
      F_top_z=coneImplicitFunction(z_hand, d_top_z, theta_top_z);
 
-     yDebug()<<"d_side_x ";
+     /*yDebug()<<"d_side_x ";
      yDebug()<<d_side_x.toString();
 
      yDebug()<<"x_hand ";
@@ -657,24 +657,23 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      yDebug()<<"z_hand ";
      yDebug()<<z_hand.toString();
-     yDebug()<<"norm x hand "<<norm(z_hand);
+     yDebug()<<"norm x hand "<<norm(z_hand);*/
 
-     cout<<endl;
+     //cout<<endl;
 
-     yDebug()<<"F_side_x   "<<F_side_x;
-     yDebug()<<"F_top_x    "<<F_top_x;
+     //yDebug()<<"F_side_x   "<<F_side_x;
+     //yDebug()<<"F_top_x    "<<F_top_x;
 
-     yDebug()<<"F_side_y   "<<F_side_y;
-     yDebug()<<"F_top_y    "<<F_top_y;
+     //yDebug()<<"F_side_y   "<<F_side_y;
+     //yDebug()<<"F_top_y    "<<F_top_y;
 
-     yDebug()<<"F_side_z   "<<F_side_z;
-     yDebug()<<"F_top_z    "<<F_top_z;
+     //yDebug()<<"F_side_z   "<<F_side_z;
+     //yDebug()<<"F_top_z    "<<F_top_z;
 
 
-
-     g[0]= F_top_x; // * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
-     g[1]= F_top_y; // * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
-     g[2]= F_top_z; // * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
+     g[0]= F_side_x * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[1]= F_side_y * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
+     g[2]= F_side_z * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
      Vector x_min(3,0.0);
      double minz=10.0;
