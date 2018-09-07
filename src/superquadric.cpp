@@ -415,9 +415,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
          d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
 
-         d_top_x[0]= 0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
          d_top_y[0]= 0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
-         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
+         d_top_z[0]= 0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
      }
      else
      {
@@ -588,9 +588,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
          d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
 
-         d_top_x[0]= 0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
-         d_top_y[0]= 0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
-         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
+         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_y[0]=0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
+         d_top_z[0]=0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
      }
      else
      {
@@ -672,9 +672,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
 
 
-     g[0]= F_side_x; // * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
-     g[1]= F_side_y; // * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
-     g[2]= F_side_z; // * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
+     g[0]= F_top_x; // * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[1]= F_top_y; // * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
+     g[2]= F_top_z; // * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
      Vector x_min(3,0.0);
      double minz=10.0;
