@@ -297,6 +297,9 @@ public:
 
    /****************************************************************/
    void alignPose(yarp::sig::Matrix &final_H);
+
+   /****************************************************************/
+ 	double coneImplicitFunction(const yarp::sig::Vector &point, yarp::sig::Vector &d, double theta);
 };
 
 
