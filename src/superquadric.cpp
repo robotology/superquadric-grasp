@@ -438,12 +438,12 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      theta_top_y=.02;
      theta_top_z=.02;*/
 
-     theta_side_x=M_PI/8.0;
+     theta_side_x=M_PI/16.0;
      theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/8.0;
-     theta_top_x=M_PI/8.0;
-     theta_top_y=M_PI/8.0;
-     theta_top_z=M_PI/8.0;
+     theta_side_z=M_PI/16.0;
+     theta_top_x=M_PI/16.0;
+     theta_top_y=M_PI/16.0;
+     theta_top_z=M_PI/16.0;
 
      double F_side_x, F_side_y, F_side_z;
      double F_top_x, F_top_y, F_top_z;
@@ -492,9 +492,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
 
 
-     g[0]= F_side_x; // * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
-     g[1]= F_side_y; // * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
-     g[2]= F_side_z; // * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
+     g[0]= F_top_x; // * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[1]= F_top_y; // * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
+     g[2]= F_top_z; // * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
      
 
@@ -611,12 +611,12 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      theta_top_y=.02;
      theta_top_z=.02;*/
 
-     theta_side_x=M_PI/8.0;
+     theta_side_x=M_PI/16.0;
      theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/8.0;
-     theta_top_x=M_PI/8.0;
-     theta_top_y=M_PI/8.0;
-     theta_top_z=M_PI/8.0;
+     theta_side_z=M_PI/16.0;
+     theta_top_x=M_PI/16.0;
+     theta_top_y=M_PI/16.0;
+     theta_top_z=M_PI/16.0;
 
      double F_side_x, F_side_y, F_side_z;
      double F_top_x, F_top_y, F_top_z;
