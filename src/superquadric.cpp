@@ -210,7 +210,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      F(x,points_on,new_x);
      obj_value=aux_objvalue;
 
-     yDebug()<<"object value "<<obj_value;
+     //yDebug()<<"object value "<<obj_value;
 
      return true;
  }
@@ -540,6 +540,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      //g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
+
      g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
      if (num_superq>0)
@@ -555,7 +556,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
-     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
+     //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
 
      return true;
  }
@@ -731,7 +732,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
-     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
+     //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
 
      if (num_superq>0)
      {
