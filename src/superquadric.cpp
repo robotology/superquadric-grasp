@@ -534,14 +534,20 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      x_tmp[5]=x[5];
 
      if (l_o_r=="right")
-        robotPose=x_tmp.subVector(0,2)-hand[0]*(H.getCol(2).subVector(0,2));
+     {
+        robotPose=x_tmp.subVector(0,2)-hand[0]*z_hand;
+        robotPose = robotPose-hand[0]*x_hand;
+     }
      else
-         robotPose=x_tmp.subVector(0,2)+hand[0]*(H.getCol(2).subVector(0,2));
+     {
+         robotPose=x_tmp.subVector(0,2)+hand[0]*z_hand;
+         robotPose = robotPose-hand[0]*x_hand;
+     }
 
-     //g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+     g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
 
-     g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+     //g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
      if (num_superq>0)
      {
@@ -556,7 +562,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
-     //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
+     //yDebug()<<"g4 "<<g[4];
 
      return true;
  }
@@ -711,26 +717,21 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      x_tmp[2]=x[2];
 
      if (l_o_r=="right")
-        robotPose=x_tmp-hand[0]*(H.getCol(2).subVector(0,2));
-     else
-         robotPose=x_tmp+hand[0]*(H.getCol(2).subVector(0,2));
-
-     //g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
-
-     g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
-
-     if (num_superq>0)
      {
-         for (size_t j=0; j<num_superq; j++)
-         {
-             g[5+j]=0;
-
-             for(size_t i=0;i<points_on.size();i++)
-                g[5+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
-
-             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
-         }
+        robotPose=x_tmp.subVector(0,2)-hand[0]*z_hand;
+        robotPose = robotPose-hand[0]*x_hand;
      }
+     else
+     {
+         robotPose=x_tmp.subVector(0,2)+hand[0]*z_hand;
+         robotPose = robotPose-hand[0]*x_hand;
+     }
+
+     g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+
+     //g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+
+
 
      //yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
 
@@ -918,8 +919,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    H_x.setSubcol(euler,0,3);
 
    cout<<endl;
-   //if (notAlignedPose(H_x))
-   //    alignPose(H_x);
+   if (notAlignedPose(H_x))
+       alignPose(H_x);
 
    solution.setSubvector(3,dcm2euler(H_x));
 
@@ -932,13 +933,13 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
     if (l_o_r=="right")
     {
         robot_pose.setSubvector(0,solution.subVector(0,2)-(hand[0]+displacement[2])*(H_x.getCol(2).subVector(0,2)));
-        robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H_x.getCol(0).subVector(0,2)));
-        robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H_x.getCol(1).subVector(0,2)));
+        robot_pose.setSubvector(0,robot_pose.subVector(0,2)-(hand[0] + displacement[0])*(H_x.getCol(0).subVector(0,2)));
+        robot_pose.setSubvector(0,robot_pose.subVector(0,2)-(displacement[1])*(H_x.getCol(1).subVector(0,2)));
     }
     else
     {
         robot_pose.setSubvector(0,solution.subVector(0,2)+(hand[0]+displacement[2])*(H_x.getCol(2).subVector(0,2)));
-        robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[0]*(H_x.getCol(0).subVector(0,2)));
+        robot_pose.setSubvector(0,robot_pose.subVector(0,2)-(hand[0] + displacement[0])*(H_x.getCol(0).subVector(0,2)));
         robot_pose.setSubvector(0,robot_pose.subVector(0,2)-displacement[1]*(H_x.getCol(1).subVector(0,2)));
     }
 
