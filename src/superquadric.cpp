@@ -210,6 +210,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      F(x,points_on,new_x);
      obj_value=aux_objvalue;
 
+     yDebug()<<"object value "<<obj_value;
+
      return true;
  }
 
@@ -237,7 +239,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      xv[0]=H(0,3);
      xv[1]=H(1,3);
      xv[2]=H(2,3);
+
+
      value*=object[0]*object[1]*object[2]/points_on.size();
+     //value/=points_on.size();
 
      aux_objvalue=value;
  }
@@ -280,6 +285,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
         value+= pow( pow(f_v(object,x,points_on[i]),object[3])-1,2 );
 
      value*=object[0]*object[1]*object[2]/points_on.size();
+     //value/=points_on.size();
 
      return value;
  }
@@ -371,7 +377,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
     {
         //if (abs(acos(p_dot_d))<=theta)
         //{
-            //yDebug()<<"value "<<(p_dot_d  - (d_dot_d) * (p_dot_p) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
+            //cout<<endl;
+            //yDebug()<<"diff angoli "<< (-acos(p_dot_d)+theta);
+            //yDebug()<<"diff cos "<< ((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta)));
             return  ((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
         //}
         //else
@@ -438,9 +446,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      theta_top_y=.02;
      theta_top_z=.02;*/
 
-     theta_side_x=M_PI/16.0;
+     theta_side_x=M_PI/8.0;
      theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/16.0;
+     theta_side_z=M_PI/8.0;
      theta_top_x=M_PI/16.0;
      theta_top_y=M_PI/16.0;
      theta_top_z=M_PI/16.0;
@@ -481,14 +489,14 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      //cout<<endl;
 
-     yDebug()<<"F_side_x   "<<F_side_x;
+     /*yDebug()<<"F_side_x   "<<F_side_x;
      yDebug()<<"F_top_x    "<<F_top_x;
 
-     //yDebug()<<"F_side_y   "<<F_side_y;
-     //yDebug()<<"F_top_y    "<<F_top_y;
+     yDebug()<<"F_side_y   "<<F_side_y;
+     yDebug()<<"F_top_y    "<<F_top_y;
 
-     //yDebug()<<"F_side_z   "<<F_side_z;
-     //yDebug()<<"F_top_z    "<<F_top_z;
+     yDebug()<<"F_side_z   "<<F_side_z;
+     yDebug()<<"F_top_z    "<<F_top_z;*/
 
 
 
@@ -530,7 +538,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      else
          robotPose=x_tmp.subVector(0,2)+hand[0]*(H.getCol(2).subVector(0,2));
 
-     g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+     //g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+
+     g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
 
      if (num_superq>0)
      {
@@ -545,7 +555,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
-     yDebug()<<"g "<<g[0] <<g[1] << g[2];
+     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
 
      return true;
  }
@@ -611,9 +621,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      theta_top_y=.02;
      theta_top_z=.02;*/
 
-     theta_side_x=M_PI/16.0;
+     theta_side_x=M_PI/8.0;
      theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/16.0;
+     theta_side_z=M_PI/8.0;
      theta_top_x=M_PI/16.0;
      theta_top_y=M_PI/16.0;
      theta_top_z=M_PI/16.0;
@@ -704,7 +714,24 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      else
          robotPose=x_tmp+hand[0]*(H.getCol(2).subVector(0,2));
 
-     g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+     //g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+
+     g[4]=(pow(f_v2(object,x_tmp, robotPose), object[3]) -1);
+
+     if (num_superq>0)
+     {
+         for (size_t j=0; j<num_superq; j++)
+         {
+             g[5+j]=0;
+
+             for(size_t i=0;i<points_on.size();i++)
+                g[5+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+
+             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+         }
+     }
+
+     yDebug()<<"g "<<g[0] <<g[1] << g[2]<<g[3]<<g[4];
 
      if (num_superq>0)
      {
