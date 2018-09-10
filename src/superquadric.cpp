@@ -380,7 +380,22 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
             //cout<<endl;
             //yDebug()<<"diff angoli "<< (-acos(p_dot_d)+theta);
             //yDebug()<<"diff cos "<< ((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta)));
-            return  ((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
+
+            /*if (((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta))) > 0.02)
+            {
+                yDebug()<<"A> 0 !!!";
+                yDebug()<<"point "<<point.toString();
+                yDebug()<<"d "<<d.toString();
+                yDebug()<<"p dot d"<<(p_dot_d * p_dot_d);
+                yDebug()<<"norm d "<<(d_dot_d);
+                yDebug()<<"norm p "<<(p_dot_p);
+
+                yDebug()<<"cos theta "<<cos(theta);
+            }*/
+
+            yDebug()<<"p_dot_d "<<p_dot_d;
+            //return  ((p_dot_d * p_dot_d)  - (d_dot_d) * (p_dot_p) * (cos(theta)) * (cos(theta))) * (-abs(acos(p_dot_d))+theta);
+            return  ((p_dot_d - 1)) * (-abs(acos(p_dot_d))+theta);
         //}
         //else
         //    return abs(acos(p_dot_d));
@@ -919,8 +934,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    H_x.setSubcol(euler,0,3);
 
    cout<<endl;
-   if (notAlignedPose(H_x))
-       alignPose(H_x);
+   //if (notAlignedPose(H_x))
+   //    alignPose(H_x);
 
    solution.setSubvector(3,dcm2euler(H_x));
 
