@@ -881,14 +881,14 @@ void GraspComputation::bestPose()
         average_obstacle_value_l=1;
         average_obstacle_value_r=1;
     }
-    else
+    /*else
     {
         if (average_obstacle_value_l>50  || average_obstacle_value_r>50)
             w4=0.0;
 
         else
             w4=5.0;
-    }
+    }*/
 
 
     if (norm(poseR)!=0.0)
@@ -896,7 +896,7 @@ void GraspComputation::bestPose()
         w1=1.0;
         w2=1.0;
         w3=1.0;
-        w4=1.0;
+        w4=1e-5;
 
         Vector x_d = poseR.subVector(0,2);
         Vector o_d = dcm2axis(euler2dcm(poseR.subVector(3,5)));
@@ -934,7 +934,7 @@ void GraspComputation::bestPose()
         w1=1.0;
         w2=1.0;
         w3=1.0;
-        w4=1.0;
+        w4=1e-5;
 
         Vector x_d=poseL.subVector(0,2);
         Vector o_d=dcm2axis(euler2dcm(poseL.subVector(3,5)));

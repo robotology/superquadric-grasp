@@ -184,7 +184,7 @@ public:
      * @return a part of the cost function value
      */
      /********************************************************************/
-     double f_v2(yarp::sig::Vector &obj, yarp::sig::Vector &x, yarp::sig::Vector &point_tr);
+     double f_v2(yarp::sig::Vector &obj, yarp::sig::Vector &point_tr);
 
      /** Gradient of the cost function of the nonlinear problem
      * @param x is the variable
