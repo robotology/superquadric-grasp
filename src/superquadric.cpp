@@ -416,10 +416,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
      theta_side_x=M_PI/8.0;
-     theta_side_y=M_PI/16.0;
+     theta_side_y=M_PI/8.0;
      theta_side_z=M_PI/8.0;
      theta_top_x=M_PI/16.0;
-     theta_top_y=M_PI/16.0;
+     theta_top_y=M_PI/8.0;
      theta_top_z=M_PI/16.0;
 
      double F_side_x, F_side_y, F_side_z;
