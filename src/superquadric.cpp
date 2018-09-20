@@ -207,7 +207,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  bool grasping_NLP::eval_f(Ipopt::Index n, const Ipopt::Number *x, bool new_x,
                 Ipopt::Number &obj_value)
  {
-     F_new(x,points_on);
+     F_new(x);
 
      obj_value=aux_objvalue;
 
@@ -217,7 +217,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
  /****************************************************************/
- double grasping_NLP::F_new(const Ipopt::Number *x, deque<Vector> &points_on)
+ double grasping_NLP::F_new(const Ipopt::Number *x)
  {
      /* Test new problem */
      euler[0]=x[3];
@@ -277,11 +277,15 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      aux_objvalue = dist_x_top * dist_x_side + dist_y_top * dist_y_side + dist_z_top * dist_z_side;
 
+     // Test: only side
+     //aux_objvalue =  dist_x_side + dist_y_side +  dist_z_side;
+
+
      //aux_objvalue=value;
  }
 
  /****************************************************************/
- double grasping_NLP::F_new_v(Vector &x, deque<Vector> &points_on)
+ double grasping_NLP::F_new_v(Vector &x)
  {
      /* Test new problem */
      euler[0]=x[3];
@@ -339,7 +343,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      dist_y_top = (dot(y_hand, d_top_y) - 1 ) * (dot(y_hand, d_top_y) - 1 );
      dist_z_top = (dot(z_hand, d_top_z) - 1 ) * (dot(z_hand, d_top_z) - 1 );
 
+     // Test: only side
+
      return dist_x_top * dist_x_side + dist_y_top * dist_y_side + dist_z_top * dist_z_side;
+     //return  dist_x_side + dist_y_side +  dist_z_side;
  }
 
  /****************************************************************/
@@ -451,11 +458,11 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      {
          x_tmp[j]=x_tmp[j]+eps;
 
-         grad_p=F_new_v(x_tmp,points_on);
+         grad_p=F_new_v(x_tmp);
 
          x_tmp[j]=x_tmp[j]-eps;
 
-         grad_n=F_new_v(x_tmp,points_on);
+         grad_n=F_new_v(x_tmp);
 
          grad_f[j]=(grad_p-grad_n)/eps;
      }
@@ -525,12 +532,12 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;
      }
 
-     theta_side_x=M_PI/8.0;
-     theta_side_y=M_PI/8.0;
-     theta_side_z=M_PI/8.0;
-     theta_top_x=M_PI/16.0;
-     theta_top_y=M_PI/8.0;
-     theta_top_z=M_PI/16.0;
+     theta_side_x=M_PI/4.0;
+     theta_side_y=M_PI/4.0;
+     theta_side_z=M_PI/4.0;
+     theta_top_x=M_PI/4.0;
+     theta_top_y=M_PI/4.0;
+     theta_top_z=M_PI/4.0;
 
      double F_side_x, F_side_y, F_side_z;
      double F_top_x, F_top_y, F_top_z;
@@ -622,6 +629,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[5]=F(x,points_on, H);
 
+     yDebug()<<"g[0] "<<g[0]<<"g[1] "<<g[1]<<"g[2] "<<g[2]<<"g[3] "<<g[3]<<"g[4] "<<g[4]<<"g[5] "<<g[5];
+
 
      if (num_superq>0)
      {
@@ -692,12 +701,13 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;
      }
 
-     theta_side_x=M_PI/8.0;
-     theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/8.0;
-     theta_top_x=M_PI/16.0;
-     theta_top_y=M_PI/8.0;
-     theta_top_z=M_PI/16.0;
+     theta_side_x=M_PI/4.0;
+     theta_side_y=M_PI/4.0;
+     theta_side_z=M_PI/4.0;
+     theta_top_x=M_PI/4.0;
+     theta_top_y=M_PI/4.0;
+     theta_top_z=M_PI/4.0;
+
 
      double F_side_x, F_side_y, F_side_z;
      double F_top_x, F_top_y, F_top_z;

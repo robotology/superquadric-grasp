@@ -302,10 +302,10 @@ public:
     double coneImplicitFunction(const yarp::sig::Vector &point, yarp::sig::Vector &d, double theta);
 
     /****************************************************************/
-    double F_new_v(yarp::sig::Vector &x, std::deque<yarp::sig::Vector> &points_on);
+    double F_new_v(yarp::sig::Vector &x);
 
     /****************************************************************/
-    double F_new(const Ipopt::Number *x, std::deque<yarp::sig::Vector> &points_on);
+    double F_new(const Ipopt::Number *x);
 };
 
 
