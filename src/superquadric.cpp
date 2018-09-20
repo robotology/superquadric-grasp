@@ -364,7 +364,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
     //return  ((p_dot_d - 1)) * (-abs(acos(p_dot_d))+theta);
 
-    return  (-p_dot_d + cos(theta));
+    return  (-(p_dot_d - 1)) *(-p_dot_d + cos(theta));
 
  }
 
