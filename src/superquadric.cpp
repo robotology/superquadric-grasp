@@ -157,9 +157,9 @@ bool grasping_NLP::get_nlp_info(Ipopt::Index &n, Ipopt::Index &m,Ipopt::Index &n
 {
     n=6;
     if (num_superq==0)
-        m=5;
+        m=6;
     else
-        m=5+(num_superq);
+        m=6+(num_superq);
 
     nnz_jac_g=n*m;
     nnz_h_lag=0;
@@ -207,7 +207,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  bool grasping_NLP::eval_f(Ipopt::Index n, const Ipopt::Number *x, bool new_x,
                 Ipopt::Number &obj_value)
  {
-     F(x,points_on,new_x);
+     F_new(x,points_on);
+
      obj_value=aux_objvalue;
 
      //yDebug()<<"object value "<<obj_value;
@@ -216,13 +217,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
  /****************************************************************/
- double grasping_NLP::F(const Ipopt::Number *x, deque<Vector> &points_on, bool new_x)
+ double grasping_NLP::F_new(const Ipopt::Number *x, deque<Vector> &points_on)
  {
-     double value=0.0;
-
-     for(size_t i=0;i<points_on.size();i++)
-         value+= pow( pow(f(object,x,points_on[i]),object[3])-1,2 );
-
+     /* Test new problem */
      euler[0]=x[3];
      euler[1]=x[4];
      euler[2]=x[5];
@@ -235,23 +232,134 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      Matrix H(4,4);
      H=H_x*H_h2w;
 
-     Vector xv(3,0.0);
-     xv[0]=H(0,3);
-     xv[1]=H(1,3);
-     xv[2]=H(2,3);
+     Vector x_hand(3), y_hand(3), z_hand(3);
+
+     x_hand=(H.getCol(0).subVector(0,2));
+
+     y_hand=(H.getCol(1).subVector(0,2));
+
+     z_hand=(H.getCol(2).subVector(0,2));
+
+     Vector d_side_x(3), d_side_y(3), d_side_z(3);
+     Vector d_top_x(3), d_top_y(3), d_top_z(3);
+
+     if (l_o_r=="right")
+     {
+         d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
+         d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
+
+         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_y[0]= 0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
+         d_top_z[0]= 0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
+     }
+     else
+     {
+         d_side_x[0]=-0.7; d_side_x[1]= 0.7; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]=-1.0;
+         d_side_z[0]=-0.7; d_side_z[1]=-0.7; d_side_z[2]= 0.0;
+
+         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_y[0]= 0.0; d_top_y[1]=-1.0; d_top_y[2]= 0.0;
+         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;
+     }
+
+     double dist_x_top, dist_y_top, dist_z_top;
+     double dist_x_side, dist_y_side, dist_z_side;
+
+     dist_x_side = (dot(x_hand, d_side_x) - 1 ) * (dot(x_hand, d_side_x) - 1 );
+     dist_y_side = (dot(y_hand, d_side_y) - 1 ) * (dot(y_hand, d_side_y) - 1 );
+     dist_z_side = (dot(z_hand, d_side_z) - 1 ) * (dot(z_hand, d_side_z) - 1 );
+
+     dist_x_top = (dot(x_hand, d_top_x) - 1 ) * (dot(x_hand, d_top_x) - 1 );
+     dist_y_top = (dot(y_hand, d_top_y) - 1 ) * (dot(y_hand, d_top_y) - 1 );
+     dist_z_top = (dot(z_hand, d_top_z) - 1 ) * (dot(z_hand, d_top_z) - 1 );
+
+     aux_objvalue = dist_x_top * dist_x_side + dist_y_top * dist_y_side + dist_z_top * dist_z_side;
+
+     //aux_objvalue=value;
+ }
+
+ /****************************************************************/
+ double grasping_NLP::F_new_v(Vector &x, deque<Vector> &points_on)
+ {
+     /* Test new problem */
+     euler[0]=x[3];
+     euler[1]=x[4];
+     euler[2]=x[5];
+     H_x=euler2dcm(euler);
+     euler[0]=x[0];
+     euler[1]=x[1];
+     euler[2]=x[2];
+     H_x.setSubcol(euler,0,3);
+
+     Matrix H(4,4);
+     H=H_x*H_h2w;
+
+     Vector x_hand(3), y_hand(3), z_hand(3);
+
+     x_hand=(H.getCol(0).subVector(0,2));
+
+     y_hand=(H.getCol(1).subVector(0,2));
+
+     z_hand=(H.getCol(2).subVector(0,2));
+
+     Vector d_side_x(3), d_side_y(3), d_side_z(3);
+     Vector d_top_x(3), d_top_y(3), d_top_z(3);
+
+     if (l_o_r=="right")
+     {
+         d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
+         d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
+
+         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_y[0]= 0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
+         d_top_z[0]= 0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
+     }
+     else
+     {
+         d_side_x[0]=-0.7; d_side_x[1]= 0.7; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]=-1.0;
+         d_side_z[0]=-0.7; d_side_z[1]=-0.7; d_side_z[2]= 0.0;
+
+         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_y[0]= 0.0; d_top_y[1]=-1.0; d_top_y[2]= 0.0;
+         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;
+     }
+
+     double dist_x_top, dist_y_top, dist_z_top;
+     double dist_x_side, dist_y_side, dist_z_side;
+
+     dist_x_side = (dot(x_hand, d_side_x) - 1 ) * (dot(x_hand, d_side_x) - 1 );
+     dist_y_side = (dot(y_hand, d_side_y) - 1 ) * (dot(y_hand, d_side_y) - 1 );
+     dist_z_side = (dot(z_hand, d_side_z) - 1 ) * (dot(z_hand, d_side_z) - 1 );
+
+     dist_x_top = (dot(x_hand, d_top_x) - 1 ) * (dot(x_hand, d_top_x) - 1 );
+     dist_y_top = (dot(y_hand, d_top_y) - 1 ) * (dot(y_hand, d_top_y) - 1 );
+     dist_z_top = (dot(z_hand, d_top_z) - 1 ) * (dot(z_hand, d_top_z) - 1 );
+
+     return dist_x_top * dist_x_side + dist_y_top * dist_y_side + dist_z_top * dist_z_side;
+ }
+
+ /****************************************************************/
+ double grasping_NLP::F(const Ipopt::Number *x, deque<Vector> &points_on, Matrix &H_x)
+ {
+     double value=0.0;
+
+     for(size_t i=0;i<points_on.size();i++)
+         value+= pow( pow(f(object,x,points_on[i], H_x),object[3])-1,2 );
 
 
      value*=object[0]*object[1]*object[2]/points_on.size();
      //value/=points_on.size();
 
-     aux_objvalue=value;
+     return value;
  }
 
  /****************************************************************/
- double grasping_NLP::f(Vector &obj, const Ipopt::Number *x, Vector &point)
+ double grasping_NLP::f(Vector &obj, const Ipopt::Number *x, Vector &point, Matrix &H_x)
  {
-     Matrix H(4,4);
-
      Vector point_tr(4,0.0);
      Vector point_tmp(4,1.0);
      point_tmp.setSubvector(0,point);
@@ -277,12 +385,12 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
  /****************************************************************/
- double grasping_NLP::F_v(Vector &x, deque<Vector> &points_on)
+ double grasping_NLP::F_v(Vector &x, deque<Vector> &points_on, Matrix &H_x)
  {
      double value=0.0;
 
      for(size_t i=0;i<points_on.size();i++)
-        value+= pow( pow(f_v(object,x,points_on[i]),object[3])-1,2 );
+        value+= pow( pow(f_v(object,x,points_on[i],H_x),object[3])-1,2 );
 
      value*=object[0]*object[1]*object[2]/points_on.size();
      //value/=points_on.size();
@@ -291,7 +399,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
  }
 
   /****************************************************************/
- double grasping_NLP::f_v(Vector &obj, Vector &x, Vector &point)
+ double grasping_NLP::f_v(Vector &obj, Vector &x, Vector &point, Matrix &H_x)
  {
      Vector point_tr(4,0.0);
      Vector point_tmp(4,1.0);
@@ -343,11 +451,11 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      {
          x_tmp[j]=x_tmp[j]+eps;
 
-         grad_p=F_v(x_tmp,points_on);
+         grad_p=F_new_v(x_tmp,points_on);
 
          x_tmp[j]=x_tmp[j]-eps;
 
-         grad_n=F_v(x_tmp,points_on);
+         grad_n=F_new_v(x_tmp,points_on);
 
          grad_f[j]=(grad_p-grad_n)/eps;
      }
@@ -512,16 +620,19 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,robotPose), object[3]) -1);
 
 
+     g[5]=F(x,points_on, H);
+
+
      if (num_superq>0)
      {
          for (size_t j=0; j<num_superq; j++)
          {
-             g[5+j]=0;
+             g[6+j]=0;
 
              for(size_t i=0;i<points_on.size();i++)
-                g[5+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+                g[6+j]+= pow(f(obstacles[j],x,points_on[i], H),obstacles[j][3])-1;
 
-             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
          }
      }
 
@@ -607,7 +718,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      F_top_y=coneImplicitFunction(y_hand, d_top_y, theta_top_y);
      F_top_z=coneImplicitFunction(z_hand, d_top_z, theta_top_z);
 
-      g[0]= F_side_x * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[0]= F_side_x * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
      g[1]= F_side_y * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
      g[2]= F_side_z * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
@@ -648,16 +759,18 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object, robotPose), object[3]) -1);
 
+     g[5]=F_v(x,points_on, H);
+
      if (num_superq>0)
      {
          for (size_t j=0; j<num_superq; j++)
          {
-             g[5+j]=0;
+             g[6+j]=0;
 
              for(size_t i=0;i<points_on.size();i++)
-                g[5+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+                g[6+j]+= pow(f_v(obstacles[j],x,points_on[i], H),obstacles[j][3])-1;
 
-             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[6+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
          }
      }
      return g[i];
@@ -855,10 +968,10 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
 
     final_F_value=0.0;
 
-    for(size_t i=0;i<points_on.size();i++)
-    {
-        final_F_value+= pow( pow(f_v(object,solution,points_on[i]),object[3])-1,2 );
-    }
+   // for(size_t i=0;i<points_on.size();i++)
+    //{
+    //    final_F_value+= pow( pow(f_v(object,solution,points_on[i]),object[3])-1,2 );
+    //}
 
     final_F_value/=points_on.size();
 

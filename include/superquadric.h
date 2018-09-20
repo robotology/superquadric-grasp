@@ -149,7 +149,7 @@ public:
     * @retun the cost function value
     */
     /****************************************************************/
-     double F(const Ipopt::Number *x, std::deque<yarp::sig::Vector> &points_on, bool new_x);
+     double F(const Ipopt::Number *x, std::deque<yarp::sig::Vector> &points_on, yarp::sig::Matrix &H_x);
 
      /** Auxiliary function for computing cost function of the nonlinear problem to be solved with ipopt
     * @param obj is the Vector of the object
@@ -158,7 +158,7 @@ public:
     * @return a part of the cost function value
     */
     /****************************************************************/
-     double f(yarp::sig::Vector &obj, const Ipopt::Number *x, yarp::sig::Vector &point);
+     double f(yarp::sig::Vector &obj, const Ipopt::Number *x, yarp::sig::Vector &point, yarp::sig::Matrix &H_x);
 
     /** Auxiliary function for computing the gradient of cost function of the nonlinear problem
     * @param x is the variable
@@ -166,7 +166,7 @@ public:
     * @return cost function value
     */
     /****************************************************************/
-     double F_v(yarp::sig::Vector &x, std::deque<yarp::sig::Vector> &points_on);
+     double F_v(yarp::sig::Vector &x, std::deque<yarp::sig::Vector> &points_on, yarp::sig::Matrix &H_x);
 
      /** Auxiliary function for computing the gradient cost function of the nonlinear problem
      * @param obj is the Vector of the object
@@ -175,7 +175,7 @@ public:
      * @return a part of the cost function value
      */
      /****************************************************************/
-     double f_v(yarp::sig::Vector &obj, yarp::sig::Vector &x, yarp::sig::Vector &point);
+     double f_v(yarp::sig::Vector &obj, yarp::sig::Vector &x, yarp::sig::Vector &point, yarp::sig::Matrix &H_x);
 
      /** Auxiliary function for computing the gradient cost function of the nonlinear problem
      * @param obj is the Vector of the object
@@ -299,7 +299,13 @@ public:
    void alignPose(yarp::sig::Matrix &final_H);
 
    /****************************************************************/
- 	double coneImplicitFunction(const yarp::sig::Vector &point, yarp::sig::Vector &d, double theta);
+    double coneImplicitFunction(const yarp::sig::Vector &point, yarp::sig::Vector &d, double theta);
+
+    /****************************************************************/
+    double F_new_v(yarp::sig::Vector &x, std::deque<yarp::sig::Vector> &points_on);
+
+    /****************************************************************/
+    double F_new(const Ipopt::Number *x, std::deque<yarp::sig::Vector> &points_on);
 };
 
 
