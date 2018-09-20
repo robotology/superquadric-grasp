@@ -365,6 +365,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
     //return  ((p_dot_d - 1)) * (-abs(acos(p_dot_d))+theta);
 
     return  (-(p_dot_d - 1)) *(-p_dot_d + cos(theta));
+    //return  (-p_dot_d + cos(theta));
 
  }
 
@@ -582,7 +583,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
      theta_side_x=M_PI/8.0;
-     theta_side_y=M_PI/16.0;
+     theta_side_y=M_PI/8.0;
      theta_side_z=M_PI/8.0;
      theta_top_x=M_PI/16.0;
      theta_top_y=M_PI/8.0;
