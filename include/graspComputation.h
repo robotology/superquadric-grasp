@@ -95,6 +95,10 @@ protected:
 	/** Print level for the Ipopt optimization problem**/
     int print_level;
 
+    double hand_length_left;
+
+    double hand_length_right;
+
 public:
     
     /** Vector for representing one hand ellipsoid*/

@@ -489,6 +489,8 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
 
             yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_R;
+
+            hand_length_right=grasp_nlp->hand[1];
         }
         else
         {
@@ -504,6 +506,8 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             yInfo()<<"[GraspComputation]: Inner product between z_hand and z_root"<<abs(H(2,2));
 
             yInfo()<<"[GraspComputation]: Final cost function value"<<final_value_L;
+
+            hand_length_left=grasp_nlp->hand[1];
         }
 
         return true;
@@ -602,14 +606,14 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         {
             bottle_right_pose.addDouble(poseR[i]);
         }
-        poses.put("pose_right", bottle.get(0));
+        poses.put("pose_0_right", bottle.get(0));
 
         Bottle &bottle_right_sol=bottle.addList();
         for (size_t i=0; i<solR.size(); i++)
         {
             bottle_right_sol.addDouble(solR[i]);
         }
-        poses.put("solution_right", bottle.get(1));
+        poses.put("solution_0_right", bottle.get(1));
 
         Bottle &bottle_right_traj=bottle.addList();
         for (size_t i=0; i<trajectory_right.size(); i++)
@@ -618,7 +622,11 @@ Property GraspComputation::fillProperty(const string &l_o_r)
             for (size_t j=0; j<trajectory_right[i].size();j++)
                 bb.addDouble(trajectory_right[i][j]);
         }
-        poses.put("trajectory_right", bottle.get(2));
+        poses.put("trajectory_0_right", bottle.get(2));
+
+        poses.put("cost_0_right", 0.1);
+
+        poses.put("hand_length_0_right", hand_length_right);
     }
 
     if (l_o_r=="both")
@@ -628,14 +636,14 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         {
             bottle_left_pose.addDouble(poseL[i]);
         }
-        poses.put("pose_left", bottle.get(3));
+        poses.put("pose_0_left", bottle.get(3));
 
         Bottle &bottle_left_sol=bottle.addList();
         for (size_t i=0; i<solL.size(); i++)
         {
             bottle_left_sol.addDouble(solL[i]);
         }
-        poses.put("solution_left", bottle.get(4));
+        poses.put("solution_0_left", bottle.get(4));
 
         Bottle &bottle_left_traj=bottle.addList();
         for (size_t i=0; i<trajectory_left.size(); i++)
@@ -644,7 +652,13 @@ Property GraspComputation::fillProperty(const string &l_o_r)
             for (size_t j=0; j<trajectory_left[i].size();j++)
                 bb.addDouble(trajectory_left[i][j]);
         }
-        poses.put("trajectory_left", bottle.get(5));
+        poses.put("trajectory_0_left", bottle.get(5));
+
+        poses.put("cost_0_left", 0.1);
+
+        poses.put("hand_length_0_left", hand_length_left);
+
+
     }
     if (l_o_r=="left")
     {
@@ -653,14 +667,14 @@ Property GraspComputation::fillProperty(const string &l_o_r)
         {
             bottle_left_pose.addDouble(poseL[i]);
         }
-        poses.put("pose_left", bottle.get(0));
+        poses.put("pose_0_left", bottle.get(0));
 
         Bottle &bottle_left_sol=bottle.addList();
         for (size_t i=0; i<solL.size(); i++)
         {
             bottle_left_sol.addDouble(solL[i]);
         }
-        poses.put("solution_left", bottle.get(1));
+        poses.put("solution_0_left", bottle.get(1));
 
         Bottle &bottle_left_traj=bottle.addList();
         for (size_t i=0; i<trajectory_left.size(); i++)
@@ -669,7 +683,11 @@ Property GraspComputation::fillProperty(const string &l_o_r)
             for (size_t j=0; j<trajectory_left[i].size();j++)
                 bb.addDouble(trajectory_left[i][j]);
         }
-        poses.put("trajectory_left", bottle.get(2));
+        poses.put("trajectory_0_left", bottle.get(2));
+
+        poses.put("cost_0_left", 0.1);
+
+        poses.put("hand_length_0_left", hand_length_left);
     }
 
     return poses;
