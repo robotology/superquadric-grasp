@@ -469,7 +469,11 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     grasp_nlp->init(object, which_hand, n_pointshand, l_o_r);
     grasp_nlp->configure(this->rf,l_o_r, displacement, plane);
 
+    double t0=Time::now();
+
     Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
+
+    yDebug()<<"Computation time "<<Time::now() - t0;
 
     if(status==Ipopt::Solve_Succeeded)
     {
