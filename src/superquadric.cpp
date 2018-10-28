@@ -399,31 +399,40 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      if (l_o_r=="right")
      {
-         d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= 0;
-         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
-         d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
+         d_side_x[0]=-1.0; d_side_x[1]=0.0; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= 0.7; d_side_y[2]= -0.7;
+         d_side_z[0]= 0.0; d_side_z[1]= -0.7; d_side_z[2]= -0.7;
 
-         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         //d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= 0;
+         //d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
+         //d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
+
+        /* d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
          d_top_y[0]= 0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
-         d_top_z[0]= 0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
+         d_top_z[0]= 0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;*/
      }
      else
      {
-         d_side_x[0]=-0.7; d_side_x[1]= 0.7; d_side_x[2]= 0;
-         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]=-1.0;
-         d_side_z[0]=-0.7; d_side_z[1]=-0.7; d_side_z[2]= 0.0;
+         d_side_x[0]=-1.0; d_side_x[1]= 0.0; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= -0.7; d_side_y[2]=-0.7;
+         d_side_z[0]=0.0; d_side_z[1]=-0.7; d_side_z[2]= 0.7;
 
-         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         /*d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
          d_top_y[0]= 0.0; d_top_y[1]=-1.0; d_top_y[2]= 0.0;
-         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;
+         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;*/
      }
 
-     theta_side_x=M_PI/8.0;
-     theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/8.0;
-     theta_top_x=M_PI/8.0;
+
+
+     theta_side_x=M_PI/4.0;
+     theta_side_y=M_PI/4.0;
+     theta_side_z=M_PI/4.0;
+     //theta_side_x=M_PI/8.0;
+     //theta_side_y=M_PI/16.0;
+     //theta_side_z=M_PI/8.0;
+     /*theta_top_x=M_PI/8.0;
      theta_top_y=M_PI/16.0;
-     theta_top_z=M_PI/8.0;
+     theta_top_z=M_PI/8.0;*/
 
      double F_side_x, F_side_y, F_side_z;
      double F_top_x, F_top_y, F_top_z;
@@ -440,9 +449,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      F_side_y=coneImplicitFunction(y_hand, d_side_y, theta_side_y);
      F_side_z=coneImplicitFunction(z_hand, d_side_z, theta_side_z);
 
-     F_top_x=coneImplicitFunction(x_hand, d_top_x, theta_top_x);
-     F_top_y=coneImplicitFunction(y_hand, d_top_y, theta_top_y);
-     F_top_z=coneImplicitFunction(z_hand, d_top_z, theta_top_z);
+     //F_top_x=coneImplicitFunction(x_hand, d_top_x, theta_top_x);
+     //F_top_y=coneImplicitFunction(y_hand, d_top_y, theta_top_y);
+     //F_top_z=coneImplicitFunction(z_hand, d_top_z, theta_top_z);
 
      /*yDebug()<<"x_hand ";
      yDebug()<<x_hand.toString();
@@ -468,9 +477,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      yDebug()<<"F_top_z    "<<F_top_z;*/
 
 
-     g[0]= F_side_x * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
-     g[1]= F_side_y * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
-     g[2]= F_side_z * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
+     g[0]= F_side_x;// * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[1]= F_side_y;// * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
+     g[2]= F_side_z;// * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
      Vector x_min;
      double minz=10.0;
@@ -563,31 +572,39 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      if (l_o_r=="right")
      {
-         d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= 0;
-         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
-         d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
+         d_side_x[0]=-1.0; d_side_x[1]=0.0; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= 0.7; d_side_y[2]= -0.7;
+         d_side_z[0]= 0.0; d_side_z[1]= -0.7; d_side_z[2]= -0.7;
 
-         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
-         d_top_y[0]=0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
-         d_top_z[0]=0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;
+         //d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= 0;
+         //d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]= -1.0;
+         //d_side_z[0]= 0.7; d_side_z[1]= -0.7; d_side_z[2]= 0;
+
+        /* d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         d_top_y[0]= 0.0; d_top_y[1]= 1.0; d_top_y[2]= 0.0;
+         d_top_z[0]= 0.7; d_top_z[1]= 0.0; d_top_z[2]=-0.7;*/
      }
      else
      {
-         d_side_x[0]=-0.7; d_side_x[1]= 0.7; d_side_x[2]= 0;
-         d_side_y[0]= 0.0; d_side_y[1]= 0.0; d_side_y[2]=-1.0;
-         d_side_z[0]=-0.7; d_side_z[1]=-0.7; d_side_z[2]= 0.0;
+         d_side_x[0]=-1.0; d_side_x[1]= 0.0; d_side_x[2]= 0;
+         d_side_y[0]= 0.0; d_side_y[1]= -0.7; d_side_y[2]=-0.7;
+         d_side_z[0]=0.0; d_side_z[1]=-0.7; d_side_z[2]= 0.7;
 
-         d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
+         /*d_top_x[0]=-0.7; d_top_x[1]= 0.0; d_top_x[2]=-0.7;
          d_top_y[0]= 0.0; d_top_y[1]=-1.0; d_top_y[2]= 0.0;
-         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;
+         d_top_z[0]=-0.7; d_top_z[1]= 0.0; d_top_z[2]= 0.7;*/
      }
 
-     theta_side_x=M_PI/8.0;
-     theta_side_y=M_PI/16.0;
-     theta_side_z=M_PI/8.0;
-     theta_top_x=M_PI/8.0;
+
+     theta_side_x=M_PI/4.0;
+     theta_side_y=M_PI/4.0;
+     theta_side_z=M_PI/4.0;
+     //theta_side_x=M_PI/8.0;
+     //theta_side_y=M_PI/16.0;
+     //theta_side_z=M_PI/8.0;
+     /*theta_top_x=M_PI/8.0;
      theta_top_y=M_PI/16.0;
-     theta_top_z=M_PI/8.0;
+     theta_top_z=M_PI/8.0;*/
 
      double F_side_x, F_side_y, F_side_z;
      double F_top_x, F_top_y, F_top_z;
@@ -604,13 +621,37 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      F_side_y=coneImplicitFunction(y_hand, d_side_y, theta_side_y);
      F_side_z=coneImplicitFunction(z_hand, d_side_z, theta_side_z);
 
-     F_top_x=coneImplicitFunction(x_hand, d_top_x, theta_top_x);
-     F_top_y=coneImplicitFunction(y_hand, d_top_y, theta_top_y);
-     F_top_z=coneImplicitFunction(z_hand, d_top_z, theta_top_z);
+     //F_top_x=coneImplicitFunction(x_hand, d_top_x, theta_top_x);
+     //F_top_y=coneImplicitFunction(y_hand, d_top_y, theta_top_y);
+     //F_top_z=coneImplicitFunction(z_hand, d_top_z, theta_top_z);
 
-      g[0]= F_side_x * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
-     g[1]= F_side_y * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
-     g[2]= F_side_z * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
+     /*yDebug()<<"x_hand ";
+     yDebug()<<x_hand.toString();
+     yDebug()<<"norm x hand "<<norm(x_hand);
+
+     yDebug()<<"y_hand ";
+     yDebug()<<y_hand.toString();
+     yDebug()<<"norm x hand "<<norm(y_hand);
+
+     yDebug()<<"z_hand ";
+     yDebug()<<z_hand.toString();
+     yDebug()<<"norm x hand "<<norm(z_hand);*/
+
+     //cout<<endl;
+
+     /*yDebug()<<"F_side_x   "<<F_side_x;
+     yDebug()<<"F_top_x    "<<F_top_x;
+
+     yDebug()<<"F_side_y   "<<F_side_y;
+     yDebug()<<"F_top_y    "<<F_top_y;
+
+     yDebug()<<"F_side_z   "<<F_side_z;
+     yDebug()<<"F_top_z    "<<F_top_z;*/
+
+
+     g[0]= F_side_x;// * (abs(F_top_x) + F_top_x) + F_top_x * (abs(F_side_x) + F_side_x);
+     g[1]= F_side_y;// * (abs(F_top_y) + F_top_y) + F_top_y * (abs(F_side_y) + F_side_y);
+     g[2]= F_side_z;// * (abs(F_top_z) + F_top_z) + F_top_z * (abs(F_side_z) + F_side_z);
 
      Vector x_min(3,0.0);
      double minz=10.0;
