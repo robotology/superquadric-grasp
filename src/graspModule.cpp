@@ -1004,8 +1004,10 @@ bool GraspingModule::configPose(ResourceFinder &rf)
     if(rf.find("nameFileTrajectory_left").isNull())
        nameFileTrajectory_left="test-trajectory_left.txt";
 
-    tol=rf.check("tol", Value(1e-3)).asDouble();
-    constr_viol_tol=rf.check("constr_tol", Value(1e-2)).asDouble();
+    tol_single=rf.check("tol_single", Value(1e-3)).asDouble();
+    constr_viol_tol_single=rf.check("constr_tol_single", Value(1e-2)).asDouble();
+    tol_multiple=rf.check("tol_multiple", Value(1e-3)).asDouble();
+    constr_viol_tol_multiple=rf.check("constr_tol_multiple", Value(1e-2)).asDouble();
     acceptable_iter=rf.check("acceptable_iter", Value(0)).asInt();
     max_iter=rf.check("max_iter", Value(1e8)).asInt();
 
@@ -1018,8 +1020,10 @@ bool GraspingModule::configPose(ResourceFinder &rf)
        nlp_scaling_method="none";
 
     ipopt_par.put("max_cpu_time",max_cpu_time);
-    ipopt_par.put("tol",tol);
-    ipopt_par.put("constr_viol_tol",constr_viol_tol);
+    ipopt_par.put("tol_single",tol_single);
+    ipopt_par.put("constr_tol_single",constr_viol_tol_single);
+    ipopt_par.put("tol_multiple",tol_multiple);
+    ipopt_par.put("constr_tol_multiple",constr_viol_tol_multiple);
     ipopt_par.put("max_iter",max_iter);
     ipopt_par.put("acceptable_iter",acceptable_iter);
     ipopt_par.put("IPOPT_mu_strategy",mu_strategy);

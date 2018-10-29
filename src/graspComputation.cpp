@@ -53,45 +53,87 @@ void GraspComputation::setIpoptPar(const Property &newOptions, bool first_time)
         }
     }
 
-    double tolValue=newOptions.find("tol").asDouble();
-    if (newOptions.find("tol").isNull() && (first_time==true))
+    double tolValue_single=newOptions.find("tol_single").asDouble();
+    if (newOptions.find("tol_single").isNull() && (first_time==true))
     {
-        tol=1e-5;
+        tol_single=1e-5;
     }
-    else if (!newOptions.find("tol").isNull())
+    else if (!newOptions.find("tol_single").isNull())
     {
-        if ((tolValue>1e-8) && (tolValue<=0.01))
+        if ((tolValue_single>1e-8) && (tolValue_single<=0.01))
         {
-            tol=tolValue;
+            tol_single=tolValue_single;
         }
-        else if (tolValue<1e-8)
+        else if (tolValue_single<1e-8)
         {
-            tol=1e-8;
+            tol_single=1e-8;
         }
-        else if (tolValue>0.01)
+        else if (tolValue_single>0.01)
         {
-            tol=0.01;
+            tol_single=0.01;
         }
     }
 
-    double constrTolValue=newOptions.find("constr_viol_tol").asDouble();
-    if (newOptions.find("constr_viol_tol").isNull() && (first_time==true))
+    double constrTolValue_single=newOptions.find("constr_tol_single").asDouble();
+    if (newOptions.find("constr_tol_single").isNull() && (first_time==true))
     {
-        constr_viol_tol=1e-5;
+        constr_viol_tol_single=1e-5;
     }
-    else if (!newOptions.find("constr_viol_tol").isNull())
+    else if (!newOptions.find("constr_tol_single").isNull())
     {
-        if ((constrTolValue>1e-8) && (constrTolValue<=0.01))
+        if ((constrTolValue_single>1e-8) && (constrTolValue_single<=0.01))
         {
-            constr_viol_tol=constrTolValue;
+            constr_viol_tol_single=constrTolValue_single;
         }
-        else if (constrTolValue<1e-8)
+        else if (constrTolValue_single<1e-8)
         {
-            constr_viol_tol=1e-8;
+            constr_viol_tol_single=1e-8;
         }
-        else if (constrTolValue>0.01)
+        else if (constrTolValue_single>0.01)
         {
-            constr_viol_tol=0.01;
+            constr_viol_tol_single=0.01;
+        }
+    }
+
+    double tolValue_multiple=newOptions.find("tol_multiple").asDouble();
+    if (newOptions.find("tol_multiple").isNull() && (first_time==true))
+    {
+        tol_multiple=1e-5;
+    }
+    else if (!newOptions.find("tol_multiple").isNull())
+    {
+        if ((tolValue_multiple>1e-8) && (tolValue_multiple<=0.01))
+        {
+            tol_multiple=tolValue_multiple;
+        }
+        else if (tolValue_multiple<1e-8)
+        {
+            tol_multiple=1e-8;
+        }
+        else if (tolValue_multiple>0.01)
+        {
+            tol_multiple=0.01;
+        }
+    }
+
+    double constrTolValue_multiple=newOptions.find("constr_tol_multiple").asDouble();
+    if (newOptions.find("constr_tol_multiple").isNull() && (first_time==true))
+    {
+        constr_viol_tol_multiple-5;
+    }
+    else if (!newOptions.find("constr_tol_multiple").isNull())
+    {
+        if ((constrTolValue_multiple>1e-8) && (constrTolValue_multiple<=0.01))
+        {
+            constr_viol_tol_multiple=constrTolValue_multiple;
+        }
+        else if (constrTolValue_multiple<1e-8)
+        {
+            constr_viol_tol_multiple=1e-8;
+        }
+        else if (constrTolValue_multiple>0.01)
+        {
+            constr_viol_tol_multiple=0.01;
         }
     }
 
@@ -196,7 +238,10 @@ Property GraspComputation::getIpoptPar()
 
     Property advOptions;
     advOptions.put("max_cpu_time",max_cpu_time);
-    advOptions.put("tol",tol);
+    advOptions.put("tol_single",tol_single);
+    advOptions.put("tol_multiple",tol_multiple);
+    advOptions.put("constr_tol_single",constr_viol_tol_single);
+    advOptions.put("constr_tol_multiple",constr_viol_tol_multiple);
     advOptions.put("max_iter",max_iter);
     advOptions.put("acceptable_iter",acceptable_iter);
     advOptions.put("IPOPT_mu_strategy",mu_strategy);
@@ -574,8 +619,24 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 
     string context=this->rf->getHomeContextPath().c_str();
     Ipopt::SmartPtr<Ipopt::IpoptApplication> app=new Ipopt::IpoptApplication;
-    app->Options()->SetNumericValue("tol",tol);
-    app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol);
+    if (obstacles.size()==0)
+    {
+        app->Options()->SetNumericValue("tol",tol_single);
+        app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol_single);
+
+        cout<<endl;
+        yInfo()<<"Using tolerance for single superquadrics                :"<<tol_single;
+        yInfo()<<"Using constraint tolerance for single superquadrics     :"<<constr_viol_tol_single;
+    }
+    else
+    {
+        app->Options()->SetNumericValue("tol",tol_multiple);
+        app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol_multiple);
+
+        cout<<endl;
+        yInfo()<<"Using tolerance for multple superquadrics               :"<<tol_multiple;
+        yInfo()<<"Using constraint tolerance for multple superquadrics    :"<<constr_viol_tol_multiple;
+    }
     app->Options()->SetIntegerValue("acceptable_iter",acceptable_iter);
     app->Options()->SetStringValue("mu_strategy",mu_strategy);
     app->Options()->SetIntegerValue("max_iter",max_iter);

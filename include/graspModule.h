@@ -61,11 +61,11 @@ protected:
     std::deque<double> times_vis;
 
     // Optimization parameters
-    double tol;
+    double tol_single, tol_multiple;
     int max_iter;
     int n_pointshand;
     int acceptable_iter;
-    double constr_viol_tol;
+    double constr_viol_tol_single, constr_viol_tol_multiple;
     std::string mu_strategy;
     std::string nlp_scaling_method;
     double max_cpu_time;

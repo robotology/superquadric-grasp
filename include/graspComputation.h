@@ -33,7 +33,8 @@ class GraspComputation
 {
 protected:
 
-    double tol, constr_viol_tol;
+    double tol_single, constr_viol_tol_single;
+    double tol_multiple, constr_viol_tol_multiple;
     int max_iter, acceptable_iter, object_provided;
     std::string mu_strategy,nlp_scaling_method;
     double max_cpu_time;
