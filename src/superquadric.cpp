@@ -399,7 +399,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      if (l_o_r=="right")
      {
-         d_side_x[0]=-1.0; d_side_x[1]=0.0; d_side_x[2]= 0;
+         d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= -0.7;
+         //d_side_x[0]=-1.0; d_side_x[1]=0.0; d_side_x[2]= 0;
          d_side_y[0]= 0.0; d_side_y[1]= 0.7; d_side_y[2]= -0.7;
          d_side_z[0]= 0.0; d_side_z[1]= -0.7; d_side_z[2]= -0.7;
 
@@ -413,7 +414,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
      else
      {
-         d_side_x[0]=-1.0; d_side_x[1]= 0.0; d_side_x[2]= 0;
+         d_side_x[0]=-0.7; d_side_x[1]=0.7; d_side_x[2]= -0.7;
+         //d_side_x[0]=-1.0; d_side_x[1]= 0.0; d_side_x[2]= 0;
          d_side_y[0]= 0.0; d_side_y[1]= -0.7; d_side_y[2]=-0.7;
          d_side_z[0]=0.0; d_side_z[1]=-0.7; d_side_z[2]= 0.7;
 
@@ -423,8 +425,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
 
+     d_side_x=d_side_x/norm(d_side_x);
 
-     theta_side_x=M_PI/4.0;
+     theta_side_x=M_PI/6.0;
      theta_side_y=M_PI/4.0;
      theta_side_z=M_PI/4.0;
      //theta_side_x=M_PI/8.0;
@@ -535,6 +538,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          }
      }
 
+     yDebug()<<"x hand"<<x_hand.toString();
+     yDebug()<<"y hand"<<y_hand.toString();
+     yDebug()<<"z hand"<<z_hand.toString();
+
      return true;
  }
 
@@ -572,7 +579,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      if (l_o_r=="right")
      {
-         d_side_x[0]=-1.0; d_side_x[1]=0.0; d_side_x[2]= 0;
+         d_side_x[0]=-0.7; d_side_x[1]=-0.7; d_side_x[2]= -0.7;
+         //d_side_x[0]=-1.0; d_side_x[1]=0.0; d_side_x[2]= 0;
          d_side_y[0]= 0.0; d_side_y[1]= 0.7; d_side_y[2]= -0.7;
          d_side_z[0]= 0.0; d_side_z[1]= -0.7; d_side_z[2]= -0.7;
 
@@ -586,7 +594,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
      else
      {
-         d_side_x[0]=-1.0; d_side_x[1]= 0.0; d_side_x[2]= 0;
+         d_side_x[0]=-0.7; d_side_x[1]=0.7; d_side_x[2]= -0.7;
+         //d_side_x[0]=-1.0; d_side_x[1]= 0.0; d_side_x[2]= 0;
          d_side_y[0]= 0.0; d_side_y[1]= -0.7; d_side_y[2]=-0.7;
          d_side_z[0]=0.0; d_side_z[1]=-0.7; d_side_z[2]= 0.7;
 
@@ -596,7 +605,9 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
 
-     theta_side_x=M_PI/4.0;
+     d_side_x=d_side_x/norm(d_side_x);
+
+     theta_side_x=M_PI/6.0;
      theta_side_y=M_PI/4.0;
      theta_side_z=M_PI/4.0;
      //theta_side_x=M_PI/8.0;
