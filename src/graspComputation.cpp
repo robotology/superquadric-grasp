@@ -543,8 +543,8 @@ void GraspComputation::run()
             go_on=((go_on==true) || (go_on1==true));
         }
 
-        if (left_right=="both")
-            bestPose();
+        //if (left_right=="both")
+        bestPose();
 
         count_file++;
         count_file_old=count_file;
@@ -875,7 +875,7 @@ void GraspComputation::bestPose()
         average_obstacle_value_l /= final_obstacles_value_L.size();
     }
 
-    if (final_obstacles_value_L.size()== 0 || final_obstacles_value_R.size()==0)
+    if (final_obstacles_value_L.size()== 0 && final_obstacles_value_R.size()==0)
     {
         w4=0.0;
         average_obstacle_value_l=1;
@@ -924,6 +924,9 @@ void GraspComputation::bestPose()
             w2=10;
         }
 
+        if (error_orientation_r < 0.1)
+            w3=0;
+
         cost_right=w1*final_value_R + w2*error_position_r + w3*error_orientation_r + w4 /average_obstacle_value_r;
     }
     else
@@ -955,6 +958,9 @@ void GraspComputation::bestPose()
             w3=0.01;
             w2=10;
         }
+
+        if (error_orientation_l < 0.1)
+            w3=0;
 
         cost_left=w1*final_value_L + w2*error_position_l + w3*error_orientation_l + w4 / average_obstacle_value_l;
 
