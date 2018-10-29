@@ -766,8 +766,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    euler[2]=x[2];
    H_x.setSubcol(euler,0,3);
 
-   //if (notAlignedPose(H_x))
-   //    alignPose(H_x);
+   if (notAlignedPose(H_x))
+       alignPose(H_x);
 
    solution.setSubvector(3,dcm2euler(H_x));
 
@@ -887,12 +887,14 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &pose_hand)
 /****************************************************************/
 bool grasping_NLP::notAlignedPose(Matrix &final_H)
 {
-    if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.3) ||  (final_H(2,1) < -0.6 && final_H(2,1) > -1.0))
+
+    yDebug()<<"H(2,1) "<<final_H(2,1);
+    if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.5) ||  (final_H(2,1) < -0.8 && final_H(2,1) > -1.0))
     {
         yInfo()<<"Not aligned pose ";
         cout<<endl;
 
-        if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.3))
+        if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.5))
             top_grasp=true;
         else
             top_grasp=false;

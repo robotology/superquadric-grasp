@@ -608,6 +608,11 @@ void GraspComputation::run()
     }
 
     t_grasp=Time::now() - t0;
+
+    cout<<endl;
+    cout<<"-------------------------------------------------------------"<<endl;
+    yInfo()<<"             Time for computing all poses      :"<<t_grasp;
+    cout<<"-------------------------------------------------------------"<<endl;
 }
 
 /***********************************************************************/
@@ -656,10 +661,17 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
 
     grasp_nlp->configure(this->rf,l_o_r, displacement, plane);
 
+    double t0=Time::now();
     Ipopt::ApplicationReturnStatus status=app->OptimizeTNLP(GetRawPtr(grasp_nlp));
 
     if(status==Ipopt::Solve_Succeeded)
     {
+        double t_single=Time::now() - t0;
+        cout<<endl;
+        cout<<"-------------------------------------------------------------"<<endl;
+        yInfo()<<"             Time for computing a single pose     :"<<t_single;
+        cout<<"-------------------------------------------------------------"<<endl;
+
         if (l_o_r=="right")
         {
             solR=grasp_nlp->get_result();
