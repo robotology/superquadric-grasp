@@ -888,11 +888,11 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &pose_hand)
 bool grasping_NLP::notAlignedPose(Matrix &final_H)
 {
 
-    yDebug()<<"H(2,1) "<<final_H(2,1);
+    //yDebug()<<"H(2,1) "<<final_H(2,1);
     if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.5) ||  (final_H(2,1) < -0.8 && final_H(2,1) > -1.0))
     {
-        yInfo()<<"Not aligned pose ";
-        cout<<endl;
+        //yInfo()<<"Not aligned pose ";
+        //cout<<endl;
 
         if ((final_H(2,1)< 0.0 && final_H(2,1) > -0.5))
             top_grasp=true;
@@ -921,7 +921,7 @@ void grasping_NLP::alignPose(Matrix &final_H)
         else
             theta=-(M_PI/2 - acos(-final_H(2,1)));
 
-        yDebug()<<"theta "<<theta;
+        //yDebug()<<"theta "<<theta;
         rot_x(1,1)=rot_x(2,2)=cos(theta);
         rot_x(2,1)=sin(theta);
         rot_x(1,2) = -rot_x(2,1);

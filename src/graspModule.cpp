@@ -209,8 +209,6 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
     else
         multiple_superq=false;
 
-    yDebug()<<"object "<<object.toString();
-    yDebug()<<"obstacle "<<obstacles[0].toString();
 
     deque<double> cost;
 

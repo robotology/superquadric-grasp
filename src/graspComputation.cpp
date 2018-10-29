@@ -610,9 +610,10 @@ void GraspComputation::run()
     t_grasp=Time::now() - t0;
 
     cout<<endl;
-    cout<<"-------------------------------------------------------------"<<endl;
+    cout<<"----------------------------------------------------------------------------------------------------";
+    cout<<endl;
     yInfo()<<"             Time for computing all poses      :"<<t_grasp;
-    cout<<"-------------------------------------------------------------"<<endl;
+    cout<<"----------------------------------------------------------------------------------------------------";
 }
 
 /***********************************************************************/
@@ -630,8 +631,12 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol_single);
 
         cout<<endl;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
         yInfo()<<"Using tolerance for single superquadrics                :"<<tol_single;
         yInfo()<<"Using constraint tolerance for single superquadrics     :"<<constr_viol_tol_single;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
     }
     else
     {
@@ -639,8 +644,13 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
         app->Options()->SetNumericValue("constr_viol_tol",constr_viol_tol_multiple);
 
         cout<<endl;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
+
         yInfo()<<"Using tolerance for multple superquadrics               :"<<tol_multiple;
         yInfo()<<"Using constraint tolerance for multple superquadrics    :"<<constr_viol_tol_multiple;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
     }
     app->Options()->SetIntegerValue("acceptable_iter",acceptable_iter);
     app->Options()->SetStringValue("mu_strategy",mu_strategy);
@@ -668,9 +678,11 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     {
         double t_single=Time::now() - t0;
         cout<<endl;
-        cout<<"-------------------------------------------------------------"<<endl;
-        yInfo()<<"             Time for computing a single pose     :"<<t_single;
-        cout<<"-------------------------------------------------------------"<<endl;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
+        yInfo()<<"                               Time for computing a single pose     :"<<t_single;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
 
         if (l_o_r=="right")
         {
@@ -681,13 +693,22 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             which_hand=grasp_nlp->get_hand();
             hand_length_right=grasp_nlp->hand[1];
 
+            cout<<endl;
+            cout<<"----------------------------------------------------------------------------------------------------";
+            cout<<endl;
             yInfo()<<"[GraspComputation]: Solution (hand pose) for "<<l_o_r<<" hand is: ";
             yInfo()<<"|| "<<poseR.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: ";
             yInfo()<<"|| "<<which_hand.toString(3,3).c_str();
+
+            cout<<"----------------------------------------------------------------------------------------------------";
+            cout<<endl;
         }
         else
         {
+            cout<<endl;
+            cout<<"----------------------------------------------------------------------------------------------------";
+            cout<<endl;
             solL=grasp_nlp->get_result();
             final_value_L=grasp_nlp->get_final_F();
             final_obstacles_value_L=grasp_nlp->get_final_constr_values();
@@ -698,6 +719,8 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
             yInfo()<<"|| "<<poseL.toString(3,3).c_str();
             yInfo()<<"[GraspComputation]: Stretched hand is: ";
             yInfo()<<"|| "<<which_hand.toString(3,3).c_str();
+            cout<<"----------------------------------------------------------------------------------------------------";
+            cout<<endl;
 
         }
 
@@ -988,8 +1011,8 @@ void GraspComputation::bestPose()
         error_orientation_r=norm(orientation_error_vector.subVector(0,2))* fabs(sin(orientation_error_vector(3)));
 
         cout<<endl;
-        yDebug()<<"|| Pos error right       :"<<error_position_r;
-        yDebug()<<"|| Orient error right    :"<<error_orientation_r;
+        yDebug()<<"||Pos error right       :"<<error_position_r;
+        yDebug()<<"||Orient error right    :"<<error_orientation_r;
 
         if (error_position_r > 0.01)
         {
@@ -1038,12 +1061,14 @@ void GraspComputation::bestPose()
         cost_left=w1*final_value_L + w2*error_position_l + w3*error_orientation_l + w4 / average_obstacle_value_l;
 
         cout<<endl;
-        yDebug()<<"|| Pos error left        :"<<error_position_l;
-        yDebug()<<"|| Orient error left     :"<<error_orientation_l;
+        yDebug()<<"||Pos error left        :"<<error_position_l;
+        yDebug()<<"||Orient error left     :"<<error_orientation_l;
     }
     else
         cost_left=0.0;
 
+    cout<<endl;
+    cout<<"----------------------------------------------------------------------------------------------------";
     cout<<endl;
     yInfo()<<"|| Final value r              :"<<final_value_R;
     yInfo()<<"|| w1 * final value r         :"<<w1*final_value_R;
@@ -1052,8 +1077,11 @@ void GraspComputation::bestPose()
     yInfo()<<"|| w2 * error_posit  r        :"<<w2*error_position_r;
     yInfo()<<"|| w3 * error_orient r        :"<<w3*error_orientation_r;
     yInfo()<<"|| cost right                 :"<<cost_right;
+    cout<<"----------------------------------------------------------------------------------------------------";
+    cout<<endl;
 
     cout<<endl;
+    cout<<"----------------------------------------------------------------------------------------------------";
     cout<<endl;
     yInfo()<<"|| Final value l              :"<<final_value_L;
     yInfo()<<"|| w1 * final value l         :"<<w1*final_value_L;
@@ -1062,6 +1090,7 @@ void GraspComputation::bestPose()
     yInfo()<<"|| w2 * error_posit  l        :"<<w2*error_position_l;
     yInfo()<<"|| w3 * error_orient l        :"<<w3*error_orientation_l;
     yInfo()<<"|| cost left                  :"<<cost_left;
+    cout<<"----------------------------------------------------------------------------------------------------";
     cout<<endl;
     cout<<endl;
 
