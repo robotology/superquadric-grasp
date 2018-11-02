@@ -872,7 +872,7 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &pose_hand)
 
         for (size_t j=0; j<edges_hand.size(); j++)
         {           
-            constr_value+= pow( pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1,2 );
+            constr_value+=  pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1;
         }
 
         constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /points_on.size();
