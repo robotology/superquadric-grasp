@@ -300,6 +300,12 @@ public:
 
    /****************************************************************/
  	double coneImplicitFunction(const yarp::sig::Vector &point, yarp::sig::Vector &d, double theta);
+
+        /****************************************************************/
+        double computeObstacleValues_v(yarp::sig::Vector &pose_hand, int k);
+
+        /****************************************************************/
+        double computeObstacleValues(const Ipopt::Number *x, int k);
 };
 
 

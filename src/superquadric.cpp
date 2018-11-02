@@ -473,10 +473,12 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          {
              g[5+j]=0;
 
-             for(size_t i=0;i<points_on.size();i++)
-                g[5+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+             //for(size_t i=0;i<points_on.size();i++)
+             //   g[5+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
 
-             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             //g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[5+j]=computeObstacleValues(x,j);
+
          }
      }
 
@@ -592,10 +594,13 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          {
              g[5+j]=0;
 
-             for(size_t i=0;i<points_on.size();i++)
+             /*for(size_t i=0;i<points_on.size();i++)
                 g[5+j]+= pow(f_v(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
 
-             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];*/
+
+             g[5+j]=computeObstacleValues_v(x,j);
+
          }
      }
      return g[i];
@@ -830,6 +835,115 @@ double grasping_NLP::get_final_F() const
 deque<double> grasping_NLP::get_final_constr_values() const
 {
    return final_obstacles_value;
+}
+
+/****************************************************************/
+double grasping_NLP::computeObstacleValues(const Ipopt::Number *x, int k)
+{
+    deque<double> values;
+    double constr_value=0.0;
+
+    Vector middle_finger(3,0.0);
+    Vector thumb_finger(3,0.0);
+    Vector palm_up(3,0.0);
+    Vector palm_down(3,0.0);
+
+    deque<Vector> edges_hand;
+
+    Vector pose_hand(6,0.0);
+
+    for (int i=0; i<6; i++)
+        pose_hand[i]=x[i];
+
+    Matrix H_robot(4,4);
+    H_robot=euler2dcm(pose_hand.subVector(3,5));
+
+    middle_finger=pose_hand.subVector(0,2) - hand[0] * H_robot.submatrix(0,2,0,2).getCol(0);
+    if (l_o_r=="right")
+        thumb_finger=pose_hand.subVector(0,2) + hand[2] * H_robot.submatrix(0,2,0,2).getCol(2);
+    else
+        thumb_finger=pose_hand.subVector(0,2) - hand[2] * H_robot.submatrix(0,2,0,2).getCol(2);
+
+    palm_up=pose_hand.subVector(0,2) - hand[0] * H_robot.submatrix(0,2,0,2).getCol(1);
+    palm_down=pose_hand.subVector(0,2) + hand[0] * H_robot.submatrix(0,2,0,2).getCol(1);
+
+    edges_hand.push_back(pose_hand.subVector(0,2));
+    edges_hand.push_back(middle_finger);
+    edges_hand.push_back(thumb_finger);
+    edges_hand.push_back(palm_up);
+    edges_hand.push_back(palm_down);
+
+
+    //for (size_t i=0; i<obstacles.size(); i++)
+    //{
+        constr_value=0.0;
+
+        Vector obstacle=obstacles[k];
+
+        for (size_t j=0; j<edges_hand.size(); j++)
+        {
+            constr_value+=  pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1;
+        }
+
+        constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /points_on.size();
+
+        //values.push_back(constr_value);
+//    }
+
+    return constr_value;
+
+}
+
+/****************************************************************/
+double grasping_NLP::computeObstacleValues_v(Vector &pose_hand, int k)
+{
+    deque<double> values;
+    double constr_value=0.0;
+
+    Vector middle_finger(3,0.0);
+    Vector thumb_finger(3,0.0);
+    Vector palm_up(3,0.0);
+    Vector palm_down(3,0.0);
+
+    deque<Vector> edges_hand;
+
+    Matrix H_robot(4,4);
+    H_robot=euler2dcm(pose_hand.subVector(3,5));
+
+    middle_finger=pose_hand.subVector(0,2) - hand[0] * H_robot.submatrix(0,2,0,2).getCol(0);
+    if (l_o_r=="right")
+        thumb_finger=pose_hand.subVector(0,2) + hand[2] * H_robot.submatrix(0,2,0,2).getCol(2);
+    else
+        thumb_finger=pose_hand.subVector(0,2) - hand[2] * H_robot.submatrix(0,2,0,2).getCol(2);
+
+    palm_up=pose_hand.subVector(0,2) - hand[0] * H_robot.submatrix(0,2,0,2).getCol(1);
+    palm_down=pose_hand.subVector(0,2) + hand[0] * H_robot.submatrix(0,2,0,2).getCol(1);
+
+    edges_hand.push_back(pose_hand.subVector(0,2));
+    edges_hand.push_back(middle_finger);
+    edges_hand.push_back(thumb_finger);
+    edges_hand.push_back(palm_up);
+    edges_hand.push_back(palm_down);
+
+
+    //for (size_t i=0; i<obstacles.size(); i++)
+    //{
+        constr_value=0.0;
+
+        Vector obstacle=obstacles[k];
+
+        for (size_t j=0; j<edges_hand.size(); j++)
+        {
+            constr_value+=  pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1;
+        }
+
+        constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /points_on.size();
+
+        //values.push_back(constr_value);
+//    }
+
+    return constr_value;
+
 }
 
 /****************************************************************/
