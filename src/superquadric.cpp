@@ -403,7 +403,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      d_y=d_y/norm(d_y);
      d_z=d_z/norm(d_z);
 
-     theta_x=M_PI/6.0;
+     if (num_superq>0)
+        theta_x=M_PI/4.0;
+     else
+         theta_x=M_PI/6.0;
      theta_y=M_PI/4.0;
      theta_z=M_PI/4.0;
 
@@ -473,13 +476,17 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          {
              g[5+j]=0;
 
-             //for(size_t i=0;i<points_on.size();i++)
-             //   g[5+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
+             /*for(size_t i=0;i<points_on.size();i++)
+                g[5+j]+= pow(f(obstacles[j],x,points_on[i]),obstacles[j][3])-1;
 
-             //g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];
+             g[5+j]*=obstacles[j][0]*obstacles[j][1]*obstacles[j][2];*/
              g[5+j]=computeObstacleValues(x,j);
 
+
+
          }
+
+
      }
 
      return true;
@@ -528,7 +535,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      d_y=d_y/norm(d_y);
      d_z=d_z/norm(d_z);
 
-     theta_x=M_PI/6.0;
+     if (num_superq>0)
+        theta_x=M_PI/4.0;
+     else
+         theta_x=M_PI/6.0;
      theta_y=M_PI/4.0;
      theta_z=M_PI/4.0;
 
@@ -885,7 +895,7 @@ double grasping_NLP::computeObstacleValues(const Ipopt::Number *x, int k)
             constr_value+=  pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1;
         }
 
-        constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /points_on.size();
+        constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /edges_hand.size();
 
         //values.push_back(constr_value);
 //    }
@@ -937,7 +947,7 @@ double grasping_NLP::computeObstacleValues_v(Vector &pose_hand, int k)
             constr_value+=  pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1;
         }
 
-        constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /points_on.size();
+        constr_value*=obstacle[0] * obstacle[1] * obstacle[2] /edges_hand.size();
 
         //values.push_back(constr_value);
 //    }
