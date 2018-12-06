@@ -575,7 +575,7 @@ bool GraspComputation::setCartesianLeft()
 /***********************************************************************/
 void GraspComputation::run()
 {
-    t0=Time::now();
+    //t0=Time::now();
 
     if (norm(hand)!=0.0 && norm(object)!=0.0)
     {
@@ -607,13 +607,13 @@ void GraspComputation::run()
         }
     }
 
-    t_grasp=Time::now() - t0;
+    //t_grasp=Time::now() - t0;
 
-    cout<<endl;
-    cout<<"----------------------------------------------------------------------------------------------------";
-    cout<<endl;
-    yInfo()<<"             Time for computing all poses      :"<<t_grasp;
-    cout<<"----------------------------------------------------------------------------------------------------";
+    //cout<<endl;
+    //cout<<"----------------------------------------------------------------------------------------------------";
+    //cout<<endl;
+    //yInfo()<<"             Time for computing all poses      :"<<t_grasp;
+    //cout<<"----------------------------------------------------------------------------------------------------";
 }
 
 /***********************************************************************/
@@ -994,6 +994,7 @@ void GraspComputation::bestPose()
         w3=1.0;
         w4=1e-5;
 
+
         Vector x_d = poseR.subVector(0,2);
         Vector o_d = dcm2axis(euler2dcm(poseR.subVector(3,5)));
         Vector x_d_hat, o_d_hat, q_d_hat;
@@ -1023,6 +1024,7 @@ void GraspComputation::bestPose()
         if (error_orientation_r < 0.1)
             w3=0;
 
+
         cost_right=w1*final_value_R + w2*error_position_r + w3*error_orientation_r + w4 /average_obstacle_value_r;
     }
     else
@@ -1034,6 +1036,7 @@ void GraspComputation::bestPose()
         w2=1.0;
         w3=1.0;
         w4=1e-5;
+
 
         Vector x_d=poseL.subVector(0,2);
         Vector o_d=dcm2axis(euler2dcm(poseL.subVector(3,5)));

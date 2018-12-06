@@ -223,6 +223,8 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
         readSuperq("hand1",graspComp->hand1,11,this->rf);
     }
 
+    t0=Time::now();
+
     graspComp->setPar("left_or_right", hand);
     graspComp->run();
     graspComp->getSolution(hand);
@@ -328,6 +330,14 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
             putPropertiesTogether(solutions, "left", all_sol);
             putPropertiesTogether(solutions, "right", all_sol);
         }
+
+        t_grasp=Time::now() - t0;
+
+        cout<<endl;
+        cout<<"----------------------------------------------------------------------------------------------------";
+        cout<<endl;
+        yInfo()<<"             Time for computing all poses      :"<<t_grasp;
+        cout<<"-------------------------------------------------------------------------------";
 
         //Temporary
         //if (best_scenario>0)
