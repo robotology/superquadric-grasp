@@ -1,5 +1,8 @@
 # superquadric-grasp
 Framework for computing a good grasping pose, by exploiting superquadric models for the object and the robot hand.
+
+:warning: **Note:** a new and improved implementation is available in [`superquadric-lib`](https://github.com/robotology/superquadric-lib).
+
 #### Overview
 - [Theoretical background](#theoretical-background)
 - [Dependencies & how to compile](#dependencies)
