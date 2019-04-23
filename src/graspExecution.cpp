@@ -1,3 +1,25 @@
+/******************************************************************************
+* Copyright (C) 2019 Istituto Italiano di Tecnologia (IIT)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License as published by the Free Software
+* Foundation; either version 2 of the License, or (at your option) any later
+* version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+* details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.                                                                     *
+ ******************************************************************************/
+
+/**
+ * @authors: Giulia Vezzani <giulia.vezzani@iit.it>
+ */
+
 #include <cmath>
 #include <algorithm>
 #include <sstream>
@@ -146,7 +168,7 @@ bool GraspExecution::configCartesian(const string &which_hand)
         yDebug()<<"Torso DOFS "<<curDof.toString(3,3);
 
         yDebug()<<"Setting max torso pitch";
-        icart_right->setLimits(0, 0.0, torso_pitch_max);     
+        icart_right->setLimits(0, 0.0, torso_pitch_max);
         icart_right->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
     }
@@ -204,7 +226,7 @@ bool GraspExecution::configCartesian(const string &which_hand)
         yDebug()<<"Setting max torso pitch";
         icart_left->setLimits(0, 0.0, torso_pitch_max);
         icart_left->getLimits(0, &min, &max);
-        yDebug()<<"Get limit of pitch"<<min<<max;     
+        yDebug()<<"Get limit of pitch"<<min<<max;
     }
 
     return done;
@@ -245,8 +267,8 @@ bool GraspExecution::configCompliant(const string &which_hand)
         Property opt_leftArm("(device remote_controlboard)");
         opt_leftArm.put("remote",("/"+robot+"/left_arm").c_str());
         opt_leftArm.put("local",("/compliantControl/left_arm"));
-    
-        
+
+
         if (!driverImped_left.open(opt_leftArm))
         {
             yError()<<"Problem in opening driver for impedance left";
@@ -445,7 +467,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
     {
         if (fivef=="on")
             five_fingers="true";
-        else 
+        else
             five_fingers="false";
 
         if ((left_or_right=="right") || (left_or_right=="both"))
@@ -602,7 +624,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         else if (lz<0.05)
         {
             lift_z=0.05;
-        }       
+        }
         else if (lz>0.3)
         {
             lift_z=0.3;
@@ -895,7 +917,7 @@ void GraspExecution::setPosePar(const Property &newOptions, bool first_time)
         else
         {
             damp_left[0]=0.002; damp_left[1]=0.002; damp_left[2]=0.002;
-            damp_left[3]=0.002; damp_left[4]=0.0; 
+            damp_left[3]=0.002; damp_left[4]=0.0;
         }
     }
 
@@ -1067,7 +1089,7 @@ void GraspExecution::getPoses(const Property &poses)
             for (size_t k=0; k<trajectory_right.size(); k++)
             {
                 yDebug()<<"[GraspExecution]: Waypoint right"<<k<<trajectory_right[k].toString(3,3);
-                
+
                 trajectory_right[k].setSubvector(0,trajectory_right[k].subVector(0,2) +shift_right);
                 yDebug()<<"[GraspExecution]: Shifted waypoint right"<<k<<trajectory_right[k].toString(3,3);
             }
@@ -1236,7 +1258,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
         done=false;
 
         if ((i == trajectory_right.size()-1) || (i == trajectory_right.size()-2))
-        {  
+        {
             while (!done)
             {
                 if (Bottle *force=portForces_right.read(false))
@@ -1296,7 +1318,7 @@ bool GraspExecution::reachWaypoint(int i, string &hand)
             while (!done)
             {
                 if (Bottle *force=portForces_left.read(false))
-                { 
+                {
                     yInfo()<<"Forces of left arm detected while moving"<<force->toString();
                     forceThre[0]=force->get(0).asDouble();
                     forceThre[1]=force->get(1).asDouble();
@@ -1354,7 +1376,7 @@ bool GraspExecution::reachWithVisual(int i, string &hand)
 
     visual_servoing_right->initFacilities(use_direct_kin);
     visual_servoing_right->goToGoal(x,o);
-    
+
     while (!done)
     {
         done=!visual_servoing_right->checkVisualServoingController();
@@ -1434,11 +1456,11 @@ bool GraspExecution::release()
     }
 
     if (grasp==true)
-    { 
-        if (left_or_right != "left")  
+    {
+        if (left_or_right != "left")
             handContr_right.close();
 
-        if (left_or_right != "right") 
+        if (left_or_right != "right")
             handContr_left.close();
     }
 
@@ -1513,7 +1535,7 @@ bool GraspExecution::goHome(const string &hand)
 
         icart_left->getLimits(0, &min, &max);
         yDebug()<<"Get limit of pitch"<<min<<max;
-        
+
 
         yDebug()<<"[GraspExecution]: opening hand ... ";
         handContr_left.openHand(true, true);
@@ -1536,7 +1558,7 @@ bool GraspExecution::goHome(const string &hand)
              Vector o_reached(4,0.0);
              icart_left->getPose(x_reached, o_reached);
              yDebug()<<"[Grasp Execution]: Waypoint "<<i<< " reached with error in position: "<<norm(home_left.subVector(0,2)-x_reached)<<" and in orientation: "<<norm(home_left.subVector(3,6)-o_reached);
-             icart_left->restoreContext(context_tmp);        
+             icart_left->restoreContext(context_tmp);
         }
     }
 
@@ -1658,5 +1680,3 @@ bool GraspExecution::releaseObject(const string &hand)
 
     return true;
 }
-
-
