@@ -1,3 +1,25 @@
+/******************************************************************************
+* Copyright (C) 2019 Istituto Italiano di Tecnologia (IIT)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License as published by the Free Software
+* Foundation; either version 2 of the License, or (at your option) any later
+* version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+* details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.                                                                     *
+ ******************************************************************************/
+
+/**
+ * @authors: Giulia Vezzani <giulia.vezzani@iit.it>
+ */
+
 #include <cmath>
 #include <algorithm>
 #include <sstream>
@@ -267,7 +289,7 @@ void GraspComputation::setPosePar(const Property &newOptions, bool first_time)
     }
     else if (!newOptions.find("n_pointshand").isNull())
     {
-        if ((points>=4) && (points<=100))
+        if ((points>=2) && (points<=100))
         {
             n_pointshand=points;
         }
@@ -657,8 +679,8 @@ bool GraspComputation::computePose(Vector &which_hand, const string &l_o_r)
     app->Options()->SetIntegerValue("max_iter",max_iter);
     app->Options()->SetStringValue("nlp_scaling_method",nlp_scaling_method);
     app->Options()->SetStringValue("hessian_approximation","limited-memory");
-    app->Options()->SetStringValue("derivative_test","first-order");
-    app->Options()->SetStringValue("derivative_test_print_all","yes");
+    //app->Options()->SetStringValue("derivative_test","first-order");
+    //app->Options()->SetStringValue("derivative_test_print_all","yes");
     app->Options()->SetIntegerValue("print_level",print_level);
 
     if (print_level > 0)

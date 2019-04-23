@@ -119,6 +119,7 @@ void grasping_NLP::init(const Vector &objectext, Vector &handext, const deque<Ve
                 }
             }
 
+
         }
     }
 
@@ -137,14 +138,18 @@ Vector grasping_NLP::computePointsHand(Vector &hand, int j, int l, const string 
 
     omega=j*M_PI/(l);
 
+
     se=sin(theta);
     ce=cos(theta);
     co=cos(omega);
     so=sin(omega);
 
+
+
     point[0]=hand[0] * sign(ce)*(pow(abs(ce),hand[3])) * sign(co)*(pow(abs(co),hand[4]));
     point[1]=hand[1] * sign(se)*(pow(abs(se),hand[3]));
     point[2]=hand[2] * sign(ce)*(pow(abs(ce),hand[3])) * sign(so)*(pow(abs(so),hand[4]));
+
 
     return point;
 }
@@ -239,7 +244,10 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      value*=object[0]*object[1]*object[2]/points_on.size();
 
+
      aux_objvalue=value;
+
+
  }
 
  /****************************************************************/
@@ -346,6 +354,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
          grad_n=F_v(x_tmp,points_on);
 
          grad_f[j]=(grad_p-grad_n)/eps;
+
      }
 
      return true;
@@ -421,6 +430,8 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
 
      z_hand=(H.getCol(2).subVector(0,2));
 
+
+
      F_x=coneImplicitFunction(x_hand, d_x, theta_x);
      F_y=coneImplicitFunction(y_hand, d_y, theta_y);
      F_z=coneImplicitFunction(z_hand, d_z, theta_z);
@@ -428,6 +439,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      g[0]= F_x;
      g[1]= F_y;
      g[2]= F_z;
+
 
      Vector x_min;
      double minz=10.0;
@@ -468,7 +480,6 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
      }
 
      g[4]=object[0]*object[1]*object[2]*(pow(f_v2(object,robotPose), object[3]) -1);
-
 
      if (num_superq>0)
      {
@@ -646,6 +657,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
                  count++;
              }
          }
+
      }
      else
     {
@@ -673,6 +685,7 @@ bool grasping_NLP::get_bounds_info(Ipopt::Index n, Ipopt::Number *x_l, Ipopt::Nu
         }
      }
 
+
  return true;
 
  }
@@ -688,7 +701,7 @@ void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, co
     for(size_t i=0; i< 6; i++)
         x0[i]=x0_tmp(i,0);
 
-    bounds.resize(6,2);    
+    bounds.resize(6,2);
     readMatrix("bounds_"+left_or_right,bounds, 6, rf);
 
     max_superq= rf->check("max_superq", Value(4)).asInt();
@@ -700,7 +713,7 @@ void grasping_NLP::configure(ResourceFinder *rf, const string &left_or_right, co
 
     l_o_r=left_or_right;
     displacement=disp;
-    plane.setCol(0,pl); 
+    plane.setCol(0,pl);
 }
 
 /****************************************************************/
@@ -781,8 +794,8 @@ void grasping_NLP::finalize_solution(Ipopt::SolverReturn status, Ipopt::Index n,
    euler[2]=x[2];
    H_x.setSubcol(euler,0,3);
 
-   if (notAlignedPose(H_x))
-       alignPose(H_x);
+   //if (notAlignedPose(H_x))
+   //    alignPose(H_x);
 
    solution.setSubvector(3,dcm2euler(H_x));
 
@@ -995,7 +1008,7 @@ deque<double> grasping_NLP::computeFinalObstacleValues(Vector &pose_hand)
         Vector obstacle=obstacles[i];
 
         for (size_t j=0; j<edges_hand.size(); j++)
-        {           
+        {
             constr_value+=  pow(f_v2(obstacle,edges_hand[j]),obstacle[3])-1;
         }
 
@@ -1068,31 +1081,3 @@ void grasping_NLP::alignPose(Matrix &final_H)
     final_H.setSubmatrix(rot_x * final_H.submatrix(0,2,0,2), 0, 0);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

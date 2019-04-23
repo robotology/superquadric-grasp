@@ -1,19 +1,24 @@
-﻿/*
- * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
- * Author: Giulia Vezzani
- * email:  giulia.vezzani@iit.it
- * Permission is granted to copy, distribute, and/or modify this program
- * under the terms of the GNU General Public License, version 2 or any
- * later version published by the Free Software Foundation.
- *
- * A copy of the license can be found at
- * http://www.cub.org/icub/license/gpl.txt
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details
-*/
+/******************************************************************************
+* Copyright (C) 2019 Istituto Italiano di Tecnologia (IIT)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License as published by the Free Software
+* Foundation; either version 2 of the License, or (at your option) any later
+* version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+* details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.                                                                     *
+ ******************************************************************************/
+
+/**
+ * @authors: Giulia Vezzani <giulia.vezzani@iit.it>
+ */
 
 #include <csignal>
 #include <cmath>
@@ -192,11 +197,11 @@ Property GraspingModule::get_grasping_pose_multiple(const Property &estimated_su
 
             obstacle[0]=obstacle_sing->get(0).asDouble(); obstacle[1]=obstacle_sing->get(1).asDouble(); obstacle[2]=obstacle_sing->get(2).asDouble();
             obstacle[3]=obstacle_sing->get(3).asDouble(); obstacle[4]=obstacle_sing->get(4).asDouble(); obstacle[5]=obstacle_sing->get(5).asDouble();
-            obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble(); 
+            obstacle[6]=obstacle_sing->get(6).asDouble(); obstacle[7]=obstacle_sing->get(7).asDouble();
             Vector axis(4,0.0);
             axis[0]=obstacle_sing->get(8).asDouble(); axis[1]=obstacle_sing->get(9).asDouble(); axis[2]=obstacle_sing->get(10).asDouble(); axis[3]=obstacle_sing->get(11).asDouble();
             obstacle.setSubvector(8,dcm2euler(axis2dcm(axis)));
-            
+
             obstacles.push_back(obstacle);
             obstacles_vis.push_back(obstacle);
         }

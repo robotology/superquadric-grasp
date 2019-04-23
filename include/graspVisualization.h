@@ -1,19 +1,24 @@
-/*
- * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
- * Author: Giulia Vezzani
- * email:  giulia.vezzani@iit.it
- * Permission is granted to copy, distribute, and/or modify this program
- * under the terms of the GNU General Public License, version 2 or any
- * later version published by the Free Software Foundation.
- *
- * A copy of the license can be found at
- * http://www.robotcub.org/icub/license/gpl.txt
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details
-*/
+/******************************************************************************
+* Copyright (C) 2019 Istituto Italiano di Tecnologia (IIT)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License as published by the Free Software
+* Foundation; either version 2 of the License, or (at your option) any later
+* version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+* details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.                                                                     *
+ ******************************************************************************/
+
+/**
+ * @authors: Giulia Vezzani <giulia.vezzani@iit.it>
+ */
 
 #ifndef __VISUALIZATION_H__
 #define __VISUALIZATION_H__
@@ -161,7 +166,7 @@ public:
     */
     /***********************************************************************/
     void showHistogram( yarp::sig::ImageOf<yarp::sig::PixelRgb> &imgOut);
-    
+
     /** This is a lookup table for the colors of the histograms according to the cost of the pose
     * @param color is the color as cv::Scalar
     * @param cost_vis is the double of the costs of a pose
